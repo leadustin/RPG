@@ -1,0 +1,75 @@
+/* public/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+
+:root {
+  --font-main: 'Cinzel Decorative', serif;
+  --color-text-light: #f5e6c8;
+  --color-text-dark: #6a5b4c;
+  
+  --color-background-dark: #000000; /* <<< GEÄNDERT ZU SCHWARZ */
+  --color-background-medium: #1c1c1c; /* Dunkles Grau für Panels */
+  --color-background-light: #4e4642;
+
+  --color-border-dark: #1f1a18;
+  --color-border-light: #5a524c;
+
+  --color-button-primary: #5c4a3e;
+  --color-button-hover: #7b6a5e;
+  --color-button-active: #9a8a7e;
+
+  --color-selection: #a87e4c; /* Goldener Ton für Ränder & Auswahl */
+  --color-shadow: rgba(0, 0, 0, 0.5);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background-dark);
+  color: var(--color-text-light);
+  font-family: var(--font-main);
+  overflow: hidden; 
+  font-size: 16px;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-main);
+    color: var(--color-text-light);
+    text-shadow: 1px 1px 2px var(--color-shadow);
+}
+
+button {
+    font-family: var(--font-main);
+    color: var(--color-text-light);
+    background-color: var(--color-button-primary);
+    border: 1px solid var(--color-border-light);
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    border-radius: 3px;
+    box-shadow: 2px 2px 5px var(--color-shadow);
+}
+
+button:hover {
+    background-color: var(--color-button-hover);
+    border-color: var(--color-selection);
+}
+
+button:active {
+    background-color: var(--color-button-active);
+    border-color: var(--color-selection);
+}
+
+input[type="text"], input[type="number"], textarea {
+    background-color: var(--color-background-light);
+    border: 1px solid var(--color-border-light);
+    color: var(--color-text-light);
+    padding: 8px;
+    border-radius: 3px;
+    box-shadow: inset 1px 1px 3px var(--color-shadow);
+}
