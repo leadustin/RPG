@@ -1,0 +1,25 @@
+/* src/components/PanelDetails.css */
+/* Diese Datei enthält geteilte Stile für Detailansichten in Panels. */
+
+.details-divider {
+  height: 1px;
+  background-color: var(--color-selection);
+  margin: 5px 0;
+}
+
+.features-list {
+  padding-left: 0;
+  list-style: none;
+  font-family: sans-serif; /* Wir nutzen hier eine lesbarere Schrift für Fließtext */
+}
+
+.features-list li {
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.features-list strong {
+  color: var(--color-text-light);
+  display: block;
+  margin-bottom: 3px;
+}
