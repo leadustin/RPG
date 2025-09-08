@@ -1,0 +1,35 @@
+.action-bar-container {
+  display: flex;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.combat-log {
+  flex-grow: 1;
+  background-color: #111;
+  border-radius: 5px;
+  padding: 15px;
+  color: #ccc;
+  overflow-y: auto;
+  margin-right: 20px;
+}
+
+.skill-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.skill-slot {
+  width: 60px;
+  height: 60px;
+  background-color: #333;
+  border: 2px solid #555;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  color: #fff;
+}
