@@ -3,22 +3,28 @@
   height: 100%;
   padding: 10px;
   box-sizing: border-box;
+  align-items: center; /* Zentriert die Elemente vertikal */
 }
 
 .combat-log {
-  flex-grow: 1;
+  width: 45%; /* Breite des Log-Fensters auf 65% festgelegt */
+  height: 90%; /* Höhe an den Container angepasst */
   background-color: #111;
   border-radius: 5px;
   padding: 15px;
   color: #ccc;
   overflow-y: auto;
   margin-right: 20px;
+  box-sizing: border-box;
 }
 
 .skill-bar {
+  flex-grow: 1; /* Nimmt den restlichen verfügbaren Platz ein */
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: flex-start; /* Richtet die Skills rlinks aus */
+  padding-right: 20px;
 }
 
 .skill-slot {
@@ -32,4 +38,10 @@
   align-items: center;
   font-size: 1.5em;
   color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.skill-slot:hover {
+    background-color: #444;
 }
