@@ -1,9 +1,9 @@
 // src/App.js
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-import CharacterCreationScreen from './components/CharacterCreationScreen';
+import CharacterCreationScreen from './components/character_creation/CharacterCreationScreen.js';
+import { WorldMap } from './components/worldmap/WorldMap.js';
 import { loadCharacter } from './utils/persistence';
-import { WorldMap } from './components/WorldMap';
 
 /**
  * Die Haupt-Spielansicht, die jetzt die interaktive Karte steuert.
