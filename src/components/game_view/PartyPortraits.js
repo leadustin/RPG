@@ -8,10 +8,11 @@ export const PartyPortraits = ({ party }) => {
         <div key={index} className="portrait-slot">
           {member ? (
             <>
-              <div className="portrait-image-placeholder"></div>
-              <div className="portrait-info">
-                <span>{member.name}</span>
-                {/* Hier könnten später HP-Balken etc. hin */}
+              <div className="portrait-image">
+                {/* Das eigentliche Porträt-Bild kommt hierhin */}
+              </div>
+              <div className="health-bar-placeholder">
+                {/* Zukünftige Lebensenergieanzeige */}
               </div>
             </>
           ) : (
