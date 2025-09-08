@@ -4,7 +4,7 @@ import './WorldMap.css';
 
 const GRID_WIDTH = 32;
 
-const images = require.context('../assets/images/map', false, /\.webp$/);
+const images = require.context('../../assets/images/map', false, /\.webp$/);
 const sortedImagePaths = images.keys().sort((a, b) => {
   const matchA = a.match(/map_(\d+)x(\d+)\.webp/);
   const matchB = b.match(/map_(\d+)x(\d+)\.webp/);
@@ -50,3 +50,4 @@ export const WorldMap = ({ zoom, offset }) => {
     </div>
   );
 };
+
