@@ -1,7 +1,7 @@
 // src/App.js
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { CharacterCreationScreen } from './components/CharacterCreationScreen';
+import CharacterCreationScreen from './components/CharacterCreationScreen';
 import { loadCharacter } from './utils/persistence';
 import { WorldMap } from './components/WorldMap';
 
