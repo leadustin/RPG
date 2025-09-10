@@ -1,0 +1,37 @@
+/* src/components/SubraceSelection.css */
+.subrace-container h2 {
+    color: var(--color-selection);
+}
+
+.subrace-options {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+/* Wir können die Stile aus RaceSelection.css wiederverwenden */
+.subrace-button {
+    font-family: var(--font-main);
+    color: var(--color-text-light);
+    background-color: var(--color-button-primary);
+    border: 1px solid var(--color-border-light);
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.subrace-button:hover {
+    background-color: var(--color-button-hover);
+}
+
+.subrace-button.selected {
+    background-color: var(--color-selection);
+    border-color: var(--color-text-light);
+    color: var(--color-background-dark);
+}
+
+.ancestry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+}

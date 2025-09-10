@@ -1,0 +1,115 @@
+/* src/components/SummaryPanel.css */
+
+.summary-panel {
+  background-color: rgba(28, 28, 28, 0.85);
+  border: 1px solid var(--color-selection);
+  padding: 20px;
+  backdrop-filter: blur(5px);
+  
+  /* WICHTIG: Flexbox-Layout für den Container */
+  display: flex;
+  flex-direction: column;
+  /* Verhindert, dass der Container selbst über den Bildschirm hinauswächst */
+  overflow: hidden; 
+}
+
+.summary-header {
+  text-align: center;
+  /* Verhindert, dass dieser Teil schrumpft */
+  flex-shrink: 0; 
+}
+
+.summary-header h2 { /* Neue Regel für den Namen */
+  margin: 0 0 5px 0;
+  color: var(--color-text-light);
+}
+
+.summary-header p {
+  margin: 5px 0 0 0;
+  font-size: 0.9em;
+}
+
+.summary-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: var(--color-text-light);
+}
+
+.stat-label {
+  font-size: 0.8em;
+  text-transform: uppercase;
+}
+
+.ability-summary-list {
+  margin-top: 15px;
+  flex-shrink: 0;
+}
+
+.ability-summary-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.summary-panel h3 {
+    flex-shrink: 0;
+}
+
+.skill-summary-list {
+  /* WICHTIG: Nimmt den restlichen verfügbaren Platz ein */
+  flex-grow: 1; 
+  /* Zeigt eine Scrollbar an, wenn der Inhalt zu lang ist */
+  overflow-y: auto; 
+  margin-top: 0;
+  padding-right: 10px; /* Platz für die Scrollbar */
+}
+
+.skill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px !important;
+  font-family: sans-serif;
+  font-size: 0.9em;
+}
+
+.skill-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.proficiency-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--color-selection);
+}
+
+.proficiency-dot.proficient {
+  background-color: var(--color-selection);
+}
+
+.skill-ability {
+  color: #999;
+}
+
+.skill-bonus {
+  font-weight: bold;
+  font-size: 1.1em;
+}

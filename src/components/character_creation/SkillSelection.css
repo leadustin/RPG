@@ -1,0 +1,30 @@
+/* src/components/SkillSelection.css */
+.skill-selection-container {
+  margin-top: 20px;
+}
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.skill-choice {
+  padding: 10px;
+  border: 1px solid var(--color-border-light);
+  background-color: var(--color-background-medium);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.skill-choice:hover {
+  border-color: var(--color-selection);
+}
+
+.skill-choice.selected {
+  background-color: var(--color-selection);
+  color: var(--color-background-dark);
+  font-weight: bold;
+}
