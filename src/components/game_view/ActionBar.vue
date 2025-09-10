@@ -3,27 +3,38 @@
     <div class="combat-log">
       <p>Willkommen im Spiel!</p>
     </div>
-    <div class="skill-bar">
-      <div class="skill-slot">1</div>
-      <div class="skill-slot">2</div>
-      <div class="skill-slot">3</div>
-      <div class="skill-slot">4</div>
+
+    <div class="controls-area">
+      <div class="skill-bar">
+        <div class="skill-slot">1</div>
+        <div class="skill-slot">2</div>
+        <div class="skill-slot">3</div>
+        <div class="skill-slot">4</div>
+      </div>
+
+      <button class="char-sheet-button" @click="goToCharacterSheet">Charakter</button>
     </div>
   </div>
 </template>
 
 <script setup>
-// Diese Komponente benötigt keine Logik, daher bleibt dieser Bereich leer.
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goToCharacterSheet = () => {
+  router.push('/character-sheet')
+}
 </script>
 
 <style scoped>
-/* Hier den kompletten Inhalt von ActionBar.css einfügen */
 .action-bar-container {
   display: flex;
   height: 100%;
   padding: 10px;
   box-sizing: border-box;
   align-items: center;
+  justify-content: space-between; /* Sorgt für Abstand zwischen Log und Controls */
 }
 
 .combat-log {
@@ -34,17 +45,19 @@
   padding: 15px;
   color: #ccc;
   overflow-y: auto;
-  margin-right: 20px;
   box-sizing: border-box;
 }
 
+.controls-area {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .skill-bar {
-  flex-grow: 1;
   display: flex;
   gap: 10px;
   align-items: center;
-  justify-content: flex-start;
-  padding-right: 20px;
 }
 
 .skill-slot {
@@ -64,5 +77,20 @@
 
 .skill-slot:hover {
   background-color: #444;
+}
+
+.char-sheet-button {
+  padding: 15px 30px;
+  font-size: 1.2em;
+  color: white;
+  background-color: #4a4a4a;
+  border: 2px solid #c7a25a;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.char-sheet-button:hover {
+  background-color: #5a5a5a;
 }
 </style>
