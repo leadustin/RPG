@@ -1,50 +1,93 @@
 // src/stores/gameStore.js
 import { defineStore } from 'pinia'
-import router from '../router' // Wir importieren den Router, um navigieren zu können
+import router from '../router'
 
-// 'useGameStore' ist der Name unseres neuen "Hooks"
 export const useGameStore = defineStore('game', {
-  // state() ist wie das `useState` in React. Hier definieren wir unsere Daten.
   state: () => ({
     character: null,
   }),
 
-  // getters sind berechnete Werte, z.B. um schnell zu prüfen, ob ein Charakter existiert.
   getters: {
     hasCharacter: (state) => !!state.character,
   },
 
-  // actions sind die Funktionen, die den State verändern dürfen.
-  // Sie entsprechen deinen `handle...`-Funktionen.
   actions: {
-    /**
-     * Setzt den finalisierten Charakter und wechselt zur Spielansicht.
-     * @param {object} finalizedCharacter Das Charakter-Objekt aus der Erstellung.
-     */
+    // Aktionen aus der Charaktererstellung & Spielstart
     finalizeCharacter(finalizedCharacter) {
       this.character = finalizedCharacter
       console.log('Character created:', this.character)
-      // Anstatt setGameState('WORLD_MAP') nutzen wir jetzt den Router
       router.push('/game')
     },
 
-    /**
-     * Lädt einen Charakter aus dem Speicher und wechselt zur Spielansicht.
-     * @param {object} loadedCharacter Der geladene Charakter.
-     */
     loadCharacter(loadedCharacter) {
       this.character = loadedCharacter
       console.log('Character loaded:', this.character)
-      // Und auch hier navigieren wir zur Spielansicht
       router.push('/game')
     },
 
-    /**
-     * Startet ein neues Spiel, indem es zur Charaktererstellung navigiert.
-     */
     startNewGame() {
-      this.character = null // Charakter zurücksetzen
+      this.character = null
       router.push('/character-creation')
+    },
+
+    // =================================================================
+    // AKTIONEN FÜR DAS INVENTAR-MANAGEMENT
+    // =================================================================
+
+    /**
+     * Wird aufgerufen, wenn sich ein Ausrüstungsslot ändert.
+     * @param {string} slotId Der Slot, der sich geändert hat (z.B. 'head').
+     * @param {object} event Das @change-Event von vuedraggable.
+     */
+    handleEquipmentChange(slotId, event) {
+      if (!this.character) return
+
+      // --- Fall 1: Ein Gegenstand wurde zum Slot HINZUGEFÜGT ---
+      if (event.added) {
+        const item = event.added.element
+
+        // PRÜFUNG: Passt der Gegenstand in den Slot? (erlaubt auch 'ring' für 'ring1'/'ring2')
+        const isValidSlot =
+          item.slot === slotId || (item.slot === 'ring' && slotId.startsWith('ring'))
+
+        if (!isValidSlot) {
+          console.error(`Gegenstand ${item.name} passt nicht in Slot ${slotId}.`)
+
+          // WICHTIG: Die UI-Änderung sofort rückgängig machen.
+          // Wir fügen den Gegenstand wieder zum Inventar hinzu, von wo er kam.
+          const invIndex = this.character.inventory.findIndex((i) => i.id === item.id)
+          if (invIndex === -1) {
+            // Nur hinzufügen, wenn nicht schon vorhanden
+            this.character.inventory.push(item)
+          }
+          return // Aktion abbrechen
+        }
+
+        // Gegenstand ausrüsten
+        const previouslyEquipped = this.character.equipment[slotId]
+        if (previouslyEquipped) {
+          // Alten Gegenstand ins Inventar legen
+          this.character.inventory.push(previouslyEquipped)
+        }
+        this.character.equipment[slotId] = item
+      }
+      // --- Fall 2: Ein Gegenstand wurde vom Slot ENTFERNT ---
+      else if (event.removed) {
+        // Der Gegenstand wurde bereits von vuedraggable ins Inventar verschoben.
+        // Wir müssen nur noch den Slot leeren.
+        this.character.equipment[slotId] = null
+      }
+    },
+
+    /**
+     * Aktualisiert das gesamte Inventar-Array.
+     * Wird vom vuedraggable-Setter aufgerufen, wenn Items im Inventar verschoben werden.
+     * @param {Array} newInventory Das neue, sortierte Inventar-Array.
+     */
+    updateInventory(newInventory) {
+      if (this.character) {
+        this.character.inventory = newInventory
+      }
     },
   },
 })
