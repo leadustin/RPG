@@ -84,7 +84,7 @@ const draw = () => {
   if (!canvas || !imagesLoaded.value) return
   const ctx = canvas.getContext('2d')
 
-  ctx.imageSmoothingEnabled = false
+  ctx.imageSmoothingEnabled = true
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   ctx.save()
   ctx.translate(viewTransform.offsetX, viewTransform.offsetY)
