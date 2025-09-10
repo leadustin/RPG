@@ -25,6 +25,28 @@ export const initializeCharacter = () => {
     ability_bonus_assignments: initialRace.ability_bonuses.fixed,
     skill_proficiencies_choice: [],
     position: { x: 2048, y: 1536 }, // Startposition für die Weltkarte
+
+    // NEU: Ausrüstungsslots (anfangs leer)
+    equipment: {
+      head: null,
+      chest: null,
+      hands: null,
+      feet: null,
+      neck: null,
+      ring1: null,
+      ring2: null,
+      mainHand: null,
+      offHand: null,
+      rangedMain: null,
+      rangedOff: null,
+    },
+
+    // NEU: Inventar (mit ein paar Beispiel-Gegenständen)
+    inventory: [
+      { id: 1, name: 'Einfaches Schwert', type: 'weapon', slot: 'mainHand' },
+      { id: 2, name: 'Lederrüstung', type: 'armor', slot: 'chest' },
+      { id: 3, name: 'Heiltrank', type: 'consumable' },
+    ],
   }
 }
 
