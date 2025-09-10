@@ -4,20 +4,15 @@ import './PartyPortraits.css';
 export const PartyPortraits = ({ party }) => {
   return (
     <div className="party-portraits-container">
-      {party.map((member, index) => (
-        <div key={index} className="portrait-slot">
-          {member ? (
-            <>
-              <div className="portrait-image">
-                {/* Das eigentliche Porträt-Bild kommt hierhin */}
-              </div>
-              <div className="health-bar-placeholder">
-                {/* Zukünftige Lebensenergieanzeige */}
-              </div>
-            </>
-          ) : (
-            <div className="portrait-empty">Leerer Platz</div>
-          )}
+      {party.map(member => (
+        <div key={member.id} className="portrait-item">
+          <img src={member.portrait} alt={member.name} />
+          <div className="character-info">
+            <span className="name">{member.name}</span>
+            <div className="hp-bar-wrapper">
+              <div className="hp-bar" style={{ width: `${(member.hp / member.maxHp) * 100}%` }}></div>
+            </div>
+          </div>
         </div>
       ))}
     </div>

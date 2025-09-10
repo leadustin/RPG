@@ -1,47 +1,22 @@
-.action-bar-container {
-  display: flex;
-  height: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  align-items: center; /* Zentriert die Elemente vertikal */
+.action-bar {
+    display: flex;
+    justify-content: center; /* Buttons zentrieren */
+    gap: 15px; /* Abstand zwischen den Buttons */
+    padding: 10px 0;
 }
 
-.combat-log {
-  width: 45%; /* Breite des Log-Fensters auf 65% festgelegt */
-  height: 90%; /* Höhe an den Container angepasst */
-  background-color: #111;
-  border-radius: 5px;
-  padding: 15px;
-  color: #ccc;
-  overflow-y: auto;
-  margin-right: 20px;
-  box-sizing: border-box;
-}
-
-.skill-bar {
-  flex-grow: 1; /* Nimmt den restlichen verfügbaren Platz ein */
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: flex-start; /* Richtet die Skills rlinks aus */
-  padding-right: 20px;
-}
-
-.skill-slot {
-  width: 60px;
-  height: 60px;
-  background-color: #333;
-  border: 2px solid #555;
-  border-radius: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5em;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.skill-slot:hover {
+.action-bar button {
     background-color: #444;
+    color: #eee;
+    border: 1px solid #666;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s;
+}
+
+.action-bar button:hover {
+    background-color: #666;
+    border-color: #888;
 }
