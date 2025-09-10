@@ -1,0 +1,114 @@
+[
+  {
+    "key": "acolyte",
+    "name": "Akolyth",
+    "description": "Du hast dein Leben im Dienst eines Tempels einer bestimmten Gottheit oder eines Pantheons verbracht. Du agierst als Vermittler zwischen dem Reich der Götter und der Welt der Sterblichen.",
+    "skill_proficiencies": ["Einblick", "Religion"],
+    "tool_proficiencies": [],
+    "languages": ["Zwei Sprachen deiner Wahl"],
+    "equipment": [
+      "Ein heiliges Symbol (ein Geschenk, das du bei Eintritt in den Orden erhalten hast)",
+      "Ein Gebetsbuch oder ein Gebetsrad",
+      "5 Weihrauchstäbchen",
+      "Priestergewänder",
+      "Eine Gürteltasche mit 15 GM"
+    ],
+    "feature": {
+      "name": "Schutz der Gläubigen",
+      "description": "Als Akolyth genießt du den Respekt derer, die deine Religion teilen. Du und deine Abenteurergefährten können kostenlose Heilung und Pflege in einem Tempel, Schrein oder einer anderen etablierten Präsenz deines Glaubens erwarten, obwohl ihr materielle Komponenten für Zauber bereitstellen müsst. Diejenigen, die deinen Glauben teilen, werden dich (aber nur dich) auf einem bescheidenen Lebensstil unterbringen."
+    }
+  },
+  {
+    "key": "criminal",
+    "name": "Krimineller",
+    "description": "Du bist ein erfahrener Krimineller mit einer Geschichte von Verbrechen. Du hast in einer Welt von Dieben, Schmugglern und Mördern überlebt, die sich an unverdienten Reichtümern und Freiheiten erfreuen.",
+    "skill_proficiencies": ["Täuschung", "Heimlichkeit"],
+    "tool_proficiencies": ["Ein Typ Spieleset", "Diebeswerkzeug"],
+    "languages": [],
+    "equipment": [
+      "Ein Brecheisen",
+      "Ein Satz dunkler, gewöhnlicher Kleidung mit Kapuze",
+      "Eine Gürteltasche mit 15 GM"
+    ],
+    "feature": {
+      "name": "Krimineller Kontakt",
+      "description": "Du hast einen zuverlässigen und vertrauenswürdigen Kontakt, der als dein Verbindungsmann zu einem Netzwerk anderer Krimineller fungiert. Du weißt, wie du Nachrichten an und von deinem Kontakt erhalten kannst, selbst über große Entfernungen; genauer gesagt, du kennst die örtlichen Boten, korrupten Karawanenmeister und zwielichtigen Seeleute, die eine Nachricht für dich überbringen können."
+    }
+  },
+  {
+    "key": "folk_hero",
+    "name": "Volksheld",
+    "description": "Du kommst aus bescheidenen Verhältnissen, bist aber dazu bestimmt, viel mehr zu sein. Schon in deiner Jugend hast du dich von den gewöhnlichen Leuten abgehoben, sei es durch ein außergewöhnliches Schicksal oder durch die Macht deiner eigenen Taten.",
+    "skill_proficiencies": ["Tierkunde", "Überlebenskunst"],
+    "tool_proficiencies": ["Ein Typ Handwerkerwerkzeug", "Landfahrzeuge"],
+    "languages": [],
+    "equipment": [
+      "Ein Satz Handwerkerwerkzeug (deiner Wahl)",
+      "Eine Schaufel",
+      "Ein Eisentopf",
+      "Ein Satz gewöhnlicher Kleidung",
+      "Eine Gürteltasche mit 10 GM"
+    ],
+    "feature": {
+      "name": "Rustikale Gastfreundschaft",
+      "description": "Da du aus den Reihen des einfachen Volkes kommst, passt du unter sie. Du kannst unter ihnen Unterschlupf, Nahrung und einen Platz zum Verstecken vor dem Gesetz oder jemand anderem finden, solange du dich nicht in Gefahr begibst. Sie werden dich nicht für eine Gegenleistung riskieren."
+    }
+  },
+  {
+    "key": "noble",
+    "name": "Adliger",
+    "description": "Du verstehst Reichtum, Macht und Privilegien. Du trägst einen Adelstitel und deine Familie besitzt Land, sammelt Steuern und übt bedeutenden politischen Einfluss aus.",
+    "skill_proficiencies": ["Geschichte", "Überzeugen"],
+    "tool_proficiencies": ["Ein Typ Spieleset"],
+    "languages": ["Eine Sprache deiner Wahl"],
+    "equipment": [
+      "Ein Satz feiner Kleidung",
+      "Ein Siegelring",
+      "Eine Schriftrolle mit deinem Stammbaum",
+      "Eine Geldbörse mit 25 GM"
+    ],
+    "feature": {
+      "name": "Position des Privilegs",
+      "description": "Dank deiner adligen Geburt erkennen dich die Leute als Autoritätsperson an. Das gemeine Volk wird sich bemühen, dich zufriedenzustellen und Ärger zu vermeiden. Andere hochrangige Personen werden dich als Mitglied desselben sozialen Umfelds behandeln. Du kannst dir leicht eine Audienz bei einem örtlichen Adligen oder Beamten sichern, wenn du dies benötigst."
+    }
+  },
+  {
+    "key": "sage",
+    "name": "Weiser",
+    "description": "Du hast Jahre damit verbracht, die Überlieferungen des Multiversums zu studieren. Du hast unzählige Manuskripte durchforstet, die Schriften der größten Gelehrten studiert und bist nun selbst eine Meisterin oder ein Meister deines Fachgebiets.",
+    "skill_proficiencies": ["Arkanum", "Geschichte"],
+    "tool_proficiencies": [],
+    "languages": ["Zwei Sprachen deiner Wahl"],
+    "equipment": [
+      "Eine Flasche schwarzer Tinte",
+      "Eine Schreibfeder",
+      "Ein kleines Messer",
+      "Ein Brief von einem verstorbenen Kollegen, der eine Frage stellt, die du noch nicht beantworten konntest",
+      "Ein Satz gewöhnlicher Kleidung",
+      "Eine Gürteltasche mit 10 GM"
+    ],
+    "feature": {
+      "name": "Forscher",
+      "description": "Wenn du versuchst, Informationen zu einem Thema zu finden oder dich daran zu erinnern, und du nicht weißt, wo du anfangen sollst, weißt du oft, wo du die Informationen finden kannst – sei es in einer Bibliothek, bei einem anderen Weisen oder an einem anderen Ort des Wissens."
+    }
+  },
+  {
+    "key": "soldier",
+    "name": "Soldat",
+    "description": "Krieg war dein Leben, solange du dich erinnern kannst. Du wurdest als Jugendlicher ausgebildet, hast in einer Armee gedient und die grundlegenden Überlebensfähigkeiten auf dem Schlachtfeld erlernt.",
+    "skill_proficiencies": ["Athletik", "Einschüchtern"],
+    "tool_proficiencies": ["Ein Typ Spieleset", "Landfahrzeuge"],
+    "languages": [],
+    "equipment": [
+      "Ein Abzeichen deines Ranges",
+      "Ein Trophäe von einem gefallenen Feind (ein Dolch, eine zerbrochene Klinge oder ein Stück eines Banners)",
+      "Ein Satz Knochenwürfel oder ein Kartenspiel",
+      "Ein Satz gewöhnlicher Kleidung",
+      "Eine Gürteltasche mit 10 GM"
+    ],
+    "feature": {
+      "name": "Militärischer Rang",
+      "description": "Du hast einen militärischen Rang aus deiner Zeit als Soldat. Soldaten, die deinem ehemaligen Militär treu sind, erkennen deine Autorität und deinen Einfluss an, und sie gehorchen dir, wenn sie einen niedrigeren Rang haben. Du kannst deinen Rang nutzen, um Zugang zu freundlichen Militärlagern und Festungen zu erhalten, wo du vorübergehend untergebracht werden kannst."
+    }
+  }
+]
