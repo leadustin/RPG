@@ -5,7 +5,7 @@ import { WorldMap } from '../worldmap/WorldMap';
 import { CombatLog } from '../combat/CombatLog';
 import './GameView.css';
 
-function GameView({ onToggleCharacterSheet }) {
+function GameView({ character, onToggleCharacterSheet }) { // ✅ character hinzugefügt
   const party = [
     { id: 'char1', name: 'Kämpfer', hp: 10, maxHp: 12, portrait: 'https://via.placeholder.com/50' },
     { id: 'char2', name: 'Magier', hp: 8, maxHp: 10, portrait: 'https://via.placeholder.com/50' },
@@ -20,9 +20,8 @@ function GameView({ onToggleCharacterSheet }) {
           <PartyPortraits party={party} />
         </div>
         <div className="world-map-area">
-          {/* NEU: Wrapper für das Seitenverhältnis */}
           <div className="world-map-aspect-ratio-wrapper">
-            <WorldMap />
+            <WorldMap character={character} /> {/* ✅ character weitergegeben */}
           </div>
         </div>
       </div>
