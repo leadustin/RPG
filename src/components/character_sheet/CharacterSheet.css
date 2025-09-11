@@ -114,3 +114,36 @@
   margin: 0;
   color: #333;
 }
+/* Ergänzungen für CharacterSheet.css */
+
+.character-traits {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.race-traits, .class-features {
+  margin-bottom: 15px;
+}
+
+.character-traits h3 {
+  margin-bottom: 15px;
+}
+
+.character-traits h4 {
+  margin-bottom: 10px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.trait, .feature {
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.trait strong, .feature strong {
+  display: block; /* Sorgt dafür, dass der Name in einer eigenen Zeile steht */
+  margin-bottom: 3px;
+  color: #333;
+}

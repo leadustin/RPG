@@ -1,5 +1,7 @@
 import React from 'react';
 import './CharacterSheet.css';
+// Importiere die Berechnungs-Engine
+import { getRacialAbilityBonus, getAbilityModifier } from '../../engine/characterEngine';
 
 const CharacterSheet = ({ character, onClose }) => {
   // Sicherheitsprüfung, falls character undefined ist
@@ -15,15 +17,17 @@ const CharacterSheet = ({ character, onClose }) => {
     );
   }
 
-  // Attribute sicher extrahieren
-  const stats = character.stats || {};
-  const strength = stats.strength || 10;
-  const dexterity = stats.dexterity || 10;
-  const constitution = stats.constitution || 10;
-  const intelligence = stats.intelligence || 10;
-  const wisdom = stats.wisdom || 10;
-  const charisma = stats.charisma || 10;
+  // Greife auf die korrekten Fähigkeitswerte aus character.abilities zu
+  const baseAbilities = character.abilities || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
 
+  // Berechne die finalen Werte inkl. Rassenboni
+  const strength = baseAbilities.str + getRacialAbilityBonus(character, 'str');
+  const dexterity = baseAbilities.dex + getRacialAbilityBonus(character, 'dex');
+  const constitution = baseAbilities.con + getRacialAbilityBonus(character, 'con');
+  const intelligence = baseAbilities.int + getRacialAbilityBonus(character, 'int');
+  const wisdom = baseAbilities.wis + getRacialAbilityBonus(character, 'wis');
+  const charisma = baseAbilities.cha + getRacialAbilityBonus(character, 'cha');
+  
   // Charakterinformationen sicher extrahieren
   const name = character.name || 'Unbekannt';
   const level = character.level || 1;
@@ -31,9 +35,6 @@ const CharacterSheet = ({ character, onClose }) => {
   // Rasse und Klasse sicher extrahieren
   const raceName = character.race?.name || 'Unbekannte Rasse';
   const className = character.class?.name || 'Unbekannte Klasse';
-
-  // Modifikatoren berechnen
-  const getModifier = (score) => Math.floor((score - 10) / 2);
 
   return (
     <div className="character-sheet-overlay">
@@ -57,7 +58,7 @@ const CharacterSheet = ({ character, onClose }) => {
               <div className="stat-name">Stärke</div>
               <div className="stat-value">{strength}</div>
               <div className="stat-modifier">
-                {getModifier(strength) >= 0 ? '+' : ''}{getModifier(strength)}
+                {getAbilityModifier(strength) >= 0 ? '+' : ''}{getAbilityModifier(strength)}
               </div>
             </div>
             
@@ -65,7 +66,7 @@ const CharacterSheet = ({ character, onClose }) => {
               <div className="stat-name">Geschick</div>
               <div className="stat-value">{dexterity}</div>
               <div className="stat-modifier">
-                {getModifier(dexterity) >= 0 ? '+' : ''}{getModifier(dexterity)}
+                {getAbilityModifier(dexterity) >= 0 ? '+' : ''}{getAbilityModifier(dexterity)}
               </div>
             </div>
             
@@ -73,7 +74,7 @@ const CharacterSheet = ({ character, onClose }) => {
               <div className="stat-name">Konstitution</div>
               <div className="stat-value">{constitution}</div>
               <div className="stat-modifier">
-                {getModifier(constitution) >= 0 ? '+' : ''}{getModifier(constitution)}
+                {getAbilityModifier(constitution) >= 0 ? '+' : ''}{getAbilityModifier(constitution)}
               </div>
             </div>
             
@@ -81,7 +82,7 @@ const CharacterSheet = ({ character, onClose }) => {
               <div className="stat-name">Intelligenz</div>
               <div className="stat-value">{intelligence}</div>
               <div className="stat-modifier">
-                {getModifier(intelligence) >= 0 ? '+' : ''}{getModifier(intelligence)}
+                {getAbilityModifier(intelligence) >= 0 ? '+' : ''}{getAbilityModifier(intelligence)}
               </div>
             </div>
             
@@ -89,7 +90,7 @@ const CharacterSheet = ({ character, onClose }) => {
               <div className="stat-name">Weisheit</div>
               <div className="stat-value">{wisdom}</div>
               <div className="stat-modifier">
-                {getModifier(wisdom) >= 0 ? '+' : ''}{getModifier(wisdom)}
+                {getAbilityModifier(wisdom) >= 0 ? '+' : ''}{getAbilityModifier(wisdom)}
               </div>
             </div>
             
@@ -97,16 +98,37 @@ const CharacterSheet = ({ character, onClose }) => {
               <div className="stat-name">Charisma</div>
               <div className="stat-value">{charisma}</div>
               <div className="stat-modifier">
-                {getModifier(charisma) >= 0 ? '+' : ''}{getModifier(charisma)}
+                {getAbilityModifier(charisma) >= 0 ? '+' : ''}{getAbilityModifier(charisma)}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Debug-Bereich (können Sie später entfernen) */}
-        <div className="debug-info" style={{ marginTop: '20px', padding: '10px', background: '#f0f0f0', fontSize: '12px' }}>
-          <h5>Debug - Character Data:</h5>
-          <pre>{JSON.stringify(character, null, 2)}</pre>
+        <div className="character-traits">
+          <h3>Besondere Fähigkeiten</h3>
+          {character.race?.traits && character.race.traits.length > 0 && (
+            <div className="race-traits">
+              <h4>Rasseneigenschaften:</h4>
+              {character.race.traits.map((trait, index) => (
+                <div key={index} className="trait">
+                  <strong>{trait.name}:</strong> 
+                  <span>{trait.description}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {character.class?.features && character.class.features.length > 0 && (
+            <div className="class-features">
+              <h4>Klassenfähigkeiten:</h4>
+              {character.class.features.map((feature, index) => (
+                <div key={index} className="feature">
+                  <strong>{feature.name}:</strong> 
+                  <span>{feature.description}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
