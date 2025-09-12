@@ -1,51 +1,103 @@
-import { useState, useCallback } from 'react';
-// KORREKTUR HIER: Die richtigen Funktionsnamen werden importiert
-import { saveCharacter, loadCharacter, deleteCharacter } from '../utils/persistence';
+// src/hooks/useGameState.js
+
+import { useState, useEffect, useCallback } from 'react';
+import { loadCharacter, saveCharacter, deleteCharacter } from '../utils/persistence';
+// HIER: Korrekte Funktionen importiert
+import { calculateInitialHP, calculateAC } from '../engine/characterEngine';
+import allRaceData from '../data/races.json';
 
 export const useGameState = () => {
   const [gameState, setGameState] = useState({
-    screen: 'start', // Mögliche Werte: 'start', 'character-creation', 'game'
+    screen: 'start', // start, character-creation, game
     character: null,
   });
 
-  const handleNewGame = useCallback(() => {
-    setGameState(prevState => ({ ...prevState, screen: 'character-creation' }));
-  }, []);
-
-  const handleLoadGame = useCallback(() => {
-    // KORREKTUR HIER: loadCharacter anstelle von loadState verwenden
-    const loadedState = loadCharacter();
-    if (loadedState) {
-      // Annahme: loadCharacter gibt das gesamte gameState-Objekt zurück
-      setGameState(loadedState);
-    } else {
-      console.log("Kein Spielstand zum Laden gefunden.");
+  useEffect(() => {
+    const loadedCharacter = loadCharacter();
+    if (loadedCharacter) {
+      setGameState(prevState => ({
+        ...prevState,
+        character: loadedCharacter,
+      }));
     }
   }, []);
+
+  const handleNewGame = () => {
+    setGameState(prevState => ({
+      ...prevState,
+      screen: 'character-creation',
+    }));
+  };
+
+  const handleLoadGame = () => {
+    const loadedCharacter = loadCharacter();
+    if (loadedCharacter) {
+      setGameState({
+        screen: 'game',
+        character: loadedCharacter,
+      });
+    }
+  };
 
   const handleSaveGame = useCallback(() => {
     if (gameState.character) {
-      // KORREKTUR HIER: saveCharacter anstelle von saveState verwenden
-      saveCharacter(gameState);
-      console.log("Spiel gespeichert!");
-    } else {
-      console.log("Kein Charakter zum Speichern vorhanden.");
+      saveCharacter(gameState.character);
     }
-  }, [gameState]);
+  }, [gameState.character]);
 
-  const handleDeleteGame = useCallback(() => {
-    // KORREKTUR HIER: deleteCharacter anstelle von deleteState verwenden
+  const handleDeleteGame = () => {
     deleteCharacter();
-    setGameState({ screen: 'start', character: null });
-    console.log("Spielstand gelöscht!");
-  }, []);
-
-  const handleCharacterCreation = useCallback((characterData) => {
     setGameState({
-      screen: 'game',
-      character: characterData,
+      screen: 'start',
+      character: null,
     });
-  }, []);
+  };
+
+  const handleCharacterCreation = (finalizedCharacter) => {
+    // --- START DER KORREKTUR ---
+    
+    // 1. Erstelle eine Kopie des Charakters, um die finalen Attributswerte zu berechnen.
+    const tempChar = JSON.parse(JSON.stringify(finalizedCharacter));
+
+    // 2. Wende die zugewiesenen Attributsboni (z.B. von der Rasse) auf die Basiswerte an.
+    if (tempChar.ability_bonus_assignments) {
+      for (const [ability, bonus] of Object.entries(tempChar.ability_bonus_assignments)) {
+        tempChar.abilities[ability] += bonus;
+      }
+    }
+
+    // 3. Berechne die finalen Werte (HP, AC etc.) basierend auf den aktualisierten Attributen.
+    const raceData = allRaceData.find(r => r.key === tempChar.race.key);
+    const hp = calculateInitialHP(tempChar);
+
+    const initialStats = {
+      hp: hp,
+      maxHp: hp,
+      armor_class: calculateAC(tempChar),
+      speed: raceData?.speed || 30,
+      abilities: tempChar.abilities, // Speichere die finalen Attributswerte
+    };
+    
+    // 4. Füge die berechneten Werte dem Charakter-Objekt hinzu.
+    const characterWithStats = {
+      ...finalizedCharacter,
+      stats: initialStats,
+    };
+    
+    // 5. Speichere den vollständigen Charakter und wechsle zum Spielbildschirm.
+    setGameState(prevState => ({
+      ...prevState,
+      screen: 'game',
+      character: characterWithStats,
+    }));
+    // --- ENDE DER KORREKTUR ---
+  };
+  
+  useEffect(() => {
+    if (gameState.character) {
+      saveCharacter(gameState.character);
+    }
+  }, [gameState.character]);
 
   return {
     gameState,
