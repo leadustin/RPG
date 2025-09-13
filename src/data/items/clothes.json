@@ -1,0 +1,9 @@
+[
+  {
+    "id": "simple-robe",
+    "name": "Einfache Robe",
+    "type": "cloth",
+    "slot": "cloth",
+    "icon": "robe.webp"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "leather-armor",
+    "name": "Lederrüstung",
+    "type": "armor",
+    "slot": "armor",
+    "ac": 11,
+    "weight": 10,
+    "value": 10,
+    "icon": "leather_chest_1.webp"
+  }
+]

@@ -1,0 +1,45 @@
+[
+  {
+    "id": "longsword",
+    "name": "Langschwert",
+    "type": "weapon",
+    "slot": "main-hand",
+    "damage": "1d8",
+    "properties": ["Vielseitig (1d10)"],
+    "weight": 3,
+    "value": 15,
+    "icon": "short_blade_05.webp"
+  },
+  {
+    "id": "shortbow",
+    "name": "Kurzbogen",
+    "type": "weapon",
+    "slot": "ranged",
+    "damage": "1d6",
+    "properties": ["Zweihändig", "Reichweite (80/320)"],
+    "weight": 2,
+    "value": 25,
+    "icon": "shortbow.webp"
+  },
+  {
+    "id": "shield",
+    "name": "Schild",
+    "type": "armor",
+    "slot": "off-hand",
+    "ac": 2,
+    "weight": 6,
+    "value": 10,
+    "icon": "shield_76.webp"
+  },
+  {
+    "id": "dagger",
+    "name": "Dolch",
+    "type": "weapon",
+    "slot": "main-hand",
+    "damage": "1d4",
+    "properties": ["Finesse", "Leicht", "Wurfwaffe (20/60)"],
+    "weight": 1,
+    "value": 2,
+    "icon": "https://i.imgur.com/2g6s3tY.png"
+  }
+]

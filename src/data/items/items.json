@@ -1,0 +1,12 @@
+[
+  {
+    "id": "healing-potion",
+    "name": "Heiltrank",
+    "type": "potion",
+    "slot": null,
+    "effect": "Heilt 2d4 + 2 Trefferpunkte",
+    "weight": 0.5,
+    "value": 50,
+    "icon": "hp1.webp"
+  }
+]
