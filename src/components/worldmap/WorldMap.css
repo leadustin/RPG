@@ -1,6 +1,5 @@
-.world-map-viewport {
-    /* Wir entfernen die feste Höhe und Breite. 
-       Die Größe wird jetzt vom Wrapper in GameView.css gesteuert. */
+.world-map-viewport { 
+    /*Die Größe wird jetzt vom Wrapper in GameView.css gesteuert. */
     position: relative;
     overflow: hidden;
     cursor: grab;
