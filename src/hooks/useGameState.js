@@ -2,7 +2,35 @@ import { useState, useEffect, useCallback } from 'react';
 import { loadCharacter, saveCharacter, deleteCharacter } from '../utils/persistence';
 import { calculateInitialHP, calculateAC } from '../engine/characterEngine';
 import allRaceData from '../data/races.json';
-import initialItems from '../data/items.json';
+
+// --- KORREKTUR START ---
+// 1. Lade alle neuen, aufgeteilten Item-Dateien
+import armorData from '../data/items/armor.json';
+import weaponsData from '../data/items/weapons.json';
+import clothesData from '../data/items/clothes.json';
+import itemsData from '../data/items/items.json';
+// Importiere auch die leeren Dateien, damit es keine Fehler gibt
+import accessoriesData from '../data/items/accessories.json';
+import beltsData from '../data/items/belts.json';
+import bootsData from '../data/items/boots.json';
+import handsData from '../data/items/hands.json';
+import headsData from '../data/items/heads.json';
+
+
+// 2. Fasse alle Daten in einer einzigen Liste zusammen
+const allItems = [
+  ...armorData,
+  ...weaponsData,
+  ...clothesData,
+  ...itemsData,
+  ...accessoriesData,
+  ...beltsData,
+  ...bootsData,
+  ...handsData,
+  ...headsData,
+];
+// --- KORREKTUR ENDE ---
+
 
 export const useGameState = () => {
   const [gameState, setGameState] = useState({
@@ -71,10 +99,11 @@ export const useGameState = () => {
       abilities: tempChar.abilities,
     };
     
+    // 3. Benutze die neue, komplette Item-Liste für das Startinventar
     const startingInventory = [
-        initialItems.find(item => item.id === 'longsword'),
-        initialItems.find(item => item.id === 'leather-armor'),
-        initialItems.find(item => item.id === 'healing-potion'),
+        allItems.find(item => item.id === 'longsword'),
+        allItems.find(item => item.id === 'leather-armor'),
+        allItems.find(item => item.id === 'healing-potion'),
     ].filter(Boolean);
 
     const characterWithStats = {
@@ -82,19 +111,9 @@ export const useGameState = () => {
       stats: initialStats,
       inventory: startingInventory,
       equipment: {
-        head: null,
-        amulet: null,
-        armor: null,
-        cloth: null,
-        cloak: null,
-        gloves: null,
-        belt: null,
-        boots: null,
-        ring1: null,
-        ring2: null,
-        'main-hand': null,
-        'off-hand': null,
-        'ranged': null,
+        head: null, amulet: null, armor: null, cloth: null, cloak: null,
+        gloves: null, belt: null, boots: null, ring1: null, ring2: null,
+        'main-hand': null, 'off-hand': null, 'ranged': null,
       }
     };
     
@@ -107,23 +126,17 @@ export const useGameState = () => {
   const handleEquipItem = useCallback((item, targetSlot) => {
     setGameState(prevState => {
       if (!prevState.character) return prevState;
-
       const character = { ...prevState.character };
       const inventory = [...character.inventory];
       const equipment = { ...character.equipment };
-
       const itemIndex = inventory.findIndex(invItem => invItem.id === item.id);
       if (itemIndex === -1) return prevState; 
-
       inventory.splice(itemIndex, 1);
-
       const previouslyEquippedItem = equipment[targetSlot];
       if (previouslyEquippedItem) {
         inventory.push(previouslyEquippedItem);
       }
-
       equipment[targetSlot] = item;
-
       return {
         ...prevState,
         character: { ...character, inventory, equipment },
@@ -134,18 +147,14 @@ export const useGameState = () => {
   const handleUnequipItem = useCallback((item, sourceSlot) => {
     setGameState(prevState => {
       if (!prevState.character) return prevState;
-
       const character = { ...prevState.character };
       const inventory = [...character.inventory];
       const equipment = { ...character.equipment };
-
       if (!sourceSlot || !equipment[sourceSlot] || equipment[sourceSlot].id !== item.id) {
         return prevState;
       }
-
       inventory.push(equipment[sourceSlot]);
       equipment[sourceSlot] = null;
-      
       return {
         ...prevState,
         character: { ...character, inventory, equipment },
