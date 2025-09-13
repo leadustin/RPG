@@ -16,6 +16,8 @@ function App() {
     handleSaveGame,
     handleDeleteGame,
     handleCharacterCreation,
+    handleEquipItem,
+    handleUnequipItem,
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -34,7 +36,7 @@ function App() {
             onSaveGame={handleSaveGame}
             onDeleteGame={handleDeleteGame}
             isGameLoaded={!!gameState.character}
-            saveFileExists={localStorage.getItem("gameState") !== null}
+            saveFileExists={localStorage.getItem("character") !== null}
           />
         );
       case "character-creation":
@@ -55,10 +57,8 @@ function App() {
           <StartScreen
             onNewGame={handleNewGame}
             onLoadGame={handleLoadGame}
-            onSaveGame={handleSaveGame}
-            onDeleteGame={handleDeleteGame}
             isGameLoaded={!!gameState.character}
-            saveFileExists={localStorage.getItem("gameState") !== null}
+            saveFileExists={localStorage.getItem("character") !== null}
           />
         );
     }
@@ -69,11 +69,12 @@ function App() {
       <div className="App">
         <div className="game-container">
           {renderScreen()}
-          {/* ✅ HIER: character-Prop hinzugefügt */}
           {showCharacterSheet && (
             <CharacterSheet
-              character={gameState.character} // ✅ character übergeben
+              character={gameState.character}
               onClose={toggleCharacterSheet}
+              handleEquipItem={handleEquipItem}
+              handleUnequipItem={handleUnequipItem}
             />
           )}
         </div>
