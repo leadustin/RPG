@@ -24,7 +24,6 @@ body {
 .game-ui {
     width: 100%;
     max-width: 1400px;
-    /* Neuer Wert */
     background-color: #111;
     border: 1px solid var(--border-color);
     border-radius: 8px;
