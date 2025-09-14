@@ -3,14 +3,23 @@ import React from 'react';
 import './ClassSelection.css';
 import './PanelDetails.css';
 import allClassData from '../../data/classes.json';
-import { SkillSelection } from './SkillSelection'; // Import der neuen Komponente
-import { SKILL_NAMES_DE } from '../../engine/characterEngine'; // Import der deutschen Namen
+import { SkillSelection } from './SkillSelection';
+import { SKILL_NAMES_DE } from '../../engine/characterEngine';
+
+function importAll(r) {
+  let images = {};
+  r.keys().forEach((item) => {
+    images[item.replace('./', '')] = r(item);
+  });
+  return images;
+}
+
+const classIcons = importAll(require.context('../../assets/images/classes', false, /\.(webp|png|jpe?g|svg)$/));
 
 export const ClassSelection = ({ character, updateCharacter }) => {
   const selectedClass = character.class;
   const skillChoiceData = selectedClass.proficiencies.skills;
 
-  // Diese Funktion wird aufgerufen, wenn sich die Fertigkeiten-Auswahl ändert
   const handleSkillChange = (newSelections) => {
     updateCharacter({ skill_proficiencies_choice: newSelections });
   };
@@ -19,23 +28,44 @@ export const ClassSelection = ({ character, updateCharacter }) => {
     return <div>Lade Klassen...</div>;
   }
 
+  // --- NEUE LOGIK ZUR FEHLERBEHEBUNG START ---
+  let skillOptions = [];
+  if (skillChoiceData && skillChoiceData.from) {
+    const allSkillKeys = Object.keys(SKILL_NAMES_DE);
+    // Prüfe, ob "from" der Sonderfall "any" ist
+    if (skillChoiceData.from === 'any') {
+      skillOptions = allSkillKeys;
+    } 
+    // Prüfe, ob "from" eine Liste (Array) ist, um Abstürze zu vermeiden
+    else if (Array.isArray(skillChoiceData.from)) {
+      skillOptions = skillChoiceData.from.map(skillName => 
+        allSkillKeys.find(key => SKILL_NAMES_DE[key] === skillName)
+      );
+    }
+  }
+  // --- NEUE LOGIK ZUR FEHLERBEHEBUNG ENDE ---
+
   return (
     <div className="class-selection-container">
-      {/* Linke Spalte: Gitter mit allen Klassen */}
       <div className="class-grid">
         {allClassData.map(cls => (
           <button 
             key={cls.key} 
             className={`class-button ${selectedClass.key === cls.key ? 'selected' : ''}`}
-            onClick={() => updateCharacter({ class: cls, skill_proficiencies_choice: [] })} // Setzt Fertigkeiten bei Klassenwechsel zurück
+            onClick={() => updateCharacter({ class: cls, skill_proficiencies_choice: [] })}
           >
-            <div className="class-icon-placeholder"></div>
+            {classIcons[cls.icon] && (
+              <img 
+                src={classIcons[cls.icon]} 
+                alt={`${cls.name} Icon`} 
+                className="class-icon"
+              />
+            )}
             <span>{cls.name}</span>
           </button>
         ))}
       </div>
 
-      {/* Rechte Spalte: Details zur ausgewählten Klasse */}
       <div className="class-details">
         <h2>{selectedClass.name}</h2>
         <p className="class-description">{selectedClass.description}</p>
@@ -52,12 +82,12 @@ export const ClassSelection = ({ character, updateCharacter }) => {
           }
         </ul>
         
-        {/* Neue Sektion für die Fertigkeiten-Auswahl */}
         {skillChoiceData && (
           <>
             <div className="details-divider"></div>
             <SkillSelection 
-              options={skillChoiceData.from.map(skillName => Object.keys(SKILL_NAMES_DE).find(key => SKILL_NAMES_DE[key] === skillName))}
+              // Verwendet jetzt die sichere "skillOptions"-Variable
+              options={skillOptions}
               maxChoices={skillChoiceData.choose}
               selections={character.skill_proficiencies_choice}
               setSelections={handleSkillChange}

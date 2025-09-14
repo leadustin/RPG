@@ -1,0 +1,58 @@
+/* src/components/AbilitySelection.css */
+.ability-selection-container {
+  padding: 10px;
+}
+
+.points-display {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid var(--color-border-light);
+}
+
+.points-display span {
+  color: var(--color-selection);
+  font-weight: bold;
+}
+
+.ability-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px !important; /* Überschreibt PanelDetails.css */
+}
+
+.ability-item strong {
+  flex-basis: 50px;
+  margin-bottom: 0 !important;
+}
+
+.ability-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ability-controls button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 1.2em;
+}
+
+.base-score {
+  font-size: 1.2em;
+  width: 30px;
+  text-align: center;
+}
+
+.ability-modifier {
+  flex-basis: 100px;
+}
+
+.final-score {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--color-selection);
+}

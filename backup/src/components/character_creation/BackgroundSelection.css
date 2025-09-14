@@ -1,0 +1,57 @@
+/* src/components/BackgroundSelection.css */
+.background-selection-container {
+  display: flex;
+  height: 100%;
+  gap: 20px;
+}
+
+.background-list {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 30%;
+  gap: 5px;
+}
+
+.background-button {
+  width: 100%;
+  padding: 15px;
+  background-color: transparent;
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-light);
+  font-family: var(--font-main);
+  font-size: 1.1em;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.background-button:hover {
+  background-color: var(--color-background-light);
+  border-color: var(--color-selection);
+}
+
+.background-button.selected {
+  border-left: 3px solid var(--color-selection);
+  background-color: rgba(168, 126, 76, 0.2);
+  font-weight: bold;
+}
+
+.background-details {
+  flex-basis: 70%;
+  padding-left: 20px;
+  border-left: 1px solid var(--color-border-light);
+  overflow-y: auto;
+}
+
+.background-details h2 {
+  margin-top: 0;
+  color: var(--color-selection);
+  font-size: 2em;
+}
+
+.background-description {
+  font-family: sans-serif;
+  line-height: 1.6;
+  font-size: 1em;
+  color: var(--color-text-light);
+}

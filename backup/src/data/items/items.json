@@ -1,0 +1,222 @@
+[
+  {
+    "id": "potion-of-healing",
+    "name": "Heiltrank",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 50,
+    "description": "Ein einfacher Trank, der Wunden schließt und die Lebensgeister wiederherstellt.",
+    "effect": "Heilt 2W4 + 2 Trefferpunkte.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-greater-healing",
+    "name": "Großer Heiltrank",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 250,
+    "description": "Ein wirksamerer Heiltrank für ernstere Verletzungen.",
+    "effect": "Heilt 4W4 + 4 Trefferpunkte.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-superior-healing",
+    "name": "Überlegener Heiltrank",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 1250,
+    "description": "Ein sehr potenter Heiltrank, der selbst schwere Wunden heilen kann.",
+    "effect": "Heilt 8W4 + 8 Trefferpunkte.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-supreme-healing",
+    "name": "Höchster Heiltrank",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 6250,
+    "description": "Der stärkste aller Heiltränke, der selbst tödliche Wunden schließen kann.",
+    "effect": "Heilt 10W4 + 20 Trefferpunkte.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-invisibility",
+    "name": "Trank der Unsichtbarkeit",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 300,
+    "description": "Macht den Trinkenden für eine Stunde unsichtbar.",
+    "effect": "Gewährt Unsichtbarkeit für 1 Stunde.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-speed",
+    "name": "Trank der Geschwindigkeit",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 400,
+    "description": "Beschleunigt die Bewegungen und Reflexe des Trinkenden.",
+    "effect": "Gewährt den Effekt des Zaubers 'Hast' für 1 Minute.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-giant-strength",
+    "name": "Trank der Riesenstärke",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 1000,
+    "description": "Verleiht dem Trinkenden die Stärke eines Riesen für eine Stunde.",
+    "effect": "Erhöht die Stärke auf 21-29 (je nach Riesenart) für 1 Stunde.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-flying",
+    "name": "Trank des Fliegens",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 750,
+    "description": "Verleiht dem Trinkenden die Fähigkeit zu fliegen.",
+    "effect": "Gewährt eine Fluggeschwindigkeit von 60 Fuß für 1 Stunde.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-fire-resistance",
+    "name": "Feuerresistenztrank",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 150,
+    "description": "Schützt den Trinkenden vor den schlimmsten Flammen.",
+    "effect": "Gewährt Resistenz gegen Feuerschaden für 1 Stunde.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "potion-of-poison-resistance",
+    "name": "Giftresistenztrank",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 150,
+    "description": "Neutralisiert die Wirkung von Giften im Körper.",
+    "effect": "Gewährt Resistenz gegen Giftschaden für 1 Stunde.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "elixir-of-colossus",
+    "name": "Elixier des Kolosses",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 200,
+    "description": "Lässt den Trinkenden wachsen und seine Stärke erhöhen.",
+    "effect": "Erhöht die Größe und den Waffenschaden des Charakters.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "elixir-of-bloodlust",
+    "name": "Elixier der Blutlust",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.5,
+    "value": 250,
+    "description": "Ein Elixier, das nach dem Töten eines Gegners eine zusätzliche Aktion gewährt.",
+    "effect": "Gewährt eine zusätzliche Aktion, nachdem ein Gegner getötet wurde.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "antidote",
+    "name": "Gegengift",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0.1,
+    "value": 25,
+    "description": "Ein kleines Fläschchen mit einer Flüssigkeit, die Gift neutralisiert.",
+    "effect": "Heilt den Zustand 'Vergiftet'.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "alchemists-fire",
+    "name": "Alchemistenfeuer",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 1,
+    "value": 50,
+    "description": "Eine klebrige, brennbare Flüssigkeit in einer Tonflasche.",
+    "effect": "Verursacht bei einem Treffer Feuerschaden und setzt das Ziel in Brand.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "acid-vial",
+    "name": "Säurefläschchen",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 1,
+    "value": 25,
+    "description": "Ein Fläschchen mit blubbernder, ätzender Säure.",
+    "effect": "Verursacht bei einem Treffer Säureschaden.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "holy-water",
+    "name": "Weihwasser",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 1,
+    "value": 25,
+    "description": "Wasser, das von einem Priester gesegnet wurde. Es ist besonders wirksam gegen Untote.",
+    "effect": "Verursacht bei Untoten und Unholden gleißenden Schaden.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "tanglefoot-bag",
+    "name": "Fussfesselbeutel",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 4,
+    "value": 50,
+    "description": "Ein Beutel gefüllt mit einer klebrigen Substanz, die Gegner verlangsamen kann.",
+    "effect": "Erzeugt eine Fläche, die schwieriges Gelände ist und Kreaturen verlangsamt.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "smokepowder-bomb",
+    "name": "Rauchpulverbombe",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 1,
+    "value": 150,
+    "description": "Eine einfache Bombe, die bei Aufprall explodiert.",
+    "effect": "Verursacht in einem kleinen Radius Explosionsschaden.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "scroll-of-revivify",
+    "name": "Schriftrolle der Wiederbelebung",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 0,
+    "value": 1000,
+    "description": "Eine magische Schriftrolle, die einen kürzlich verstorbenen Verbündeten ins Leben zurückholen kann.",
+    "effect": "Wirkt den Zauber 'Wiederbeleben'.",
+    "icon": "placeholder_item.webp"
+  },
+  {
+    "id": "thieves-tools",
+    "name": "Diebeswerkzeug",
+    "type": "item",
+    "slot": "consumable",
+    "weight": 1,
+    "value": 25,
+    "description": "Ein Satz von Dietrichen und anderen Werkzeugen, die zum Entschärfen von Fallen und zum Knacken von Schlössern benötigt werden.",
+    "effect": "Ermöglicht Würfe zum Entschärfen von Fallen und Knacken von Schlössern.",
+    "icon": "placeholder_item.webp"
+  }
+]
