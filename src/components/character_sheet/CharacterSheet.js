@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useDrop } from "react-dnd";
 import "./CharacterSheet.css";
+import Tooltip from "../tooltip/Tooltip";
 import {
   getAbilityModifier,
   calculateInitialHP,
   calculateAC,
+  calculateMeleeDamage,
+  ABILITY_DESCRIPTIONS_DE,
 } from "../../engine/characterEngine";
 import InventoryItem from "./InventoryItem";
 import EquipmentSlot from "./EquipmentSlot";
@@ -23,7 +26,7 @@ const CharacterSheet = ({
   // Move useMemo before the early return
   const currentWeight = useMemo(() => {
     if (!character || !character.inventory) return 0;
-    
+
     // Gehe durch alle Items im Inventar und summiere ihr Gewicht
     return character.inventory.reduce((total, item) => {
       // Stelle sicher, dass das Item und das Gewicht existieren und eine Zahl sind
@@ -48,6 +51,25 @@ const CharacterSheet = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
+  // Innerhalb der CharacterSheet Komponente
+  const [hoveredStat, setHoveredStat] = useState(null);
+  const strRef = useRef(null);
+  const dexRef = useRef(null);
+  const conRef = useRef(null);
+  const intRef = useRef(null);
+  const wisRef = useRef(null);
+  const chaRef = useRef(null);
+
+  // Mappen der Refs für einfacheren Zugriff
+  const statRefs = {
+    str: strRef,
+    dex: dexRef,
+    con: conRef,
+    int: intRef,
+    wis: wisRef,
+    cha: chaRef,
+  };
+
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
       accept: [
@@ -70,7 +92,7 @@ const CharacterSheet = ({
   }
 
   // Berechne die maximale Tragekapazität (typische D&D 5e Regel)
-  const maxWeight = character.abilities.strength * 15;
+  const maxWeight = character.stats.abilities.str * 15;
 
   // --- KORREKTUR: Fehlende Funktion wiederhergestellt ---
   const toggleInventory = (characterName) => {
@@ -84,6 +106,7 @@ const CharacterSheet = ({
   const currentHp = character.stats.hp || maxHp;
   const armorClass = calculateAC(character);
   const initiative = getAbilityModifier(character.stats.abilities.dex);
+  const meleeDamage = calculateMeleeDamage(character);
 
   return (
     <div className="game-ui">
@@ -146,9 +169,13 @@ const CharacterSheet = ({
             >
               <h3>{character.name}</h3>
               <div className="inventory-details">
-                <div className={`weight-display ${currentWeight > maxWeight ? 'encumbered' : ''}`}>
-                Gewicht: {currentWeight.toFixed(1)} / {maxWeight} Pfund
-              </div>
+                <div
+                  className={`weight-display ${
+                    currentWeight > maxWeight ? "encumbered" : ""
+                  }`}
+                >
+                  Gewicht: {currentWeight.toFixed(1)} / {maxWeight} kg
+                </div>
                 <span className="toggle-icon">
                   {collapsedInventories[character.name] ? "+" : "-"}
                 </span>
@@ -269,47 +296,31 @@ const CharacterSheet = ({
               </div>
             </div>
             <div className="primary-stats">
-              <div className="stat-block">
-                <span className="stat-value">
-                  {character.stats.abilities.str}
-                </span>
-                <span className="stat-label">STR</span>
-              </div>
-              <div className="stat-block">
-                <span className="stat-value">
-                  {character.stats.abilities.dex}
-                </span>
-                <span className="stat-label">DEX</span>
-              </div>
-              <div className="stat-block">
-                <span className="stat-value">
-                  {character.stats.abilities.con}
-                </span>
-                <span className="stat-label">CON</span>
-              </div>
-              <div className="stat-block">
-                <span className="stat-value">
-                  {character.stats.abilities.int}
-                </span>
-                <span className="stat-label">INT</span>
-              </div>
-              <div className="stat-block">
-                <span className="stat-value">
-                  {character.stats.abilities.wis}
-                </span>
-                <span className="stat-label">WIS</span>
-              </div>
-              <div className="stat-block">
-                <span className="stat-value">
-                  {character.stats.abilities.cha}
-                </span>
-                <span className="stat-label">CHA</span>
-              </div>
+              {Object.keys(character.stats.abilities).map((key) => (
+                <div
+                  key={key}
+                  className="stat-block"
+                  ref={statRefs[key]}
+                  onMouseEnter={() => setHoveredStat(key)}
+                  onMouseLeave={() => setHoveredStat(null)}
+                >
+                  <span className="stat-value">
+                    {character.stats.abilities[key]}
+                  </span>
+                  <span className="stat-label">{key.toUpperCase()}</span>
+                  {hoveredStat === key && (
+                    <Tooltip
+                      text={ABILITY_DESCRIPTIONS_DE[key]}
+                      parentRef={statRefs[key]}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
             <div className="combat-stats">
               <div className="combat-stat">
-                <span>Melee Damage</span>
-                <span>N/A</span>
+                <span>Nahkampfschaden</span>
+                <span>{meleeDamage}</span>
               </div>
               <div className="combat-stat">
                 <span>Attack Bonus</span>
@@ -326,7 +337,7 @@ const CharacterSheet = ({
                 <span>{armorClass}</span>
               </div>
               <div className="combat-stat">
-                <span>Movement Speed</span>
+                <span>Bewegungsgeschw.</span>
                 <span>{character.race.speed}m</span>
               </div>
               <div className="combat-stat">

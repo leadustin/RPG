@@ -2,6 +2,7 @@
   {
     "key": "barbarian",
     "name": "Barbar",
+    "icon": "Class_Barbarian_Icon.png",
     "description": "Ein wilder Krieger aus der zivilisationsfernen Wildnis, der im Kampf von unbändiger Wut angetrieben wird.",
     "hit_die": 12,
     "saving_throws": ["strength", "constitution"],
@@ -41,6 +42,7 @@
   {
     "key": "bard",
     "name": "Barde",
+    "icon": "Class_Bard_Icon.png",
     "description": "Ein inspirierender Magier, dessen Macht von der Musik und den Geschichten der Schöpfung herrührt.",
     "hit_die": 8,
     "saving_throws": ["dexterity", "charisma"],
@@ -77,6 +79,7 @@
   {
     "key": "cleric",
     "name": "Kleriker",
+    "icon": "Class_Cleric_Icon.png",
     "description": "Ein Kleriker ist ein Priester, der göttliche Magie ausübt, um die Macht seiner Gottheit in die Welt zu tragen.",
     "hit_die": 8,
     "saving_throws": ["wisdom", "charisma"],
@@ -115,6 +118,7 @@
   {
     "key": "druid",
     "name": "Druide",
+    "icon": "Class_Druid_Icon.png",
     "description": "Ein Priester der Alten Weise, der seine Macht aus der Natur selbst schöpft und die Gestalt wilder Tiere annehmen kann.",
     "hit_die": 8,
     "saving_throws": ["intelligence", "wisdom"],
@@ -154,6 +158,7 @@
   {
     "key": "fighter",
     "name": "Kämpfer",
+    "icon": "Class_Fighter_Icon.png",
     "description": "Ein Meister der Kampfkunst, der in jeder Waffe und Rüstung geübt ist und über unübertroffene Fähigkeiten auf dem Schlachtfeld verfügt.",
     "hit_die": 10,
     "saving_throws": ["strength", "constitution"],
@@ -190,6 +195,7 @@
   {
     "key": "monk",
     "name": "Mönch",
+    "icon": "Class_Monk_Icon.png",
     "description": "Ein Meister der Kampfkünste, der die Kraft des Körpers und des Geistes nutzt, um die mystische Energie des Ki zu kanalisieren.",
     "hit_die": 8,
     "saving_throws": ["strength", "dexterity"],
@@ -231,6 +237,7 @@
   {
     "key": "paladin",
     "name": "Paladin",
+    "icon": "Class_Paladin_Icon.png",
     "description": "Ein heiliger Krieger, gebunden an einen Eid, der als Leuchtfeuer der Hoffnung in einer von Dunkelheit geplagten Welt dient.",
     "hit_die": 10,
     "saving_throws": ["wisdom", "charisma"],
@@ -270,6 +277,7 @@
   {
     "key": "ranger",
     "name": "Waldläufer",
+    "icon": "Class_Ranger_Icon.png",
     "description": "Ein Krieger der Wildnis, der Feinde mit geschärften Sinnen, tödlichen Waffen und einer tiefen Verbindung zur Natur jagt.",
     "hit_die": 10,
     "saving_throws": ["strength", "dexterity"],
@@ -308,6 +316,7 @@
   {
     "key": "rogue",
     "name": "Schurke",
+    "icon": "Class_Rogue_Icon.png",
     "description": "Ein listiger und schwer fassbarer Abenteurer, der mit Geschick, Heimlichkeit und den Schwächen seiner Feinde zum Erfolg kommt.",
     "hit_die": 8,
     "saving_throws": ["dexterity", "intelligence"],
@@ -346,6 +355,7 @@
   {
     "key": "sorcerer",
     "name": "Zauberer",
+    "icon": "Class_Sorcerer_Icon.png",
     "description": "Ein Zauberwirker, der seine Magie aus einer angeborenen Gabe oder einer übernatürlichen Blutlinie schöpft.",
     "hit_die": 6,
     "saving_throws": ["constitution", "charisma"],
@@ -379,6 +389,7 @@
   {
     "key": "warlock",
     "name": "Hexenmeister",
+    "icon": "Class_Warlock_Icon.png",
     "description": "Ein Zauberwirker, der seine Macht durch einen Pakt mit einem außerweltlichen Wesen erlangt hat.",
     "hit_die": 8,
     "saving_throws": ["wisdom", "charisma"],
@@ -414,6 +425,7 @@
   {
     "key": "wizard",
     "name": "Magier",
+    "icon": "Class_Wizard_Icon.png",
     "description": "Ein gelehrter Zauberwirker, der die arkanen Energien durch jahrelanges Studium und unermüdliche Forschung zu meistern gelernt hat.",
     "hit_die": 6,
     "saving_throws": ["intelligence", "wisdom"],

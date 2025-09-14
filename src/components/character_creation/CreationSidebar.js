@@ -2,14 +2,24 @@
 import React from 'react';
 import './CreationSidebar.css';
 
-export const CreationSidebar = ({ currentStep, setCurrentStep, character }) => {
+// Übersetzungsobjekt für die deutschen Begriffe
+const stepTranslations = {
+  Race: 'Volk',
+  Subrace: 'Unterart',
+  Class: 'Klasse',
+  Background: 'Hintergrund',
+  Abilities: 'Fähigkeiten',
+};
+
+export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFinalize }) => {
+  // Wir behalten die englischen Schlüssel für die Logik bei
   const steps = ['Race', 'Subrace', 'Class', 'Background', 'Abilities'];
 
   const hasSubraces = character.race?.subraces && character.race.subraces.length > 0;
   const hasAncestries = character.race?.ancestries && character.race.ancestries.length > 0;
 
   const handleStepClick = (step) => {
-    // Verhindere Klick, wenn der Schritt nicht relevant ist
+    // Die Logik hier bleibt unverändert, da wir die englischen Schlüssel verwenden
     if (step === 'Subrace' && !hasSubraces && !hasAncestries) {
       return;
     }
@@ -21,8 +31,11 @@ export const CreationSidebar = ({ currentStep, setCurrentStep, character }) => {
       <ul>
         {steps.map(step => {
           const isSubraceStep = step === 'Subrace';
-          let label = step;
-          // Ändere den Text für Drachenblütige
+          
+          // Standard-Label aus unserem Übersetzungsobjekt holen
+          let label = stepTranslations[step];
+
+          // Sonderfall für Drachenblütige beibehalten
           if (isSubraceStep && hasAncestries) {
             label = 'Abstammung';
           }
@@ -32,6 +45,7 @@ export const CreationSidebar = ({ currentStep, setCurrentStep, character }) => {
           return (
             <li 
               key={step}
+              // Die Logik für 'active' und 'disabled' funktioniert weiterhin
               className={`${currentStep === step ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}
               onClick={() => handleStepClick(step)}
             >
@@ -40,6 +54,14 @@ export const CreationSidebar = ({ currentStep, setCurrentStep, character }) => {
           );
         })}
       </ul>
+      <div className="sidebar-finalize-container">
+        {/* Der Button wird nur angezeigt, wenn der aktuelle Schritt 'Abilities' ist */}
+        {currentStep === 'Abilities' && (
+          <button className="finalize-button" onClick={onFinalize}>
+            Abenteuer beginnen
+          </button>
+        )}
+      </div>
     </div>
   );
 };

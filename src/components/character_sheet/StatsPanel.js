@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
 import './StatsPanel.css';
+import Tooltip from '../tooltip/Tooltip'; // Tooltip importieren
+import { 
+    SKILL_MAP, 
+    SKILL_NAMES_DE, 
+    calculateSkillBonus, 
+    SKILL_DESCRIPTIONS_DE 
+} from '../../engine/characterEngine';
 
 const StatsPanel = ({ character }) => {
   const [activeTab, setActiveTab] = useState('stats');
@@ -19,18 +26,27 @@ const StatsPanel = ({ character }) => {
           </div>
         );
       case 'skills':
-        return (
-          <div>
-            <h3>Skills</h3>
-            {/* Diese Daten sind momentan Platzhalter und müssen noch in characterEngine.js hinzugefügt werden */}
-            <p>Acrobatics: 0</p>
-            <p>Animal Handling: 0</p>
-            <p>Arcana: 0</p>
-            <p>Athletics: 0</p>
-            <p>Deception: 0</p>
-            <p>History: 0</p>
-          </div>
-        );
+    const skillKeys = Object.keys(SKILL_MAP); // Alle Fertigkeiten-Schlüssel holen
+    return (
+      <div>
+        <h3>Fertigkeiten</h3>
+        {skillKeys.map(key => {
+          const skillName = SKILL_NAMES_DE[key] || key;
+          const bonus = calculateSkillBonus(character, key);
+          const description = SKILL_DESCRIPTIONS_DE[key] || "Keine Beschreibung verfügbar.";
+          const bonusString = bonus >= 0 ? `+${bonus}` : bonus;
+
+          return (
+            <Tooltip key={key} text={description}>
+              <div className="skill-entry">
+                <span>{skillName}</span>
+                <span>{bonusString}</span>
+              </div>
+            </Tooltip>
+          );
+        })}
+      </div>
+    );
       case 'proficiencies':
         return (
           <div>

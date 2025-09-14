@@ -1,0 +1,88 @@
+/* Hauptcontainer, der die Ansicht in zwei Zeilen teilt */
+.game-view-container {
+    display: flex;
+    flex-direction: column; /* Reihen untereinander */
+    height: 100%;
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+    background-color: #1a1a1a;
+    gap: 15px; /* Abstand zwischen oberer und unterer Sektion */
+}
+
+/* Obere Sektion: Nimmt den verfügbaren Platz ein */
+.top-section {
+    flex-grow: 1; /* Wächst, um den Raum zu füllen */
+    display: grid;
+    grid-template-columns: 160px 1fr; /* Breite für Porträts und Rest für Karte */
+    gap: 15px;
+    overflow: hidden; /* Wichtig, damit nichts überläuft */
+}
+
+/* Untere Sektion: Feste Höhe */
+.bottom-section {
+    height: 288px; /* Feste Höhe für Log und Aktionen */
+    flex-shrink: 0; /* Verhindert, dass die Sektion schrumpft */
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Breite für Log und Rest für Aktionen */
+    gap: 15px;
+}
+
+/* Zuweisung der Komponenten zu den Bereichen */
+.party-portraits-area {
+    /* Nimmt automatisch die 1. Spalte in .top-section ein */
+}
+
+.world-map-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Wrapper, der das 4:3 Seitenverhältnis erzwingt */
+.world-map-aspect-ratio-wrapper {
+    width: 100%;
+    max-height: 100%;
+    position: relative;
+    padding-top: 75%; /* 3 / 4 = 75% für 4:3 Verhältnis */
+    overflow: hidden;
+}
+
+/* Die eigentliche WorldMap-Komponente im Wrapper */
+.world-map-aspect-ratio-wrapper > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Stellt sicher, dass das Bild in der Karte korrekt skaliert wird */
+.world-map-aspect-ratio-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    margin: auto;
+}
+
+.log-area {
+    /* Nimmt automatisch die 1. Spalte in .bottom-section ein */
+}
+
+.action-bar-area {
+    /* Nimmt automatisch die 2. Spalte in .bottom-section ein */
+    background-color: #2a2a2a;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}

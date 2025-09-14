@@ -10,7 +10,7 @@
 }
 
 .skill-choice {
-  padding: 10px;
+  padding: 5px;
   border: 1px solid var(--color-border-light);
   background-color: var(--color-background-medium);
   cursor: pointer;

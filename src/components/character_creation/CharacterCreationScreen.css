@@ -2,7 +2,7 @@
   height: 100vh;
   width: auto;
   display: grid;
-  grid-template-columns: 300px 1fr 400px; /* Left | Center | Right */
+  grid-template-columns: 200px 1fr 400px; /* Left | Center | Right */
   gap: 20px;
   padding: 20px;
   box-sizing: border-box;

@@ -1,30 +1,35 @@
-import React from 'react';
+import React, { useRef, useState } from 'react'; // useState hinzufügen
 import { useDrag } from 'react-dnd';
-import { ItemTypes } from '../../dnd/itemTypes';
 import './DraggableItem.css';
+import Tooltip from '../tooltip/Tooltip'; // Der Pfad sollte bereits stimmen
 
 const DraggableItem = ({ item, index }) => {
+  const dragRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false); // Hover-Zustand hinzufügen
+
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemTypes.ITEM,
-    // Hier packen wir die Daten rein, die beim Ziehen verfügbar sein sollen
-    item: { ...item, index, source: 'inventory' }, 
+    type: item.type,
+    item: { ...item, originalIndex: index },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-  }), [item, index]);
+  }));
 
-  // Wenn ein Item gezogen wird, machen wir es halbtransparent
-  const style = {
-    opacity: isDragging ? 0.5 : 1,
-  };
+  drag(dragRef);
 
   return (
-    <div ref={drag} className="draggable-item" style={style}>
-      <div className="item-icon-placeholder">{item.name.substring(0, 2)}</div>
-      {item.quantity > 1 && (
-        <span className="item-quantity">{item.quantity}</span>
-      )}
-    </div>
+    <>
+      <div
+        ref={dragRef}
+        className={`draggable-item ${isDragging ? 'dragging' : ''}`}
+        onMouseEnter={() => setIsHovered(true)} // Maus-Events hinzufügen
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <img src={item.icon || 'https://placeholder.pics/svg/48'} alt={item.name} />
+      </div>
+      {/* Tooltip nur anzeigen, wenn isHovered true ist */}
+      {isHovered && <Tooltip item={item} parentRef={dragRef} />}
+    </>
   );
 };
 

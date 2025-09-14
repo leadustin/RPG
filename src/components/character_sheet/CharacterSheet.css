@@ -125,7 +125,7 @@ header {
 
 /* Mittlere Spalte: Inventar */
 .inventory-section {
-    flex: 0 0 40%;
+    flex: 0 0 35%;
     padding: 20px;
     overflow-y: auto;
     border-right: 1px solid var(--border-color);
@@ -249,7 +249,7 @@ header {
     flex-direction: column;
     align-items: flex-start;
     /* Labels linksbündig ausrichten */
-    flex: 0 0 130px;
+    flex: 0 0 120px;
     gap: 12px;
     /* Einheitlicher Abstand zwischen den Elementen */
 }
@@ -335,7 +335,7 @@ header {
 }
 
 .stats-column-right {
-    flex: 0 0 160px;
+    flex: 0 0 175px;
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -361,7 +361,7 @@ header {
 .class-icon {
     width: 60px;
     height: 60px;
-    background-color: #334;
+    background-color: #26263100;
 }
 
 .character-title p {
@@ -402,7 +402,7 @@ header {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .combat-stat {

@@ -25,6 +25,17 @@
   font-weight: bold;
 }
 
+.tooltip.text-tooltip {
+  background-color: #1a1a1e;
+  color: #c5c5d0; /* Etwas hellerer Text für besseren Kontrast */
+  border: 1px solid #5a5a60; /* Hellerer Rand */
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.9em;
+  line-height: 1.6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
 /* Optional: Farben für Item-Seltenheit (kannst du in der JSON hinzufügen) */
 .rarity-common { color: #ffffff; }
 .rarity-uncommon { color: #1eff00; }

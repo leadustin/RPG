@@ -34,3 +34,14 @@
   flex-grow: 1;
   overflow-y: auto;
 }
+.skill-entry {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: help;
+}
+
+.skill-entry:hover {
+  background-color: #3a3a3a;
+}
