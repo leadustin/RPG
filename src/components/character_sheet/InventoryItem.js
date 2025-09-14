@@ -1,11 +1,10 @@
-// Dein Pfad: src/components/character_sheet/InventoryItem.js
+// src/components/character_sheet/InventoryItem.js
 
-import React, { useState } from 'react'; // <-- useState importieren
+import React, { useState, useRef } from 'react';
 import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../../dnd/itemTypes';
-import Tooltip from '../tooltip/Tooltip'; // <-- Tooltip-Komponente importieren
+import Tooltip from '../tooltip/Tooltip';
 
-// Diese Funktion hilft uns, den richtigen Bildpfad dynamisch zu erstellen.
 const getIcon = (iconName) => {
     try {
         return require(`../../assets/images/icons/${iconName}`);
@@ -15,36 +14,44 @@ const getIcon = (iconName) => {
     }
 };
 
-const InventoryItem = ({ item, equippedIn = null }) => {
-  const [showTooltip, setShowTooltip] = useState(false); // <-- Zustand für den Tooltip
-  const itemType = item.type.toUpperCase();
+// Die Prop 'equippedIn' wird hier nicht mehr benötigt
+const InventoryItem = ({ item }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const itemRef = useRef(null);
+  const itemType = item ? item.type.toUpperCase() : "ITEM";
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes[itemType] || ItemTypes.ITEM,
-    item: { ...item, equippedIn },
+    // Da dieses Item aus dem Inventar kommt, hat es keinen 'equippedIn' Status
+    item: { ...item },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }));
 
+  // Die kombinierte Ref-Funktion bleibt für den Tooltip erhalten
+  const combinedRef = (el) => {
+    drag(el);
+    itemRef.current = el;
+  };
+
+  if (!item) {
+    return <div className="inventory-slot"></div>;
+  }
+
   return (
     <div
-      ref={drag}
+      ref={combinedRef}
       className="inventory-slot"
       style={{
         opacity: isDragging ? 0.5 : 1,
         cursor: 'grab',
-        position: 'relative', // <-- Wichtig für die Positionierung des Tooltips
       }}
-      // Das 'title'-Attribut kannst du entfernen, da wir es durch den neuen Tooltip ersetzen
-      // title={item.name} 
-      onMouseEnter={() => setShowTooltip(true)} // <-- Tooltip anzeigen
-      onMouseLeave={() => setShowTooltip(false)} // <-- Tooltip ausblenden
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
     >
-      {item && <img src={getIcon(item.icon)} alt={item.name} style={{ width: '100%', height: '100%' }} />}
-
-      {/* Hier wird der Tooltip angezeigt, wenn showTooltip true ist */}
-      {showTooltip && !isDragging && <Tooltip item={item} />}
+      <img src={getIcon(item.icon)} alt={item.name} className="item-icon" />
+      {showTooltip && !isDragging && <Tooltip item={item} parentRef={itemRef} />}
     </div>
   );
 };

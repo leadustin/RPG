@@ -132,14 +132,31 @@ header {
 }
 
 .inventory-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-right: 10px; /* Etwas Platz am Rand */
 }
 
-.inventory-header h2 {
-    margin: 0;
+.inventory-header h4 {
+  margin: 0;
+}
+
+.weight-display {
+  font-size: 0.9em;
+  color: #bdbdbd;
+  background-color: #2c2c2c;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid #444;
+}
+
+/* Stil für überladene Charaktere */
+.weight-display.encumbered {
+  color: #ef5350; /* Ein auffälliges Rot */
+  font-weight: bold;
+  border-color: #ef5350;
 }
 
 .filter-btn {

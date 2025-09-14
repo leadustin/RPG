@@ -7,6 +7,7 @@
     "ac": 11,
     "weight": 10,
     "value": 10,
+    "rarity": "rare",
     "description": "Eine einfache, aber effektive Rüstung aus gehärtetem Leder. Sie bietet grundlegenden Schutz, ohne die Beweglichkeit einzuschränken.",
     "icon": "placeholder_armor.webp"
   },
