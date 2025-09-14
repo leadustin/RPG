@@ -18,6 +18,7 @@ const CharacterSheet = ({
   onClose,
   handleEquipItem,
   handleUnequipItem,
+  handleToggleTwoHanded,
 }) => {
   const [activeNav, setActiveNav] = useState("Inventory");
   const [activePortrait, setActivePortrait] = useState("");
@@ -258,6 +259,12 @@ const CharacterSheet = ({
                 onEquipItem={handleEquipItem}
               />
             </div>
+            {character.equipment['main-hand'] && 
+             character.equipment['main-hand'].properties.some(p => p.startsWith('Vielseitig')) &&
+              <button onClick={() => handleToggleTwoHanded('main-hand')}>
+                {character.equipment['main-hand'].isTwoHanded ? 'Einhändig' : 'Zweihändig'}
+              </button>
+            }
 
             <p className="slot-label">Ranged</p>
             <div className="two-column-grid">
