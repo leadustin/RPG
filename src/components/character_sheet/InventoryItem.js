@@ -1,25 +1,27 @@
-import React from 'react';
+// Dein Pfad: src/components/character_sheet/InventoryItem.js
+
+import React, { useState } from 'react'; // <-- useState importieren
 import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../../dnd/itemTypes';
+import Tooltip from '../tooltip/Tooltip'; // <-- Tooltip-Komponente importieren
 
 // Diese Funktion hilft uns, den richtigen Bildpfad dynamisch zu erstellen.
-// Webpack wird dadurch angewiesen, alle Bilder im Ordner 'icons' zu berücksichtigen.
 const getIcon = (iconName) => {
     try {
         return require(`../../assets/images/icons/${iconName}`);
     } catch (err) {
-        // Fallback-Bild, falls ein Icon nicht gefunden wird
         console.warn(`Icon not found: ${iconName}`);
-        return 'https://placeholder.pics/svg/40x40'; 
+        return 'https://placeholder.pics/svg/40x40';
     }
 };
 
 const InventoryItem = ({ item, equippedIn = null }) => {
+  const [showTooltip, setShowTooltip] = useState(false); // <-- Zustand für den Tooltip
   const itemType = item.type.toUpperCase();
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes[itemType] || ItemTypes.ITEM,
-    item: { ...item, equippedIn }, 
+    item: { ...item, equippedIn },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -32,11 +34,17 @@ const InventoryItem = ({ item, equippedIn = null }) => {
       style={{
         opacity: isDragging ? 0.5 : 1,
         cursor: 'grab',
+        position: 'relative', // <-- Wichtig für die Positionierung des Tooltips
       }}
-      title={item.name}
+      // Das 'title'-Attribut kannst du entfernen, da wir es durch den neuen Tooltip ersetzen
+      // title={item.name} 
+      onMouseEnter={() => setShowTooltip(true)} // <-- Tooltip anzeigen
+      onMouseLeave={() => setShowTooltip(false)} // <-- Tooltip ausblenden
     >
-      {/* Die getIcon-Funktion wird hier aufgerufen, um das Bild zu laden */}
       {item && <img src={getIcon(item.icon)} alt={item.name} style={{ width: '100%', height: '100%' }} />}
+
+      {/* Hier wird der Tooltip angezeigt, wenn showTooltip true ist */}
+      {showTooltip && !isDragging && <Tooltip item={item} />}
     </div>
   );
 };

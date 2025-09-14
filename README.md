@@ -1,2 +1,0 @@
-# RPG
-Ein RPG-Projekt

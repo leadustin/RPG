@@ -1,0 +1,24 @@
+.tooltip {
+  position: absolute;
+  top: 50%; /* Vertikal zentrieren */
+  left: 105%; /* Rechts neben dem Item positionieren (100%) plus 5% Abstand */
+  transform: translateY(-50%); /* Genaue vertikale Zentrierung sicherstellen */
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  z-index: 1000;
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: 0.9em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip h4 {
+  margin: 0 0 5px 0;
+  color: #aaddff; /* Beispiel: Name in einer anderen Farbe */
+}
+
+.tooltip p {
+  margin: 0;
+}

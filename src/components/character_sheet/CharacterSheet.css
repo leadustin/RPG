@@ -208,7 +208,7 @@ header {
   display: flex; /* Wichtig für die Bildzentrierung und -skalierung */
   justify-content: center; /* Zentriert horizontal */
   align-items: center; /* Zentriert vertikal */
-  overflow: hidden; /* Verhindert, dass das Bild über den Slot hinausragt */
+  overflow: visible; /* Verhindert, dass das Bild über den Slot hinausragt */
 }
 
 .inventory-slot img {
