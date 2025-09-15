@@ -424,3 +424,25 @@ header {
     cursor: pointer;
     font-weight: bold;
 }
+
+/* --- NEUER ABSCHNITT FÜR DAS ZAUBERBUCH --- */
+.spells-section {
+    flex-grow: 1; /* Nimmt den gesamten verfügbaren Platz ein */
+    padding: 20px;
+    overflow-y: auto; /* Erlaubt scrollen, falls der Inhalt zu lang wird */
+}
+
+.spells-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.spells-header h2 {
+  margin: 0;
+}
+
+.spells-content {
+  /* Hier kannst du das Layout für deine Zauber definieren, z.B. ein Grid */
+}

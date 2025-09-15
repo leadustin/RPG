@@ -164,8 +164,19 @@ export const calculateMeleeDamage = (character) => {
 
   if (mainHandWeapon && mainHandWeapon.damage) {
     // Wenn eine Waffe mit Schadenswert vorhanden ist
+    let damage = mainHandWeapon.damage;
+    const versatileProperty = mainHandWeapon.properties?.find(p => p.startsWith("Vielseitig"));
+
+    // Prüfen, ob die Waffe vielseitig ist und beidhändig geführt wird
+    if (versatileProperty && mainHandWeapon.isTwoHanded) {
+      const twoHandedDamage = versatileProperty.match(/\((.*?)\)/)?.[1];
+      if (twoHandedDamage) {
+        damage = twoHandedDamage;
+      }
+    }
+
     const modifierString = strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
-    return `${mainHandWeapon.damage} ${modifierString}`;
+    return `${damage} ${modifierString}`;
   } else {
     // Standard für waffenlosen Schlag (1 + Stärke-Modifikator)
     const unarmedDamage = 1 + strModifier;

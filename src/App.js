@@ -18,6 +18,7 @@ function App() {
     handleCharacterCreation,
     handleEquipItem,
     handleUnequipItem,
+    handleToggleTwoHanded, // Hinzugefügte Funktion
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -75,6 +76,7 @@ function App() {
               onClose={toggleCharacterSheet}
               handleEquipItem={handleEquipItem}
               handleUnequipItem={handleUnequipItem}
+              handleToggleTwoHanded={handleToggleTwoHanded} // Prop weitergeben
             />
           )}
         </div>

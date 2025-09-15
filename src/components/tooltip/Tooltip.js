@@ -1,51 +1,57 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+// /src/components/tooltip/Tooltip.js
+
+import React, { useLayoutEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import "./Tooltip.css";
 
-// Die Komponente akzeptiert jetzt "item" ODER "text" als Prop
 const Tooltip = ({ item, text, parentRef }) => {
   const tooltipRef = useRef(null);
 
+  // --- KORREKTUR START ---
   useLayoutEffect(() => {
-    if (parentRef.current && tooltipRef.current) {
+    if ((item || text) && parentRef && parentRef.current && tooltipRef.current) {
       const parentRect = parentRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      const tooltipEl = tooltipRef.current;
 
+      // Positioniere den Tooltip rechts neben dem Parent-Element
       let top = parentRect.top;
-      let left = parentRect.right + 15;
+      let left = parentRect.right + 10; // 10px Abstand
 
+      // Prüfen, ob der Tooltip aus dem Bildschirm herausragt
       if (left + tooltipRect.width > window.innerWidth) {
-        left = parentRect.left - tooltipRect.width - 15;
+        left = parentRect.left - tooltipRect.width - 10; // Links positionieren
       }
       if (top + tooltipRect.height > window.innerHeight) {
-        top = window.innerHeight - tooltipRect.height - 15;
+        top = parentRect.bottom - tooltipRect.height; // Nach oben anpassen
       }
-      if (top < 0) top = 15;
-      if (left < 0) left = 15;
-      
-      tooltipRef.current.style.top = `${top}px`;
-      tooltipRef.current.style.left = `${left}px`;
+      if (top < 0) {
+        top = 0; // Sicherstellen, dass er nicht oben aus dem Bild ragt
+      }
+
+      // Die berechneten Werte anwenden
+      tooltipEl.style.top = `${top}px`;
+      tooltipEl.style.left = `${left}px`;
     }
   }, [item, text, parentRef]);
+  // --- KORREKTUR ENDE ---
 
-  // Wenn weder item noch text vorhanden ist, wird nichts gerendert.
+
   if (!item && !text) {
     return null;
   }
-  
+
   const formatItemType = (item) => {
+    // Diese Funktion muss noch implementiert werden, falls sie benötigt wird.
+    // Beispiel:
     if (!item || !item.type) return null;
-    const type = item.type.charAt(0).toUpperCase() + item.type.slice(1);
-    return <div className="item-type">{type}</div>;
+    return <div className="item-type">{item.type}</div>;
   };
 
-  // Bestimmt die CSS-Klasse basierend auf dem Inhaltstyp.
   const tooltipClass = item ? 'item-tooltip' : 'text-tooltip';
 
   return ReactDOM.createPortal(
-    // Die Klasse wird hier dynamisch gesetzt.
     <div ref={tooltipRef} className={`tooltip ${tooltipClass}`}>
-      {/* Wenn ein "item"-Objekt vorhanden ist, render die Item-Details */}
       {item && (
         <>
           <h4 className={`item-name rarity-${item.rarity || 'common'}`}>{item.name}</h4>
@@ -53,14 +59,15 @@ const Tooltip = ({ item, text, parentRef }) => {
           <div className="stats-grid">
             {item.damage && <><div>Schaden:</div><div>{item.damage}</div></>}
             {item.ac && <><div>Rüstungsklasse:</div><div>{item.ac}</div></>}
+            {item.weight && <><div>Gewicht:</div><div>{item.weight}</div></>}
+            {item.value && <><div>Wert:</div><div>{item.value}</div></>}
           </div>
           {item.properties && <div className="item-properties">{item.properties.join(' • ')}</div>}
           {item.description && <p className="item-description">{item.description}</p>}
           {item.bonus && <div className="item-bonus">{item.bonus}</div>}
         </>
       )}
-      {/* Wenn nur "text" vorhanden ist, render ein einfaches Paragraphen-Element */}
-      {text && <p>{text}</p>}
+      {text && !item && <div>{text}</div>}
     </div>,
     document.body
   );
