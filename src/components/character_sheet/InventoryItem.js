@@ -1,17 +1,17 @@
 // src/components/character_sheet/InventoryItem.js
 
-import React, { useState, useRef } from 'react';
-import { useDrag } from 'react-dnd';
-import { ItemTypes } from '../../dnd/itemTypes';
-import Tooltip from '../tooltip/Tooltip';
+import React, { useState, useRef } from "react";
+import { useDrag } from "react-dnd";
+import { ItemTypes } from "../../dnd/itemTypes";
+import Tooltip from "../tooltip/Tooltip";
 
 const getIcon = (iconName) => {
-    try {
-        return require(`../../assets/images/icons/${iconName}`);
-    } catch (err) {
-        console.warn(`Icon not found: ${iconName}`);
-        return 'https://placeholder.pics/svg/40x40';
-    }
+  try {
+    return require(`../../assets/images/icons/${iconName}`);
+  } catch (err) {
+    console.warn(`Icon not found: ${iconName}`);
+    return "https://placeholder.pics/svg/40x40";
+  }
 };
 
 // Die Prop 'equippedIn' wird hier nicht mehr benötigt
@@ -45,13 +45,15 @@ const InventoryItem = ({ item }) => {
       className="inventory-slot"
       style={{
         opacity: isDragging ? 0.5 : 1,
-        cursor: 'grab',
+        cursor: "grab",
       }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
       <img src={getIcon(item.icon)} alt={item.name} className="item-icon" />
-      {showTooltip && !isDragging && <Tooltip item={item} parentRef={itemRef} />}
+      {showTooltip && itemRef.current && (
+        <Tooltip item={item} parentRef={itemRef} />
+      )}
     </div>
   );
 };
