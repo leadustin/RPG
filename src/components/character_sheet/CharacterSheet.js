@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useDrop } from "react-dnd";
 import "./CharacterSheet.css";
 import Tooltip from "../tooltip/Tooltip";
+import SpellbookTab from './SpellbookTab';
 import {
   getAbilityModifier,
   calculateInitialHP,
