@@ -1,4 +1,3 @@
-
 /**
  * Berechnet den Modifikator für einen Attributswert.
  */
@@ -18,12 +17,29 @@ export const getProficiencyBonus = (level) => {
 
 /**
  * Holt den vom Spieler zugewiesenen Attributsbonus für ein Attribut.
- * Dies ist die korrigierte Funktion, die auf die neuen Zuweisungen zugreift.
+ * Unterstützt sowohl fixe als auch floating Boni.
  */
 export const getRacialAbilityBonus = (character, abilityKey) => {
-  // Greift auf die Zuweisungen im Charakterobjekt zu, nicht mehr auf die races.json
-  if (!character?.ability_bonus_assignments) return 0;
-  return character.ability_bonus_assignments[abilityKey] || 0;
+  if (!character) return 0;
+  
+  let totalBonus = 0;
+  
+  // Fixe Boni (z.B. bei Menschen)
+  if (character.ability_bonus_assignments && character.ability_bonus_assignments[abilityKey]) {
+    totalBonus += character.ability_bonus_assignments[abilityKey];
+  }
+  
+  // Floating Boni (z.B. bei Halbelfen)
+  if (character.race?.ability_bonuses?.floating && character.floating_bonus_assignments) {
+    const floatingBonuses = character.race.ability_bonuses.floating;
+    const bonusIndex = character.floating_bonus_assignments[abilityKey];
+    
+    if (bonusIndex !== undefined && floatingBonuses[bonusIndex] !== undefined) {
+      totalBonus += floatingBonuses[bonusIndex];
+    }
+  }
+  
+  return totalBonus;
 };
 
 /**

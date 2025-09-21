@@ -24,6 +24,7 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     abilities: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
     ability_bonus_assignments: allRaceData.find((r) => r.key === "human")
       .ability_bonuses.fixed,
+    floating_bonus_assignments: {}, // NEU: Für floating Boni wie bei Halbelfen
     skill_proficiencies_choice: [],
   });
 
