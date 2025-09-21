@@ -1,5 +1,5 @@
 .creation-screen-container {
-  height: 100vh;
+  height: 95vh;
   width: auto;
   display: grid;
   grid-template-columns: 200px 1fr 400px; /* Left | Center | Right */

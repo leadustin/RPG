@@ -21,7 +21,7 @@
 
 /* Untere Sektion: Feste Höhe */
 .bottom-section {
-    height: 288px; /* Feste Höhe für Log und Aktionen */
+    height: 250px; /* Feste Höhe für Log und Aktionen */
     flex-shrink: 0; /* Verhindert, dass die Sektion schrumpft */
     display: grid;
     grid-template-columns: 350px 1fr; /* Breite für Log und Rest für Aktionen */
