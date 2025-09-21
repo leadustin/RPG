@@ -124,7 +124,7 @@ const CharacterSheet = ({
             className={`character-portrait ${activePortrait === character.name ? "active" : ""}`}
             onClick={() => setActivePortrait(character.name)}
           >
-            <img src={character.portrait || "https://i.imgur.com/gplS3xv.png"} alt={`${character.name} Portrait`} />
+            <img src={character.portrait || "https://placeholder.pics/svg/120x120.svg"} alt={`${character.name} Portrait`} />
             <div className="hp-bar">
               <div className="hp-current" style={{ width: `${(currentHp / maxHp) * 100}%` }}></div>
               <span>{currentHp} / {maxHp}</span>

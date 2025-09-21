@@ -100,13 +100,13 @@ header {
 }
 
 .hp-bar {
-    background-color: #555;
+    background-color: #970b0b;
     border-radius: 3px;
     height: 18px;
     position: relative;
     font-size: 12px;
     text-align: center;
-    margin-top: 5px;
+    margin-top: -5px;
 }
 
 .hp-bar .hp-current {
