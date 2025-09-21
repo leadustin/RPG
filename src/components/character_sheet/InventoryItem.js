@@ -14,7 +14,6 @@ const getIcon = (iconName) => {
   }
 };
 
-// Die Prop 'equippedIn' wird hier nicht mehr benötigt
 const InventoryItem = ({ item }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const itemRef = useRef(null);
@@ -22,14 +21,12 @@ const InventoryItem = ({ item }) => {
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes[itemType] || ItemTypes.ITEM,
-    // Da dieses Item aus dem Inventar kommt, hat es keinen 'equippedIn' Status
     item: { ...item },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }));
 
-  // Die kombinierte Ref-Funktion bleibt für den Tooltip erhalten
   const combinedRef = (el) => {
     drag(el);
     itemRef.current = el;
@@ -51,7 +48,8 @@ const InventoryItem = ({ item }) => {
       onMouseLeave={() => setShowTooltip(false)}
     >
       <img src={getIcon(item.icon)} alt={item.name} className="item-icon" />
-      {showTooltip && itemRef.current && (
+      {/* Tooltip nur anzeigen, wenn showTooltip true ist UND das Item nicht gezogen wird */}
+      {showTooltip && !isDragging && itemRef.current && (
         <Tooltip item={item} parentRef={itemRef} />
       )}
     </div>
