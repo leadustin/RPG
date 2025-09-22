@@ -1,23 +1,25 @@
 /* src/components/worldmap/PlayerCharacter.css */
 .player-character {
   position: absolute;
+  /* top: 0 und left: 0 als Ausgangspunkt, bevor JS die Position setzt */
+  top: 0;
+  left: 0;
   width: 16px;
   height: 16px;
   border: 2px solid #ecf0f1;
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(52, 152, 219, 0.7);
 
-  /* Dieser Trick zentriert die Figur genau auf der Mausposition */
-  transform: translate(-50%, -50%);
-
-  /* Dies sorgt für eine weiche Bewegung zum Zielpunkt */
-  transition: top 0.5s linear, left 0.5s linear;
+  /* Die Transition wurde bereits entfernt, das ist gut so */
 
   /* Stellt sicher, dass die Figur über der Karte liegt */
   z-index: 10;
   
   /* Stellt sicher, dass das Bild innerhalb des runden Rahmens bleibt */
-  overflow: hidden; 
+  overflow: hidden;
+
+  /* Die Transformation wird jetzt direkt per JavaScript gesetzt, 
+     um eine perfekte Synchronisation zu gewährleisten */
 }
 
 .player-character img {

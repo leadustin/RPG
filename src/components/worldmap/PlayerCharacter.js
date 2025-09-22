@@ -1,19 +1,13 @@
 // src/components/worldmap/PlayerCharacter.js
-import React from 'react';
+import React, { forwardRef } from 'react';
 import './PlayerCharacter.css';
 
-const PlayerCharacter = ({ position }) => {
+const PlayerCharacter = forwardRef((props, ref) => {
   return (
-    <div
-      className="player-character"
-      style={{
-        top: `${position.y}px`,
-        left: `${position.x}px`,
-      }}
-    >
+    <div ref={ref} className="player-character">
       <img src="https://placeholder.pics/svg/16x16.svg" alt="Player Character" />
     </div>
   );
-};
+});
 
 export default PlayerCharacter;
