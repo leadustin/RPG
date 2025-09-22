@@ -55,7 +55,7 @@
   },
   {
     "key": "entertainer",
-    "name": "Unterhaltungskünstler",
+    "name": "Unterhalter",
     "description": "Du lebst, um das Publikum zu begeistern. Du weißt, wie man die Menge unterhält, sie zum Lachen oder Weinen bringt und ihre Stimmungen beeinflusst.",
     "skill_proficiencies": ["Akrobatik", "Auftreten"],
     "tool_proficiencies": ["Verkleidungssatz", "Ein Musikinstrument deiner Wahl"],
