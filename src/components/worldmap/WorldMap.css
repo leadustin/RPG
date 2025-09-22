@@ -3,8 +3,8 @@
     position: relative;
     overflow: hidden;
     cursor: grab;
-    width: 1280px;
-    height: 768px;
+    width: 1240px;
+    height: 650px;
 }
 
 .world-map-viewport:active {
@@ -14,19 +14,19 @@
 .world-map-viewport canvas {
     /* Das Canvas soll sich an den Container anpassen, ohne sich zu verzerren */
     display: block;
-    max-width: 1280px;
-    max-height: 768px;
-    width: 1280px;
-    height: 768px;
+    max-width: 1240px;
+    max-height: 650px;
+    width: 1240px;
+    height: 650px;
     object-fit: contain; /* WICHTIG: Behält das Seitenverhältnis bei */
     margin: auto; /* Zentriert das Canvas, falls es Ränder gibt */
 }
 
 .mouse-coords {
     position: absolute;
-    bottom: 165px;
+    bottom: 20px;
     right: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.4);
     color: white;
     padding: 5px 10px;
     border-radius: 5px;

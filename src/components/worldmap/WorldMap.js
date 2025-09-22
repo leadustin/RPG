@@ -8,15 +8,16 @@ const MAP_HEIGHT_TILES = 24;
 const MAP_WIDTH_PX = MAP_WIDTH_TILES * TILE_SIZE;
 const MAP_HEIGHT_PX = MAP_HEIGHT_TILES * TILE_SIZE;
 
-const CANVAS_WIDTH_TILES = 10; // 1280 / 128 = 10
-const CANVAS_HEIGHT_TILES = 6; // 720 / 128 = 5.625
-const CANVAS_WIDTH_PX = CANVAS_WIDTH_TILES * TILE_SIZE; // 1280px
-const CANVAS_HEIGHT_PX = CANVAS_HEIGHT_TILES * TILE_SIZE; // 640px
+const CANVAS_WIDTH_PX = 1280;
+const CANVAS_HEIGHT_PX = 640;
 
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 2.0;
 
-// --- Bild-Import via require.context ---
+// --- Hilfsfunktion: Wert in einem Bereich begrenzen ---
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
+// --- Bild-Import ---
 function importAll(r) {
   let images = {};
   r.keys().forEach((item) => {
@@ -28,7 +29,7 @@ const mapImageSources = importAll(
   require.context("../../assets/images/map", false, /\.webp$/)
 );
 
-// --- Hilfsfunktion zum Laden der Bilder ---
+// --- Lade-Funktion für Bilder ---
 const imageCache = {};
 const loadMapImages = () => {
   const imagePromises = [];
@@ -36,7 +37,6 @@ const loadMapImages = () => {
     for (let x = 1; x <= MAP_WIDTH_TILES; x++) {
       const imageName = `map_${y}x${x}`;
       const imageSrc = mapImageSources[imageName];
-
       if (imageSrc) {
         const promise = new Promise((resolve, reject) => {
           const img = new Image();
@@ -57,28 +57,20 @@ const loadMapImages = () => {
 export const WorldMap = ({ character }) => {
   const canvasRef = useRef(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
-
   const [viewTransform, setViewTransform] = useState({
     scale: 1,
     offsetX: 0,
     offsetY: 0,
   });
-
   const [isPanning, setIsPanning] = useState(false);
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    loadMapImages()
-      .then(() => {
-        setImagesLoaded(true);
-        console.log("Alle 768 Kartenkacheln erfolgreich geladen.");
-      })
-      .catch((error) => {
-        console.error("Fehler beim Laden der Kartenkacheln:", error);
-      });
+    loadMapImages().then(() => setImagesLoaded(true));
   }, []);
 
+  // --- ZEICHENFUNKTION ---
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !imagesLoaded) return;
@@ -98,19 +90,15 @@ export const WorldMap = ({ character }) => {
       width: canvas.width / viewTransform.scale,
       height: canvas.height / viewTransform.scale,
     };
+    
+    // Kacheln berechnen (mit Puffer, um Clipping-Fehler zu vermeiden)
     const startCol = Math.max(0, Math.floor(view.x / TILE_SIZE));
-    const endCol = Math.min(
-      MAP_WIDTH_TILES,
-      Math.ceil((view.x + view.width) / TILE_SIZE)
-    );
+    const endCol = Math.min(MAP_WIDTH_TILES, Math.floor((view.x + view.width) / TILE_SIZE) + 1);
     const startRow = Math.max(0, Math.floor(view.y / TILE_SIZE));
-    const endRow = Math.min(
-      MAP_HEIGHT_TILES,
-      Math.ceil((view.y + view.height) / TILE_SIZE)
-    );
+    const endRow = Math.min(MAP_HEIGHT_TILES, Math.floor((view.y + view.height) / TILE_SIZE) + 1);
 
+    // Kacheln zeichnen
     const OVERLAP = 0.5;
-
     for (let row = startRow; row < endRow; row++) {
       for (let col = startCol; col < endCol; col++) {
         const imageName = `map_${row + 1}x${col + 1}`;
@@ -127,21 +115,14 @@ export const WorldMap = ({ character }) => {
       }
     }
 
+    // Spieler zeichnen
     if (character && character.position) {
       const playerX = character.position.x * TILE_SIZE;
       const playerY = character.position.y * TILE_SIZE;
-
       ctx.fillStyle = "rgba(255, 0, 0, 0.7)";
       ctx.beginPath();
-      ctx.arc(
-        playerX + TILE_SIZE / 2,
-        playerY + TILE_SIZE / 2,
-        TILE_SIZE / 3,
-        0,
-        2 * Math.PI
-      );
+      ctx.arc(playerX + TILE_SIZE / 2, playerY + TILE_SIZE / 2, TILE_SIZE / 3, 0, 2 * Math.PI);
       ctx.fill();
-
       ctx.fillStyle = "white";
       ctx.font = "bold 32px Arial";
       ctx.textAlign = "center";
@@ -157,38 +138,33 @@ export const WorldMap = ({ character }) => {
     return () => cancelAnimationFrame(animationFrameId);
   }, [draw]);
 
+  // --- EVENT HANDLER (STABILISIERT) ---
   const handleWheel = (e) => {
     e.preventDefault();
-    const scaleAmount = -e.deltaY > 0 ? 1.1 : 0.9;
-    const newScale = Math.max(
-      MIN_ZOOM,
-      Math.min(viewTransform.scale * scaleAmount, MAX_ZOOM)
-    );
+    const rect = canvasRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-    const canvasBounds = canvasRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - canvasBounds.left;
-    const mouseY = e.clientY - canvasBounds.top;
+    setViewTransform(prev => {
+      const scaleAmount = -e.deltaY > 0 ? 1.1 : 0.9;
+      const newScale = clamp(prev.scale * scaleAmount, MIN_ZOOM, MAX_ZOOM);
 
-    let newOffsetX =
-      mouseX -
-      (mouseX - viewTransform.offsetX) * (newScale / viewTransform.scale);
-    let newOffsetY =
-      mouseY -
-      (mouseY - viewTransform.offsetY) * (newScale / viewTransform.scale);
+      // Weltkoordinaten des Mauszeigers vor dem Zoom
+      const worldX = (mouseX - prev.offsetX) / prev.scale;
+      const worldY = (mouseY - prev.offsetY) / prev.scale;
 
-    newOffsetX = Math.min(
-      0,
-      Math.max(newOffsetX, CANVAS_WIDTH_PX - MAP_WIDTH_PX * newScale)
-    );
-    newOffsetY = Math.min(
-      0,
-      Math.max(newOffsetY, CANVAS_HEIGHT_PX - MAP_HEIGHT_PX * newScale)
-    );
+      // Neuer Offset, damit der Weltpunkt unter der Maus bleibt
+      const newOffsetX = mouseX - worldX * newScale;
+      const newOffsetY = mouseY - worldY * newScale;
 
-    setViewTransform({
-      scale: newScale,
-      offsetX: newOffsetX,
-      offsetY: newOffsetY,
+      const minOffsetX = CANVAS_WIDTH_PX - MAP_WIDTH_PX * newScale;
+      const minOffsetY = CANVAS_HEIGHT_PX - MAP_HEIGHT_PX * newScale;
+
+      return {
+        scale: newScale,
+        offsetX: clamp(newOffsetX, minOffsetX, 0),
+        offsetY: clamp(newOffsetY, minOffsetY, 0),
+      };
     });
   };
 
@@ -202,56 +178,37 @@ export const WorldMap = ({ character }) => {
   };
 
   const handleMouseMove = (e) => {
-    const canvasBounds = canvasRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - canvasBounds.left;
-    const mouseY = e.clientY - canvasBounds.top;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-    const worldX = Math.floor(
-      (mouseX - viewTransform.offsetX) / viewTransform.scale
-    );
-    const worldY = Math.floor(
-      (mouseY - viewTransform.offsetY) / viewTransform.scale
-    );
-
+    // Welt-Koordinaten für die Anzeige berechnen
+    const worldX = Math.floor((mouseX - viewTransform.offsetX) / viewTransform.scale);
+    const worldY = Math.floor((mouseY - viewTransform.offsetY) / viewTransform.scale);
     setMouseCoords({ x: worldX, y: worldY });
 
-    if (!isPanning) return;
-    const dx = e.clientX - lastMousePos.x;
-    const dy = e.clientY - lastMousePos.y;
-    setLastMousePos({ x: e.clientX, y: e.clientY });
+    if (isPanning) {
+      const dx = e.clientX - lastMousePos.x;
+      const dy = e.clientY - lastMousePos.y;
+      setLastMousePos({ x: e.clientX, y: e.clientY });
 
-    setViewTransform((prev) => {
-      const newOffsetX = prev.offsetX + dx;
-      const newOffsetY = prev.offsetY + dy;
-      const clampedOffsetX = Math.min(
-        0,
-        Math.max(newOffsetX, CANVAS_WIDTH_PX - MAP_WIDTH_PX * prev.scale)
-      );
-      const clampedOffsetY = Math.min(
-        0,
-        Math.max(newOffsetY, CANVAS_HEIGHT_PX - MAP_HEIGHT_PX * prev.scale)
-      );
-      return { ...prev, offsetX: clampedOffsetX, offsetY: clampedOffsetY };
-    });
+      setViewTransform(prev => {
+        const newOffsetX = prev.offsetX + dx;
+        const newOffsetY = prev.offsetY + dy;
+        
+        const minOffsetX = CANVAS_WIDTH_PX - MAP_WIDTH_PX * prev.scale;
+        const minOffsetY = CANVAS_HEIGHT_PX - MAP_HEIGHT_PX * prev.scale;
+
+        return {
+          ...prev,
+          offsetX: clamp(newOffsetX, minOffsetX, 0),
+          offsetY: clamp(newOffsetY, minOffsetY, 0),
+        };
+      });
+    }
   };
-
-  if (!imagesLoaded) {
-    return (
-      <div
-        className="world-map-viewport"
-        style={{
-          width: CANVAS_WIDTH_PX,
-          height: CANVAS_HEIGHT_PX,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-        }}
-      >
-        Lade Kartenkacheln (768)...
-      </div>
-    );
-  }
+  
+  if (!imagesLoaded) return <div>Lade Kartenkacheln...</div>;
 
   return (
     <div className="world-map-viewport">

@@ -52,9 +52,7 @@ function GameView({ character, onToggleCharacterSheet }) {
           <PartyPortraits party={party} />
         </div>
         <div className="world-map-area">
-          <div className="world-map-aspect-ratio-wrapper">
-            <WorldMap character={character} />
-          </div>
+          <WorldMap character={character} />
         </div>
       </div>
 
