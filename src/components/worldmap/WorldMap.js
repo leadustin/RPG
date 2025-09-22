@@ -8,10 +8,10 @@ const MAP_HEIGHT_TILES = 24;
 const MAP_WIDTH_PX = MAP_WIDTH_TILES * TILE_SIZE;
 const MAP_HEIGHT_PX = MAP_HEIGHT_TILES * TILE_SIZE;
 
-const CANVAS_WIDTH_TILES = 11;
-const CANVAS_HEIGHT_TILES = 5.5; // 720 / 128 = 5.625
-const CANVAS_WIDTH_PX = CANVAS_WIDTH_TILES * TILE_SIZE; // 1408px
-const CANVAS_HEIGHT_PX = CANVAS_HEIGHT_TILES * TILE_SIZE; // 720px
+const CANVAS_WIDTH_TILES = 10; // 1280 / 128 = 10
+const CANVAS_HEIGHT_TILES = 6; // 720 / 128 = 5.625
+const CANVAS_WIDTH_PX = CANVAS_WIDTH_TILES * TILE_SIZE; // 1280px
+const CANVAS_HEIGHT_PX = CANVAS_HEIGHT_TILES * TILE_SIZE; // 640px
 
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 2.0;
@@ -66,6 +66,7 @@ export const WorldMap = ({ character }) => {
 
   const [isPanning, setIsPanning] = useState(false);
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
+  const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     loadMapImages()
@@ -201,6 +202,19 @@ export const WorldMap = ({ character }) => {
   };
 
   const handleMouseMove = (e) => {
+    const canvasBounds = canvasRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - canvasBounds.left;
+    const mouseY = e.clientY - canvasBounds.top;
+
+    const worldX = Math.floor(
+      (mouseX - viewTransform.offsetX) / viewTransform.scale
+    );
+    const worldY = Math.floor(
+      (mouseY - viewTransform.offsetY) / viewTransform.scale
+    );
+
+    setMouseCoords({ x: worldX, y: worldY });
+
     if (!isPanning) return;
     const dx = e.clientX - lastMousePos.x;
     const dy = e.clientY - lastMousePos.y;
@@ -251,6 +265,9 @@ export const WorldMap = ({ character }) => {
         onMouseLeave={handleMouseUp}
         onMouseMove={handleMouseMove}
       />
+      <div className="mouse-coords">
+        X: {mouseCoords.x}, Y: {mouseCoords.y}
+      </div>
     </div>
   );
 };

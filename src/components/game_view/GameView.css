@@ -35,6 +35,8 @@
 
 .world-map-area {
     display: flex;
+    width: 1280px; /* Feste Breite für die Karte */
+    height: 768px; /* Feste Höhe für die Karte */
     justify-content: center;
     align-items: center;
     background-color: #000;
