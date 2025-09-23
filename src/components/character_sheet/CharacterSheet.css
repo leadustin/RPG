@@ -447,3 +447,99 @@ header {
 .spells-content {
   /* Hier kannst du das Layout für deine Zauber definieren, z.B. ein Grid */
 }
+
+/* Schild-Spezifische Styles */
+
+.toggle-btn {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: var(--slot-bg);
+    border: 1px solid var(--border-color);
+    color: var(--primary-text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.toggle-btn:hover {
+    background-color: #3a3a3a;
+}
+
+.toggle-btn:disabled {
+    background-color: #1a1a1a;
+    color: var(--secondary-text-color);
+    cursor: not-allowed;
+    border-color: #333;
+}
+
+.combat-style-indicator {
+    width: 100%;
+    padding: 6px 8px;
+    background-color: rgba(0, 150, 0, 0.2);
+    border: 1px solid rgba(0, 150, 0, 0.4);
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 8px;
+}
+
+.style-active {
+    color: #4caf50;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Slot-Placeholder Styling */
+.slot-placeholder {
+    font-size: 10px;
+    color: var(--secondary-text-color);
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Item Icon Styling */
+.item-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Erweiterte Hover-Effekte für Slots */
+.equipment-slot:hover {
+    border-color: #d4af37;
+}
+
+/* Spezielle Styling für Schilde */
+.equipment-slot.off-hand .item-icon[alt*="schild" i],
+.equipment-slot.off-hand .item-icon[alt*="shield" i] {
+    filter: hue-rotate(30deg);
+}
+
+/* Two-Handed Display Styling */
+.equipment-slot.two-handed-display {
+    background-color: rgba(100, 100, 100, 0.1);
+}
+
+.equipment-slot.two-handed-display:hover {
+    border-color: #aaa;
+    cursor: not-allowed;
+}
+
+.two-handed-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffd700;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ffd700;
+}

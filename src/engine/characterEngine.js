@@ -70,41 +70,34 @@ export const calculateAC = (character) => {
     return 10; // Fallback
   }
 
-  // 1. FINALE ATTRIBUT-MODIFIKATOREN BERECHNEN
+  // 1. Finale Attribut-Modifikatoren berechnen
   const finalDex = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
   const dexModifier = getAbilityModifier(finalDex);
 
-  // 2. AUSGERÜSTETE ITEMS IDENTIFIZIEREN
-  const equippedArmorData = character.equipment?.chest ? allArmor.find(a => a.key === character.equipment.chest) : null;
-  const equippedShieldData = character.equipment?.off_hand ? allArmor.find(a => a.key === character.equipment.off_hand && a.type === 'shield') : null;
+  // 2. Ausgerüstete Items identifizieren
+  const equippedArmorData = character.equipment?.chest ? allArmor.find(a => a.id === character.equipment.chest) : null;
+  const equippedShieldData = character.equipment?.off_hand ? allArmor.find(a => a.id === character.equipment.off_hand && a.type === 'shield') : null;
 
   let baseAC = 10;
-  let armorDexBonus = dexModifier; // Standardmäßig wird der volle DEX-Bonus angewendet
+  let armorDexBonus = dexModifier;
 
-  // 3. AC BASIEREND AUF GERTRAGENER RÜSTUNG BERECHNEN
+  // 3. AC basierend auf getragener Rüstung berechnen
   if (equippedArmorData) {
     baseAC = equippedArmorData.ac;
     
-    switch (equippedArmorData.type) {
-      case 'light_armor':
-        // Leichte Rüstung: Voller DEX-Bonus
-        armorDexBonus = dexModifier;
-        break;
-      case 'medium_armor':
-        // Mittlere Rüstung: DEX-Bonus bis maximal +2
-        armorDexBonus = Math.min(dexModifier, 2);
-        break;
-      case 'heavy_armor':
-        // Schwere Rüstung: Kein DEX-Bonus
-        armorDexBonus = 0;
-        break;
-      default:
-        // Wenn das Item keine Rüstung ist (z.B. Kleidung)
-        armorDexBonus = dexModifier;
-        baseAC = 10;
+    // Annahme: Rüstungstypen müssen in armor.json noch definiert werden (z.B. "light", "medium", "heavy")
+    // Hier fügen wir eine vereinfachte Logik basierend auf dem Namen hinzu, die du an deine Daten anpassen kannst.
+    const armorType = equippedArmorData.name.toLowerCase(); 
+
+    if (armorType.includes('leder') || armorType.includes('wams')) { // Leichte Rüstung
+      armorDexBonus = dexModifier;
+    } else if (armorType.includes('kettenhemd') || armorType.includes('schuppenpanzer') || armorType.includes('brustplatte') || armorType.includes('halbplatten')) { // Mittlere Rüstung
+      armorDexBonus = Math.min(dexModifier, 2);
+    } else if (armorType.includes('ringpanzer') || armorType.includes('kettenpanzer') || armorType.includes('schienenpanzer') || armorType.includes('plattenpanzer')) { // Schwere Rüstung
+      armorDexBonus = 0;
     }
   } 
-  // 4. SONDERFÄLLE FÜR UNGEPANZERTE VERTEIDIGUNG PRÜFEN
+  // 4. Sonderfälle für ungepanzerte Verteidigung prüfen (wenn keine Rüstung getragen wird)
   else { 
     let unarmoredDefenseAC = 0;
     if (character.class.key === 'barbarian') {
@@ -118,11 +111,12 @@ export const calculateAC = (character) => {
     }
     
     // Wähle den HÖHEREN Wert zwischen normaler AC und der Spezialfähigkeit
-    return Math.max(10 + dexModifier, unarmoredDefenseAC) + (equippedShieldData ? 2 : 0);
+    const shieldBonus = equippedShieldData ? equippedShieldData.ac : 0;
+    return Math.max(10 + dexModifier, unarmoredDefenseAC) + shieldBonus;
   }
 
-  // 5. FINALE BERECHNUNG: Basis-AC + Rüstungs-DEX-Bonus + Schild
-  const shieldBonus = equippedShieldData ? 2 : 0;
+  // 5. Finale Berechnung: Basis-AC + Rüstungs-DEX-Bonus + Schild
+  const shieldBonus = equippedShieldData ? equippedShieldData.ac : 0;
   return baseAC + armorDexBonus + shieldBonus;
 };
 
