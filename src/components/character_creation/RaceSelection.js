@@ -7,36 +7,77 @@ import allRaceData from '../../data/races.json';
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 export const RaceSelection = ({ character, updateCharacter }) => {
-  const [assignments, setAssignments] = useState(character.ability_bonus_assignments);
+  const [assignments, setAssignments] = useState({});
   const selectedRace = character.race;
   const floatingBonuses = selectedRace.ability_bonuses.floating || [];
 
   useEffect(() => {
+    // Bei Rassenwechsel die Zuweisungen zurücksetzen
     let initialAssignments = {};
+    
+    // Für fixe Boni verwenden wir die Attribut-Keys direkt
     if (selectedRace.ability_bonuses.fixed) {
-      initialAssignments = selectedRace.ability_bonuses.fixed;
+      // Kopiere die fixen Boni direkt
+      Object.entries(selectedRace.ability_bonuses.fixed).forEach(([ability, value]) => {
+        initialAssignments[ability] = value;
+      });
     }
+    
     setAssignments(initialAssignments);
-    updateCharacter({ race: selectedRace, ability_bonus_assignments: initialAssignments, subrace: null, ancestry: null });
+    updateCharacter({ 
+      race: selectedRace, 
+      ability_bonus_assignments: initialAssignments, 
+      floating_bonus_assignments: {}, // Neue Struktur für floating Boni
+      subrace: null, 
+      ancestry: null 
+    });
   }, [selectedRace]);
 
-  const updateCentralState = (newAssignments) => {
-    updateCharacter({ ability_bonus_assignments: newAssignments });
+  const updateCentralState = (newAssignments, floatingAssignments = {}) => {
+    updateCharacter({ 
+      ability_bonus_assignments: newAssignments,
+      floating_bonus_assignments: floatingAssignments 
+    });
   };
 
-  const handleAssignBonus = (ability, bonus) => {
-    const currentAssignments = { ...assignments };
-    const oldAbilityForBonus = Object.keys(currentAssignments).find(key => currentAssignments[key] === bonus);
-    if (oldAbilityForBonus) {
-      delete currentAssignments[oldAbilityForBonus];
+  const handleAssignBonus = (ability, bonusIndex) => {
+    const newAssignments = { ...assignments };
+    const newFloatingAssignments = { ...character.floating_bonus_assignments } || {};
+    
+    // Für floating Boni verwenden wir eine separate Struktur
+    if (floatingBonuses.length > 0) {
+      // Prüfe ob dieser Bonus-Index bereits diesem Attribut zugewiesen ist
+      if (newFloatingAssignments[ability] === bonusIndex) {
+        // Wenn ja, entferne die Zuweisung
+        delete newFloatingAssignments[ability];
+      } else {
+        // Prüfe ob dieser spezifische Bonus-Index bereits einem anderen Attribut zugewiesen ist
+        const existingAbility = Object.keys(newFloatingAssignments).find(
+          key => newFloatingAssignments[key] === bonusIndex
+        );
+        if (existingAbility) {
+          delete newFloatingAssignments[existingAbility];
+        }
+        // Weise den Bonus dem neuen Attribut zu
+        newFloatingAssignments[ability] = bonusIndex;
+      }
+      
+      // Behalte die fixen Boni bei
+      const combinedAssignments = { ...selectedRace.ability_bonuses.fixed };
+      
+      setAssignments({ ...combinedAssignments, ...newFloatingAssignments });
+      updateCentralState(combinedAssignments, newFloatingAssignments);
     }
-    if (currentAssignments[ability] === bonus) {
-        delete currentAssignments[ability];
-    } else {
-        currentAssignments[ability] = bonus;
-    }
-    setAssignments(currentAssignments);
-    updateCentralState(currentAssignments);
+  };
+  
+  // Helper-Funktion um zu prüfen, ob ein Bonus-Index zugewiesen ist
+  const isBonusAssigned = (ability, bonusIndex) => {
+    return character.floating_bonus_assignments?.[ability] === bonusIndex;
+  };
+  
+  // Helper-Funktion um zu prüfen, ob ein Bonus-Index bereits verwendet wird
+  const isBonusUsed = (bonusIndex) => {
+    return Object.values(character.floating_bonus_assignments || {}).includes(bonusIndex);
   };
   
   return (
@@ -54,9 +95,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
       </div>
 
       <div className="race-details">
-        {/* ====================================================== */}
-        {/* NEUE FELDER FÜR NAME UND GESCHLECHT                   */}
-        {/* ====================================================== */}
+        {/* Name und Geschlecht Felder */}
         <div className="character-identity">
             <div className="input-group">
                 <label htmlFor="charName">Name</label>
@@ -86,7 +125,6 @@ export const RaceSelection = ({ character, updateCharacter }) => {
             </div>
         </div>
         <div className="details-divider"></div>
-        {/* ====================================================== */}
 
         <h2>{selectedRace.name}</h2>
         <div className="details-divider"></div>
@@ -102,10 +140,10 @@ export const RaceSelection = ({ character, updateCharacter }) => {
                 <div className="bonus-buttons">
                   {floatingBonuses.map((bonusValue, index) => (
                     <button
-                      key={index}
-                      onClick={() => handleAssignBonus(abiKey, bonusValue)}
-                      className={assignments[abiKey] === bonusValue ? 'selected' : ''}
-                      disabled={assignments[abiKey] && assignments[abiKey] !== bonusValue}
+                      key={`${abiKey}-${index}`}
+                      onClick={() => handleAssignBonus(abiKey, index)}
+                      className={isBonusAssigned(abiKey, index) ? 'selected' : ''}
+                      disabled={isBonusUsed(index) && !isBonusAssigned(abiKey, index)}
                     >
                       +{bonusValue}
                     </button>

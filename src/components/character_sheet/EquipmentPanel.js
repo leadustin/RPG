@@ -15,7 +15,7 @@ const EquipmentPanel = ({ character, onMoveItem }) => {
       {/* Alle Slots erhalten jetzt `onDropItem={onMoveItem}` */}
       <div className="slot-head">        <EquipmentSlot slotName="Head" item={equipment.head} onDropItem={onMoveItem} slotType="head" /> </div>
       <div className="slot-amulet">      <EquipmentSlot slotName="Amulet" item={equipment.amulet} onDropItem={onMoveItem} slotType="amulet" /> </div>
-      <div className="slot-chest">       <EquipmentSlot slotName="Chest" item={equipment.chest} onDropItem={onMoveItem} slotType="chest" /> </div>
+      <div className="slot-armor">       <EquipmentSlot slotName="Armor" item={equipment.armor} onDropItem={onMoveItem} slotType="armor" /> </div>
       <div className="slot-main-hand">   <EquipmentSlot slotName="Main Hand" item={equipment.mainHand} onDropItem={onMoveItem} slotType="mainHand" /> </div>
       <div className="slot-off-hand">    <EquipmentSlot slotName="Off Hand" item={equipment.offHand} onDropItem={onMoveItem} slotType="offHand" /> </div>
       <div className="slot-hands">       <EquipmentSlot slotName="Hands" item={equipment.hands} onDropItem={onMoveItem} slotType="hands" /> </div>

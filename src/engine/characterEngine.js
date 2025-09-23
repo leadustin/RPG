@@ -1,4 +1,4 @@
-
+import allArmor from '../data/items/armor.json';
 /**
  * Berechnet den Modifikator für einen Attributswert.
  */
@@ -18,12 +18,29 @@ export const getProficiencyBonus = (level) => {
 
 /**
  * Holt den vom Spieler zugewiesenen Attributsbonus für ein Attribut.
- * Dies ist die korrigierte Funktion, die auf die neuen Zuweisungen zugreift.
+ * Unterstützt sowohl fixe als auch floating Boni.
  */
 export const getRacialAbilityBonus = (character, abilityKey) => {
-  // Greift auf die Zuweisungen im Charakterobjekt zu, nicht mehr auf die races.json
-  if (!character?.ability_bonus_assignments) return 0;
-  return character.ability_bonus_assignments[abilityKey] || 0;
+  if (!character) return 0;
+  
+  let totalBonus = 0;
+  
+  // Fixe Boni (z.B. bei Menschen)
+  if (character.ability_bonus_assignments && character.ability_bonus_assignments[abilityKey]) {
+    totalBonus += character.ability_bonus_assignments[abilityKey];
+  }
+  
+  // Floating Boni (z.B. bei Halbelfen)
+  if (character.race?.ability_bonuses?.floating && character.floating_bonus_assignments) {
+    const floatingBonuses = character.race.ability_bonuses.floating;
+    const bonusIndex = character.floating_bonus_assignments[abilityKey];
+    
+    if (bonusIndex !== undefined && floatingBonuses[bonusIndex] !== undefined) {
+      totalBonus += floatingBonuses[bonusIndex];
+    }
+  }
+  
+  return totalBonus;
 };
 
 /**
@@ -43,26 +60,75 @@ export const calculateInitialHP = (character) => {
 };
 
 /**
- * Berechnet die Rüstungsklasse (AC).
+ * Berechnet die Rüstungsklasse (AC) nach 5e-Regeln.
+ * Berücksichtigt angelegte Rüstung, Schilde und Klassen-Features.
+ * @param {object} character - Das zentrale Charakter-Objekt.
+ * @returns {number} - Die finale Rüstungsklasse.
  */
 export const calculateAC = (character) => {
-    if (!character.class || !character.race) return 10;
-    
-    const finalDex = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
-    const dexModifier = getAbilityModifier(finalDex);
-    
-    if (character.class.key === 'barbarian') {
-        const finalCon = character.abilities.con + getRacialAbilityBonus(character, 'con');
-        const conModifier = getAbilityModifier(finalCon);
-        return 10 + dexModifier + conModifier;
-    }
-    if (character.class.key === 'monk') {
-        const finalWis = character.abilities.wis + getRacialAbilityBonus(character, 'wis');
-        const wisModifier = getAbilityModifier(finalWis);
-        return 10 + dexModifier + wisModifier;
-    }
+  if (!character || !character.abilities || !character.class) {
+    return 10; // Fallback
+  }
 
-    return 10 + dexModifier;
+  // 1. Finale Attribut-Modifikatoren berechnen
+  const finalDex = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
+  const dexModifier = getAbilityModifier(finalDex);
+
+  // 2. Ausgerüstete Items
+  const equippedArmorData = character.equipment?.armor;
+  
+  // Schild-Erkennung
+  let equippedShieldData = null;
+  let shieldBonus = 0;
+
+  if (character.equipment?.['off-hand'] && character.equipment['off-hand'].type === 'shield') {
+    equippedShieldData = character.equipment['off-hand'];
+    shieldBonus = equippedShieldData.ac || 2;
+  } else if (character.equipment?.['off-hand'] && character.equipment['off-hand'].slot === 'off-hand') {
+    equippedShieldData = character.equipment['off-hand'];
+    shieldBonus = equippedShieldData.ac || 2;
+  } else if (character.equipment?.shield) {
+    equippedShieldData = character.equipment.shield;
+    shieldBonus = equippedShieldData.ac || 2;
+  } else if (character.equipment?.['off-hand'] && character.equipment['off-hand'].ac > 0) {
+    equippedShieldData = character.equipment['off-hand'];
+    shieldBonus = equippedShieldData.ac;
+  }
+
+  // 3. Fall 1: Charakter trägt eine Rüstung
+  if (equippedArmorData) {
+    let baseAC = equippedArmorData.ac;
+    let armorDexBonus = 0;
+
+    const armorName = equippedArmorData.name.toLowerCase();
+    
+    if (armorName.includes('leder') || armorName.includes('wams') || armorName.includes('elfen-kettenrüstung')) {
+      armorDexBonus = dexModifier;
+    } else if (armorName.includes('kettenhemd') || armorName.includes('schuppenpanzer') || armorName.includes('brustplatte') || armorName.includes('halbplatten')) {
+      armorDexBonus = Math.min(dexModifier, 2);
+    } else {
+      armorDexBonus = 0;
+    }
+    
+    return baseAC + armorDexBonus + shieldBonus;
+  } 
+  
+  // 4. Fall 2: Charakter trägt KEINE Rüstung
+  else { 
+    let unarmoredAC = 10 + dexModifier;
+
+    if (character.class.key === 'barbarian') {
+      const finalCon = character.abilities.con + getRacialAbilityBonus(character, 'con');
+      const conModifier = getAbilityModifier(finalCon);
+      unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + conModifier);
+    } else if (character.class.key === 'monk' && !equippedShieldData) {
+      const finalWis = character.abilities.wis + getRacialAbilityBonus(character, 'wis');
+      const wisModifier = getAbilityModifier(finalWis);
+      unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + wisModifier);
+    }
+    
+    return unarmoredAC + shieldBonus;
+  }
 };
 
 // Eine Zuordnung aller Fertigkeiten zu ihren Hauptattributen
@@ -193,6 +259,13 @@ export const ABILITY_DESCRIPTIONS_DE = {
   wis: "Weisheit: Misst die Wahrnehmung, Intuition und Willenskraft. Wichtig für göttliche Magie, Wahrnehmung und Einblick.",
   cha: "Charisma: Misst die Überzeugungskraft, Persönlichkeit und Führungsstärke. Wichtig für soziale Interaktion und einige Magieformen."
 };
+
+// Deutsche Beschreibungen für die Kampfwerte
+export const COMBAT_STATS_DESCRIPTIONS_DE = {
+  ac: "Gibt an, wie schwer es ist, dich im Kampf zu treffen. Basiert auf 10 + deinem Geschicklichkeits-Modifikator. Rüstung und Schilde können diesen Wert erhöhen.",
+  hp: "Deine Lebensenergie. Erreicht sie 0, bist du kampfunfähig. Basiert auf dem Trefferwürfel deiner Klasse und deinem Konstitutions-Modifikator.",
+  proficiency: "Ein Bonus, den du auf alle Würfe addierst, in denen du geübt bist (Angriffe, Fertigkeiten, etc.). Er steigt mit deinem Charakterlevel an."
+  };
 
 // Deutsche Beschreibungen für die Fertigkeiten
 export const SKILL_DESCRIPTIONS_DE = {

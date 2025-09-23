@@ -30,9 +30,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     }
   };
 
-  // ### DIESE LOKALE, FEHLERHAFTE FUNKTION WURDE ENTFERNT ###
-  // const getRacialBonus = (ability) => { ... };
-
   return (
     <div className="ability-selection-container">
       <div className="points-display">

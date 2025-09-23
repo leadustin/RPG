@@ -1,11 +1,13 @@
-import React, { useRef, useState } from 'react'; // useState hinzufügen
+// src/components/character_sheet/DraggableItem.js
+
+import React, { useRef, useState } from 'react';
 import { useDrag } from 'react-dnd';
 import './DraggableItem.css';
-import Tooltip from '../tooltip/Tooltip'; // Der Pfad sollte bereits stimmen
+import Tooltip from '../tooltip/Tooltip';
 
 const DraggableItem = ({ item, index }) => {
   const dragRef = useRef(null);
-  const [isHovered, setIsHovered] = useState(false); // Hover-Zustand hinzufügen
+  const [isHovered, setIsHovered] = useState(false);
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: item.type,
@@ -22,13 +24,13 @@ const DraggableItem = ({ item, index }) => {
       <div
         ref={dragRef}
         className={`draggable-item ${isDragging ? 'dragging' : ''}`}
-        onMouseEnter={() => setIsHovered(true)} // Maus-Events hinzufügen
+        onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <img src={item.icon || 'https://placeholder.pics/svg/48'} alt={item.name} />
       </div>
-      {/* Tooltip nur anzeigen, wenn isHovered true ist */}
-      {isHovered && <Tooltip item={item} parentRef={dragRef} />}
+      {/* Tooltip nur anzeigen, wenn isHovered true ist UND das Item nicht gezogen wird */}
+      {isHovered && !isDragging && <Tooltip item={item} parentRef={dragRef} />}
     </>
   );
 };
