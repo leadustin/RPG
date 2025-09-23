@@ -181,8 +181,8 @@ const CharacterSheet = ({
                   onEquipItem={handleEquipItem}
                 />
                 <EquipmentSlot
-                  slotType="amulet"
-                  currentItem={character.equipment.amulet}
+                  slotType="cloak"
+                  currentItem={character.equipment.cloak}
                   onEquipItem={handleEquipItem}
                 />
                 <EquipmentSlot
@@ -196,23 +196,23 @@ const CharacterSheet = ({
                   onEquipItem={handleEquipItem}
                 />
                 <EquipmentSlot
-                  slotType="cloak"
-                  currentItem={character.equipment.cloak}
-                  onEquipItem={handleEquipItem}
-                />
-                <EquipmentSlot
                   slotType="gloves"
                   currentItem={character.equipment.gloves}
                   onEquipItem={handleEquipItem}
                 />
                 <EquipmentSlot
-                  slotType="belt"
-                  currentItem={character.equipment.belt}
+                  slotType="amulet"
+                  currentItem={character.equipment.amulet}
                   onEquipItem={handleEquipItem}
                 />
                 <EquipmentSlot
                   slotType="boots"
                   currentItem={character.equipment.boots}
+                  onEquipItem={handleEquipItem}
+                />
+                <EquipmentSlot
+                  slotType="belt"
+                  currentItem={character.equipment.belt}
                   onEquipItem={handleEquipItem}
                 />
                 <EquipmentSlot
