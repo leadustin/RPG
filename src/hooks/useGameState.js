@@ -108,6 +108,7 @@ export const useGameState = () => {
       allItems.find((item) => item.id === "longsword"),
       allItems.find((item) => item.id === "greatsword"),
       allItems.find((item) => item.id === "leather-armor"),
+      allItems.find((item) => item.id === "shield"),
       allItems.find((item) => item.id === "healing-potion"),
     ].filter(Boolean);
 

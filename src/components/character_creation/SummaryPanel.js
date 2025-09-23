@@ -14,7 +14,8 @@ import {
   SKILL_MAP,
   SKILL_NAMES_DE,
   ABILITY_DESCRIPTIONS_DE, // Beschreibungen für Attribute importieren
-  SKILL_DESCRIPTIONS_DE   // Beschreibungen für Fertigkeiten importieren
+  SKILL_DESCRIPTIONS_DE,   // Beschreibungen für Fertigkeiten importieren
+  COMBAT_STATS_DESCRIPTIONS_DE // Beschreibungen für Kampfwerte importieren
 } from '../../engine/characterEngine';
 
 // Die Zeile "export const" bleibt unverändert, um den Fehler zu beheben.
@@ -22,8 +23,10 @@ export const SummaryPanel = ({ character }) => {
   // --- Hooks für die Tooltips ---
   const [hoveredStat, setHoveredStat] = useState(null);
   const [hoveredSkill, setHoveredSkill] = useState(null);
+  const [hoveredCombatStat, setHoveredCombatStat] = useState(null); // Neu für Kampfwerte
   const abilityRefs = useRef({});
   const skillRefs = useRef({});
+  const combatStatRefs = useRef({}); // Neu für Kampfwerte
   // -----------------------------
 
   if (!character) {
@@ -35,6 +38,11 @@ export const SummaryPanel = ({ character }) => {
   const hp = calculateInitialHP(character);
   const ac = calculateAC(character);
 
+  // Refs für Kampfwerte erstellen
+  if (!combatStatRefs.current['ac']) combatStatRefs.current['ac'] = React.createRef();
+  if (!combatStatRefs.current['hp']) combatStatRefs.current['hp'] = React.createRef();
+  if (!combatStatRefs.current['proficiency']) combatStatRefs.current['proficiency'] = React.createRef();
+
   return (
     <div className="summary-panel">
       {/* TEIL 1: HEADER */}
@@ -45,19 +53,43 @@ export const SummaryPanel = ({ character }) => {
       </div>
       <div className="details-divider"></div>
 
-      {/* TEIL 2: RÜSTUNGSKLASSE, HP, ETC. */}
+      {/* TEIL 2: RÜSTUNGSKLASSE, HP, ETC. mit Tooltips */}
       <div className="summary-stats-grid">
-        <div className="stat-box">
+        <div 
+          className="stat-box"
+          ref={combatStatRefs.current['ac']}
+          onMouseEnter={() => setHoveredCombatStat('ac')}
+          onMouseLeave={() => setHoveredCombatStat(null)}
+        >
           <span className="stat-value">{ac}</span>
           <span className="stat-label">Rüstungsklasse</span>
+          {hoveredCombatStat === 'ac' && (
+            <Tooltip text={COMBAT_STATS_DESCRIPTIONS_DE.ac} parentRef={combatStatRefs.current['ac']} />
+          )}
         </div>
-        <div className="stat-box">
+        <div 
+          className="stat-box"
+          ref={combatStatRefs.current['hp']}
+          onMouseEnter={() => setHoveredCombatStat('hp')}
+          onMouseLeave={() => setHoveredCombatStat(null)}
+        >
           <span className="stat-value">{hp} / {hp}</span>
           <span className="stat-label">Trefferpunkte</span>
+          {hoveredCombatStat === 'hp' && (
+            <Tooltip text={COMBAT_STATS_DESCRIPTIONS_DE.hp} parentRef={combatStatRefs.current['hp']} />
+          )}
         </div>
-        <div className="stat-box">
+        <div 
+          className="stat-box"
+          ref={combatStatRefs.current['proficiency']}
+          onMouseEnter={() => setHoveredCombatStat('proficiency')}
+          onMouseLeave={() => setHoveredCombatStat(null)}
+        >
           <span className="stat-value">+{proficiencyBonus}</span>
           <span className="stat-label">Übungsbonus</span>
+          {hoveredCombatStat === 'proficiency' && (
+            <Tooltip text={COMBAT_STATS_DESCRIPTIONS_DE.proficiency} parentRef={combatStatRefs.current['proficiency']} />
+          )}
         </div>
       </div>
       <div className="details-divider"></div>

@@ -1,3 +1,4 @@
+import allArmor from '../data/items/armor.json';
 /**
  * Berechnet den Modifikator für einen Attributswert.
  */
@@ -59,26 +60,70 @@ export const calculateInitialHP = (character) => {
 };
 
 /**
- * Berechnet die Rüstungsklasse (AC).
+ * Berechnet die Rüstungsklasse (AC) nach 5e-Regeln.
+ * Berücksichtigt angelegte Rüstung, Schilde und Klassen-Features.
+ * @param {object} character - Das zentrale Charakter-Objekt.
+ * @returns {number} - Die finale Rüstungsklasse.
  */
 export const calculateAC = (character) => {
-    if (!character.class || !character.race) return 10;
-    
-    const finalDex = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
-    const dexModifier = getAbilityModifier(finalDex);
-    
-    if (character.class.key === 'barbarian') {
-        const finalCon = character.abilities.con + getRacialAbilityBonus(character, 'con');
-        const conModifier = getAbilityModifier(finalCon);
-        return 10 + dexModifier + conModifier;
-    }
-    if (character.class.key === 'monk') {
-        const finalWis = character.abilities.wis + getRacialAbilityBonus(character, 'wis');
-        const wisModifier = getAbilityModifier(finalWis);
-        return 10 + dexModifier + wisModifier;
-    }
+  if (!character || !character.abilities || !character.class) {
+    return 10; // Fallback
+  }
 
-    return 10 + dexModifier;
+  // 1. FINALE ATTRIBUT-MODIFIKATOREN BERECHNEN
+  const finalDex = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
+  const dexModifier = getAbilityModifier(finalDex);
+
+  // 2. AUSGERÜSTETE ITEMS IDENTIFIZIEREN
+  const equippedArmorData = character.equipment?.chest ? allArmor.find(a => a.key === character.equipment.chest) : null;
+  const equippedShieldData = character.equipment?.off_hand ? allArmor.find(a => a.key === character.equipment.off_hand && a.type === 'shield') : null;
+
+  let baseAC = 10;
+  let armorDexBonus = dexModifier; // Standardmäßig wird der volle DEX-Bonus angewendet
+
+  // 3. AC BASIEREND AUF GERTRAGENER RÜSTUNG BERECHNEN
+  if (equippedArmorData) {
+    baseAC = equippedArmorData.ac;
+    
+    switch (equippedArmorData.type) {
+      case 'light_armor':
+        // Leichte Rüstung: Voller DEX-Bonus
+        armorDexBonus = dexModifier;
+        break;
+      case 'medium_armor':
+        // Mittlere Rüstung: DEX-Bonus bis maximal +2
+        armorDexBonus = Math.min(dexModifier, 2);
+        break;
+      case 'heavy_armor':
+        // Schwere Rüstung: Kein DEX-Bonus
+        armorDexBonus = 0;
+        break;
+      default:
+        // Wenn das Item keine Rüstung ist (z.B. Kleidung)
+        armorDexBonus = dexModifier;
+        baseAC = 10;
+    }
+  } 
+  // 4. SONDERFÄLLE FÜR UNGEPANZERTE VERTEIDIGUNG PRÜFEN
+  else { 
+    let unarmoredDefenseAC = 0;
+    if (character.class.key === 'barbarian') {
+      const finalCon = character.abilities.con + getRacialAbilityBonus(character, 'con');
+      const conModifier = getAbilityModifier(finalCon);
+      unarmoredDefenseAC = 10 + dexModifier + conModifier;
+    } else if (character.class.key === 'monk' && !equippedShieldData) { // Mönche verlieren den Bonus mit Schild
+      const finalWis = character.abilities.wis + getRacialAbilityBonus(character, 'wis');
+      const wisModifier = getAbilityModifier(finalWis);
+      unarmoredDefenseAC = 10 + dexModifier + wisModifier;
+    }
+    
+    // Wähle den HÖHEREN Wert zwischen normaler AC und der Spezialfähigkeit
+    return Math.max(10 + dexModifier, unarmoredDefenseAC) + (equippedShieldData ? 2 : 0);
+  }
+
+  // 5. FINALE BERECHNUNG: Basis-AC + Rüstungs-DEX-Bonus + Schild
+  const shieldBonus = equippedShieldData ? 2 : 0;
+  return baseAC + armorDexBonus + shieldBonus;
 };
 
 // Eine Zuordnung aller Fertigkeiten zu ihren Hauptattributen
@@ -209,6 +254,13 @@ export const ABILITY_DESCRIPTIONS_DE = {
   wis: "Weisheit: Misst die Wahrnehmung, Intuition und Willenskraft. Wichtig für göttliche Magie, Wahrnehmung und Einblick.",
   cha: "Charisma: Misst die Überzeugungskraft, Persönlichkeit und Führungsstärke. Wichtig für soziale Interaktion und einige Magieformen."
 };
+
+// Deutsche Beschreibungen für die Kampfwerte
+export const COMBAT_STATS_DESCRIPTIONS_DE = {
+  ac: "Gibt an, wie schwer es ist, dich im Kampf zu treffen. Basiert auf 10 + deinem Geschicklichkeits-Modifikator. Rüstung und Schilde können diesen Wert erhöhen.",
+  hp: "Deine Lebensenergie. Erreicht sie 0, bist du kampfunfähig. Basiert auf dem Trefferwürfel deiner Klasse und deinem Konstitutions-Modifikator.",
+  proficiency: "Ein Bonus, den du auf alle Würfe addierst, in denen du geübt bist (Angriffe, Fertigkeiten, etc.). Er steigt mit deinem Charakterlevel an."
+  };
 
 // Deutsche Beschreibungen für die Fertigkeiten
 export const SKILL_DESCRIPTIONS_DE = {

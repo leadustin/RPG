@@ -34,9 +34,8 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem }) => {
   }), [currentItem, slotType]); // Abhängigkeiten aktualisieren
 
 
-  // --- Drop-Logik (unverändert) ---
+  // --- Drop-Logik
   const getAcceptedItemTypes = () => {
-    // ... (deine Logik hier bleibt unverändert)
     if (slotType.includes("hand") || slotType === "ranged") return [ItemTypes.WEAPON];
     if (slotType.includes("ring") || slotType === "amulet" || slotType === "belt") return [ItemTypes.ACCESSORY];
     if (slotType === "cloth") return [ItemTypes.CLOTH];

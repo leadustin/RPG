@@ -242,5 +242,16 @@
     "description": "Eine exotische Halbplattenrüstung, wie sie von den Githyanki-Kriegern getragen wird. Sie ist leichter als gewöhnliche Rüstungen und bietet Schutz vor psionischen Angriffen.",
     "bonus": "Vorteil bei Rettungswürfen gegen psionische Effekte.",
     "icon": "placeholder_armor.webp"
+  },
+  {
+    "id": "shield",
+    "name": "Schild",
+    "type": "shield",
+    "slot": "off-hand",
+    "ac": 2,
+    "weight": 6,
+    "value": 10,
+    "description": "Ein Schild aus Holz oder Metall, der in einer Hand getragen wird. Er gewährt einen Bonus von +2 auf die Rüstungsklasse.",
+    "icon": "placeholder_armor.webp"
   }
 ]
