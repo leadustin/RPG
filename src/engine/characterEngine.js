@@ -74,50 +74,50 @@ export const calculateAC = (character) => {
   const finalDex = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
   const dexModifier = getAbilityModifier(finalDex);
 
-  // 2. Ausgerüstete Items identifizieren
+  // 2. Ausgerüstete Items aus den JSON-Daten finden
+  // Wichtig: Wir verwenden 'id', da dies der Schlüssel in deiner armor.json ist
   const equippedArmorData = character.equipment?.chest ? allArmor.find(a => a.id === character.equipment.chest) : null;
   const equippedShieldData = character.equipment?.off_hand ? allArmor.find(a => a.id === character.equipment.off_hand && a.type === 'shield') : null;
 
-  let baseAC = 10;
-  let armorDexBonus = dexModifier;
+  const shieldBonus = equippedShieldData ? equippedShieldData.ac : 0;
 
-  // 3. AC basierend auf getragener Rüstung berechnen
+  // 3. Fall 1: Charakter trägt eine Rüstung
   if (equippedArmorData) {
-    baseAC = equippedArmorData.ac;
-    
-    // Annahme: Rüstungstypen müssen in armor.json noch definiert werden (z.B. "light", "medium", "heavy")
-    // Hier fügen wir eine vereinfachte Logik basierend auf dem Namen hinzu, die du an deine Daten anpassen kannst.
-    const armorType = equippedArmorData.name.toLowerCase(); 
+    let baseAC = equippedArmorData.ac;
+    let armorDexBonus = 0;
 
-    if (armorType.includes('leder') || armorType.includes('wams')) { // Leichte Rüstung
+    // HINWEIS: Da deine armor.json keinen Rüstungstyp (leicht, mittel, schwer) hat,
+    // leiten wir ihn hier aus dem Namen ab. Es wäre besser, dies zukünftig als festes Datenfeld hinzuzufügen.
+    const armorName = equippedArmorData.name.toLowerCase();
+    
+    if (armorName.includes('leder') || armorName.includes('wams') || armorName.includes('elfen-kettenrüstung')) { // Leichte Rüstung
       armorDexBonus = dexModifier;
-    } else if (armorType.includes('kettenhemd') || armorType.includes('schuppenpanzer') || armorType.includes('brustplatte') || armorType.includes('halbplatten')) { // Mittlere Rüstung
+    } else if (armorName.includes('kettenhemd') || armorName.includes('schuppenpanzer') || armorName.includes('brustplatte') || armorName.includes('halbplatten')) { // Mittlere Rüstung
       armorDexBonus = Math.min(dexModifier, 2);
-    } else if (armorType.includes('ringpanzer') || armorType.includes('kettenpanzer') || armorType.includes('schienenpanzer') || armorType.includes('plattenpanzer')) { // Schwere Rüstung
+    } else { // Schwere Rüstung
       armorDexBonus = 0;
     }
+    
+    return baseAC + armorDexBonus + shieldBonus;
   } 
-  // 4. Sonderfälle für ungepanzerte Verteidigung prüfen (wenn keine Rüstung getragen wird)
+  
+  // 4. Fall 2: Charakter trägt KEINE Rüstung
   else { 
-    let unarmoredDefenseAC = 0;
+    let unarmoredAC = 10 + dexModifier;
+
+    // "Ungepanzerte Verteidigung" für Barbar oder Mönch prüfen
     if (character.class.key === 'barbarian') {
       const finalCon = character.abilities.con + getRacialAbilityBonus(character, 'con');
       const conModifier = getAbilityModifier(finalCon);
-      unarmoredDefenseAC = 10 + dexModifier + conModifier;
+      unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + conModifier);
     } else if (character.class.key === 'monk' && !equippedShieldData) { // Mönche verlieren den Bonus mit Schild
       const finalWis = character.abilities.wis + getRacialAbilityBonus(character, 'wis');
       const wisModifier = getAbilityModifier(finalWis);
-      unarmoredDefenseAC = 10 + dexModifier + wisModifier;
+      unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + wisModifier);
     }
     
-    // Wähle den HÖHEREN Wert zwischen normaler AC und der Spezialfähigkeit
-    const shieldBonus = equippedShieldData ? equippedShieldData.ac : 0;
-    return Math.max(10 + dexModifier, unarmoredDefenseAC) + shieldBonus;
+    return unarmoredAC + shieldBonus;
   }
-
-  // 5. Finale Berechnung: Basis-AC + Rüstungs-DEX-Bonus + Schild
-  const shieldBonus = equippedShieldData ? equippedShieldData.ac : 0;
-  return baseAC + armorDexBonus + shieldBonus;
 };
 
 // Eine Zuordnung aller Fertigkeiten zu ihren Hauptattributen
