@@ -74,27 +74,39 @@ export const calculateAC = (character) => {
   const finalDex = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
   const dexModifier = getAbilityModifier(finalDex);
 
-  // 2. Ausgerüstete Items aus den JSON-Daten finden
-  // Wichtig: Wir verwenden 'id', da dies der Schlüssel in deiner armor.json ist
-  const equippedArmorData = character.equipment?.chest ? allArmor.find(a => a.id === character.equipment.chest) : null;
-  const equippedShieldData = character.equipment?.off_hand ? allArmor.find(a => a.id === character.equipment.off_hand && a.type === 'shield') : null;
+  // 2. Ausgerüstete Items
+  const equippedArmorData = character.equipment?.armor;
+  
+  // Schild-Erkennung
+  let equippedShieldData = null;
+  let shieldBonus = 0;
 
-  const shieldBonus = equippedShieldData ? equippedShieldData.ac : 0;
+  if (character.equipment?.['off-hand'] && character.equipment['off-hand'].type === 'shield') {
+    equippedShieldData = character.equipment['off-hand'];
+    shieldBonus = equippedShieldData.ac || 2;
+  } else if (character.equipment?.['off-hand'] && character.equipment['off-hand'].slot === 'off-hand') {
+    equippedShieldData = character.equipment['off-hand'];
+    shieldBonus = equippedShieldData.ac || 2;
+  } else if (character.equipment?.shield) {
+    equippedShieldData = character.equipment.shield;
+    shieldBonus = equippedShieldData.ac || 2;
+  } else if (character.equipment?.['off-hand'] && character.equipment['off-hand'].ac > 0) {
+    equippedShieldData = character.equipment['off-hand'];
+    shieldBonus = equippedShieldData.ac;
+  }
 
   // 3. Fall 1: Charakter trägt eine Rüstung
   if (equippedArmorData) {
     let baseAC = equippedArmorData.ac;
     let armorDexBonus = 0;
 
-    // HINWEIS: Da deine armor.json keinen Rüstungstyp (leicht, mittel, schwer) hat,
-    // leiten wir ihn hier aus dem Namen ab. Es wäre besser, dies zukünftig als festes Datenfeld hinzuzufügen.
     const armorName = equippedArmorData.name.toLowerCase();
     
-    if (armorName.includes('leder') || armorName.includes('wams') || armorName.includes('elfen-kettenrüstung')) { // Leichte Rüstung
+    if (armorName.includes('leder') || armorName.includes('wams') || armorName.includes('elfen-kettenrüstung')) {
       armorDexBonus = dexModifier;
-    } else if (armorName.includes('kettenhemd') || armorName.includes('schuppenpanzer') || armorName.includes('brustplatte') || armorName.includes('halbplatten')) { // Mittlere Rüstung
+    } else if (armorName.includes('kettenhemd') || armorName.includes('schuppenpanzer') || armorName.includes('brustplatte') || armorName.includes('halbplatten')) {
       armorDexBonus = Math.min(dexModifier, 2);
-    } else { // Schwere Rüstung
+    } else {
       armorDexBonus = 0;
     }
     
@@ -105,12 +117,11 @@ export const calculateAC = (character) => {
   else { 
     let unarmoredAC = 10 + dexModifier;
 
-    // "Ungepanzerte Verteidigung" für Barbar oder Mönch prüfen
     if (character.class.key === 'barbarian') {
       const finalCon = character.abilities.con + getRacialAbilityBonus(character, 'con');
       const conModifier = getAbilityModifier(finalCon);
       unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + conModifier);
-    } else if (character.class.key === 'monk' && !equippedShieldData) { // Mönche verlieren den Bonus mit Schild
+    } else if (character.class.key === 'monk' && !equippedShieldData) {
       const finalWis = character.abilities.wis + getRacialAbilityBonus(character, 'wis');
       const wisModifier = getAbilityModifier(finalWis);
       unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + wisModifier);
