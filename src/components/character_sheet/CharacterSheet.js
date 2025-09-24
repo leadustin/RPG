@@ -12,6 +12,7 @@ import {
 import InventoryItem from "./InventoryItem";
 import EquipmentSlot from "./EquipmentSlot";
 import { ItemTypes } from "../../dnd/itemTypes";
+import InventoryFilter from "./InventoryFilter";
 
 const CharacterSheet = ({
   character,
@@ -20,9 +21,10 @@ const CharacterSheet = ({
   handleUnequipItem,
   handleToggleTwoHanded,
 }) => {
-  const [activeTab, setActiveTab] = useState("Inventory"); 
+  const [activeTab, setActiveTab] = useState("Inventory");
   const [activePortrait, setActivePortrait] = useState("");
   const [collapsedInventories, setCollapsedInventories] = useState({});
+  const [activeFilter, setActiveFilter] = useState("all");
 
   const currentWeight = useMemo(() => {
     if (!character) return 0;
@@ -36,7 +38,7 @@ const CharacterSheet = ({
       }, 0);
     }
     if (character.equipment) {
-      Object.values(character.equipment).forEach(item => {
+      Object.values(character.equipment).forEach((item) => {
         if (item && typeof item.weight === "number") {
           totalWeight += item.weight;
         }
@@ -45,20 +47,34 @@ const CharacterSheet = ({
     return totalWeight;
   }, [character]);
 
+  const filteredInventory = useMemo(() => {
+    if (!character || !character.inventory) {
+      return [];
+    }
+    if (activeFilter === "all") {
+      return character.inventory;
+    }
+    return character.inventory.filter(
+      (item) => item && item.type === activeFilter
+    );
+  }, [character, activeFilter]);
+
   // Funktion um zu prüfen ob eine Zweihandwaffe im Off-Hand Slot angezeigt werden soll
   const getTwoHandedDisplayItem = () => {
     const mainHand = character.equipment["main-hand"];
     if (!mainHand || mainHand.type !== "weapon") return null;
-    
-    const isTwoHanded = mainHand.properties && 
-      (mainHand.properties.includes("Zweihändig") || 
-       mainHand.properties.includes("Two-Handed") ||
-       (mainHand.properties.some(p => p.startsWith('Vielseitig')) && mainHand.isTwoHanded));
-    
+
+    const isTwoHanded =
+      mainHand.properties &&
+      (mainHand.properties.includes("Zweihändig") ||
+        mainHand.properties.includes("Two-Handed") ||
+        (mainHand.properties.some((p) => p.startsWith("Vielseitig")) &&
+          mainHand.isTwoHanded));
+
     if (isTwoHanded && !character.equipment["off-hand"]) {
       return { ...mainHand, isTwoHandedDisplay: true };
     }
-    
+
     return null;
   };
 
@@ -67,10 +83,12 @@ const CharacterSheet = ({
     const offHandItem = character.equipment["off-hand"];
 
     if (slotType === "main-hand" && item.type === "weapon") {
-      const isTwoHanded = item.properties && 
-        (item.properties.includes("Zweihändig") || 
-         item.properties.includes("Two-Handed") ||
-         (item.properties.some(p => p.startsWith('Vielseitig')) && item.isTwoHanded));
+      const isTwoHanded =
+        item.properties &&
+        (item.properties.includes("Zweihändig") ||
+          item.properties.includes("Two-Handed") ||
+          (item.properties.some((p) => p.startsWith("Vielseitig")) &&
+            item.isTwoHanded));
 
       if (isTwoHanded && offHandItem) {
         handleUnequipItem(offHandItem, "off-hand");
@@ -78,16 +96,20 @@ const CharacterSheet = ({
     }
 
     if (slotType === "off-hand" && mainHandWeapon) {
-      const mainHandIsTwoHanded = mainHandWeapon.properties && 
-        (mainHandWeapon.properties.includes("Zweihändig") || 
-         mainHandWeapon.properties.includes("Two-Handed") ||
-         (mainHandWeapon.properties.some(p => p.startsWith('Vielseitig')) && mainHandWeapon.isTwoHanded));
+      const mainHandIsTwoHanded =
+        mainHandWeapon.properties &&
+        (mainHandWeapon.properties.includes("Zweihändig") ||
+          mainHandWeapon.properties.includes("Two-Handed") ||
+          (mainHandWeapon.properties.some((p) => p.startsWith("Vielseitig")) &&
+            mainHandWeapon.isTwoHanded));
 
       if (mainHandIsTwoHanded) {
-        if (mainHandWeapon.properties.some(p => p.startsWith('Vielseitig'))) {
-          handleToggleTwoHanded('main-hand');
+        if (mainHandWeapon.properties.some((p) => p.startsWith("Vielseitig"))) {
+          handleToggleTwoHanded("main-hand");
         } else {
-          console.warn("Kann nicht in Off-Hand ausrüsten - Main-Hand ist zweihändig besetzt");
+          console.warn(
+            "Kann nicht in Off-Hand ausrüsten - Main-Hand ist zweihändig besetzt"
+          );
           return;
         }
       }
@@ -102,12 +124,18 @@ const CharacterSheet = ({
     if (!mainHand || !offHand) return false;
     if (mainHand.type !== "weapon" || offHand.type !== "weapon") return false;
 
-    const mainHandLight = mainHand.properties && mainHand.properties.includes("Leicht");
-    const offHandLight = offHand.properties && offHand.properties.includes("Leicht");
-    const mainHandVersatile = mainHand.properties && 
-      mainHand.properties.some(p => p.startsWith('Vielseitig')) && !mainHand.isTwoHanded;
+    const mainHandLight =
+      mainHand.properties && mainHand.properties.includes("Leicht");
+    const offHandLight =
+      offHand.properties && offHand.properties.includes("Leicht");
+    const mainHandVersatile =
+      mainHand.properties &&
+      mainHand.properties.some((p) => p.startsWith("Vielseitig")) &&
+      !mainHand.isTwoHanded;
 
-    return (mainHandLight && offHandLight) || (mainHandVersatile && offHandLight);
+    return (
+      (mainHandLight && offHandLight) || (mainHandVersatile && offHandLight)
+    );
   };
 
   useEffect(() => {
@@ -132,31 +160,47 @@ const CharacterSheet = ({
   const wisRef = useRef(null);
   const chaRef = useRef(null);
 
-  const statRefs = { str: strRef, dex: dexRef, con: conRef, int: intRef, wis: wisRef, cha: chaRef };
+  const statRefs = {
+    str: strRef,
+    dex: dexRef,
+    con: conRef,
+    int: intRef,
+    wis: wisRef,
+    cha: chaRef,
+  };
 
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: [ItemTypes.WEAPON, ItemTypes.ARMOR, ItemTypes.ACCESSORY, ItemTypes.CLOTH],
-    drop: (item) => handleUnequipItem(item, item.equippedIn),
-    collect: (monitor) => ({ isOver: !!monitor.isOver(), canDrop: !!monitor.canDrop() }),
-  }), [handleUnequipItem]);
+  const [{ canDrop, isOver }, drop] = useDrop(
+    () => ({
+      accept: [
+        ItemTypes.WEAPON,
+        ItemTypes.ARMOR,
+        ItemTypes.ACCESSORY,
+        ItemTypes.CLOTH,
+      ],
+      drop: (item) => handleUnequipItem(item, item.equippedIn),
+      collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
+        canDrop: !!monitor.canDrop(),
+      }),
+    }),
+    [handleUnequipItem]
+  );
 
-  // --- NEUE FUNKTION ZUM LADEN DES PORTRÄTS ---
-  const getPortraitPath = () => {
-    if (!character || !character.race) return ''; // Fallback, falls Charakterdaten unvollständig sind
-    
-    const { race, gender, portrait } = character;
-    const genderString = gender === 'Männlich' ? 'male' : 'female';
-    
+  const getClassIcon = () => {
+    if (!character || !character.class || !character.class.icon) {
+      return ""; // Fallback
+    }
     try {
-      // Passt den relativen Pfad von CharacterSheet.js zu den Bildern an
-      return require(`../../assets/images/portraits/${race.key}/${genderString}/${portrait}.webp`);
+      return require(`../../assets/images/classes/${character.class.icon}`);
     } catch (e) {
-      console.error("Portrait not found:", race.key, genderString, portrait);
-      // Optional ein Platzhalterbild laden
-      // return require('../../assets/images/portraits/placeholder.webp');
-      return "https://i.imgur.com/gplS3xv.png"; // Dein bisheriger Platzhalter
+      console.error("Class icon not found:", character.class.icon);
+      return ""; // Fallback
     }
   };
+
+  if (!character) {
+    return null;
+  }
 
   if (!character) {
     return null;
@@ -184,7 +228,7 @@ const CharacterSheet = ({
             className={`nav-btn ${activeTab === "Inventory" ? "active" : ""}`}
             onClick={() => setActiveTab("Inventory")}
           >
-            Inventory
+            Inventar
           </button>
           <button
             className={`nav-btn ${activeTab === "Spells" ? "active" : ""}`}
@@ -197,20 +241,27 @@ const CharacterSheet = ({
           <span>Party Gold</span>
           <span className="gold-amount">{character.gold || 188}</span>
         </div>
-        <button onClick={onClose} className="close-btn">X</button>
+        <button onClick={onClose} className="close-btn">
+          X
+        </button>
       </header>
 
       <main className="main-content">
         <aside className="left-sidebar">
           <div
-            className={`character-portrait ${activePortrait === character.name ? "active" : ""}`}
+            className={`character-portrait ${
+              activePortrait === character.name ? "active" : ""
+            }`}
             onClick={() => setActivePortrait(character.name)}
           >
-            {/* --- ANGEPASSTES BILD-ELEMENT --- */}
-            <img src={getPortraitPath()} alt={`${character.name} Portrait`} />
-            <div className="hp-bar">
-              <div className="hp-current" style={{ width: `${(currentHp / maxHp) * 100}%` }}></div>
-              <span>{currentHp} / {maxHp}</span>
+            <img src={character.portrait} alt={`${character.name} Portrait`} />
+
+            <div className="hp-bar-wrapper">
+              <div
+                className="hp-current"
+                style={{ width: `${(currentHp / maxHp) * 100}%` }}
+              ></div>
+              <span className="hp-text">{`${currentHp} / ${maxHp}`}</span>
             </div>
           </div>
         </aside>
@@ -219,20 +270,36 @@ const CharacterSheet = ({
           <section ref={drop} className="inventory-section">
             <div className="inventory-header">
               <h2>Inventory</h2>
-              <button className="filter-btn">Filters</button>
             </div>
-            <div className={`character-inventory ${collapsedInventories[character.name] ? "collapsed" : ""}`}>
-              <div className="inventory-owner toggle-inventory" onClick={() => toggleInventory(character.name)}>
+            <InventoryFilter
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+            />
+            <div
+              className={`character-inventory ${
+                collapsedInventories[character.name] ? "collapsed" : ""
+              }`}
+            >
+              <div
+                className="inventory-owner toggle-inventory"
+                onClick={() => toggleInventory(character.name)}
+              >
                 <h3>{character.name}</h3>
                 <div className="inventory-details">
-                  <div className={`weight-display ${currentWeight > maxWeight ? "encumbered" : ""}`}>
+                  <div
+                    className={`weight-display ${
+                      currentWeight > maxWeight ? "encumbered" : ""
+                    }`}
+                  >
                     Gewicht: {currentWeight.toFixed(1)} / {maxWeight} kg
                   </div>
-                  <span className="toggle-icon">{collapsedInventories[character.name] ? "+" : "-"}</span>
+                  <span className="toggle-icon">
+                    {collapsedInventories[character.name] ? "+" : "-"}
+                  </span>
                 </div>
               </div>
               <div className="inventory-grid">
-                {character.inventory.map((item, index) => (
+                {filteredInventory.map((item, index) => (
                   <InventoryItem key={`${item.id}-${index}`} item={item} />
                 ))}
               </div>
@@ -317,23 +384,29 @@ const CharacterSheet = ({
                 />
                 <EquipmentSlot
                   slotType="off-hand"
-                  currentItem={getTwoHandedDisplayItem() || character.equipment["off-hand"]}
+                  currentItem={
+                    getTwoHandedDisplayItem() || character.equipment["off-hand"]
+                  }
                   onEquipItem={enhancedHandleEquipItem}
                   isTwoHandedDisplay={!!getTwoHandedDisplayItem()}
                 />
               </div>
-              
-              {character.equipment['main-hand'] && 
-               character.equipment['main-hand'].properties?.some(p => p.startsWith('Vielseitig')) && (
-                <button 
-                  onClick={() => handleToggleTwoHanded('main-hand')}
-                  className="toggle-btn"
-                  disabled={character.equipment['off-hand'] !== null}
-                >
-                  {character.equipment['main-hand'].isTwoHanded ? 'Einhändig' : 'Zweihändig'}
-                  {character.equipment['off-hand'] && ' (Off-Hand räumen)'}
-                </button>
-              )}
+
+              {character.equipment["main-hand"] &&
+                character.equipment["main-hand"].properties?.some((p) =>
+                  p.startsWith("Vielseitig")
+                ) && (
+                  <button
+                    onClick={() => handleToggleTwoHanded("main-hand")}
+                    className="toggle-btn"
+                    disabled={character.equipment["off-hand"] !== null}
+                  >
+                    {character.equipment["main-hand"].isTwoHanded
+                      ? "Einhändig"
+                      : "Zweihändig"}
+                    {character.equipment["off-hand"] && " (Off-Hand räumen)"}
+                  </button>
+                )}
 
               {canTwoWeaponFight() && (
                 <div className="combat-style-indicator">
@@ -354,7 +427,9 @@ const CharacterSheet = ({
             <div className="character-model-column">
               <div className="character-viewer">
                 <img
-                  src={character.model || "https://placeholder.pics/svg/160x300"}
+                  src={
+                    character.model || "https://placeholder.pics/svg/160x300"
+                  }
                   alt="Character Model"
                 />
               </div>
@@ -363,7 +438,12 @@ const CharacterSheet = ({
             <div className="stats-column-right">
               <div className="character-title">
                 <div className="class-icon-wrapper">
-                  <div className="class-icon"></div>
+                  <div className="class-icon">
+                    <img
+                      src={getClassIcon()}
+                      alt={`${character.class.name} icon`}
+                    />
+                  </div>
                 </div>
                 <div>
                   <p className="char-class">

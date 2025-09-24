@@ -23,7 +23,7 @@ body {
 
 .game-ui {
     width: 100%;
-    max-width: 1200px;
+    max-width: 100%;
     background-color: #111;
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -33,7 +33,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1000;
-    height: 90vh;
+    height: 95vh;
 }
 
 header {
@@ -77,10 +77,50 @@ header {
 
 /* Linke Spalte: Porträts */
 .left-sidebar {
-    width: 130px;
-    padding: 10px 10px;
-    border-right: 1px solid var(--border-color);
-    flex-shrink: 0;
+    padding: 20px; /* Dieser Wert sorgt für den Abstand zum Rand */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.left-sidebar .character-portrait {
+    position: relative;
+    cursor: pointer;
+    /* Gib dem Container eine feste Größe, z.B. 150x150px */
+    width: 120px;
+    height: 120px;
+    border-radius: 5px; /* Optional: für abgerundete Ecken */
+    overflow: hidden; /* Verhindert, dass das Bild über den Rand hinausgeht */
+}
+
+.left-sidebar .hp-bar-wrapper {
+    position: absolute;
+    bottom: 5px; /* Positioniert den Balken am unteren Rand des Portraits */
+    left: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    height: 14px; /* Etwas größer für bessere Lesbarkeit */
+    border: 1px solid #222;
+}
+
+.left-sidebar .hp-current {
+    background-color: #c0392b;
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease-in-out;
+}
+
+.left-sidebar .hp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px black, 0 0 3px black;
+    white-space: nowrap;
 }
 
 .character-portrait {
@@ -106,7 +146,7 @@ header {
     position: relative;
     font-size: 12px;
     text-align: center;
-    margin-top: -5px;
+    margin-top: 0px;
 }
 
 .hp-bar .hp-current {
@@ -125,7 +165,7 @@ header {
 
 /* Mittlere Spalte: Inventar */
 .inventory-section {
-    flex: 0 0 35%;
+    flex: 0 0 40%;
     padding: 20px;
     overflow-y: auto;
     border-right: 1px solid var(--border-color);
@@ -201,13 +241,15 @@ header {
 
 .inventory-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
-    gap: 2px; 
+    grid-template-columns: repeat(9, 1fr); 
+    gap: 5px; 
     box-sizing: content-box;
-    max-height: 500px; /* Eine ausreichend große Höhe, um alle Items anzuzeigen */
-    overflow: hidden;
-    transition: max-height 0.4s ease-out, padding 0.4s ease-out; /* padding hinzufügen */
+    max-height: 305px; /* Eine ausreichend große Höhe, um alle Items anzuzeigen */
+    overflow-y: auto;
     padding-top: 5px;
+    padding-left: 0px;
+    padding-right: 15px;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
 }
 
 .character-inventory.collapsed .inventory-grid {
@@ -232,6 +274,26 @@ header {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+/* Optional: Ein schöneres Design für die neue Scrollbar */
+.inventory-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.inventory-grid::-webkit-scrollbar-track {
+  background: #2c2c2c; /* Hintergrund der Scroll-Leiste */
+  border-radius: 4px;
+}
+
+.inventory-grid::-webkit-scrollbar-thumb {
+  background-color: #666; /* Die Farbe des Scroll-Balkens */
+  border-radius: 4px;
+  border: 2px solid #2c2c2c; /* Ein kleiner Rand um den Balken */
+}
+
+.inventory-grid::-webkit-scrollbar-thumb:hover {
+  background-color: #888; /* Farbe beim Darüberfahren */
 }
 
 /* --- RECHTE SPALTE: CHARAKTER-SHEET --- */
@@ -347,10 +409,8 @@ header {
 }
 
 .class-icon-wrapper {
-    background-image: url('https://placeholder.pics/svg/60x60');
-    background-size: cover;
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -359,9 +419,15 @@ header {
 }
 
 .class-icon {
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     background-color: #26263100;
+}
+
+.class-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .character-title p {

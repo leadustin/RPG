@@ -1,4 +1,4 @@
-// src/components/RaceSelection.js
+// src/components/character_creation/RaceSelection.js
 import React, { useState, useEffect } from 'react';
 import './RaceSelection.css';
 import './PanelDetails.css';
@@ -11,6 +11,18 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   const selectedRace = character.race;
   const floatingBonuses = selectedRace.ability_bonuses.floating || [];
 
+  // KORREKTUR: Diese Funktion lädt das Bild als Modul, das React verwenden kann.
+  const getPortraitModule = (raceKey, gender, portraitIndex) => {
+    const genderString = gender === 'Männlich' ? 'male' : 'female';
+    try {
+      // require() gibt das Modul zurück, nicht nur den Pfad.
+      return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
+    } catch (e) {
+      console.error("Portrait not found:", raceKey, genderString, portraitIndex);
+      return ''; // Fallback
+    }
+  };
+
   useEffect(() => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
     let initialAssignments = {};
@@ -22,13 +34,17 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     }
     
     setAssignments(initialAssignments);
+
+    // KORREKTUR: Setzt das initial geladene Portrait-Modul
+    const initialPortraitModule = getPortraitModule(selectedRace.key, character.gender, 1);
+
     updateCharacter({ 
       race: selectedRace, 
       ability_bonus_assignments: initialAssignments, 
       floating_bonus_assignments: {},
       subrace: null, 
       ancestry: null,
-      portrait: 1,
+      portrait: initialPortraitModule, // Speichert das Modul, nicht einen Index oder Pfad-String
     });
   }, [selectedRace]);
 
@@ -38,7 +54,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
       floating_bonus_assignments: floatingAssignments 
     });
   };
-
+  
   const handleAssignBonus = (ability, bonusIndex) => {
     const newFloatingAssignments = { ...character.floating_bonus_assignments } || {};
     
@@ -69,21 +85,15 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   const isBonusUsed = (bonusIndex) => {
     return Object.values(character.floating_bonus_assignments || {}).includes(bonusIndex);
   };
-
-  // --- KORRIGIERTE FUNKTION ---
-  const getPortraitPath = (raceKey, gender, portraitIndex) => {
-    const genderString = gender === 'Männlich' ? 'male' : 'female';
-    // Verwende require() mit dem relativen Pfad von dieser Komponente aus
-    try {
-      return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
-    } catch (e) {
-      // Optional: Lade ein Platzhalterbild, falls ein Porträt fehlt, um einen Fehler zu vermeiden.
-      // return require('../../assets/images/portraits/placeholder.webp');
-      console.error("Portrait not found:", raceKey, genderString, portraitIndex);
-      return ''; // Oder ein Platzhalterbild-Pfad
-    }
-  };
   
+  // KORREKTUR: Eigene Funktion, um beim Geschlechtswechsel das Portrait zu aktualisieren
+  const handleGenderChange = (newGender) => {
+    // Setzt das Portrait auf das erste Bild des neuen Geschlechts zurück,
+    // um sicherzustellen, dass immer ein gültiges Portrait geladen ist.
+    const newPortraitModule = getPortraitModule(character.race.key, newGender, 1);
+    updateCharacter({ gender: newGender, portrait: newPortraitModule });
+  };
+
   return (
     <div className="race-selection-container">
       <div className="race-list">
@@ -115,13 +125,13 @@ export const RaceSelection = ({ character, updateCharacter }) => {
                 <div className="gender-buttons">
                     <button 
                         className={character.gender === 'Männlich' ? 'selected' : ''}
-                        onClick={() => updateCharacter({ gender: 'Männlich' })}
+                        onClick={() => handleGenderChange('Männlich')}
                     >
                         Männlich
                     </button>
                     <button 
                         className={character.gender === 'Weiblich' ? 'selected' : ''}
-                        onClick={() => updateCharacter({ gender: 'Weiblich' })}
+                        onClick={() => handleGenderChange('Weiblich')}
                     >
                         Weiblich
                     </button>
@@ -135,15 +145,18 @@ export const RaceSelection = ({ character, updateCharacter }) => {
 
         <h3>Portrait</h3>
         <div className="portrait-selection">
-          {[1, 2, 3, 4].map(index => (
-            <img
-              key={index}
-              src={getPortraitPath(selectedRace.key, character.gender, index)}
-              alt={`Portrait ${index}`}
-              className={`portrait-image ${character.portrait === index ? 'selected' : ''}`}
-              onClick={() => updateCharacter({ portrait: index })}
-            />
-          ))}
+          {[1, 2, 3, 4].map(index => {
+            const portraitModule = getPortraitModule(selectedRace.key, character.gender, index);
+            return (
+              <img
+                key={index}
+                src={portraitModule} // src erhält das geladene Modul
+                alt={`Portrait ${index}`}
+                className={`portrait-image ${character.portrait === portraitModule ? 'selected' : ''}`}
+                onClick={() => updateCharacter({ portrait: portraitModule })} // Speichert das Modul
+              />
+            );
+          })}
         </div>
         <div className="details-divider"></div>
 

@@ -18,7 +18,7 @@ function App() {
     handleCharacterCreation,
     handleEquipItem,
     handleUnequipItem,
-    handleToggleTwoHanded, // Hinzugefügte Funktion
+    handleToggleTwoHanded,
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);

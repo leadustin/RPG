@@ -18,7 +18,6 @@ import {
   COMBAT_STATS_DESCRIPTIONS_DE // Beschreibungen für Kampfwerte importieren
 } from '../../engine/characterEngine';
 
-// Die Zeile "export const" bleibt unverändert, um den Fehler zu beheben.
 export const SummaryPanel = ({ character }) => {
   // --- Hooks für die Tooltips ---
   const [hoveredStat, setHoveredStat] = useState(null);

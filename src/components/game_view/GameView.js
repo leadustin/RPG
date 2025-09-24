@@ -6,42 +6,20 @@ import { CombatLog } from "../combat/CombatLog";
 import "./GameView.css";
 
 function GameView({ character, onToggleCharacterSheet }) {
-  // Hinzugefügt: Eine Überprüfung, um sicherzustellen, dass der Charakter und seine Werte geladen sind.
-  // Das verhindert den Absturz der Anwendung.
+  // Überprüfung, um sicherzustellen, dass der Charakter und seine Werte geladen sind.
   if (!character || !character.stats) {
     return <div>Lade Charakterdaten...</div>;
   }
 
-  // Die Party-Liste, jetzt mit deinem erstellten Charakter an erster Stelle.
+  // Die Party-Liste enthält jetzt nur noch den Spielercharakter.
+  // Sie kann in Zukunft dynamisch mit weiteren Charakteren erweitert werden.
   const party = [
     {
       id: "player",
       name: character.name,
       hp: character.stats.hp,
       maxHp: character.stats.maxHp,
-      portrait: "https://via.placeholder.com/50",
-    },
-    // Die restlichen Mitglieder sind weiterhin Platzhalter.
-    {
-      id: "char2",
-      name: "Magier",
-      hp: 8,
-      maxHp: 10,
-      portrait: "https://via.placeholder.com/50",
-    },
-    {
-      id: "char3",
-      name: "Schurke",
-      hp: 12,
-      maxHp: 12,
-      portrait: "https://via.placeholder.com/50",
-    },
-    {
-      id: "char4",
-      name: "Barbar",
-      hp: 9,
-      maxHp: 10,
-      portrait: "https://via.placeholder.com/50",
+      portrait: character.portrait, // Hier wird das korrekte Portrait verwendet
     },
   ];
 

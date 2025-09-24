@@ -1,51 +1,74 @@
+/* src/components/game_view/PartyPortraits.css */
 .party-portraits-container {
     display: flex;
-    flex-direction: column; /* WICHTIG: Richtet die Porträts vertikal aus */
-    gap: 10px; /* Abstand zwischen den Porträts */
-    height: 100%;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .portrait-item {
-    display: flex;
-    align-items: center;
-    background-color: #2a2a2a;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #444;
-}
-
-.portrait-item img {
-    width: 50px;
-    height: 50px;
-    border-radius: 3px;
-    margin-right: 15px;
-    flex-shrink: 0;
-}
-
-.character-info {
-    flex-grow: 1;
-    text-align: left;
-}
-
-.character-info .name {
-    font-weight: bold;
-    color: #eee;
-    font-size: 1.1em;
-}
-
-.hp-bar-wrapper {
-    width: 100%;
-    height: 10px;
-    background-color: #111;
+    position: relative;
+    width: 120px; /* Feste Breite */
+    height: 120px; /* Feste Höhe */
+    border: 2px solid #555;
     border-radius: 5px;
     overflow: hidden;
-    margin-top: 5px;
-    border: 1px solid #555;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.hp-bar {
+.portrait-item .character-portrait-img {
+    width: 100%;
     height: 100%;
-    background-color: #b22222; /* Rote HP-Leiste */
-    transition: width 0.3s ease-in-out;
+    object-fit: cover; /* Stellt sicher, dass das Bild den Raum füllt */
+    display: block;
+}
+
+/* KORREKTUR: Hintergrund des Overlays ist jetzt komplett transparent */
+.portrait-item .character-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent; /* HINTERGRUND ENTFERNT */
+    padding: 5px;
+    color: white;
+    text-align: center;
+    /* Optional: Ein leichter Verlauf, um den Text unten abzuheben */
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+.portrait-item .name {
+    font-size: 14px;
+    font-weight: bold;
+    /* Stärkerer Schatten für bessere Lesbarkeit */
+    text-shadow: 2px 2px 4px black, 0 0 5px black; 
+    display: block;
+    margin-bottom: 4px;
+}
+
+.portrait-item .hp-bar-wrapper {
+    background-color: rgba(0, 0, 0, 0.5); /* Leichter abgedunkelt für Kontrast */
+    border-radius: 5px;
+    height: 12px;
+    position: relative;
+    border: 1px solid #222;
+}
+
+.portrait-item .hp-bar {
+    background-color: #c0392b;
+    height: 100%;
     border-radius: 4px;
+    transition: width 0.3s ease-in-out;
+}
+
+.portrait-item .hp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    /* Stärkerer Schatten für bessere Lesbarkeit */
+    text-shadow: 1px 1px 2px black, 0 0 3px black; 
+    white-space: nowrap;
 }
