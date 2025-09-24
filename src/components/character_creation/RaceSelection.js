@@ -15,9 +15,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
     let initialAssignments = {};
     
-    // Für fixe Boni verwenden wir die Attribut-Keys direkt
     if (selectedRace.ability_bonuses.fixed) {
-      // Kopiere die fixen Boni direkt
       Object.entries(selectedRace.ability_bonuses.fixed).forEach(([ability, value]) => {
         initialAssignments[ability] = value;
       });
@@ -27,9 +25,10 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     updateCharacter({ 
       race: selectedRace, 
       ability_bonus_assignments: initialAssignments, 
-      floating_bonus_assignments: {}, // Neue Struktur für floating Boni
+      floating_bonus_assignments: {},
       subrace: null, 
-      ancestry: null 
+      ancestry: null,
+      portrait: 1,
     });
   }, [selectedRace]);
 
@@ -41,28 +40,21 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   };
 
   const handleAssignBonus = (ability, bonusIndex) => {
-    const newAssignments = { ...assignments };
     const newFloatingAssignments = { ...character.floating_bonus_assignments } || {};
     
-    // Für floating Boni verwenden wir eine separate Struktur
     if (floatingBonuses.length > 0) {
-      // Prüfe ob dieser Bonus-Index bereits diesem Attribut zugewiesen ist
       if (newFloatingAssignments[ability] === bonusIndex) {
-        // Wenn ja, entferne die Zuweisung
         delete newFloatingAssignments[ability];
       } else {
-        // Prüfe ob dieser spezifische Bonus-Index bereits einem anderen Attribut zugewiesen ist
         const existingAbility = Object.keys(newFloatingAssignments).find(
           key => newFloatingAssignments[key] === bonusIndex
         );
         if (existingAbility) {
           delete newFloatingAssignments[existingAbility];
         }
-        // Weise den Bonus dem neuen Attribut zu
         newFloatingAssignments[ability] = bonusIndex;
       }
       
-      // Behalte die fixen Boni bei
       const combinedAssignments = { ...selectedRace.ability_bonuses.fixed };
       
       setAssignments({ ...combinedAssignments, ...newFloatingAssignments });
@@ -70,14 +62,26 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     }
   };
   
-  // Helper-Funktion um zu prüfen, ob ein Bonus-Index zugewiesen ist
   const isBonusAssigned = (ability, bonusIndex) => {
     return character.floating_bonus_assignments?.[ability] === bonusIndex;
   };
   
-  // Helper-Funktion um zu prüfen, ob ein Bonus-Index bereits verwendet wird
   const isBonusUsed = (bonusIndex) => {
     return Object.values(character.floating_bonus_assignments || {}).includes(bonusIndex);
+  };
+
+  // --- KORRIGIERTE FUNKTION ---
+  const getPortraitPath = (raceKey, gender, portraitIndex) => {
+    const genderString = gender === 'Männlich' ? 'male' : 'female';
+    // Verwende require() mit dem relativen Pfad von dieser Komponente aus
+    try {
+      return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
+    } catch (e) {
+      // Optional: Lade ein Platzhalterbild, falls ein Porträt fehlt, um einen Fehler zu vermeiden.
+      // return require('../../assets/images/portraits/placeholder.webp');
+      console.error("Portrait not found:", raceKey, genderString, portraitIndex);
+      return ''; // Oder ein Platzhalterbild-Pfad
+    }
   };
   
   return (
@@ -127,6 +131,20 @@ export const RaceSelection = ({ character, updateCharacter }) => {
         <div className="details-divider"></div>
 
         <h2>{selectedRace.name}</h2>
+        <div className="details-divider"></div>
+
+        <h3>Portrait</h3>
+        <div className="portrait-selection">
+          {[1, 2, 3, 4].map(index => (
+            <img
+              key={index}
+              src={getPortraitPath(selectedRace.key, character.gender, index)}
+              alt={`Portrait ${index}`}
+              className={`portrait-image ${character.portrait === index ? 'selected' : ''}`}
+              onClick={() => updateCharacter({ portrait: index })}
+            />
+          ))}
+        </div>
         <div className="details-divider"></div>
 
         <h3>Attributs-Boost</h3>

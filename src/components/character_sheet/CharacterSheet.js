@@ -50,13 +50,11 @@ const CharacterSheet = ({
     const mainHand = character.equipment["main-hand"];
     if (!mainHand || mainHand.type !== "weapon") return null;
     
-    // Prüfen ob die Waffe zweihändig geführt wird
     const isTwoHanded = mainHand.properties && 
       (mainHand.properties.includes("Zweihändig") || 
        mainHand.properties.includes("Two-Handed") ||
        (mainHand.properties.some(p => p.startsWith('Vielseitig')) && mainHand.isTwoHanded));
     
-    // Wenn zweihändig und kein echtes Off-Hand Item, dann Main-Hand Item anzeigen
     if (isTwoHanded && !character.equipment["off-hand"]) {
       return { ...mainHand, isTwoHandedDisplay: true };
     }
@@ -64,12 +62,10 @@ const CharacterSheet = ({
     return null;
   };
 
-  // Erweiterte Equip-Logik mit Two-Weapon Fighting und Schild-Support
   const enhancedHandleEquipItem = (item, slotType) => {
     const mainHandWeapon = character.equipment["main-hand"];
     const offHandItem = character.equipment["off-hand"];
 
-    // Wenn eine Zweihandwaffe ausgerüstet wird, Off-Hand räumen
     if (slotType === "main-hand" && item.type === "weapon") {
       const isTwoHanded = item.properties && 
         (item.properties.includes("Zweihändig") || 
@@ -77,12 +73,10 @@ const CharacterSheet = ({
          (item.properties.some(p => p.startsWith('Vielseitig')) && item.isTwoHanded));
 
       if (isTwoHanded && offHandItem) {
-        // Off-Hand Item ins Inventar zurück
         handleUnequipItem(offHandItem, "off-hand");
       }
     }
 
-    // Wenn in Off-Hand ausgerüstet wird, prüfen ob Main-Hand zweihändig ist
     if (slotType === "off-hand" && mainHandWeapon) {
       const mainHandIsTwoHanded = mainHandWeapon.properties && 
         (mainHandWeapon.properties.includes("Zweihändig") || 
@@ -90,23 +84,17 @@ const CharacterSheet = ({
          (mainHandWeapon.properties.some(p => p.startsWith('Vielseitig')) && mainHandWeapon.isTwoHanded));
 
       if (mainHandIsTwoHanded) {
-        // Zweihandwaffe zu einhändig machen oder blockieren
         if (mainHandWeapon.properties.some(p => p.startsWith('Vielseitig'))) {
-          // Vielseitige Waffe automatisch zu einhändig machen
           handleToggleTwoHanded('main-hand');
         } else {
-          // Echte Zweihandwaffe blockiert Off-Hand
           console.warn("Kann nicht in Off-Hand ausrüsten - Main-Hand ist zweihändig besetzt");
           return;
         }
       }
     }
-
-    // Normale Equip-Logik aufrufen
     handleEquipItem(item, slotType);
   };
 
-  // Prüfen ob Two-Weapon Fighting möglich ist
   const canTwoWeaponFight = () => {
     const mainHand = character.equipment["main-hand"];
     const offHand = character.equipment["off-hand"];
@@ -114,7 +102,6 @@ const CharacterSheet = ({
     if (!mainHand || !offHand) return false;
     if (mainHand.type !== "weapon" || offHand.type !== "weapon") return false;
 
-    // Beide Waffen müssen leicht sein ODER eine muss vielseitig einhändig sein
     const mainHandLight = mainHand.properties && mainHand.properties.includes("Leicht");
     const offHandLight = offHand.properties && offHand.properties.includes("Leicht");
     const mainHandVersatile = mainHand.properties && 
@@ -152,6 +139,24 @@ const CharacterSheet = ({
     drop: (item) => handleUnequipItem(item, item.equippedIn),
     collect: (monitor) => ({ isOver: !!monitor.isOver(), canDrop: !!monitor.canDrop() }),
   }), [handleUnequipItem]);
+
+  // --- NEUE FUNKTION ZUM LADEN DES PORTRÄTS ---
+  const getPortraitPath = () => {
+    if (!character || !character.race) return ''; // Fallback, falls Charakterdaten unvollständig sind
+    
+    const { race, gender, portrait } = character;
+    const genderString = gender === 'Männlich' ? 'male' : 'female';
+    
+    try {
+      // Passt den relativen Pfad von CharacterSheet.js zu den Bildern an
+      return require(`../../assets/images/portraits/${race.key}/${genderString}/${portrait}.webp`);
+    } catch (e) {
+      console.error("Portrait not found:", race.key, genderString, portrait);
+      // Optional ein Platzhalterbild laden
+      // return require('../../assets/images/portraits/placeholder.webp');
+      return "https://i.imgur.com/gplS3xv.png"; // Dein bisheriger Platzhalter
+    }
+  };
 
   if (!character) {
     return null;
@@ -201,7 +206,8 @@ const CharacterSheet = ({
             className={`character-portrait ${activePortrait === character.name ? "active" : ""}`}
             onClick={() => setActivePortrait(character.name)}
           >
-            <img src={character.portrait || "https://i.imgur.com/gplS3xv.png"} alt={`${character.name} Portrait`} />
+            {/* --- ANGEPASSTES BILD-ELEMENT --- */}
+            <img src={getPortraitPath()} alt={`${character.name} Portrait`} />
             <div className="hp-bar">
               <div className="hp-current" style={{ width: `${(currentHp / maxHp) * 100}%` }}></div>
               <span>{currentHp} / {maxHp}</span>
@@ -317,7 +323,6 @@ const CharacterSheet = ({
                 />
               </div>
               
-              {/* Two-Handed Toggle Button */}
               {character.equipment['main-hand'] && 
                character.equipment['main-hand'].properties?.some(p => p.startsWith('Vielseitig')) && (
                 <button 
@@ -330,7 +335,6 @@ const CharacterSheet = ({
                 </button>
               )}
 
-              {/* Two-Weapon Fighting Status */}
               {canTwoWeaponFight() && (
                 <div className="combat-style-indicator">
                   <span className="style-active">⚔️ Two-Weapon Fighting</span>

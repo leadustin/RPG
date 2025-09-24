@@ -38,7 +38,7 @@ function GameView({ character, onToggleCharacterSheet }) {
     },
     {
       id: "char4",
-      name: "Kleriker",
+      name: "Barbar",
       hp: 9,
       maxHp: 10,
       portrait: "https://via.placeholder.com/50",

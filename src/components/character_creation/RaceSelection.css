@@ -167,3 +167,25 @@
   background-color: var(--color-selection);
   color: var(--color-background-dark);
 }
+
+.portrait-selection {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.portrait-image {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.portrait-image:hover {
+  border-color: var(--color-selection);
+}
+
+.portrait-image.selected {
+  border-color: var(--color-selection);
+}
