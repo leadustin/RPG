@@ -6,6 +6,7 @@ import { StartScreen } from "./components/start_screen/StartScreen";
 import { CharacterCreationScreen } from "./components/character_creation/CharacterCreationScreen";
 import GameView from "./components/game_view/GameView";
 import CharacterSheet from "./components/character_sheet/CharacterSheet";
+import LocationView from "./components/location_view/LocationView";
 import "./App.css";
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
+    handleEnterLocation,
+    handleLeaveLocation,
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -28,6 +31,16 @@ function App() {
   };
 
   const renderScreen = () => {
+    // --- NEU: Prüfen, ob der Spieler an einem Ort ist ---
+    if (gameState.character && gameState.character.currentLocation !== 'worldmap') {
+      return (
+        <LocationView
+          locationId={gameState.character.currentLocation}
+          onLeaveLocation={handleLeaveLocation}
+        />
+      );
+    }
+
     switch (gameState.screen) {
       case "start":
         return (
@@ -51,6 +64,7 @@ function App() {
           <GameView
             character={gameState.character}
             onToggleCharacterSheet={toggleCharacterSheet}
+            onEnterLocation={handleEnterLocation} 
           />
         );
       default:
@@ -76,7 +90,7 @@ function App() {
               onClose={toggleCharacterSheet}
               handleEquipItem={handleEquipItem}
               handleUnequipItem={handleUnequipItem}
-              handleToggleTwoHanded={handleToggleTwoHanded} // Prop weitergeben
+              handleToggleTwoHanded={handleToggleTwoHanded}
             />
           )}
         </div>

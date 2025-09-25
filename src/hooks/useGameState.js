@@ -6,21 +6,19 @@ import {
 } from "../utils/persistence";
 import { calculateInitialHP, calculateAC } from "../engine/characterEngine";
 import allRaceData from "../data/races.json";
+import locationsData from "../data/locations.json"; // Orte importieren
 
-// --- KORREKTUR START ---
-// 1. Lade alle neuen, aufgeteilten Item-Dateien
+// Item-Daten importieren
 import armorData from "../data/items/armor.json";
 import weaponsData from "../data/items/weapons.json";
 import clothesData from "../data/items/clothes.json";
 import itemsData from "../data/items/items.json";
-// Importiere auch die leeren Dateien, damit es keine Fehler gibt
 import accessoriesData from "../data/items/accessories.json";
 import beltsData from "../data/items/belts.json";
 import bootsData from "../data/items/boots.json";
 import handsData from "../data/items/hands.json";
 import headsData from "../data/items/heads.json";
 
-// 2. Fasse alle Daten in einer einzigen Liste zusammen
 const allItems = [
   ...armorData,
   ...weaponsData,
@@ -32,7 +30,6 @@ const allItems = [
   ...handsData,
   ...headsData,
 ];
-// --- KORREKTUR ENDE ---
 
 export const useGameState = () => {
   const [gameState, setGameState] = useState({
@@ -103,7 +100,6 @@ export const useGameState = () => {
       abilities: tempChar.abilities,
     };
 
-    // 3. Benutze die neue, komplette Item-Liste für das Startinventar
     const startingInventory = [
       allItems.find((item) => item.id === "longsword"),
       allItems.find((item) => item.id === "greatsword"),
@@ -131,6 +127,9 @@ export const useGameState = () => {
         "off-hand": null,
         ranged: null,
       },
+      position: { x: 2048, y: 1536 },
+      currentLocation: "worldmap",
+      worldMapPosition: { x: 2048, y: 1536 },
     };
 
     setGameState({
@@ -138,6 +137,46 @@ export const useGameState = () => {
       character: characterWithStats,
     });
   };
+
+  const handleEnterLocation = useCallback((locationId, currentPosition) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      character.worldMapPosition = currentPosition;
+      character.currentLocation = locationId;
+      return { ...prevState, character };
+    });
+  }, []);
+
+  const handleLeaveLocation = useCallback(() => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      const currentLocationData = locationsData.find(
+        (loc) => loc.id === character.currentLocation
+      );
+      let newPosition = character.worldMapPosition;
+
+      if (currentLocationData) {
+        const angle = Math.atan2(
+          newPosition.y - currentLocationData.y,
+          newPosition.x - currentLocationData.x
+        );
+        const newX =
+          currentLocationData.x +
+          Math.cos(angle) * (currentLocationData.radius + 15);
+        const newY =
+          currentLocationData.y +
+          Math.sin(angle) * (currentLocationData.radius + 15);
+        newPosition = { x: newX, y: newY };
+      }
+
+      character.position = newPosition;
+      character.currentLocation = "worldmap";
+
+      return { ...prevState, character };
+    });
+  }, []);
 
   const handleEquipItem = useCallback((item, targetSlot) => {
     setGameState((prevState) => {
@@ -167,27 +206,16 @@ export const useGameState = () => {
       const newCharacter = { ...prevGameState.character };
       const weapon = newCharacter.equipment[slotId];
 
-      // Prüfen, ob eine vielseitige Waffe vorhanden ist
       if (weapon && weapon.properties.some((p) => p.startsWith("Vielseitig"))) {
-        
-        // --- ANPASSUNG START ---
-        // Behandelt den Fall, dass isTwoHanded anfangs 'undefined' ist
         const currentState = weapon.isTwoHanded || false;
         weapon.isTwoHanded = !currentState;
-        // --- ANPASSUNG ENDE ---
-
-        // Wenn auf beidhändig umgeschaltet wird, Nebenhand leeren
         if (weapon.isTwoHanded && newCharacter.equipment["off-hand"]) {
           const offHandItem = newCharacter.equipment["off-hand"];
           newCharacter.inventory.push(offHandItem);
           newCharacter.equipment["off-hand"] = null;
         }
       }
-
-      return {
-        ...prevGameState,
-        character: newCharacter,
-      };
+      return { ...prevGameState, character: newCharacter };
     });
   };
 
@@ -229,5 +257,7 @@ export const useGameState = () => {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
+    handleEnterLocation,
+    handleLeaveLocation,
   };
 };

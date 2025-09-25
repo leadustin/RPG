@@ -1,0 +1,222 @@
+[
+  {
+    "id": "robe-of-the-archmagi",
+    "name": "Robe der Erzmagier",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 60000,
+    "description": "Eine legendäre Robe, die in Weiß, Grau oder Schwarz erhältlich ist. Sie bietet immensen Schutz und verstärkt die Zauber des Trägers.",
+    "bonus": "+2 auf Rüstungsklasse, Vorteil bei Rettungswürfen gegen Zauber, +2 auf den Schwierigkeitsgrad von Zauberrettungswürfen.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "robe-of-useful-items",
+    "name": "Robe der nützlichen Gegenstände",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 7000,
+    "description": "Eine unscheinbare Robe mit aufgenähten Flicken in verschiedenen Formen. Jeder Flicken kann abgenommen und in den entsprechenden Gegenstand verwandelt werden.",
+    "bonus": "Enthält eine Vielzahl von nützlichen Gegenständen als Flicken (z.B. Dolche, Laterne, Seil, etc.).",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "robe-of-eyes",
+    "name": "Robe der Augen",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 12000,
+    "description": "Diese seltsame Robe ist mit Augenmustern bestickt, die dem Träger eine verbesserte Wahrnehmung und die Fähigkeit verleihen, in alle Richtungen zu sehen.",
+    "bonus": "Vorteil bei Wahrnehmungswürfen, kann nicht überrascht werden, sieht unsichtbare Kreaturen.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "vest-of-the-soul-rejuvenation",
+    "name": "Weste der Seelenverjüngung",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 3,
+    "value": 9000,
+    "description": "Eine Weste, die es dem Träger ermöglicht, sich besser zu verteidigen und gegnerische Angriffe abzuwehren.",
+    "bonus": "Der Träger kann einmal pro Runde eine Reaktion verwenden, um den Schaden eines Angriffs zu reduzieren.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "the-potent-robe",
+    "name": "Die potente Robe",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 8000,
+    "description": "Eine Robe, die die Zaubertricks von Zauberkundigen verstärkt und sie widerstandsfähiger macht.",
+    "bonus": "Fügt Zaubertricks zusätzlichen Schaden in Höhe des Charisma-Modifikators hinzu. Gewährt am Anfang jeder Runde temporäre Trefferpunkte.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "robe-of-scintillating-colours",
+    "name": "Robe der funkelnden Farben",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 6000,
+    "description": "Eine schillernde Robe, die den Träger in ein Kaleidoskop aus Farben hüllt und es schwer macht, ihn zu treffen.",
+    "bonus": "Angreifer haben einen Nachteil bei Angriffswürfen gegen den Träger.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "robe-of-the-weave",
+    "name": "Robe des Gewebes",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 12000,
+    "description": "Eine meisterhaft gefertigte Robe, die die Verbindung des Trägers zum magischen Gewebe stärkt.",
+    "bonus": "+1 auf Zauberangriffswürfe und den Schwierigkeitsgrad von Zauberrettungswürfen. Stellt bei erfolgreichen Rettungswürfen gegen Zauber Trefferpunkte wieder her.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "graceful-cloth",
+    "name": "Anmutiger Stoff",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 3,
+    "value": 7500,
+    "description": "Ein elegantes Gewand, das die Geschicklichkeit und die Reflexe des Trägers verbessert.",
+    "bonus": "Erhöht die Geschicklichkeit um 2. Vorteil bei Geschicklichkeitsrettungswürfen.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "infernal-robe",
+    "name": "Höllische Robe",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 10000,
+    "description": "Eine Robe aus den Feuern der Hölle. Sie bietet Resistenz gegen Feuer und kann Gegner in Brand setzen.",
+    "bonus": "Resistenz gegen Feuerschaden. Gewährt den Zauber 'Feuerschild'.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "moon-devotion-robe",
+    "name": "Mondandachtsrobe",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 8500,
+    "description": "Eine Robe, die von Klerikern der Mondgöttin getragen wird. Sie verstärkt schützende Zauber.",
+    "bonus": "Wenn der Träger einen Zauber wirkt, der temporäre Trefferpunkte gewährt, erhält das Ziel zusätzliche temporäre Trefferpunkte.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "wavemothers-robe",
+    "name": "Robe der Wellenmutter",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 9500,
+    "description": "Diese Robe scheint ständig feucht zu sein und schützt vor Feuer, während sie gleichzeitig die Heilung auf nassen Kreaturen verbessert.",
+    "bonus": "Resistenz gegen Feuerschaden. Stellt zusätzliche Trefferpunkte wieder her, wenn Kreaturen auf Wasseroberflächen geheilt werden.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "icebite-robe",
+    "name": "Eisbiss-Robe",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 7000,
+    "description": "Eine eiskalte Robe, die den Träger vor Kälte schützt und seine Kältezauber verstärkt.",
+    "bonus": "Resistenz gegen Kälteschaden. Fügt Kältezaubern zusätzlichen Schaden hinzu.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "poisoners-robe",
+    "name": "Robe des Giftmischers",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 6500,
+    "description": "Eine Robe in kränklichen Grün- und Violetttönen, die Giftzauber effektiver macht.",
+    "bonus": "Wenn der Träger einen Zauber wirkt, der Giftschaden verursacht, verursacht er zusätzlichen Giftschaden.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "vest-of-soul-reaping",
+    "name": "Weste des Seelenerntens",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 3,
+    "value": 11000,
+    "description": "Eine dunkle Weste, die es dem Träger ermöglicht, sich an der Lebenskraft besiegter Feinde zu laben.",
+    "bonus": "Wenn der Träger eine Kreatur tötet, erhält er temporäre Trefferpunkte.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "birthright",
+    "name": "Geburtsrecht",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 3,
+    "value": 13000,
+    "description": "Ein opulentes Gewand, das das angeborene Charisma des Trägers verstärkt.",
+    "bonus": "Erhöht das Charisma um 2.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "bloodguzzlers-garb",
+    "name": "Gewand des Blutsäufers",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 7000,
+    "description": "Ein barbarisches Gewand, das den Träger in einen Blutrausch versetzt, wenn er getroffen wird.",
+    "bonus": "Wenn der Träger getroffen wird, erhält er 'Zorn', der seinen Schaden erhöht.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "enraging-heart-garb",
+    "name": "Gewand des wütenden Herzens",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 7500,
+    "description": "Ein Gewand für Barbaren, das ihre Wut kanalisiert und ihre Konstitution stärkt.",
+    "bonus": "Wenn der Träger wütend ist, erhält er +2 auf Konstitution.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "shelter-of-athkatla",
+    "name": "Schutz von Athkatla",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 10000,
+    "description": "Eine prächtige Robe, die dem Träger einen Vorteil bei Rettungswürfen gegen Zauber gewährt.",
+    "bonus": "Vorteil bei Rettungswürfen gegen Zauber.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "the-vest-of-cherished-necromancy",
+    "name": "Die Weste der geschätzten Nekromantie",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 3,
+    "value": 14000,
+    "description": "Eine finstere Weste, die es Nekromanten ermöglicht, die Seelen derer zu absorbieren, die sie töten, um ihre Zauber ohne Kosten zu wirken.",
+    "bonus": "Wenn der Träger eine Kreatur mit einem Zauber tötet, kann er seinen nächsten Nekromantie-Zauber wirken, ohne einen Zauberplatz zu verbrauchen.",
+    "icon": "placeholder_cloth.webp"
+  },
+  {
+    "id": "robe-of-supreme-defences",
+    "name": "Robe der höchsten Verteidigung",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 4,
+    "value": 11000,
+    "description": "Eine Robe, die sich an die Bedrohungen anpasst und dem Träger Schutz bietet, wenn er sich konzentriert.",
+    "bonus": "Wenn sich der Träger auf einen Zauber konzentriert, erhält er +1 auf Rüstungsklasse und Rettungswürfe.",
+    "icon": "placeholder_cloth.webp"
+  }
+]

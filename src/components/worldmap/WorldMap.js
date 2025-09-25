@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import PlayerCharacter from "./PlayerCharacter";
 import "./WorldMap.css";
+import locations from "../../data/locations.json";
 
-// --- Map-Konfiguration ---
+// --- Map Configuration ---
 const TILE_SIZE = 128;
 const MAP_WIDTH_TILES = 32;
 const MAP_HEIGHT_TILES = 24;
@@ -14,14 +15,15 @@ const CANVAS_HEIGHT_PX = 640;
 
 const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 2.0;
+const OVERLAP = 0.5; // Pixel-Überlappung, um Lücken zu vermeiden
 
-// --- Geschwindigkeit der Spielfigur ---
-const PLAYER_SPEED_PIXELS_PER_SECOND = 50; // Pixel pro Sekunde
+// --- Player Speed ---
+const PLAYER_SPEED_PIXELS_PER_SECOND = 150;
 
-// --- Hilfsfunktion: Wert in einem Bereich begrenzen ---
+// --- Helper Function ---
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
-// --- Bild-Import ---
+// --- Image Import ---
 function importAll(r) {
   let images = {};
   r.keys().forEach((item) => {
@@ -33,7 +35,7 @@ const mapImageSources = importAll(
   require.context("../../assets/images/map", false, /\.webp$/)
 );
 
-// --- Lade-Funktion für Bilder ---
+// --- Image Loading ---
 const imageCache = {};
 const loadMapImages = () => {
   const imagePromises = [];
@@ -49,7 +51,7 @@ const loadMapImages = () => {
             imageCache[imageName] = img;
             resolve();
           };
-          img.onerror = () => reject(`Fehler beim Laden von ${imageName}`);
+          img.onerror = () => reject(`Error loading ${imageName}`);
         });
         imagePromises.push(promise);
       }
@@ -58,10 +60,10 @@ const loadMapImages = () => {
   return Promise.all(imagePromises);
 };
 
-export const WorldMap = () => {
+export const WorldMap = ({ character, onEnterLocation }) => {
   const canvasRef = useRef(null);
   const playerRef = useRef(null);
-  const animationFrameId = useRef(); // Ref, um die ID des Animation Frames zu speichern
+  const animationFrameId = useRef();
   const lastFrameTimeRef = useRef(performance.now());
 
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -71,19 +73,46 @@ export const WorldMap = () => {
     offsetY: 0,
   });
   const [isPanning, setIsPanning] = useState(false);
-  const panStartRef = useRef({ x: 0, y: 0, initialOffsetX: 0, initialOffsetY: 0 });
+  const panStartRef = useRef({
+    x: 0,
+    y: 0,
+    initialOffsetX: 0,
+    initialOffsetY: 0,
+  });
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
+  const [modal, setModal] = useState({ show: false, location: null });
 
-  // Zielposition (wird per Rechtsklick gesetzt)
-  const playerTargetPosition = useRef({ x: 2048, y: 1536 });
-  // Aktuelle Position (wird in der Animation aktualisiert)
-  const playerCurrentPosition = useRef({ x: 2048, y: 1536 });
+  const playerCurrentPosition = useRef(character.position);
+  const playerTargetPosition = useRef(character.position);
 
   useEffect(() => {
     loadMapImages().then(() => setImagesLoaded(true));
   }, []);
 
-  // Die Haupt-Animationsschleife
+  useEffect(() => {
+    const centerViewOnPlayer = () => {
+      const playerX = playerCurrentPosition.current.x;
+      const playerY = playerCurrentPosition.current.y;
+      const scale = 1.0;
+
+      let newOffsetX = CANVAS_WIDTH_PX / 2 - playerX * scale;
+      let newOffsetY = CANVAS_HEIGHT_PX / 2 - playerY * scale;
+
+      const minOffsetX = CANVAS_WIDTH_PX - MAP_WIDTH_PX * scale;
+      const minOffsetY = CANVAS_HEIGHT_PX - MAP_HEIGHT_PX * scale;
+
+      setViewTransform({
+        scale: scale,
+        offsetX: clamp(newOffsetX, minOffsetX, 0),
+        offsetY: clamp(newOffsetY, minOffsetY, 0),
+      });
+    };
+
+    if (imagesLoaded) {
+      centerViewOnPlayer();
+    }
+  }, [imagesLoaded, character.position]);
+
   const gameLoop = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !imagesLoaded || !playerRef.current) {
@@ -92,41 +121,72 @@ export const WorldMap = () => {
     }
     const ctx = canvas.getContext("2d");
 
-    // DeltaTime Berechnung
     const now = performance.now();
-    const deltaTime = (now - lastFrameTimeRef.current) / 1000; // in Sekunden
+    const deltaTime = (now - lastFrameTimeRef.current) / 1000;
     lastFrameTimeRef.current = now;
 
-    // --- KARTEN-RENDERING ---
     canvas.width = CANVAS_WIDTH_PX;
     canvas.height = CANVAS_HEIGHT_PX;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(viewTransform.offsetX, viewTransform.offsetY);
     ctx.scale(viewTransform.scale, viewTransform.scale);
+
     const view = {
       x: -viewTransform.offsetX / viewTransform.scale,
       y: -viewTransform.offsetY / viewTransform.scale,
       width: canvas.width / viewTransform.scale,
       height: canvas.height / viewTransform.scale,
     };
+
     const startCol = Math.max(0, Math.floor(view.x / TILE_SIZE));
-    const endCol = Math.min(MAP_WIDTH_TILES, Math.ceil((view.x + view.width) / TILE_SIZE));
+    const endCol = Math.min(
+      MAP_WIDTH_TILES,
+      Math.ceil((view.x + view.width) / TILE_SIZE)
+    );
     const startRow = Math.max(0, Math.floor(view.y / TILE_SIZE));
-    const endRow = Math.min(MAP_HEIGHT_TILES, Math.ceil((view.y + view.height) / TILE_SIZE));
-    const OVERLAP = 0.5;
+    const endRow = Math.min(
+      MAP_HEIGHT_TILES,
+      Math.ceil((view.y + view.height) / TILE_SIZE)
+    );
+
     for (let row = startRow; row < endRow; row++) {
       for (let col = startCol; col < endCol; col++) {
         const imageName = `map_${row + 1}x${col + 1}`;
         const image = imageCache[imageName];
         if (image) {
-          ctx.drawImage(image, col * TILE_SIZE - OVERLAP, row * TILE_SIZE - OVERLAP, TILE_SIZE + OVERLAP * 2, TILE_SIZE + OVERLAP * 2);
+          // Kacheln leicht überlappend zeichnen
+          ctx.drawImage(
+            image,
+            col * TILE_SIZE - OVERLAP,
+            row * TILE_SIZE - OVERLAP,
+            TILE_SIZE + OVERLAP * 2,
+            TILE_SIZE + OVERLAP * 2
+          );
         }
       }
     }
+
+    locations.forEach((loc) => {
+      ctx.beginPath();
+      ctx.arc(loc.x, loc.y, 20, 0, 2 * Math.PI);
+      ctx.fillStyle =
+        loc.type === "city" ? "rgba(255, 215, 0, 0.8)" : "rgba(139, 0, 0, 0.8)";
+      ctx.fill();
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.font = "bold 22px sans-serif";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 4;
+      ctx.strokeText(loc.name, loc.x, loc.y - 30);
+      ctx.fillText(loc.name, loc.x, loc.y - 30);
+    });
     ctx.restore();
 
-    // --- SPIELER-BEWEGUNGSLOGIK ---
     const currentPos = playerCurrentPosition.current;
     const targetPos = playerTargetPosition.current;
     const dx = targetPos.x - currentPos.x;
@@ -144,16 +204,30 @@ export const WorldMap = () => {
       }
     }
 
-    // --- SPIELER-RENDERING ---
-    const playerPixelX = currentPos.x * viewTransform.scale + viewTransform.offsetX;
-    const playerPixelY = currentPos.y * viewTransform.scale + viewTransform.offsetY;
-    playerRef.current.style.transform = `translate(${playerPixelX}px, ${playerPixelY}px) translate(-50%, -50%)`;
+    if (!modal.show) {
+      for (const loc of locations) {
+        const dxLoc = loc.x - currentPos.x;
+        const dyLoc = loc.y - currentPos.y;
+        const distanceToLoc = Math.sqrt(dxLoc * dxLoc + dyLoc * dyLoc);
+        if (distanceToLoc < loc.radius) {
+          playerTargetPosition.current = { ...currentPos };
+          setModal({ show: true, location: loc });
+          break;
+        }
+      }
+    }
 
-    // Nächsten Frame anfordern
+    const playerPixelX =
+      currentPos.x * viewTransform.scale + viewTransform.offsetX;
+    const playerPixelY =
+      currentPos.y * viewTransform.scale + viewTransform.offsetY;
+    if (playerRef.current) {
+      playerRef.current.style.transform = `translate(${playerPixelX}px, ${playerPixelY}px) translate(-50%, -50%)`;
+    }
+
     animationFrameId.current = requestAnimationFrame(gameLoop);
-  }, [imagesLoaded, viewTransform]); // Abhängig von viewTransform, um bei Zoom/Pan neu berechnet zu werden
+  }, [imagesLoaded, viewTransform, modal.show]);
 
-  // Effekt zum Starten und Stoppen der Game Loop
   useEffect(() => {
     animationFrameId.current = requestAnimationFrame(gameLoop);
     return () => {
@@ -161,14 +235,12 @@ export const WorldMap = () => {
     };
   }, [gameLoop]);
 
-
-  // --- EVENT HANDLER ---
   const handleWheel = (e) => {
     e.preventDefault();
     const rect = canvasRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    setViewTransform(prev => {
+    setViewTransform((prev) => {
       const scaleAmount = -e.deltaY > 0 ? 1.1 : 0.9;
       const newScale = clamp(prev.scale * scaleAmount, MIN_ZOOM, MAX_ZOOM);
       const worldX = (mouseX - prev.offsetX) / prev.scale;
@@ -186,7 +258,7 @@ export const WorldMap = () => {
   };
 
   const handleMouseDown = (e) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || modal.show) return;
     e.preventDefault();
     setIsPanning(true);
     panStartRef.current = {
@@ -197,44 +269,69 @@ export const WorldMap = () => {
     };
   };
 
-  const handleMouseUp = () => {
-    setIsPanning(false);
-  };
+  const handleMouseUp = () => setIsPanning(false);
 
   const handleMouseMove = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    const worldXForDisplay = Math.floor((mouseX - viewTransform.offsetX) / viewTransform.scale);
-    const worldYForDisplay = Math.floor((mouseY - viewTransform.offsetY) / viewTransform.scale);
+    const worldXForDisplay = Math.floor(
+      (mouseX - viewTransform.offsetX) / viewTransform.scale
+    );
+    const worldYForDisplay = Math.floor(
+      (mouseY - viewTransform.offsetY) / viewTransform.scale
+    );
     setMouseCoords({ x: worldXForDisplay, y: worldYForDisplay });
     if (isPanning) {
       const dx = e.clientX - panStartRef.current.x;
       const dy = e.clientY - panStartRef.current.y;
-      setViewTransform(prev => {
+      setViewTransform((prev) => {
         const newOffsetX = panStartRef.current.initialOffsetX + dx;
         const newOffsetY = panStartRef.current.initialOffsetY + dy;
         const minOffsetX = CANVAS_WIDTH_PX - MAP_WIDTH_PX * prev.scale;
         const minOffsetY = CANVAS_HEIGHT_PX - MAP_HEIGHT_PX * prev.scale;
-        return { ...prev, offsetX: clamp(newOffsetX, minOffsetX, 0), offsetY: clamp(newOffsetY, minOffsetY, 0) };
+        return {
+          ...prev,
+          offsetX: clamp(newOffsetX, minOffsetX, 0),
+          offsetY: clamp(newOffsetY, minOffsetY, 0),
+        };
       });
     }
   };
 
   const handleContextMenu = (e) => {
     e.preventDefault();
+    if (modal.show) return;
     const rect = canvasRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     const worldX = (mouseX - viewTransform.offsetX) / viewTransform.scale;
     const worldY = (mouseY - viewTransform.offsetY) / viewTransform.scale;
-    
-    // Setzt nur das neue Ziel in der Ref. Kein State-Update, kein Re-Render!
     playerTargetPosition.current = { x: worldX, y: worldY };
   };
 
+  const handleEnter = () => {
+    if (modal.location) {
+      onEnterLocation(modal.location.id, playerCurrentPosition.current);
+      setModal({ show: false, location: null });
+    }
+  };
+
+  const handleCancel = () => {
+    const loc = modal.location;
+    setModal({ show: false, location: null });
+    if (loc) {
+      const currentPos = playerCurrentPosition.current;
+      const angle = Math.atan2(currentPos.y - loc.y, currentPos.x - loc.x);
+      playerTargetPosition.current = {
+        x: currentPos.x + Math.cos(angle) * 20,
+        y: currentPos.y + Math.sin(angle) * 20,
+      };
+    }
+  };
+
   if (!imagesLoaded) return <div>Lade Kartenkacheln...</div>;
-  
+
   return (
     <div className="world-map-viewport">
       <canvas
@@ -248,6 +345,15 @@ export const WorldMap = () => {
         onMouseMove={handleMouseMove}
         onContextMenu={handleContextMenu}
       />
+
+      {modal.show && (
+        <div className="interaction-modal">
+          <p>Möchtest du {modal.location.name} betreten?</p>
+          <button onClick={handleEnter}>Betreten</button>
+          <button onClick={handleCancel}>Nein</button>
+        </div>
+      )}
+
       <div className="mouse-coords">
         X: {mouseCoords.x}, Y: {mouseCoords.y}
       </div>

@@ -5,21 +5,19 @@ import { WorldMap } from "../worldmap/WorldMap";
 import { CombatLog } from "../combat/CombatLog";
 import "./GameView.css";
 
-function GameView({ character, onToggleCharacterSheet }) {
-  // Überprüfung, um sicherzustellen, dass der Charakter und seine Werte geladen sind.
+// 'onEnterLocation' wird hier als prop empfangen
+function GameView({ character, onToggleCharacterSheet, onEnterLocation }) {
   if (!character || !character.stats) {
     return <div>Lade Charakterdaten...</div>;
   }
 
-  // Die Party-Liste enthält jetzt nur noch den Spielercharakter.
-  // Sie kann in Zukunft dynamisch mit weiteren Charakteren erweitert werden.
   const party = [
     {
       id: "player",
       name: character.name,
       hp: character.stats.hp,
       maxHp: character.stats.maxHp,
-      portrait: character.portrait, // Hier wird das korrekte Portrait verwendet
+      portrait: character.portrait,
     },
   ];
 
@@ -30,7 +28,8 @@ function GameView({ character, onToggleCharacterSheet }) {
           <PartyPortraits party={party} />
         </div>
         <div className="world-map-area">
-          <WorldMap character={character} />
+          {/* Die 'onEnterLocation' prop wird jetzt an WorldMap weitergegeben */}
+          <WorldMap character={character} onEnterLocation={onEnterLocation} />
         </div>
       </div>
 
