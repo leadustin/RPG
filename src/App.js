@@ -30,8 +30,20 @@ function App() {
     setShowCharacterSheet((prevState) => !prevState);
   };
 
+  // Wrapper-Funktionen für die ActionBar
+  const handleQuickSave = () => {
+    console.log('Quick save triggered from ActionBar');
+    return handleSaveGame();
+  };
+
+  const handleQuickLoad = () => {
+    console.log('Quick load triggered from ActionBar');
+    // handleLoadGame setzt bereits den gameState, wir müssen nur aufrufen
+    handleLoadGame();
+  };
+
   const renderScreen = () => {
-    // --- NEU: Prüfen, ob der Spieler an einem Ort ist ---
+    // Prüfen, ob der Spieler an einem Ort ist
     if (gameState.character && gameState.character.currentLocation !== 'worldmap') {
       return (
         <LocationView
@@ -50,7 +62,7 @@ function App() {
             onSaveGame={handleSaveGame}
             onDeleteGame={handleDeleteGame}
             isGameLoaded={!!gameState.character}
-            saveFileExists={localStorage.getItem("character") !== null}
+            saveFileExists={localStorage.getItem("rpg_character") !== null}
           />
         );
       case "character-creation":
@@ -64,7 +76,9 @@ function App() {
           <GameView
             character={gameState.character}
             onToggleCharacterSheet={toggleCharacterSheet}
-            onEnterLocation={handleEnterLocation} 
+            onEnterLocation={handleEnterLocation}
+            onSaveGame={handleQuickSave}
+            onLoadGame={handleQuickLoad}
           />
         );
       default:
@@ -72,8 +86,10 @@ function App() {
           <StartScreen
             onNewGame={handleNewGame}
             onLoadGame={handleLoadGame}
+            onSaveGame={handleSaveGame}
+            onDeleteGame={handleDeleteGame}
             isGameLoaded={!!gameState.character}
-            saveFileExists={localStorage.getItem("character") !== null}
+            saveFileExists={localStorage.getItem("rpg_character") !== null}
           />
         );
     }

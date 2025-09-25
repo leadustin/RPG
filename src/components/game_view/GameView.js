@@ -5,8 +5,14 @@ import { WorldMap } from "../worldmap/WorldMap";
 import { CombatLog } from "../combat/CombatLog";
 import "./GameView.css";
 
-// 'onEnterLocation' wird hier als prop empfangen
-function GameView({ character, onToggleCharacterSheet, onEnterLocation }) {
+// Props erweitert um onSaveGame und onLoadGame
+function GameView({ 
+  character, 
+  onToggleCharacterSheet, 
+  onEnterLocation, 
+  onSaveGame, 
+  onLoadGame 
+}) {
   if (!character || !character.stats) {
     return <div>Lade Charakterdaten...</div>;
   }
@@ -38,7 +44,12 @@ function GameView({ character, onToggleCharacterSheet, onEnterLocation }) {
           <CombatLog />
         </div>
         <div className="action-bar-area">
-          <ActionBar onToggleCharacterSheet={onToggleCharacterSheet} />
+          <ActionBar 
+            character={character}
+            onToggleCharacterSheet={onToggleCharacterSheet}
+            onSaveGame={onSaveGame}
+            onLoadGame={onLoadGame}
+          />
         </div>
       </div>
     </div>
