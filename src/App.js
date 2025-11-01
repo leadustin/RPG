@@ -29,6 +29,7 @@ function App() {
     handleEnterLocation,
     handleLeaveLocation,
     handleUpdatePosition,
+    handleDiscoverLocation,
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -99,6 +100,7 @@ function App() {
             onSaveGame={() => setSaveManagerMode("save")}
             onLoadGame={() => setSaveManagerMode("load")}
             onUpdatePosition={handleUpdatePosition}
+            onDiscoverLocation={handleDiscoverLocation}
             saveFileExists={saveFileExists}
           />
         );

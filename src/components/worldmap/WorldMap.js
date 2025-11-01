@@ -65,7 +65,8 @@ const loadMapImages = () => {
 export const WorldMap = ({
   character,
   onEnterLocation,
-  onUpdatePosition, // <--- KORREKTUR 1: onUpdatePosition Prop empfangen
+  onUpdatePosition,
+  onDiscoverLocation, // <--- KORREKTUR 1: Neue Prop empfangen
 }) => {
   const canvasRef = useRef(null);
   const playerRef = useRef(null);
@@ -91,9 +92,6 @@ export const WorldMap = ({
   const playerCurrentPosition = useRef(character.position);
   const playerTargetPosition = useRef(character.position);
 
-  // <--- KORREKTUR 2: Dieser Hook fixt das LADE-Problem
-  // Er synchronisiert die 'character.position'-Prop (die sich beim Laden ändert)
-  // mit den internen 'useRef'-Positionen der Karte.
   useEffect(() => {
     playerCurrentPosition.current = character.position;
     playerTargetPosition.current = character.position;
@@ -125,8 +123,6 @@ export const WorldMap = ({
     if (imagesLoaded) {
       centerViewOnPlayer();
     }
-    // Wir entfernen character.position von hier, da der andere Hook das Zentrieren
-    // beim Laden jetzt durch die Aktualisierung der Refs regelt.
   }, [imagesLoaded]);
 
   const gameLoop = useCallback(() => {
@@ -171,7 +167,6 @@ export const WorldMap = ({
         const imageName = `map_${row + 1}x${col + 1}`;
         const image = imageCache[imageName];
         if (image) {
-          // Kacheln leicht überlappend zeichnen
           ctx.drawImage(
             image,
             col * TILE_SIZE - OVERLAP,
@@ -183,7 +178,9 @@ export const WorldMap = ({
       }
     }
 
+    // vvv--- LOGIK GEÄNDERT ---vvv
     locations.forEach((loc) => {
+      // 1. Kreis (Marker) immer zeichnen
       ctx.beginPath();
       ctx.arc(loc.x, loc.y, 20, 0, 2 * Math.PI);
       ctx.fillStyle =
@@ -193,14 +190,22 @@ export const WorldMap = ({
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      ctx.font = "bold 22px sans-serif";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.strokeStyle = "black";
-      ctx.lineWidth = 4;
-      ctx.strokeText(loc.name, loc.x, loc.y - 30);
-      ctx.fillText(loc.name, loc.x, loc.y - 30);
+      // 2. Name nur zeichnen, wenn der Ort entdeckt wurde
+      if (
+        character.discoveredLocations &&
+        character.discoveredLocations.includes(loc.id)
+      ) {
+        ctx.font = "bold 22px sans-serif";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 4;
+        ctx.strokeText(loc.name, loc.x, loc.y - 30);
+        ctx.fillText(loc.name, loc.x, loc.y - 30);
+      }
     });
+    // ^^^--- LOGIK GEÄNDERT ---^^^
+
     ctx.restore();
 
     const currentPos = playerCurrentPosition.current;
@@ -214,9 +219,6 @@ export const WorldMap = ({
       if (movementAmount >= distance) {
         currentPos.x = targetPos.x;
         currentPos.y = targetPos.y;
-        // <--- KORREKTUR 3: Melde die Position an den GameState (für Autosave)
-        // Wir rufen dies nur auf, wenn der Spieler sein Ziel erreicht hat,
-        // um nicht 60x pro Sekunde zu speichern.
         if (onUpdatePosition) {
           onUpdatePosition(currentPos);
         }
@@ -232,6 +234,12 @@ export const WorldMap = ({
         const dyLoc = loc.y - currentPos.y;
         const distanceToLoc = Math.sqrt(dxLoc * dxLoc + dyLoc * dyLoc);
         if (distanceToLoc < loc.radius) {
+          // vvv--- KORREKTUR 2: Ort als entdeckt melden ---vvv
+          if (onDiscoverLocation) {
+            onDiscoverLocation(loc.id);
+          }
+          // ^^^--- KORREKTUR 2 ---^^^
+
           playerTargetPosition.current = { ...currentPos };
           setModal({ show: true, location: loc });
           break;
@@ -248,7 +256,15 @@ export const WorldMap = ({
     }
 
     animationFrameId.current = requestAnimationFrame(gameLoop);
-  }, [imagesLoaded, viewTransform, modal.show, onEnterLocation, onUpdatePosition]); // <-- Abhängigkeiten hier hinzugefügt
+  }, [
+    imagesLoaded,
+    viewTransform,
+    modal.show,
+    onEnterLocation,
+    onUpdatePosition,
+    onDiscoverLocation, // <--- KORREKTUR 3: Abhängigkeit hinzugefügt
+    character, // <--- KORREKTUR 4: Abhängigkeit hinzugefügt (für discoveredLocations)
+  ]);
 
   useEffect(() => {
     animationFrameId.current = requestAnimationFrame(gameLoop);

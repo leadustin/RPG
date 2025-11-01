@@ -152,6 +152,7 @@ export const useGameState = () => {
       position: { x: 2048, y: 1536 },
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
+      discoveredLocations: [],
     };
 
     setGameState({
@@ -159,6 +160,34 @@ export const useGameState = () => {
       character: characterWithStats,
     });
   };
+
+const handleDiscoverLocation = useCallback((locationId) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+
+      // Prüfen, ob der Ort bereits entdeckt wurde
+      if (
+        prevState.character.discoveredLocations &&
+        prevState.character.discoveredLocations.includes(locationId)
+      ) {
+        return prevState; // Nichts tun, wenn schon entdeckt
+      }
+
+      // Den neuen Ort zum Array hinzufügen
+      const newDiscoveredLocations = [
+        ...(prevState.character.discoveredLocations || []),
+        locationId,
+      ];
+
+      return {
+        ...prevState,
+        character: {
+          ...prevState.character,
+          discoveredLocations: newDiscoveredLocations,
+        },
+      };
+    });
+  }, []);
 
   const handleEnterLocation = useCallback((locationId, currentPosition) => {
     setGameState((prevState) => {
@@ -291,5 +320,6 @@ export const useGameState = () => {
     handleEnterLocation,
     handleLeaveLocation,
     handleUpdatePosition,
+    handleDiscoverLocation,
   };
 };
