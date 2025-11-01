@@ -7,6 +7,7 @@ import { useGameState } from "./hooks/useGameState";
 import { StartScreen } from "./components/start_screen/StartScreen";
 import { CharacterCreationScreen } from "./components/character_creation/CharacterCreationScreen";
 import GameView from "./components/game_view/GameView";
+import { LevelUpModal } from "./components/level_up/LevelUpModal";
 import CharacterSheet from "./components/character_sheet/CharacterSheet";
 import { TileMap } from "./components/maps/TileMap";
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
@@ -30,6 +31,7 @@ function App() {
     handleLeaveLocation,
     handleUpdatePosition,
     handleDiscoverLocation,
+    handleConfirmLevelUp
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -134,6 +136,13 @@ function App() {
               handleToggleTwoHanded={handleToggleTwoHanded}
             />
           )}
+
+          {gameState.character && gameState.character.pendingLevelUp && (
+          <LevelUpModal
+            character={gameState.character}
+            onConfirm={handleConfirmLevelUp}
+          />
+        )}
 
           {saveManagerMode && (
             <SaveSlotManager

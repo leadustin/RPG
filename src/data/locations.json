@@ -6,7 +6,8 @@
     "y": 1400,
     "radius": 10,
     "description": "Ein alter Wachturm der Elfen, umgeben von einem dichten Wald.",
-    "mapFile": "elfenwacht_turm.json"
+    "mapFile": "elfenwacht_turm.json",
+    "xp": 50
   },
   {
     "id": "goblinhoehle",
@@ -15,7 +16,8 @@
     "y": 2000,
     "radius": 5,
     "description": "Eine feuchte, übelriechende Höhle, die von wilden Goblins bewohnt wird.",
-    "mapFile": "goblinhoehle.json"
+    "mapFile": "goblinhoehle.json",
+    "xp": 500
   },
   {
     "id": "verlassenes_dorf",
@@ -23,6 +25,8 @@
     "x": 1500,
     "y": 2500,
     "radius": 5,
-    "description": "Ein Dorf, das vor langer Zeit von seinen Bewohnern aufgegeben wurde. Die Gründe dafür sind unbekannt."
+    "description": "Ein Dorf, das vor langer Zeit von seinen Bewohnern aufgegeben wurde. Die Gründe dafür sind unbekannt.",
+    "mapFile": "verlassenes_dorf.json",
+    "xp": 50
   }
 ]

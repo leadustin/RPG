@@ -9,6 +9,7 @@ import {
   calculateMeleeDamage,
   ABILITY_DESCRIPTIONS_DE,
 } from "../../engine/characterEngine";
+import { LEVEL_XP_TABLE } from "../../utils/helpers";
 import InventoryItem from "./InventoryItem";
 import EquipmentSlot from "./EquipmentSlot";
 import { ItemTypes } from "../../dnd/itemTypes";
@@ -202,10 +203,6 @@ const CharacterSheet = ({
     return null;
   }
 
-  if (!character) {
-    return null;
-  }
-
   const maxWeight = character.stats.abilities.str * 15;
   const toggleInventory = (characterName) => {
     setCollapsedInventories((prevState) => ({
@@ -219,6 +216,11 @@ const CharacterSheet = ({
   const armorClass = calculateAC(character);
   const initiative = getAbilityModifier(character.stats.abilities.dex);
   const meleeDamage = calculateMeleeDamage(character);
+
+  // EXP-Berechnungen
+  const currentExp = character.experience || 0;
+  const nextLevel = (character.level || 1) + 1;
+  const expForNextLevel = nextLevel <= 20 ? LEVEL_XP_TABLE[nextLevel] : "MAX";
 
   return (
     <div className="game-ui">
@@ -505,6 +507,13 @@ const CharacterSheet = ({
                 <div className="combat-stat">
                   <span>Initiative</span>
                   <span>{initiative >= 0 ? `+${initiative}` : initiative}</span>
+                </div>
+                <div className="combat-stat">
+                  <span>Erfahrung</span>
+                  <span>
+                    {currentExp}
+                    {expForNextLevel !== "MAX" ? `/${expForNextLevel}` : " (MAX)"}
+                  </span>
                 </div>
               </div>
             </div>

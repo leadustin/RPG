@@ -8,7 +8,14 @@ import {
   saveToSlot,
   loadFromSlot,
 } from "../utils/persistence";
-import { calculateInitialHP, calculateAC } from "../engine/characterEngine";
+// *** 1. IMPORT ERWEITERT ***
+import { 
+  calculateInitialHP, 
+  calculateAC, 
+  grantXpToCharacter,
+  applyLevelUp, 
+  rollDiceFormula
+} from "../engine/characterEngine";
 import allRaceData from "../data/races.json";
 import locationsData from "../data/locations.json";
 
@@ -153,6 +160,7 @@ export const useGameState = () => {
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
       discoveredLocations: [],
+      // HINZUGEFÜGT (aus vorherigem Schritt)
       level: 1,
       experience: 0,
     };
@@ -163,6 +171,7 @@ export const useGameState = () => {
     });
   };
 
+// *** 2. handleDiscoverLocation ANGEPASST ***
 const handleDiscoverLocation = useCallback((locationId) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -181,15 +190,26 @@ const handleDiscoverLocation = useCallback((locationId) => {
         locationId,
       ];
 
+      // --- START DER ÄNDERUNG ---
+      let updatedCharacter = {
+        ...prevState.character,
+        discoveredLocations: newDiscoveredLocations,
+      };
+
+      // EP-Logik für Entdeckung
+      const locationData = locationsData.find(loc => loc.id === locationId);
+      if (locationData && locationData.xp > 0) {
+        // Rufe die neue Engine-Funktion auf
+        updatedCharacter = grantXpToCharacter(updatedCharacter, locationData.xp);
+      }
+      // --- ENDE DER ÄNDERUNG ---
+
       return {
         ...prevState,
-        character: {
-          ...prevState.character,
-          discoveredLocations: newDiscoveredLocations,
-        },
+        character: updatedCharacter, // Speichere den potenziell aufgestiegenen Charakter
       };
     });
-  }, []);
+  }, []); //
 
   const handleEnterLocation = useCallback((locationId, currentPosition) => {
     setGameState((prevState) => {
@@ -307,11 +327,27 @@ const handleDiscoverLocation = useCallback((locationId) => {
     });
   }, []);
 
+  const handleConfirmLevelUp = useCallback((hpRollResult) => {
+    setGameState((prevState) => {
+      if (!prevState.character || !prevState.character.pendingLevelUp) {
+        return prevState;
+      }
+      
+      // Rufe die neue Engine-Funktion auf, um die Stats anzuwenden
+      const updatedCharacter = applyLevelUp(prevState.character, hpRollResult);
+
+      return {
+        ...prevState,
+        character: updatedCharacter,
+      };
+    });
+  }, []);
+
   return {
     gameState,
     setGameState,
     handleNewGame,
-    handleLoadAutoSaveGame, // Neu
+    handleLoadAutoSaveGame,
     handleDeleteGame,
     handleSaveToSlot,
     handleLoadFromSlot,
@@ -323,5 +359,7 @@ const handleDiscoverLocation = useCallback((locationId) => {
     handleLeaveLocation,
     handleUpdatePosition,
     handleDiscoverLocation,
+    handleConfirmLevelUp,
+    rollDiceFormula,
   };
 };
