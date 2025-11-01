@@ -1,4 +1,7 @@
 import allArmor from '../data/items/armor.json';
+// *** 1. IMPORT HINZUGEFÜGT ***
+import { LEVEL_XP_TABLE } from '../utils/helpers';
+
 /**
  * Berechnet den Modifikator für einen Attributswert.
  */
@@ -10,10 +13,12 @@ export const getAbilityModifier = (score) => {
  * Gibt den Übungsbonus für ein gegebenes Level zurück.
  */
 export const getProficiencyBonus = (level) => {
+  // *** KORREKTUR *** (D&D 5e geht bis +6)
   if (level < 5) return 2;
   if (level < 9) return 3;
   if (level < 13) return 4;
-  return 5;
+  if (level < 17) return 5;
+  return 6; // Stufe 17-20
 };
 
 /**
@@ -211,8 +216,12 @@ export const calculateSkillBonus = (character, skillKey) => {
   const finalAbilityScore = character.abilities[abilityKey] + getRacialAbilityBonus(character, abilityKey);
   const modifier = getAbilityModifier(finalAbilityScore);
   
+  // *** KORREKTUR ***
+  // Verwendet jetzt das tatsächliche Level des Charakters statt "1"
+  const proficiencyBonus = getProficiencyBonus(character.level || 1);
+  
   if (isProficientInSkill(character, skillKey)) {
-    return modifier + getProficiencyBonus(1); // Annahme: Level 1
+    return modifier + proficiencyBonus;
   }
   
   return modifier;
@@ -287,4 +296,136 @@ export const SKILL_DESCRIPTIONS_DE = {
   sleight_of_hand: "Fingerfertigkeit (Geschicklichkeit): Die Fähigkeit, Taschendiebstahl zu begehen, Schlösser zu knacken und andere manuelle Tricks auszuführen.",
   stealth: "Heimlichkeit (Geschicklichkeit): Die Fähigkeit, sich ungesehen und ungehört an anderen vorbeizuschleichen.",
   survival: "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden."
+};
+
+
+// --- *** 2. NEUE FUNKTIONEN FÜR EP UND LEVEL-LOGIK *** ---
+
+
+/**
+ * BERECHNET MAXIMALE HP
+ * (Wird für Stufenaufstiege benötigt)
+ * Berechnet die maximalen Trefferpunkte basierend auf Level, Klasse und Konstitution.
+ */
+export const calculateMaxHP = (character) => {
+    if (!character || !character.class || !character.abilities) return 1;
+    
+    const finalCon = character.abilities.con + getRacialAbilityBonus(character, 'con');
+    const conMod = getAbilityModifier(finalCon);
+    const level = character.level || 1;
+    
+    // Trefferwürfel (z.B. 10 für Kämpfer, 8 für Kleriker)
+    const hitDieValue = character.class.hit_die || 8; 
+    
+    // Level 1: Max. Würfelwert + KON
+    let hp = hitDieValue + conMod;
+    
+    // Level 2+: Durchschnittlicher Wurf (aufgerundet) + KON
+    if (level > 1) {
+        // D&D 5e Durchschnitt: (Würfel / 2) + 1. (z.B. d8 -> 4 + 1 = 5)
+        const avgRoll = Math.floor(hitDieValue / 2) + 1; 
+        hp += (avgRoll + conMod) * (level - 1);
+    }
+
+    // Rassenboni (z.B. Berzwerg)
+    if (character.subrace?.key === 'hill-dwarf') {
+      hp += level; // +1 HP pro Level (D&D 5e Regel)
+    }
+    
+    return hp;
+};
+
+/**
+ * PRÜFT AUF STUFENAUFSTIEG
+ * Prüft, ob ein Charakter genug EP für einen Stufenaufstieg hat.
+ * @param {object} character Das Charakterobjekt.
+ * @returns {object} Das potenziell aktualisierte Charakterobjekt.
+ */
+export const checkForLevelUp = (character) => {
+  // Stufe 20 ist das Maximum
+  if (character.level >= 20) {
+    return character;
+  }
+
+  const nextLevel = character.level + 1;
+  const xpForNextLevel = LEVEL_XP_TABLE[nextLevel];
+
+  // Prüfen, ob der Charakter genug EP hat
+  if (character.experience >= xpForNextLevel) {
+    // STUFENAUFSTIEG!
+    let leveledUpChar = {
+      ...character,
+      level: nextLevel
+    };
+    
+    console.log(`STUFENAUFSTIEG: ${character.name} ist jetzt Stufe ${nextLevel}!`);
+    
+    // HP neu berechnen (WICHTIG!)
+    // Wir nehmen an, der Charakter heilt beim Stufenaufstieg nicht automatisch voll.
+    // Wir berechnen die *Erhöhung* der Max. HP und addieren sie zu den *aktuellen* HP.
+    const oldMaxHP = leveledUpChar.hp || calculateMaxHP({ ...leveledUpChar, level: leveledUpChar.level - 1 });
+    const newMaxHP = calculateMaxHP(leveledUpChar);
+    const hpIncrease = newMaxHP - oldMaxHP;
+
+    leveledUpChar.hp = (leveledUpChar.hp || oldMaxHP) + hpIncrease;
+    leveledUpChar.maxHp = newMaxHP; // Stelle sicher, dass du maxHp speicherst
+    
+    // TODO: Hier muss die Logik für Attributerhöhungen, neue Zauber etc. hin.
+    
+    // Erneut prüfen, falls genug EP für mehrere Level gesammelt wurden.
+    return checkForLevelUp(leveledUpChar);
+  }
+
+  // Kein Stufenaufstieg
+  return character;
+};
+
+
+/**
+ * VERGIBT ERFAHRUNGSPUNKTE
+ * Verteilt EP an die Gruppe und prüft auf Stufenaufstiege.
+ * @param {Array<object>} party - Das aktuelle Array der Party-Mitglieder.
+ * @param {Array<object>} defeatedEnemies - Ein Array der besiegten Gegner-Objekte (aus enemies.json).
+ * @returns {Array<object>} Das aktualisierte Party-Array.
+ */
+export const grantExperienceToParty = (party, defeatedEnemies) => {
+  // 1. Gesamt-EP der besiegten Gegner berechnen
+  const totalXp = defeatedEnemies.reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
+  
+  if (totalXp === 0) {
+    return party; // Nichts zu tun
+  }
+
+  // 2. EP gleichmäßig auf alle Party-Mitglieder verteilen
+  const partySize = party.length;
+  if (partySize === 0) {
+    return party;
+  }
+
+  const xpPerMember = Math.floor(totalXp / partySize);
+
+  if (xpPerMember === 0) {
+    return party;
+  }
+
+  console.log(`Die Gruppe erhält ${totalXp} EP (${xpPerMember} pro Mitglied).`);
+
+  // 3. EP an jeden Charakter vergeben und auf Stufenaufstieg prüfen
+  const updatedParty = party.map(character => {
+    // Stelle sicher, dass die Startwerte vorhanden sind
+    const currentExperience = character.experience || 0;
+    const currentLevel = character.level || 1;
+
+    const updatedChar = {
+      ...character,
+      level: currentLevel,
+      experience: currentExperience + xpPerMember
+    };
+    
+    // Prüfe, ob dieser Charakter aufsteigt
+    return checkForLevelUp(updatedChar);
+  });
+
+  // 4. Die aktualisierte Party zurückgeben
+  return updatedParty;
 };

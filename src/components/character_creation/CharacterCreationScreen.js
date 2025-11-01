@@ -29,6 +29,8 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
       languages: [],
       tools: [],
     },
+    level: 1,
+    experience: 0
   });
 
   const updateCharacter = (newValues) => {

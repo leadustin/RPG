@@ -20,7 +20,7 @@ const MAX_ZOOM = 2.0;
 const OVERLAP = 0.5; // Pixel-Überlappung, um Lücken zu vermeiden
 
 // --- Player Speed ---
-const PLAYER_SPEED_PIXELS_PER_SECOND = 150;
+const PLAYER_SPEED_PIXELS_PER_SECOND = 100;
 
 // --- Helper Function ---
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
@@ -234,11 +234,9 @@ export const WorldMap = ({
         const dyLoc = loc.y - currentPos.y;
         const distanceToLoc = Math.sqrt(dxLoc * dxLoc + dyLoc * dyLoc);
         if (distanceToLoc < loc.radius) {
-          // vvv--- KORREKTUR 2: Ort als entdeckt melden ---vvv
           if (onDiscoverLocation) {
             onDiscoverLocation(loc.id);
           }
-          // ^^^--- KORREKTUR 2 ---^^^
 
           playerTargetPosition.current = { ...currentPos };
           setModal({ show: true, location: loc });

@@ -153,6 +153,8 @@ export const useGameState = () => {
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
       discoveredLocations: [],
+      level: 1,
+      experience: 0,
     };
 
     setGameState({
