@@ -1,3 +1,5 @@
+// src/components/game_view/GameView.js
+
 import React from "react";
 import { PartyPortraits } from "./PartyPortraits";
 import ActionBar from "./ActionBar";
@@ -5,13 +7,13 @@ import { WorldMap } from "../worldmap/WorldMap";
 import { CombatLog } from "../combat/CombatLog";
 import "./GameView.css";
 
-// Props erweitert um onSaveGame und onLoadGame
-function GameView({ 
-  character, 
-  onToggleCharacterSheet, 
-  onEnterLocation, 
-  onSaveGame, 
-  onLoadGame 
+function GameView({
+  character,
+  onToggleCharacterSheet,
+  onEnterLocation,
+  onSaveGame,
+  onLoadGame,
+  onUpdatePosition,
 }) {
   if (!character || !character.stats) {
     return <div>Lade Charakterdaten...</div>;
@@ -34,8 +36,11 @@ function GameView({
           <PartyPortraits party={party} />
         </div>
         <div className="world-map-area">
-          {/* Die 'onEnterLocation' prop wird jetzt an WorldMap weitergegeben */}
-          <WorldMap character={character} onEnterLocation={onEnterLocation} />
+          <WorldMap
+            character={character}
+            onEnterLocation={onEnterLocation}
+            onUpdatePosition={onUpdatePosition}
+          />
         </div>
       </div>
 
@@ -44,7 +49,7 @@ function GameView({
           <CombatLog />
         </div>
         <div className="action-bar-area">
-          <ActionBar 
+          <ActionBar
             character={character}
             onToggleCharacterSheet={onToggleCharacterSheet}
             onSaveGame={onSaveGame}

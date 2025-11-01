@@ -1,3 +1,5 @@
+// src/App.js
+
 import React, { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -6,7 +8,8 @@ import { StartScreen } from "./components/start_screen/StartScreen";
 import { CharacterCreationScreen } from "./components/character_creation/CharacterCreationScreen";
 import GameView from "./components/game_view/GameView";
 import CharacterSheet from "./components/character_sheet/CharacterSheet";
-import LocationView from "./components/location_view/LocationView";
+import { TileMap } from "./components/maps/TileMap";
+import locationsData from "./data/locations.json";
 import "./App.css";
 
 function App() {
@@ -22,6 +25,7 @@ function App() {
     handleToggleTwoHanded,
     handleEnterLocation,
     handleLeaveLocation,
+    handleUpdatePosition,
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -30,26 +34,30 @@ function App() {
     setShowCharacterSheet((prevState) => !prevState);
   };
 
-  // Wrapper-Funktionen für die ActionBar
-  const handleQuickSave = () => {
-    console.log('Quick save triggered from ActionBar');
-    return handleSaveGame();
-  };
-
-  const handleQuickLoad = () => {
-    console.log('Quick load triggered from ActionBar');
-    // handleLoadGame setzt bereits den gameState, wir müssen nur aufrufen
-    handleLoadGame();
-  };
-
   const renderScreen = () => {
-    // Prüfen, ob der Spieler an einem Ort ist
-    if (gameState.character && gameState.character.currentLocation !== 'worldmap') {
+    const currentLocationId = gameState.character?.currentLocation;
+    if (currentLocationId && currentLocationId !== "worldmap") {
+      const location = locationsData.find(
+        (loc) => loc.id === currentLocationId
+      );
+
+      if (location && location.mapFile) {
+        return (
+          <TileMap
+            mapFile={location.mapFile}
+            character={gameState.character}
+            onLeaveLocation={handleLeaveLocation}
+            onUpdatePosition={handleUpdatePosition}
+          />
+        );
+      }
+
       return (
-        <LocationView
-          locationId={gameState.character.currentLocation}
-          onLeaveLocation={handleLeaveLocation}
-        />
+        <div>
+          <h1>{location?.name || "Unbekannter Ort"}</h1>
+          <p>{location?.description || "Keine Beschreibung verfügbar."}</p>
+          <button onClick={handleLeaveLocation}>Zurück zur Weltkarte</button>
+        </div>
       );
     }
 
@@ -77,8 +85,9 @@ function App() {
             character={gameState.character}
             onToggleCharacterSheet={toggleCharacterSheet}
             onEnterLocation={handleEnterLocation}
-            onSaveGame={handleQuickSave}
-            onLoadGame={handleQuickLoad}
+            onSaveGame={handleSaveGame}
+            onLoadGame={handleLoadGame}
+            onUpdatePosition={handleUpdatePosition}
           />
         );
       default:

@@ -1,3 +1,5 @@
+// src/hooks/useGameState.js
+
 import { useState, useEffect, useCallback } from "react";
 import {
   loadCharacter,
@@ -6,7 +8,7 @@ import {
 } from "../utils/persistence";
 import { calculateInitialHP, calculateAC } from "../engine/characterEngine";
 import allRaceData from "../data/races.json";
-import locationsData from "../data/locations.json"; // Orte importieren
+import locationsData from "../data/locations.json";
 
 // Item-Daten importieren
 import armorData from "../data/items/armor.json";
@@ -100,6 +102,18 @@ export const useGameState = () => {
       abilities: tempChar.abilities,
     };
 
+    const equipmentList = finalizedCharacter.class.starting_equipment || [];
+    const initialEquipment = {};
+    equipmentList.forEach((item) => {
+      const itemDetails = allItems.find((i) => i.name === item.item);
+      if (itemDetails && itemDetails.slot) {
+        initialEquipment[itemDetails.slot] = {
+          ...itemDetails,
+          id: `${itemDetails.name}-${Date.now()}`,
+        };
+      }
+    });
+
     const startingInventory = [
       allItems.find((item) => item.id === "longsword"),
       allItems.find((item) => item.id === "greatsword"),
@@ -112,21 +126,7 @@ export const useGameState = () => {
       ...finalizedCharacter,
       stats: initialStats,
       inventory: startingInventory,
-      equipment: {
-        head: null,
-        amulet: null,
-        armor: null,
-        cloth: null,
-        cloak: null,
-        gloves: null,
-        belt: null,
-        boots: null,
-        ring1: null,
-        ring2: null,
-        "main-hand": null,
-        "off-hand": null,
-        ranged: null,
-      },
+      equipment: initialEquipment,
       position: { x: 2048, y: 1536 },
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
@@ -241,14 +241,30 @@ export const useGameState = () => {
     });
   }, []);
 
+  // useEffect für automatisches Speichern kann hier bleiben oder entfernt werden,
+  // je nachdem, ob Sie zusätzlich zum manuellen Speichern ein Autosave möchten.
   useEffect(() => {
     if (gameState.character) {
       saveCharacter(gameState.character);
     }
   }, [gameState.character]);
 
+  const handleUpdatePosition = useCallback((newPosition) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      return {
+        ...prevState,
+        character: {
+          ...prevState.character,
+          position: newPosition,
+        },
+      };
+    });
+  }, []);
+
   return {
     gameState,
+    setGameState,
     handleNewGame,
     handleLoadGame,
     handleSaveGame,
@@ -259,5 +275,6 @@ export const useGameState = () => {
     handleToggleTwoHanded,
     handleEnterLocation,
     handleLeaveLocation,
+    handleUpdatePosition,
   };
 };

@@ -1,7 +1,10 @@
+// src/components/game_view/ActionBar.js
+
 import React, { useState } from 'react';
 import './ActionBar.css';
 
 function ActionBar({ character, onToggleCharacterSheet, onSaveGame, onLoadGame }) {
+  // Die confirmation states könnten später entfernt werden, wenn alles über den Manager läuft.
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
   const [showLoadConfirmation, setShowLoadConfirmation] = useState(false);
 
@@ -10,11 +13,10 @@ function ActionBar({ character, onToggleCharacterSheet, onSaveGame, onLoadGame }
     onToggleCharacterSheet();
   };
 
+  // Diese Funktion ruft jetzt direkt die Prop auf, die den SaveSlotManager öffnet.
   const handleSaveClick = () => {
     if (onSaveGame) {
-      onSaveGame();
-      setShowSaveConfirmation(true);
-      setTimeout(() => setShowSaveConfirmation(false), 2000); // 2 Sekunden anzeigen
+      onSaveGame(); 
     }
   };
 
@@ -22,22 +24,22 @@ function ActionBar({ character, onToggleCharacterSheet, onSaveGame, onLoadGame }
     if (onLoadGame) {
       onLoadGame();
       setShowLoadConfirmation(true);
-      setTimeout(() => setShowLoadConfirmation(false), 2000); // 2 Sekunden anzeigen
+      setTimeout(() => setShowLoadConfirmation(false), 2000);
     }
   };
 
-  // Prüfen ob ein Spielstand existiert
   const saveExists = localStorage.getItem('rpg_character') !== null;
 
   return (
     <div className="action-bar">
+      {/* Dieser Button öffnet jetzt den SaveSlotManager */}
       <button onClick={handleSaveClick} title="Spiel speichern">
         💾 Speichern
       </button>
       <button 
         onClick={handleLoadClick} 
         disabled={!saveExists}
-        title={saveExists ? "Spiel laden" : "Kein Spielstand vorhanden"}
+        title={saveExists ? "Spiel laden (Schnellladen)" : "Kein Spielstand vorhanden"}
       >
         📂 Laden
       </button>
@@ -51,7 +53,6 @@ function ActionBar({ character, onToggleCharacterSheet, onSaveGame, onLoadGame }
         🎒 Inventar
       </button>
       
-      {/* Bestätigungsmeldungen */}
       {showSaveConfirmation && (
         <div className="confirmation-message save-confirmation">
           ✅ Spiel gespeichert!
