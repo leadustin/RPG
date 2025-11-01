@@ -3,17 +3,22 @@
 import React, { useState } from 'react';
 import './ActionBar.css';
 
-function ActionBar({ character, onToggleCharacterSheet, onSaveGame, onLoadGame }) {
-  // Die confirmation states könnten später entfernt werden, wenn alles über den Manager läuft.
+function ActionBar({ 
+  character, 
+  onToggleCharacterSheet, 
+  onSaveGame, 
+  onLoadGame,
+  saveFileExists // <--- 1. PROP HIER EMPFANGEN
+}) {
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
-  const [showLoadConfirmation, setShowLoadConfirmation] = useState(false);
+  // showLoadConfirmation wird nicht mehr gebraucht, da der Manager sich öffnet
+  // const [showLoadConfirmation, setShowLoadConfirmation] = useState(false);
 
   const handleCharacterClick = () => {
     console.log('Character button clicked', character);
     onToggleCharacterSheet();
   };
 
-  // Diese Funktion ruft jetzt direkt die Prop auf, die den SaveSlotManager öffnet.
   const handleSaveClick = () => {
     if (onSaveGame) {
       onSaveGame(); 
@@ -23,12 +28,15 @@ function ActionBar({ character, onToggleCharacterSheet, onSaveGame, onLoadGame }
   const handleLoadClick = () => {
     if (onLoadGame) {
       onLoadGame();
-      setShowLoadConfirmation(true);
-      setTimeout(() => setShowLoadConfirmation(false), 2000);
+      // Diese Bestätigung ist FALSCH, da wir nur den Manager öffnen.
+      // Wir entfernen sie, um Verwirrung zu vermeiden.
+      // setShowLoadConfirmation(true);
+      // setTimeout(() => setShowLoadConfirmation(false), 2000);
     }
   };
 
-  const saveExists = localStorage.getItem('rpg_character') !== null;
+  // 2. DIESE ZEILE LÖSCHEN:
+  // const saveExists = localStorage.getItem('rpg_character') !== null;
 
   return (
     <div className="action-bar">
@@ -38,8 +46,8 @@ function ActionBar({ character, onToggleCharacterSheet, onSaveGame, onLoadGame }
       </button>
       <button 
         onClick={handleLoadClick} 
-        disabled={!saveExists}
-        title={saveExists ? "Spiel laden (Schnellladen)" : "Kein Spielstand vorhanden"}
+        disabled={!saveFileExists} // <--- 3. KORRIGIERTE PROP VERWENDEN
+        title={saveFileExists ? "Spiel laden" : "Kein Spielstand vorhanden"}
       >
         📂 Laden
       </button>
@@ -58,11 +66,12 @@ function ActionBar({ character, onToggleCharacterSheet, onSaveGame, onLoadGame }
           ✅ Spiel gespeichert!
         </div>
       )}
-      {showLoadConfirmation && (
+      {/* {showLoadConfirmation && (
         <div className="confirmation-message load-confirmation">
           ✅ Spiel geladen!
         </div>
       )}
+      */}
     </div>
   );
 }

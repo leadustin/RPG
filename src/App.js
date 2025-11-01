@@ -9,6 +9,8 @@ import { CharacterCreationScreen } from "./components/character_creation/Charact
 import GameView from "./components/game_view/GameView";
 import CharacterSheet from "./components/character_sheet/CharacterSheet";
 import { TileMap } from "./components/maps/TileMap";
+import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
+import { loadAutoSave, getSaveSlots } from "./utils/persistence"; // loadAutoSave importiert
 import locationsData from "./data/locations.json";
 import "./App.css";
 
@@ -16,9 +18,10 @@ function App() {
   const {
     gameState,
     handleNewGame,
-    handleLoadGame,
-    handleSaveGame,
+    handleLoadAutoSaveGame, // Neuer Handler
     handleDeleteGame,
+    handleSaveToSlot,
+    handleLoadFromSlot,
     handleCharacterCreation,
     handleEquipItem,
     handleUnequipItem,
@@ -29,10 +32,16 @@ function App() {
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
+  const [saveManagerMode, setSaveManagerMode] = useState(null);
 
   const toggleCharacterSheet = () => {
     setShowCharacterSheet((prevState) => !prevState);
   };
+
+  // Wir prüfen jetzt Autosave und manuelle Slots getrennt
+  const autoSaveExists = loadAutoSave() !== undefined;
+  const manualSaveExists = getSaveSlots().some((slot) => slot !== null);
+  const saveFileExists = autoSaveExists || manualSaveExists;
 
   const renderScreen = () => {
     const currentLocationId = gameState.character?.currentLocation;
@@ -66,11 +75,13 @@ function App() {
         return (
           <StartScreen
             onNewGame={handleNewGame}
-            onLoadGame={handleLoadGame}
-            onSaveGame={handleSaveGame}
+            onContinueGame={handleLoadAutoSaveGame} // Neu
+            onLoadGame={() => setSaveManagerMode("load")}
+            onSaveGame={() => setSaveManagerMode("save")}
             onDeleteGame={handleDeleteGame}
             isGameLoaded={!!gameState.character}
-            saveFileExists={localStorage.getItem("rpg_character") !== null}
+            autoSaveExists={autoSaveExists} // Neu
+            saveFileExists={saveFileExists}
           />
         );
       case "character-creation":
@@ -85,20 +96,23 @@ function App() {
             character={gameState.character}
             onToggleCharacterSheet={toggleCharacterSheet}
             onEnterLocation={handleEnterLocation}
-            onSaveGame={handleSaveGame}
-            onLoadGame={handleLoadGame}
+            onSaveGame={() => setSaveManagerMode("save")}
+            onLoadGame={() => setSaveManagerMode("load")}
             onUpdatePosition={handleUpdatePosition}
+            saveFileExists={saveFileExists}
           />
         );
       default:
         return (
           <StartScreen
             onNewGame={handleNewGame}
-            onLoadGame={handleLoadGame}
-            onSaveGame={handleSaveGame}
+            onContinueGame={handleLoadAutoSaveGame} // Neu
+            onLoadGame={() => setSaveManagerMode("load")}
+            onSaveGame={() => setSaveManagerMode("save")}
             onDeleteGame={handleDeleteGame}
             isGameLoaded={!!gameState.character}
-            saveFileExists={localStorage.getItem("rpg_character") !== null}
+            autoSaveExists={autoSaveExists} // Neu
+            saveFileExists={saveFileExists}
           />
         );
     }
@@ -116,6 +130,22 @@ function App() {
               handleEquipItem={handleEquipItem}
               handleUnequipItem={handleUnequipItem}
               handleToggleTwoHanded={handleToggleTwoHanded}
+            />
+          )}
+
+          {saveManagerMode && (
+            <SaveSlotManager
+              mode={saveManagerMode}
+              character={gameState.character}
+              onClose={() => setSaveManagerMode(null)}
+              onSave={(slotId, saveName) => {
+                handleSaveToSlot(slotId, saveName);
+                setSaveManagerMode(null);
+              }}
+              onLoad={(slotData, slotId) => {
+                handleLoadFromSlot(slotData);
+                setSaveManagerMode(null);
+              }}
             />
           )}
         </div>

@@ -14,6 +14,7 @@ function GameView({
   onSaveGame,
   onLoadGame,
   onUpdatePosition,
+  saveFileExists, // <--- 1. HIER PROP EMPFANGEN
 }) {
   if (!character || !character.stats) {
     return <div>Lade Charakterdaten...</div>;
@@ -54,6 +55,7 @@ function GameView({
             onToggleCharacterSheet={onToggleCharacterSheet}
             onSaveGame={onSaveGame}
             onLoadGame={onLoadGame}
+            saveFileExists={saveFileExists} // <--- 2. HIER PROP WEITERGEBEN
           />
         </div>
       </div>

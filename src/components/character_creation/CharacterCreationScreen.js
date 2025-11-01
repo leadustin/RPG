@@ -4,7 +4,6 @@ import "./CharacterCreationScreen.css";
 import { CreationSidebar } from "./CreationSidebar";
 import { SelectionPanel } from "./SelectionPanel";
 import { SummaryPanel } from "./SummaryPanel";
-import { saveCharacter } from "../../utils/persistence";
 
 import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";
@@ -47,7 +46,6 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
   };
 
   const handleFinalize = () => {
-    saveCharacter(character);
     onCharacterFinalized(character);
   };
 

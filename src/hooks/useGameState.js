@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  loadCharacter,
-  saveCharacter,
-  deleteCharacter,
+  loadAutoSave,
+  saveAutoSave,
+  deleteAutoSave,
+  saveToSlot,
+  loadFromSlot,
 } from "../utils/persistence";
 import { calculateInitialHP, calculateAC } from "../engine/characterEngine";
 import allRaceData from "../data/races.json";
@@ -39,15 +41,33 @@ export const useGameState = () => {
     character: null,
   });
 
+  // Initiales Laden: ENTFERNT. Wir starten immer mit screen: "start".
+  /*
   useEffect(() => {
-    const loadedCharacter = loadCharacter();
-    if (loadedCharacter) {
-      setGameState((prevState) => ({
-        ...prevState,
-        character: loadedCharacter,
-      }));
+    const loadedState = loadAutoSave();
+    if (loadedState) {
+      setGameState(loadedState);
     }
   }, []);
+  */
+
+  // Autosave: Speichere bei JEDER Änderung, wenn im Spiel
+  useEffect(() => {
+    if (gameState.screen === "game" && gameState.character) {
+      saveAutoSave(gameState);
+    }
+  }, [gameState]);
+
+  // NEUER Handler, um das Autosave-Spiel (Fortsetzen) zu laden
+  const handleLoadAutoSaveGame = () => {
+    const loadedState = loadAutoSave();
+    if (loadedState) {
+      setGameState(loadedState);
+    } else {
+      // Fallback, falls Autosave gelöscht wurde
+      console.warn("Konnte Autosave nicht laden.");
+    }
+  };
 
   const handleNewGame = () => {
     setGameState((prevState) => ({
@@ -56,29 +76,31 @@ export const useGameState = () => {
     }));
   };
 
-  const handleLoadGame = () => {
-    const loadedCharacter = loadCharacter();
-    if (loadedCharacter) {
-      setGameState({
-        screen: "game",
-        character: loadedCharacter,
-      });
-    }
-  };
-
-  const handleSaveGame = useCallback(() => {
-    if (gameState.character) {
-      saveCharacter(gameState.character);
-    }
-  }, [gameState.character]);
-
   const handleDeleteGame = () => {
-    deleteCharacter();
+    deleteAutoSave();
     setGameState({
       screen: "start",
       character: null,
     });
   };
+
+  const handleSaveToSlot = useCallback(
+    (slotId, saveName) => {
+      if (gameState.character) {
+        saveToSlot(slotId, gameState, saveName);
+      }
+    },
+    [gameState]
+  );
+
+  const handleLoadFromSlot = useCallback(
+    (slotData) => {
+      if (slotData && slotData.gameState) {
+        setGameState(slotData.gameState);
+      }
+    },
+    [setGameState]
+  );
 
   const handleCharacterCreation = (finalizedCharacter) => {
     const tempChar = JSON.parse(JSON.stringify(finalizedCharacter));
@@ -241,14 +263,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  // useEffect für automatisches Speichern kann hier bleiben oder entfernt werden,
-  // je nachdem, ob Sie zusätzlich zum manuellen Speichern ein Autosave möchten.
-  useEffect(() => {
-    if (gameState.character) {
-      saveCharacter(gameState.character);
-    }
-  }, [gameState.character]);
-
   const handleUpdatePosition = useCallback((newPosition) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -266,9 +280,10 @@ export const useGameState = () => {
     gameState,
     setGameState,
     handleNewGame,
-    handleLoadGame,
-    handleSaveGame,
+    handleLoadAutoSaveGame, // Neu
     handleDeleteGame,
+    handleSaveToSlot,
+    handleLoadFromSlot,
     handleCharacterCreation,
     handleEquipItem,
     handleUnequipItem,

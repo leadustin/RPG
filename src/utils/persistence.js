@@ -1,66 +1,42 @@
 // src/utils/persistence.js
 
-const CHARACTER_STORAGE_KEY = "rpg_character";
-const GAME_STATE_STORAGE_KEY = "rpg_game_state";
-
-// --- Bestehende Funktionen ---
-export const saveCharacter = (character) => {
-  try {
-    const serializedState = JSON.stringify(character);
-    localStorage.setItem(CHARACTER_STORAGE_KEY, serializedState);
-  } catch (e) {
-    console.warn("Could not save character", e);
-  }
-};
-
-export const loadCharacter = () => {
-  try {
-    const serializedState = localStorage.getItem(CHARACTER_STORAGE_KEY);
-    if (serializedState === null) {
-      return undefined;
-    }
-    return JSON.parse(serializedState);
-  } catch (e) {
-    console.warn("Could not load character", e);
-    return undefined;
-  }
-};
-
-export const deleteCharacter = () => {
-  try {
-    localStorage.removeItem(CHARACTER_STORAGE_KEY);
-    localStorage.removeItem(GAME_STATE_STORAGE_KEY);
-  } catch (e) {
-    console.warn("Could not delete character", e);
-  }
-};
-
-export const saveGameState = (state) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem(GAME_STATE_STORAGE_KEY, serializedState);
-  } catch (e) {
-    console.warn("Could not save game state", e);
-  }
-};
-
-export const loadGameState = () => {
-  try {
-    const serializedState = localStorage.getItem(GAME_STATE_STORAGE_KEY);
-    if (serializedState === null) {
-      return undefined;
-    }
-    return JSON.parse(serializedState);
-  } catch (e) {
-    console.warn("Could not load game state", e);
-    return undefined;
-  }
-};
-
-// =========== FUNKTIONEN FÜR SAVE SLOT MANAGER ===========
-
+const AUTOSAVE_STORAGE_KEY = "rpg_autosave";
 const MAX_SLOTS = 5;
 const SLOT_PREFIX = "rpg_save_slot_";
+
+// --- Autosave Funktionen ---
+
+export const saveAutoSave = (state) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem(AUTOSAVE_STORAGE_KEY, serializedState);
+  } catch (e) {
+    console.warn("Could not save autosave", e);
+  }
+};
+
+export const loadAutoSave = () => {
+  try {
+    const serializedState = localStorage.getItem(AUTOSAVE_STORAGE_KEY);
+    if (serializedState === null) {
+      return undefined;
+    }
+    return JSON.parse(serializedState);
+  } catch (e) {
+    console.warn("Could not load autosave", e);
+    return undefined;
+  }
+};
+
+export const deleteAutoSave = () => {
+  try {
+    localStorage.removeItem(AUTOSAVE_STORAGE_KEY);
+  } catch (e) {
+    console.warn("Could not delete autosave", e);
+  }
+};
+
+// --- Manuelle Save Slot Funktionen (Bestehend) ---
 
 export const getSaveSlots = () => {
   const slots = [];
@@ -79,7 +55,7 @@ export const saveToSlot = (slotId, gameState, name) => {
   const data = {
     name,
     timestamp: new Date().toISOString(),
-    gameState,
+    gameState, // Wichtig: Wir speichern den *gesamten* gameState
   };
   localStorage.setItem(`${SLOT_PREFIX}${slotId}`, JSON.stringify(data));
 };

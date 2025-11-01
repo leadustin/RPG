@@ -1,3 +1,5 @@
+// src/components/worldmap/WorldMap.js
+
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import PlayerCharacter from "./PlayerCharacter";
 import "./WorldMap.css";
@@ -60,7 +62,11 @@ const loadMapImages = () => {
   return Promise.all(imagePromises);
 };
 
-export const WorldMap = ({ character, onEnterLocation }) => {
+export const WorldMap = ({
+  character,
+  onEnterLocation,
+  onUpdatePosition, // <--- KORREKTUR 1: onUpdatePosition Prop empfangen
+}) => {
   const canvasRef = useRef(null);
   const playerRef = useRef(null);
   const animationFrameId = useRef();
@@ -84,6 +90,14 @@ export const WorldMap = ({ character, onEnterLocation }) => {
 
   const playerCurrentPosition = useRef(character.position);
   const playerTargetPosition = useRef(character.position);
+
+  // <--- KORREKTUR 2: Dieser Hook fixt das LADE-Problem
+  // Er synchronisiert die 'character.position'-Prop (die sich beim Laden ändert)
+  // mit den internen 'useRef'-Positionen der Karte.
+  useEffect(() => {
+    playerCurrentPosition.current = character.position;
+    playerTargetPosition.current = character.position;
+  }, [character.position]);
 
   useEffect(() => {
     loadMapImages().then(() => setImagesLoaded(true));
@@ -111,7 +125,9 @@ export const WorldMap = ({ character, onEnterLocation }) => {
     if (imagesLoaded) {
       centerViewOnPlayer();
     }
-  }, [imagesLoaded, character.position]);
+    // Wir entfernen character.position von hier, da der andere Hook das Zentrieren
+    // beim Laden jetzt durch die Aktualisierung der Refs regelt.
+  }, [imagesLoaded]);
 
   const gameLoop = useCallback(() => {
     const canvas = canvasRef.current;
@@ -198,6 +214,12 @@ export const WorldMap = ({ character, onEnterLocation }) => {
       if (movementAmount >= distance) {
         currentPos.x = targetPos.x;
         currentPos.y = targetPos.y;
+        // <--- KORREKTUR 3: Melde die Position an den GameState (für Autosave)
+        // Wir rufen dies nur auf, wenn der Spieler sein Ziel erreicht hat,
+        // um nicht 60x pro Sekunde zu speichern.
+        if (onUpdatePosition) {
+          onUpdatePosition(currentPos);
+        }
       } else {
         currentPos.x += (dx / distance) * movementAmount;
         currentPos.y += (dy / distance) * movementAmount;
@@ -226,7 +248,7 @@ export const WorldMap = ({ character, onEnterLocation }) => {
     }
 
     animationFrameId.current = requestAnimationFrame(gameLoop);
-  }, [imagesLoaded, viewTransform, modal.show]);
+  }, [imagesLoaded, viewTransform, modal.show, onEnterLocation, onUpdatePosition]); // <-- Abhängigkeiten hier hinzugefügt
 
   useEffect(() => {
     animationFrameId.current = requestAnimationFrame(gameLoop);
