@@ -90,5 +90,4 @@ const StatsPanel = ({ character }) => {
     </div>
   );
 };
-
 export default StatsPanel;
