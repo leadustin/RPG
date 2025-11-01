@@ -524,9 +524,6 @@ export const applyLevelUp = (character, hpRollResult) => {
       ...character.stats,
       maxHp: newMaxHP,
       hp: newCurrentHP,
-      // Wichtig: Aktualisiere auch die Fähigkeiten im stats-Objekt, falls sie sich ändern
-      // (Momentan ändern sie sich nicht, aber für Attributerhöhungen wird das wichtig)
-      abilities: { ...character.abilities },
     },
   };
 

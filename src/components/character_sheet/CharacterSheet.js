@@ -60,7 +60,6 @@ const CharacterSheet = ({
     );
   }, [character, activeFilter]);
 
-  // Funktion um zu prüfen ob eine Zweihandwaffe im Off-Hand Slot angezeigt werden soll
   const getTwoHandedDisplayItem = () => {
     const mainHand = character.equipment["main-hand"];
     if (!mainHand || mainHand.type !== "weapon") return null;
@@ -189,13 +188,13 @@ const CharacterSheet = ({
 
   const getClassIcon = () => {
     if (!character || !character.class || !character.class.icon) {
-      return ""; // Fallback
+      return "";
     }
     try {
       return require(`../../assets/images/classes/${character.class.icon}`);
     } catch (e) {
       console.error("Class icon not found:", character.class.icon);
-      return ""; // Fallback
+      return "";
     }
   };
 
@@ -211,13 +210,12 @@ const CharacterSheet = ({
     }));
   };
 
-  const maxHp = calculateInitialHP(character);
+  const maxHp = character.stats.maxHp || calculateInitialHP(character);
   const currentHp = character.stats.hp || maxHp;
   const armorClass = calculateAC(character);
   const initiative = getAbilityModifier(character.stats.abilities.dex);
   const meleeDamage = calculateMeleeDamage(character);
 
-  // EXP-Berechnungen
   const currentExp = character.experience || 0;
   const nextLevel = (character.level || 1) + 1;
   const expForNextLevel = nextLevel <= 20 ? LEVEL_XP_TABLE[nextLevel] : "MAX";

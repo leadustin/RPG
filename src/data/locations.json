@@ -7,7 +7,7 @@
     "radius": 10,
     "description": "Ein alter Wachturm der Elfen, umgeben von einem dichten Wald.",
     "mapFile": "elfenwacht_turm.json",
-    "xp": 50
+    "xp": 500
   },
   {
     "id": "goblinhoehle",
