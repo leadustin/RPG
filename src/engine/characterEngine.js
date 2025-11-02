@@ -590,7 +590,7 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
     stats: {
       ...character.stats,
       maxHp: newMaxHP,
-      hp: newCurrentHP,
+      hp: newMaxHP,
     },
     // 5. Füge die neuen Fähigkeiten zu den bestehenden hinzu
     features: [

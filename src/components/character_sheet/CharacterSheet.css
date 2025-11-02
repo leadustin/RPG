@@ -10,7 +10,7 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--font-main);
     background-color: var(--bg-color);
     color: var(--primary-text-color);
     margin: 0;
@@ -440,8 +440,9 @@ header {
   gap: 20px; /* Stellt den Abstand zwischen den Sektionen wieder her */
   /* Sorgt dafür, dass der Inhalt den verbleibenden Platz einnimmt */
   flex-grow: 1;
+  max-height: 420px; /* Höhe anpassen, falls nötig */
+  overflow-y: auto;
 }
-/* --- ENDE NEUE STILE --- */
 
 /* --- NEUE STILE FÜR ZENTRIERTE STATS-ANZEIGE --- */
 .character-info-centered {
@@ -679,4 +680,78 @@ header {
 .char-subclass-centered,
 .char-class-centered {
   cursor: help; /* Zeigt ein Fragezeichen beim Hovern */
+}
+
+/* Stile für den "Details"-Tab (Fertigkeitenliste) */
+.details-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+}
+/* Stile für die Fertigkeiten-Liste (kann auch .details-tab-content sein) */
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 275px;
+}
+
+.skill-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Abstand zwischen Header und Skills */
+  margin-bottom: 12px; /* Abstand zwischen den Gruppen */
+}
+
+.skill-group-header {
+  font-family: var(--font-main);
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #d4af37; /* Gold */
+  text-align: center;
+  padding: 6px;
+  background-color: #222;
+  border-radius: 4px;
+  border-bottom: 2px solid #d4af37;
+}
+
+.skill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2a2a2e;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  cursor: default;
+  transition: background-color 0.2s;
+}
+
+.skill-row:hover {
+  background-color: #3a3a40;
+}
+
+.skill-name {
+  font-family: var(--font-main);
+  font-size: 0.9em;
+  color: #eee;
+}
+
+.skill-ability {
+  font-size: 0.85em;
+  color: #aaa;
+  margin-left: 4px;
+}
+
+.skill-bonus {
+  font-family: var(--font-main);  
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #fff;
+  background-color: #1a1a1c;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-width: 30px;
+  text-align: center;
 }

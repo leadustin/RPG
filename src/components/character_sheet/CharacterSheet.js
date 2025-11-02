@@ -8,7 +8,11 @@ import {
   calculateAC,
   calculateMeleeDamage,
   ABILITY_DESCRIPTIONS_DE,
-  getRacialAbilityBonus, // <-- KORREKTUR: Import hinzugefügt
+  getRacialAbilityBonus,
+  calculateSkillBonus,
+  SKILL_MAP,
+  SKILL_NAMES_DE,
+  SKILL_DESCRIPTIONS_DE,
 } from "../../engine/characterEngine";
 import { LEVEL_XP_TABLE } from "../../utils/helpers";
 import InventoryItem from "./InventoryItem";
@@ -16,6 +20,32 @@ import EquipmentSlot from "./EquipmentSlot";
 import { ItemTypes } from "../../dnd/itemTypes";
 import InventoryFilter from "./InventoryFilter";
 import allClassData from "../../data/classes.json";
+
+// --- 2. HILFS-KONSTANTEN HIER DEFINIEREN (außerhalb der Komponente) ---
+// Definiert die Anzeigereihenfolge
+const ATTRIBUTE_ORDER = ["str", "dex", "con", "int", "wis", "cha"];
+
+// Definiert die deutschen Namen für die Header
+const ATTRIBUTE_NAMES_DE = {
+  str: "Stärke",
+  dex: "Geschicklichkeit",
+  con: "Konstitution",
+  int: "Intelligenz",
+  wis: "Weisheit",
+  cha: "Charisma",
+};
+
+// Erstellt die Gruppierung aus der SKILL_MAP
+const SKILLS_BY_ATTRIBUTE = {
+  str: [], dex: [], con: [], int: [], wis: [], cha: [],
+};
+// Füllt das Objekt automatisch
+for (const [skillKey, attrKey] of Object.entries(SKILL_MAP)) {
+  if (SKILLS_BY_ATTRIBUTE[attrKey]) {
+    SKILLS_BY_ATTRIBUTE[attrKey].push(skillKey);
+  }
+}
+// --- ENDE HILFS-KONSTANTEN ---
 
 const CharacterSheet = ({
   character,
@@ -173,10 +203,24 @@ const CharacterSheet = ({
   };
 
   const [hoveredInfo, setHoveredInfo] = useState(null); // 'race', 'classIcon', 'subclass', 'class'
+  const [hoveredSkill, setHoveredSkill] = useState(null);
   const raceRef = useRef(null);
   const classIconRef = useRef(null);
   const subclassRef = useRef(null);
   const classRef = useRef(null);
+  const skillRefs = useRef({});
+
+  // Wird für die Header (z.B. "Intelligenz +2") benötigt
+  const finalModifiers = useMemo(() => {
+    if (!character) return {};
+    const modifiers = {};
+    ATTRIBUTE_ORDER.forEach((key) => {
+      const finalScore =
+        character.abilities[key] + getRacialAbilityBonus(character, key);
+      modifiers[key] = getAbilityModifier(finalScore);
+    });
+    return modifiers;
+  }, [character]);
 
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
@@ -657,16 +701,74 @@ const CharacterSheet = ({
                   </div>
                 )}
 
-                {/* INHALT FÜR TAB 3: DETAILS (Jetzt leer) */}
+                {/* INHALT FÜR TAB 3: DETAILS  */}
                 {activeStatTab === "Details" && (
-                  <div className="details-tab-content">
-                    <p>Weitere Details (z.B. Fähigkeiten, Resistenzen) können hier angezeigt werden.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </aside>
-        )}
+                <div className="details-tab-content skill-list">
+                  {/* Äußere Schleife: Iteriert über die Attribute in definierter Reihenfolge */}
+                  {ATTRIBUTE_ORDER.map((attrKey) => {
+                    const skills = SKILLS_BY_ATTRIBUTE[attrKey];
+                    // Überspringe Attribute ohne Skills (z.B. Konstitution)
+                    if (!skills || skills.length === 0) {
+                      return null; 
+                    }
+
+                    const modifier = finalModifiers[attrKey];
+
+                    return (
+                      <div className="skill-group" key={attrKey}>
+                        {/* Der neue Header (z.B. "Intelligenz +2") */}
+                        <div className="skill-group-header">
+                          {ATTRIBUTE_NAMES_DE[attrKey]} (
+                          {modifier >= 0 ? "+" : ""}
+                          {modifier})
+                        </div>
+
+                        {/* Innere Schleife: Iteriert über die Skills des Attributs */}
+                        {skills.map((skillKey) => {
+                          const bonus = calculateSkillBonus(character, skillKey);
+                          const name = SKILL_NAMES_DE[skillKey] || skillKey;
+                          const description =
+                            SKILL_DESCRIPTIONS_DE[skillKey] ||
+                            "Keine Beschreibung verfügbar.";
+                          
+                          return (
+                            <React.Fragment key={skillKey}>
+                              <div
+                                className="skill-row"
+                                ref={(el) => (skillRefs.current[skillKey] = el)}
+                                onMouseEnter={() => setHoveredSkill(skillKey)}
+                                onMouseLeave={() => setHoveredSkill(null)}
+                              >
+                                <span className="skill-name">{name}</span>
+                                <span className="skill-bonus">
+                                  {bonus >= 0 ? "+" : ""}
+                                  {bonus}
+                                </span>
+                              </div>
+
+                              {/* Tooltip (als Portal) */}
+                              {hoveredSkill === skillKey && (
+                                <Tooltip
+                                  text={description}
+                                  parentRef={
+                                    skillRefs.current[skillKey]
+                                      ? { current: skillRefs.current[skillKey] }
+                                      : null
+                                  }
+                                />
+                              )}
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div> {/* Ende .stat-tab-content */}
+          </div> {/* Ende .stats-column-right */}
+        </aside>
+      )} {/* Ende activeTab === "Inventory" */}
       </main>
     </div>
   );
