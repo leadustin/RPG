@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { rollDiceFormula } from '../../engine/characterEngine';
+import React, { useState, useMemo } from 'react'; // 'useMemo' importiert
+import { 
+  rollDiceFormula, 
+  getRacialAbilityBonus // 'getRacialAbilityBonus' importiert
+} from '../../engine/characterEngine';
 import allClassData from '../../data/classes.json'; 
 import './LevelUpModal.css';
 
-// *** (Unveränderte Unter-Komponente) ***
-const AbilityScoreImprovement = ({ abilities, points, choices, onChange }) => {
+// KORREKTUR: 'abilities' (Basiswerte) in 'finalAbilities' (Basis + Bonus) umbenannt
+const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) => {
   const handleIncrease = (key) => {
     if (points > 0 && (choices[key] || 0) < 2) {
       const newChoices = { ...choices, [key]: (choices[key] || 0) + 1 };
@@ -23,9 +26,10 @@ const AbilityScoreImprovement = ({ abilities, points, choices, onChange }) => {
     <div className="asi-selection">
       <h4>Attributswerte erhöhen ({points} Punkte übrig)</h4>
       <p>Verteile +2 auf ein Attribut oder +1 auf zwei Attribute.</p>
-      {Object.keys(abilities).map((key) => (
+      {/* KORREKTUR: 'finalAbilities' wird iteriert und angezeigt (z.B. 17) */}
+      {Object.keys(finalAbilities).map((key) => (
         <div key={key} className="asi-row">
-          <span className="asi-label">{key.toUpperCase()} ({abilities[key]})</span>
+          <span className="asi-label">{key.toUpperCase()} ({finalAbilities[key]})</span>
           <button onClick={() => handleDecrease(key)} disabled={!choices[key] || choices[key] <= 0}>-</button>
           <span className="asi-choice">+{choices[key] || 0}</span>
           <button onClick={() => handleIncrease(key)} disabled={points <= 0 || (choices[key] || 0) >= 2}>+</button>
@@ -62,29 +66,45 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
 };
 
 
-export const LevelUpModal = ({ character, onConfirm }) => {
-  // *** 5. KORREKTUR: Hooks MÜSSEN vor dem "early return" stehen ***
+// KORREKTUR: 'export const' entfernt, um 'export default' am Ende zu verwenden
+const LevelUpModal = ({ character, onConfirm }) => {
+  
+  // *** KORREKTUR: ALLE HOOKS (useState, useMemo) VOR DEN EARLY RETURN VERSCHOBEN ***
   const [step, setStep] = useState('hp'); // 'hp', 'asi', 'subclass', 'summary'
   const [isRolling, setIsRolling] = useState(false);
   const [rollResult, setRollResult] = useState(null);
   
   // State für Wahlen
-  // Wir initialisieren 'asiPoints' basierend auf dem Flag, *falls* character existiert
+  // Initialisierung muss ebenfalls vor dem Return stattfinden, mit 'character'-Prüfung
   const initialAsiPoints = character?.pendingLevelUp?.isAbilityIncrease ? 2 : 0;
   const [asiPoints, setAsiPoints] = useState(initialAsiPoints);
   const [asiChoices, setAsiChoices] = useState({});
   const [selectedSubclass, setSelectedSubclass] = useState(null);
 
-  // *** KORREKTUR: "early return" kommt NACH den Hooks ***
+  // 'useMemo' (Hook) muss vor dem Return stehen
+  const finalAbilities = useMemo(() => {
+    if (!character) return {}; // Sicherstellen, dass character existiert
+    return {
+      str: character.abilities.str + getRacialAbilityBonus(character, 'str'),
+      dex: character.abilities.dex + getRacialAbilityBonus(character, 'dex'),
+      con: character.abilities.con + getRacialAbilityBonus(character, 'con'),
+      int: character.abilities.int + getRacialAbilityBonus(character, 'int'),
+      wis: character.abilities.wis + getRacialAbilityBonus(character, 'wis'),
+      cha: character.abilities.cha + getRacialAbilityBonus(character, 'cha'),
+    };
+  }, [character]); // Abhängigkeit von 'character'
+
+  // *** (Early return ist jetzt sicher) ***
   if (!character || !character.pendingLevelUp) {
     return null;
   }
 
-  // *** 4. Daten aus pendingLevelUp extrahieren (jetzt nach dem Guard) ***
+  // Datenextraktion (jetzt nach dem Guard und nach den Hooks)
   const { newLevel, hpRollFormula, isAbilityIncrease, isSubclassChoice } = character.pendingLevelUp;
 
   
-  // *** 6. Logik zur Schritt-Navigation ***
+  // *** (Restliche Funktionen bleiben unverändert) ***
+  
   const getNextStep = (currentStep) => {
     if (currentStep === 'hp') {
       if (isAbilityIncrease) return 'asi';
@@ -109,10 +129,13 @@ export const LevelUpModal = ({ character, onConfirm }) => {
     let rollCount = 0;
     const interval = setInterval(() => {
       rollCount++;
-      setRollResult(Math.floor(Math.random() * 8) + 1);
+      // Zeigt eine zufällige Zahl des Würfels (ohne Boni) an
+      const dieSides = parseInt(hpRollFormula.split(/[d+-]/)[1], 10) || 8;
+      setRollResult(Math.floor(Math.random() * dieSides) + 1);
       
       if (rollCount > 10) { 
         clearInterval(interval);
+        // Das endgültige Ergebnis ist der Wurf *inklusive* Boni
         const finalRoll = rollDiceFormula(hpRollFormula);
         setRollResult(finalRoll);
         setIsRolling(false);
@@ -138,17 +161,15 @@ export const LevelUpModal = ({ character, onConfirm }) => {
     setStep(getNextStep(currentStep));
   };
   
-  // *** 7. Finale Bestätigung ***
   const handleConfirmAll = () => {
     const choices = {
       asi: isAbilityIncrease ? asiChoices : null,
       subclassKey: isSubclassChoice ? selectedSubclass : null,
     };
-    // onConfirm sendet nun HP UND die Wahlen an die Engine
     onConfirm(rollResult, choices); 
   };
 
-  // *** 8. Render-Funktionen für Schritte (unverändert) ***
+  // *** (Render-Funktionen) ***
 
   const renderHpStep = () => (
     <div className="hp-roll-section">
@@ -177,8 +198,9 @@ export const LevelUpModal = ({ character, onConfirm }) => {
 
   const renderAsiStep = () => (
     <div className="asi-section">
+      {/* KORREKTUR: Übergibt die 'finalAbilities' (mit Boni) an die Unterkomponente */}
       <AbilityScoreImprovement
-        abilities={character.abilities}
+        finalAbilities={finalAbilities}
         points={asiPoints}
         choices={asiChoices}
         onChange={handleAsiChange}
@@ -249,3 +271,6 @@ export const LevelUpModal = ({ character, onConfirm }) => {
     </div>
   );
 };
+
+// KORREKTUR: 'export default' hinzugefügt, damit es zu App.js passt
+export default LevelUpModal;

@@ -8,6 +8,7 @@ import {
   calculateAC,
   calculateMeleeDamage,
   ABILITY_DESCRIPTIONS_DE,
+  getRacialAbilityBonus, // <-- KORREKTUR: Import hinzugefügt
 } from "../../engine/characterEngine";
 import { LEVEL_XP_TABLE } from "../../utils/helpers";
 import InventoryItem from "./InventoryItem";
@@ -210,7 +211,10 @@ const CharacterSheet = ({
     return null;
   }
 
-  const maxWeight = character.stats.abilities.str * 15;
+  // KORREKTUR: Berechne finale Stärke für Gewicht
+  const finalStrForWeight = character.abilities.str + getRacialAbilityBonus(character, 'str');
+  const maxWeight = finalStrForWeight * 15;
+
   const toggleInventory = (characterName) => {
     setCollapsedInventories((prevState) => ({
       ...prevState,
@@ -221,7 +225,11 @@ const CharacterSheet = ({
   const maxHp = character.stats.maxHp || calculateInitialHP(character);
   const currentHp = character.stats.hp || maxHp;
   const armorClass = calculateAC(character);
-  const initiative = getAbilityModifier(character.stats.abilities.dex);
+
+  // KORREKTUR: Berechne finale Geschicklichkeit für Initiative
+  const finalDexForInit = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
+  const initiative = getAbilityModifier(finalDexForInit);
+  
   const meleeDamage = calculateMeleeDamage(character);
 
   const currentExp = character.experience || 0;
@@ -576,29 +584,35 @@ const CharacterSheet = ({
                       </p>
                     </div>
 
-                    {/* Attributs-Stats (bleiben wie sie waren) */}
+                    {/* KORREKTUR: Attributs-Stats */}
                     <div className="primary-stats">
-                      {Object.keys(character.stats.abilities).map((key) => (
-                        <div
-                          key={key}
-                          className="stat-block"
-                          ref={statRefs[key]}
-                          onMouseEnter={() => setHoveredStat(key)}
-                          onMouseLeave={() => setHoveredStat(null)}
-                        >
-                          {/* ... (Stat-Anzeige) ... */}
-                          <span className="stat-value">
-                            {character.stats.abilities[key]}
-                          </span>
-                          <span className="stat-label">{key.toUpperCase()}</span>
-                          {hoveredStat === key && (
-                            <Tooltip
-                              text={ABILITY_DESCRIPTIONS_DE[key]}
-                              parentRef={statRefs[key]}
-                            />
-                          )}
-                        </div>
-                      ))}
+                      {/* KORRIGIERT: Iteriere über character.abilities (Basiswerte) statt character.stats.abilities */}
+                      {Object.keys(character.abilities).map((key) => {
+                        // KORRIGIERT: Berechne den finalen Wert (Basis + Rassenbonus)
+                        const finalScore = character.abilities[key] + getRacialAbilityBonus(character, key);
+                        
+                        return (
+                          <div
+                            key={key}
+                            className="stat-block"
+                            ref={statRefs[key]}
+                            onMouseEnter={() => setHoveredStat(key)}
+                            onMouseLeave={() => setHoveredStat(null)}
+                          >
+                            <span className="stat-value">
+                              {/* KORRIGIERT: Zeige den berechneten finalen Wert an */}
+                              {finalScore}
+                            </span>
+                            <span className="stat-label">{key.toUpperCase()}</span>
+                            {hoveredStat === key && (
+                              <Tooltip
+                                text={ABILITY_DESCRIPTIONS_DE[key]}
+                                parentRef={statRefs[key]}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </React.Fragment>
                 )}
