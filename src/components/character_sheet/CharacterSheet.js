@@ -14,6 +14,7 @@ import InventoryItem from "./InventoryItem";
 import EquipmentSlot from "./EquipmentSlot";
 import { ItemTypes } from "../../dnd/itemTypes";
 import InventoryFilter from "./InventoryFilter";
+import allClassData from "../../data/classes.json";
 
 const CharacterSheet = ({
   character,
@@ -23,6 +24,7 @@ const CharacterSheet = ({
   handleToggleTwoHanded,
 }) => {
   const [activeTab, setActiveTab] = useState("Inventory");
+  const [activeStatTab, setActiveStatTab] = useState("Stats"); // "Stats", "Kampf", "Details"
   const [activePortrait, setActivePortrait] = useState("");
   const [collapsedInventories, setCollapsedInventories] = useState({});
   const [activeFilter, setActiveFilter] = useState("all");
@@ -169,6 +171,12 @@ const CharacterSheet = ({
     cha: chaRef,
   };
 
+  const [hoveredInfo, setHoveredInfo] = useState(null); // 'race', 'classIcon', 'subclass', 'class'
+  const raceRef = useRef(null);
+  const classIconRef = useRef(null);
+  const subclassRef = useRef(null);
+  const classRef = useRef(null);
+
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
       accept: [
@@ -219,6 +227,15 @@ const CharacterSheet = ({
   const currentExp = character.experience || 0;
   const nextLevel = (character.level || 1) + 1;
   const expForNextLevel = nextLevel <= 20 ? LEVEL_XP_TABLE[nextLevel] : "MAX";
+  const classData = character.class.key
+    ? allClassData.find((c) => c.key === character.class.key)
+    : null;
+  const subclassData =
+    classData && character.subclassKey
+      ? classData.subclasses.find((sc) => sc.key === character.subclassKey)
+      : null;
+  const subclassName = subclassData?.name;
+  const raceInfo = character.subrace || character.race;
 
   return (
     <div className="game-ui">
@@ -228,13 +245,19 @@ const CharacterSheet = ({
             className={`nav-btn ${activeTab === "Inventory" ? "active" : ""}`}
             onClick={() => setActiveTab("Inventory")}
           >
-            Inventar
+            Ausrüstung
           </button>
           <button
             className={`nav-btn ${activeTab === "Spells" ? "active" : ""}`}
             onClick={() => setActiveTab("Spells")}
           >
             Zauberbuch
+          </button>
+          <button
+            className={`nav-btn ${activeTab === "Alchemy" ? "active" : ""}`}
+            onClick={() => setActiveTab("Alchemy")}
+          >
+            Alchemie
           </button>
         </nav>
         <div className="party-gold">
@@ -436,83 +459,196 @@ const CharacterSheet = ({
             </div>
 
             <div className="stats-column-right">
-              <div className="character-title">
-                <div className="class-icon-wrapper">
-                  <div className="class-icon">
-                    <img
-                      src={getClassIcon()}
-                      alt={`${character.class.name} icon`}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <p className="char-class">
-                    Lv {character.level || 1} {character.class.name}
-                  </p>
-                  <p className="char-race">
-                    {character.subrace
-                      ? character.subrace.name
-                      : character.race.name}
-                  </p>
-                  <p className="char-background">{character.background.name}</p>
-                </div>
+              {/* TAB-NAVIGATION (Unverändert) */}
+              <div className="stat-tab-nav">
+                <button
+                  className={`stat-tab-btn ${
+                    activeStatTab === "Stats" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveStatTab("Stats")}
+                >
+                  Stats
+                </button>
+                <button
+                  className={`stat-tab-btn ${
+                    activeStatTab === "Kampf" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveStatTab("Kampf")}
+                >
+                  Kampf
+                </button>
+                <button
+                  className={`stat-tab-btn ${
+                    activeStatTab === "Details" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveStatTab("Details")}
+                >
+                  Details
+                </button>
               </div>
-              <div className="primary-stats">
-                {Object.keys(character.stats.abilities).map((key) => (
-                  <div
-                    key={key}
-                    className="stat-block"
-                    ref={statRefs[key]}
-                    onMouseEnter={() => setHoveredStat(key)}
-                    onMouseLeave={() => setHoveredStat(null)}
-                  >
-                    <span className="stat-value">
-                      {character.stats.abilities[key]}
-                    </span>
-                    <span className="stat-label">{key.toUpperCase()}</span>
-                    {hoveredStat === key && (
-                      <Tooltip
-                        text={ABILITY_DESCRIPTIONS_DE[key]}
-                        parentRef={statRefs[key]}
-                      />
-                    )}
+
+              {/* TAB-INHALT (Angepasst) */}
+              <div className="stat-tab-content">
+                
+                {/* INHALT FÜR TAB 1: STATS (Angepasst) */}
+                {activeStatTab === "Stats" && (
+                  <React.Fragment>
+                    
+                    {/* *** 2. ZENTRIERTE STRUKTUR MIT TOOLTIPS *** */}
+                    <div className="character-info-centered">
+                      
+                      {/* 1. Rasse */}
+                      <p 
+                        className="char-race-centered tooltip-hover" // Klasse für CSS hinzugefügt
+                        ref={raceRef}
+                        onMouseEnter={() => setHoveredInfo('race')}
+                        onMouseLeave={() => setHoveredInfo(null)}
+                      >
+                        {character.subrace
+                          ? character.subrace.name
+                          : character.race.name}
+                      </p>
+                      {hoveredInfo === 'race' && (
+                        <Tooltip
+                          text={raceInfo.description || raceInfo.name}
+                          parentRef={raceRef}
+                        />
+                      )}
+
+                      {/* 2. Klassen-Icon */}
+                      <div 
+                        className="class-icon-wrapper-centered tooltip-hover" // Klasse für CSS hinzugefügt
+                        ref={classIconRef}
+                        onMouseEnter={() => setHoveredInfo('classIcon')}
+                        onMouseLeave={() => setHoveredInfo(null)}
+                      >
+                        <div className="class-icon">
+                          <img
+                            src={getClassIcon()}
+                            alt={`${character.class.name} icon`}
+                          />
+                        </div>
+                      </div>
+                      {hoveredInfo === 'classIcon' && (
+                        <Tooltip
+                          text={character.class.name}
+                          parentRef={classIconRef}
+                        />
+                      )}
+
+                      {/* 3. Subklasse (nur wenn vorhanden) */}
+                      {subclassName && (
+                        <p 
+                          className="char-subclass-centered tooltip-hover" // Klasse für CSS hinzugefügt
+                          ref={subclassRef}
+                          onMouseEnter={() => setHoveredInfo('subclass')}
+                          onMouseLeave={() => setHoveredInfo(null)}
+                        >
+                          {subclassName}
+                        </p>
+                      )}
+                      {hoveredInfo === 'subclass' && subclassData && (
+                        <Tooltip
+                          text={subclassData.description || subclassName}
+                          parentRef={subclassRef}
+                        />
+                      )}
+                      
+                      {/* 4. Klasse + Level */}
+                      <p 
+                        className="char-class-centered tooltip-hover" // Klasse für CSS hinzugefügt
+                        ref={classRef}
+                        onMouseEnter={() => setHoveredInfo('class')}
+                        onMouseLeave={() => setHoveredInfo(null)}
+                      >
+                        Lv {character.level || 1} {character.class.name}
+                      </p>
+                      {hoveredInfo === 'class' && (
+                        <Tooltip
+                          text={character.class.description || character.class.name}
+                          parentRef={classRef}
+                        />
+                      )}
+                      
+                      {/* 5. Hintergrund (ohne Tooltip laut Anforderung) */}
+                      <p className="char-background-centered">
+                          {character.background.name}
+                      </p>
+                    </div>
+
+                    {/* Attributs-Stats (bleiben wie sie waren) */}
+                    <div className="primary-stats">
+                      {Object.keys(character.stats.abilities).map((key) => (
+                        <div
+                          key={key}
+                          className="stat-block"
+                          ref={statRefs[key]}
+                          onMouseEnter={() => setHoveredStat(key)}
+                          onMouseLeave={() => setHoveredStat(null)}
+                        >
+                          {/* ... (Stat-Anzeige) ... */}
+                          <span className="stat-value">
+                            {character.stats.abilities[key]}
+                          </span>
+                          <span className="stat-label">{key.toUpperCase()}</span>
+                          {hoveredStat === key && (
+                            <Tooltip
+                              text={ABILITY_DESCRIPTIONS_DE[key]}
+                              parentRef={statRefs[key]}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </React.Fragment>
+                )}
+
+                {/* ... (Restliche Tabs 'Kampf' und 'Details' bleiben unverändert) ... */}
+                {/* INHALT FÜR TAB 2: KAMPF (Unverändert) */}
+                {activeStatTab === "Kampf" && (
+                  <div className="combat-stats">
+                    <div className="combat-stat">
+                      <span>Nahkampfschaden</span>
+                      <span>{meleeDamage}</span>
+                    </div>
+                    <div className="combat-stat">
+                      <span>Attack Bonus</span>
+                      <span>+0</span>
+                    </div>
+                    <div className="combat-stat">
+                      <span>Hit Points</span>
+                      <span>
+                        {currentHp}/{maxHp}
+                      </span>
+                    </div>
+                    <div className="combat-stat">
+                      <span>Armour Class</span>
+                      <span>{armorClass}</span>
+                    </div>
+                    <div className="combat-stat">
+                      <span>Bewegungsgeschw.</span>
+                      <span>{character.race.speed}m</span>
+                    </div>
+                    <div className="combat-stat">
+                      <span>Initiative</span>
+                      <span>{initiative >= 0 ? `+${initiative}` : initiative}</span>
+                    </div>
+                    <div className="combat-stat">
+                      <span>Erfahrung</span>
+                      <span>
+                        {currentExp}
+                        {expForNextLevel !== "MAX" ? `/${expForNextLevel}` : " (MAX)"}
+                      </span>
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="combat-stats">
-                <div className="combat-stat">
-                  <span>Nahkampfschaden</span>
-                  <span>{meleeDamage}</span>
-                </div>
-                <div className="combat-stat">
-                  <span>Attack Bonus</span>
-                  <span>+0</span>
-                </div>
-                <div className="combat-stat">
-                  <span>Hit Points</span>
-                  <span>
-                    {currentHp}/{maxHp}
-                  </span>
-                </div>
-                <div className="combat-stat">
-                  <span>Armour Class</span>
-                  <span>{armorClass}</span>
-                </div>
-                <div className="combat-stat">
-                  <span>Bewegungsgeschw.</span>
-                  <span>{character.race.speed}m</span>
-                </div>
-                <div className="combat-stat">
-                  <span>Initiative</span>
-                  <span>{initiative >= 0 ? `+${initiative}` : initiative}</span>
-                </div>
-                <div className="combat-stat">
-                  <span>Erfahrung</span>
-                  <span>
-                    {currentExp}
-                    {expForNextLevel !== "MAX" ? `/${expForNextLevel}` : " (MAX)"}
-                  </span>
-                </div>
+                )}
+
+                {/* INHALT FÜR TAB 3: DETAILS (Jetzt leer) */}
+                {activeStatTab === "Details" && (
+                  <div className="details-tab-content">
+                    <p>Weitere Details (z.B. Fähigkeiten, Resistenzen) können hier angezeigt werden.</p>
+                  </div>
+                )}
               </div>
             </div>
           </aside>

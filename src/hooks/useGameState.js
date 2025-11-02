@@ -327,14 +327,18 @@ const handleDiscoverLocation = useCallback((locationId) => {
     });
   }, []);
 
-  const handleConfirmLevelUp = useCallback((hpRollResult) => {
+  const handleConfirmLevelUp = useCallback((hpRollResult, levelUpChoices) => { // <-- 1. HIER 'levelUpChoices' HINZUFÜGEN
     setGameState((prevState) => {
       if (!prevState.character || !prevState.character.pendingLevelUp) {
         return prevState;
       }
       
-      // Rufe die neue Engine-Funktion auf, um die Stats anzuwenden
-      const updatedCharacter = applyLevelUp(prevState.character, hpRollResult);
+      // 2. Beide Argumente an die Engine-Funktion übergeben
+      const updatedCharacter = applyLevelUp(
+        prevState.character, 
+        hpRollResult, 
+        levelUpChoices // <-- 3. HIER 'levelUpChoices' WEITERGEBEN
+      );
 
       return {
         ...prevState,

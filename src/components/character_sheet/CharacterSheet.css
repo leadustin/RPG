@@ -397,25 +397,107 @@ header {
 }
 
 .stats-column-right {
-    flex: 0 0 175px;
+    flex: 0 0 280px;
     display: flex;
     flex-direction: column;
     gap: 25px;
 }
 
-.character-title {
-    display: flex;
-    align-items: center;
+/* --- NEUE STILE FÜR DIE STAT-TABS --- */
+.stat-tab-nav {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 15px; /* Abstand zum Inhalt */
 }
 
-.class-icon-wrapper {
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 15px;
-    flex-shrink: 0;
+.stat-tab-btn {
+  flex: 1; /* Tabs füllen den Platz gleichmäßig aus */
+  background: none;
+  border: none;
+  color: var(--secondary-text-color);
+  padding: 8px 5px; /* Etwas Paddinb */
+  cursor: pointer;
+  font-size: 13px; /* Kleinere Schrift für die Tabs */
+  font-weight: bold;
+  border-bottom: 2px solid transparent; /* Platzhalter für den aktiven Strich */
+  transition: all 0.2s ease;
+  white-space: nowrap; /* Verhindert Zeilenumbruch */
+}
+
+.stat-tab-btn:hover {
+  color: var(--primary-text-color);
+}
+
+.stat-tab-btn.active {
+  color: #d4af37; /* Gold-Akzent, passend zu den anderen aktiven Elementen */
+  border-bottom-color: #d4af37;
+}
+
+.stat-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Stellt den Abstand zwischen den Sektionen wieder her */
+  /* Sorgt dafür, dass der Inhalt den verbleibenden Platz einnimmt */
+  flex-grow: 1;
+}
+/* --- ENDE NEUE STILE --- */
+
+/* --- NEUE STILE FÜR ZENTRIERTE STATS-ANZEIGE --- */
+.character-info-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 15px; /* Abstand zu den Attributen */
+  border-bottom: 1px solid var(--border-color); /* Trennlinie */
+  margin-bottom: 15px; /* Abstand nach der Trennlinie */
+}
+
+.char-race-centered {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--primary-text-color);
+  margin: 0;
+  text-align: center;
+}
+
+.class-icon-wrapper-centered {
+  width: 64px;
+  height: 64px;
+  margin: 8px 0; /* Abstand oben/unten */
+}
+/* .class-icon (bereits vorhanden) wird hier wiederverwendet */
+
+.char-subclass-centered {
+  font-size: 14px;
+  color: #d4af37; /* Gold-Akzent für Subklasse */
+  margin: 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.char-class-centered {
+  font-size: 14px;
+  color: var(--secondary-text-color);
+  margin: 4px 0 0 0;
+  text-align: center;
+}
+
+.char-background-centered {
+  font-size: 12px;
+  color: var(--secondary-text-color);
+  font-style: italic;
+  margin: 4px 0 0 0;
+  text-align: center;
+}
+
+/* Anpassung an primary-stats, falls es jetzt zu nah ist */
+.primary-stats {
+    /* (Stellen Sie sicher, dass border-bottom hier entfernt wird, 
+       da die Trennlinie jetzt im .character-info-centered ist) */
+    padding-bottom: 0; 
+    border-bottom: none;
 }
 
 .class-icon {
@@ -428,18 +510,6 @@ header {
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-.character-title p {
-    margin: 2px 0;
-    font-size: 14px;
-    color: var(--secondary-text-color);
-}
-
-.character-title .char-class {
-    color: var(--primary-text-color);
-    font-weight: bold;
-    font-size: 16px;
 }
 
 .primary-stats {
@@ -608,4 +678,11 @@ header {
     align-items: center;
     justify-content: center;
     border: 1px solid #ffd700;
+}
+
+.char-race-centered,
+.class-icon-wrapper-centered,
+.char-subclass-centered,
+.char-class-centered {
+  cursor: help; /* Zeigt ein Fragezeichen beim Hovern */
 }

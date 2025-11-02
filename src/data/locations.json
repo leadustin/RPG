@@ -12,8 +12,8 @@
   {
     "id": "goblinhoehle",
     "name": "Goblinhöhle",
-    "x": 3000,
-    "y": 2000,
+    "x": 2600,
+    "y": 1400,
     "radius": 5,
     "description": "Eine feuchte, übelriechende Höhle, die von wilden Goblins bewohnt wird.",
     "mapFile": "goblinhoehle.json",

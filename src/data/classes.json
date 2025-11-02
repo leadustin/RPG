@@ -1,81 +1,225 @@
 [
   {
-    "key": "barbarian",
-    "name": "Barbar",
-    "icon": "Class_Barbarian_Icon.png",
-    "description": "Ein wilder Krieger aus der zivilisationsfernen Wildnis, der im Kampf von unbändiger Wut angetrieben wird.",
-    "hit_die": 12,
-    "saving_throws": ["strength", "constitution"],
-    "proficiencies": {
-      "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
-      "weapons": ["Einfache Waffen", "Kriegswaffen"],
-      "skills": {
-        "choose": 2,
-        "from": ["Tierkunde", "Athletik", "Einschüchtern", "Naturkunde", "Wahrnehmung", "Überlebenskunst"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Konstitutionsmodifikator." },
-      { "level": 1, "name": "Kampfrausch", "description": "Du kannst als Bonusaktion in einen Kampfrausch verfallen. Du erhältst Vorteile bei Stärke-Rettungswürfen, einen Bonus auf Schadenswürfe und Resistenz gegen Hieb-, Stich- und Wuchtschaden." },
-      { "level": 2, "name": "Tollkühner Angriff", "description": "Du kannst dir bei deinem ersten Angriff in deinem Zug einen Vorteil verschaffen. Alle Angriffswürfe gegen dich haben bis zu deinem nächsten Zug ebenfalls Vorteil." },
-      { "level": 2, "name": "Gefahrensinn", "description": "Du hast einen Vorteil bei Geschicklichkeits-Rettungswürfen gegen Effekte, die du sehen kannst, wie Fallen und Zauber." },
-      { "level": 3, "name": "Urtümlicher Pfad", "description": "Du wählst einen urtümlichen Pfad, der die Natur deiner Wut bestimmt." },
-      { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
-      { "level": 5, "name": "Schnelle Bewegung", "description": "Deine Bewegungsrate erhöht sich um 3 Meter, solange du keine schwere Rüstung trägst." },
-      { "level": 7, "name": "Instinktives Zuschlagen", "description": "Du hast einen Vorteil bei Initiative-Würfen. Wenn du überrascht wirst, aber nicht handlungsunfähig bist, kannst du in deinem ersten Zug dennoch deinen Kampfrausch einsetzen." },
-      { "level": 9, "name": "Brutaler Kritischer Treffer", "description": "Du kannst einen zusätzlichen Waffenschadenswürfel zu dem zusätzlichen Schaden eines kritischen Treffers addieren." },
-      { "level": 11, "name": "Unnachgiebiger Zorn", "description": "Wenn deine Trefferpunkte auf 0 fallen, während du im Kampfrausch bist, kannst du einen Konstitutions-Rettungswurf (SG 10) machen. Bei Erfolg fällst du stattdessen auf 1 Trefferpunkt." }
-    ],
-    "subclasses": [
-      {
-        "key": "path_of_the_berserker",
-        "name": "Pfad des Berserkers",
-        "description": "Du folgst dem Pfad des Berserkers und lässt dich von einer Wut verzehren, die so mächtig ist, dass sie dich in einen unaufhaltsamen Rausch versetzt.",
-        "features": [
-          { "level": 3, "name": "Raserei", "description": "Wenn du im Kampfrausch bist, kannst du in eine Raserei verfallen. In jedem deiner Züge danach kannst du als Bonusaktion einen Waffenangriff ausführen." },
-          { "level": 6, "name": "Geistesgegenwärtiger Zorn", "description": "Du kannst nicht mehr bezaubert oder verängstigt werden, während du im Kampfrausch bist." },
-          { "level": 10, "name": "Einschüchternde Präsenz", "description": "Du kannst deine Aktion verwenden, um eine Kreatur zu verängstigen, die dich sehen oder hören kann." }
-        ]
-      }
-    ]
+  "key": "barbarian",
+  "name": "Barbar",
+  "icon": "Class_Barbarian_Icon.png",
+  "description": "Ein wilder Krieger aus der zivilisationsfernen Wildnis, der im Kampf von unbändiger Wut angetrieben wird.",
+  "hit_die": 12,
+  "saving_throws": ["strength", "constitution"],
+  "proficiencies": {
+    "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
+    "weapons": ["Einfache Waffen", "Kriegswaffen"],
+    "skills": {
+      "choose": 2,
+      "from": ["Tierkunde", "Athletik", "Einschüchtern", "Naturkunde", "Wahrnehmung", "Überlebenskunst"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Konstitutionsmodifikator." },
+    { "level": 1, "name": "Kampfrausch", "description": "Als Bonusaktion kannst du in einen Kampfrausch verfallen. Du erhältst Vorteil auf Stärke-Würfe und -Rettungswürfe, einen Bonus auf Nahkampfschaden und Resistenz gegen Hieb-, Stich- und Wuchtschaden. Dauer: 1 Minute." },
+    { "level": 2, "name": "Tollkühner Angriff", "description": "Du kannst bei deinem ersten Angriff in einem Zug Vorteil erhalten. Bis zu deinem nächsten Zug haben jedoch alle Angriffswürfe gegen dich Vorteil." },
+    { "level": 2, "name": "Gefahrensinn", "description": "Du hast Vorteil bei Geschicklichkeits-Rettungswürfen gegen Effekte, die du sehen kannst, wie Fallen oder Zauber, solange du nicht blind, taub oder handlungsunfähig bist." },
+    { "level": 3, "name": "Urtümlicher Pfad", "description": "Du wählst einen urtümlichen Pfad, der die Natur deiner Wut bestimmt. Die Wahl verleiht dir zusätzliche Fähigkeiten auf höheren Stufen." },
+    { "level": 5, "name": "Zusätzlicher Angriff", "description": "Wenn du die Angriffsaktion nutzt, kannst du zweimal anstatt einmal angreifen." },
+    { "level": 5, "name": "Schnelle Bewegung", "description": "Deine Bewegungsrate erhöht sich um 3 Meter, solange du keine schwere Rüstung trägst." },
+    { "level": 7, "name": "Instinktives Zuschlagen", "description": "Du hast Vorteil auf Initiativewürfe. Wenn du überrascht wirst, kannst du deinen Kampfrausch sofort einsetzen, wenn du nicht handlungsunfähig bist." },
+    { "level": 9, "name": "Brutaler Kritischer Treffer", "description": "Du kannst einen zusätzlichen Waffenschadenswürfel zu dem zusätzlichen Schaden eines kritischen Treffers addieren. Dies erhöht sich auf Level 13 und 17 weiter." },
+    { "level": 11, "name": "Unnachgiebiger Zorn", "description": "Wenn deine Trefferpunkte auf 0 fallen, während du im Kampfrausch bist, kannst du einen Konstitutions-Rettungswurf (SG 10) machen, um stattdessen auf 1 Trefferpunkt zu bleiben." },
+    { "level": 15, "name": "Beharrlicher Zorn", "description": "Dein Kampfrausch endet nur, wenn du bewusstlos wirst oder ihn freiwillig beendest." },
+    { "level": 18, "name": "Unbezwingbare Stärke", "description": "Wenn dein Stärkewurf unter deinem Stärkewert liegt, kannst du stattdessen deinen Stärkewert verwenden." },
+    { "level": 20, "name": "Urtümlicher Champion", "description": "Dein Stärkewert und dein Konstitutionswert steigen um 4 (max. 24)." }
+  ],
+  "rage_progression": [
+    { "level": 1, "uses": 2, "damage_bonus": 2 },
+    { "level": 3, "uses": 3, "damage_bonus": 2 },
+    { "level": 6, "uses": 4, "damage_bonus": 2 },
+    { "level": 9, "uses": 4, "damage_bonus": 3 },
+    { "level": 12, "uses": 5, "damage_bonus": 3 },
+    { "level": 15, "uses": 5, "damage_bonus": 3 },
+    { "level": 17, "uses": 6, "damage_bonus": 4 },
+    { "level": 20, "uses": "∞", "damage_bonus": 4 }
+  ],
+  "subclasses": [
+    {
+      "key": "path_of_the_berserker",
+      "name": "Pfad des Berserkers",
+      "description": "Du verfällst in eine Raserei, die dich zu einem unaufhaltsamen Wirbel aus Zorn und Stahl macht.",
+      "features": [
+        { "level": 3, "name": "Raserei", "description": "Wenn du im Kampfrausch bist, kannst du in eine Raserei verfallen. In jedem deiner Züge kannst du als Bonusaktion einen zusätzlichen Waffenangriff machen. Nach der Raserei erhältst du 1 Stufe Erschöpfung." },
+        { "level": 6, "name": "Geistesgegenwärtiger Zorn", "description": "Während deines Kampfrausches kannst du nicht bezaubert oder verängstigt werden." },
+        { "level": 10, "name": "Einschüchternde Präsenz", "description": "Du kannst eine Aktion nutzen, um eine Kreatur in 9 m Umkreis, die dich sehen oder hören kann, einzuschüchtern. Sie muss einen Weisheitsrettungswurf bestehen oder verängstigt werden." },
+        { "level": 14, "name": "Vergeltender Zorn", "description": "Wenn dich eine Kreatur angreift, kannst du als Reaktion sofort einen Nahkampfangriff gegen sie ausführen." }
+      ]
+    },
+    {
+      "key": "path_of_the_totem_warrior",
+      "name": "Pfad des Totemkriegers",
+      "description": "Du rufst die Macht der Tiergeister an, die dich im Kampf stärken und leiten.",
+      "features": [
+        { "level": 3, "name": "Totemgeist", "description": "Du wählst einen Tiergeist (z. B. Bär, Adler, Wolf), der dir besondere Kräfte gewährt, während du im Kampfrausch bist." },
+        { "level": 6, "name": "Aspekt des Tieres", "description": "Du erhältst dauerhafte Vorteile des gewählten Totemtiers, selbst außerhalb des Kampfrausches." },
+        { "level": 10, "name": "Totemische Wanderung", "description": "Während des Kampfrausches bewegst du dich geisterhaft, ignorierst schwieriges Gelände und kannst durch schwierige Umgebungen leichter reisen." },
+        { "level": 14, "name": "Totemische Macht", "description": "Du erhältst die stärkste Gabe deines Totemtiers. Beispiel: Bär – du bist fast unaufhaltbar und widerstehst fast allem physischen Schaden." }
+      ]
+    },
+    {
+      "key": "path_of_the_ancestral_guardian",
+      "name": "Pfad des Ahnenbeschützers",
+      "description": "Die Geister deiner Vorfahren wachen über dich und schützen dich und deine Verbündeten.",
+      "features": [
+        { "level": 3, "name": "Ahnenbeschützer", "description": "Die Geister der Ahnen erscheinen, wenn du Gegner triffst, und verleihen Nachteil auf Angriffe gegen deine Verbündeten." },
+        { "level": 6, "name": "Geisterschilde", "description": "Geister schützen dich oder Verbündete und reduzieren erlittenen Schaden." },
+        { "level": 10, "name": "Beruhigender Geist", "description": "Du kannst Geister herbeirufen, die dich oder einen Verbündeten heilen." },
+        { "level": 14, "name": "Ahnenhaftes Bollwerk", "description": "Deine Geister weiten ihren Schutz auf mehrere Kreaturen gleichzeitig aus." }
+      ]
+    },
+    {
+      "key": "path_of_the_storm_herald",
+      "name": "Pfad des Sturmboten",
+      "description": "Dein Zorn entfesselt die rohe Macht der Elemente in Form einer Aura.",
+      "features": [
+        { "level": 3, "name": "Sturmaura", "description": "Während des Kampfrausches erzeugst du eine Aura (Feuer, Meer oder Wüste), die Gegner in deinem Umkreis schädigt oder Verbündete stärkt." },
+        { "level": 6, "name": "Sturmseele", "description": "Du wirst teilweise resistent gegen den Schaden deines Elementes (Feuer, Blitz, Kälte usw.)." },
+        { "level": 10, "name": "Schützende Aura", "description": "Deine Aura kann Verbündete schützen, indem sie ihnen Resistenz oder Vorteile gibt." },
+        { "level": 14, "name": "Zorn des Sturms", "description": "Deine Aura wird mächtiger und verursacht erhöhten Schaden oder größere Effekte." }
+      ]
+    },
+    {
+      "key": "path_of_the_beast",
+      "name": "Pfad der Bestie",
+      "description": "Dein Zorn weckt eine urtümliche, tierische Kraft in deinem Inneren.",
+      "features": [
+        { "level": 3, "name": "Form der Bestie", "description": "Wenn du in den Kampfrausch verfällst, wachsen dir Klauen, Reißzähne oder ein Schwanz, mit denen du angreifen kannst." },
+        { "level": 6, "name": "Bestienspürsinn", "description": "Du erhältst verstärkte Sinne und kannst mit Tieren auf instinktive Weise kommunizieren." },
+        { "level": 10, "name": "Infektiöse Wut", "description": "Wenn du Gegner triffst, können sie selbst in eine wilde Raserei geraten, die du kontrollierst." },
+        { "level": 14, "name": "König der Bestien", "description": "Deine tierische Form wird mächtiger; du regenerierst Trefferpunkte bei Angriffen und deine Waffenangriffe gelten als magisch." }
+      ]
+    },
+    {
+      "key": "path_of_wild_magic",
+      "name": "Pfad der Wilden Magie",
+      "description": "Dein Zorn entfesselt chaotische, magische Energien, die unvorhersehbare Effekte hervorrufen.",
+      "features": [
+        { "level": 3, "name": "Magische Wut", "description": "Wenn du in Wut gerätst, löst du einen zufälligen magischen Effekt aus einer Wildmagie-Tabelle aus." },
+        { "level": 6, "name": "Magiekanalisierung", "description": "Du kannst magische Energie lenken, um dich oder Verbündete zu stärken." },
+        { "level": 10, "name": "Wilde Explosion", "description": "Deine magischen Effekte werden intensiver und können Flächen betreffen." },
+        { "level": 14, "name": "Kontrollierte Wildnis", "description": "Du lernst, die chaotische Magie in deinem Inneren gezielt zu steuern." }
+      ]
+    },
+    {
+      "key": "path_of_the_zealot",
+      "name": "Pfad des Zeloten",
+      "description": "Deine Wut ist göttlicher Natur, du kämpfst im Namen einer höheren Macht.",
+      "features": [
+        { "level": 3, "name": "Göttliche Raserei", "description": "Während deiner Wut fügst du deinen Angriffen zusätzlichen göttlichen Schaden hinzu." },
+        { "level": 6, "name": "Krieger des Glaubens", "description": "Wenn du stirbst, bist du leichter wiederzubeleben, und deine Verbündeten erhalten Vorteile bei deiner Rettung." },
+        { "level": 10, "name": "Zorn der Götter", "description": "Deine göttliche Energie verursacht zusätzlichen Schaden an ungläubigen Feinden." },
+        { "level": 14, "name": "Ewiger Krieger", "description": "Dein göttlicher Zorn hält dich selbst nach dem Tod im Kampf – du bist schwer endgültig zu töten." }
+      ]
+    }
+  ]
+},
   {
-    "key": "bard",
-    "name": "Barde",
-    "icon": "Class_Bard_Icon.png",
-    "description": "Ein inspirierender Magier, dessen Macht von der Musik und den Geschichten der Schöpfung herrührt.",
-    "hit_die": 8,
-    "saving_throws": ["dexterity", "charisma"],
-    "proficiencies": {
-      "armor": ["Leichte Rüstung"],
-      "weapons": ["Einfache Waffen", "Handarmbrüste", "Langschwerter", "Rapier", "Kurzschwerter"],
-      "tools": ["Drei Musikinstrumente deiner Wahl"],
-      "skills": { "choose": 3, "from": "any" }
-    },
-    "features": [
-      { "level": 1, "name": "Zauber wirken", "description": "Du kannst Bardenzauber wirken." },
-      { "level": 1, "name": "Bardische Inspiration", "description": "Du kannst deine Bonusaktion verwenden, um eine Kreatur zu inspirieren. Diese Kreatur kann einen W6 zu einem Attributs-, Angriffs- oder Rettungswurf addieren." },
-      { "level": 2, "name": "Hansdampf in allen Gassen", "description": "Du kannst die Hälfte deines Übungsbonus zu jedem Attributswurf addieren, bei dem du nicht bereits geübt bist." },
-      { "level": 2, "name": "Lied der Erholung", "description": "Während einer kurzen Rast können du und alle verbündeten Kreaturen, die dich hören, zusätzliche Trefferpunkte in Höhe eines Barden-Inspirations-Würfels wiedererlangen." },
-      { "level": 3, "name": "Barden-Kolleg", "description": "Du wählst ein Kolleg, das deine künstlerischen Fähigkeiten und magischen Talente formt." },
-      { "level": 3, "name": "Expertise", "description": "Wähle zwei deiner Fertigkeitsübungen. Dein Übungsbonus wird für jeden Attributswurf, den du mit einer der gewählten Fertigkeiten machst, verdoppelt." },
-      { "level": 5, "name": "Quelle der Inspiration", "description": "Du erhältst alle verbrauchten Anwendungen deiner Bardischen Inspiration zurück, wenn du eine kurze oder lange Rast beendest." },
-      { "level": 6, "name": "Gegenbezauberung", "description": "Du kannst deine Aktion verwenden, um eine Darbietung zu beginnen, die dir und allen Verbündeten innerhalb von 9 Metern einen Vorteil bei Rettungswürfen gegen Bezauberung oder Verängstigung gewährt." },
-      { "level": 10, "name": "Expertise", "description": "Wähle zwei weitere deiner Fertigkeitsübungen, um deinen Übungsbonus zu verdoppeln." }
-    ],
-    "subclasses": [
-      {
-        "key": "college_of_lore",
-        "name": "Kolleg des Wissens",
-        "description": "Du studierst die Geheimnisse des Multiversums und sammelst Wissen, das du in deine Darbietungen und Magie einfließen lässt.",
-        "features": [
-          { "level": 3, "name": "Zusätzliche Übungen", "description": "Du erhältst Übung in drei Fertigkeiten deiner Wahl." },
-          { "level": 3, "name": "Schneidende Worte", "description": "Wenn eine Kreatur einen Angriffs-, Attributs- oder Schadenswurf macht, kannst du deine Reaktion und einen Barden-Inspirations-Würfel verwenden, um diesen Wurf zu reduzieren." },
-          { "level": 6, "name": "Zusätzliche magische Geheimnisse", "description": "Du lernst zwei Zauber beliebiger Klassen. Diese zählen als Bardenzauber für dich." }
-        ]
-      }
-    ]
+  "key": "bard",
+  "name": "Barde",
+  "icon": "Class_Bard_Icon.png",
+  "description": "Ein inspirierender Magier, dessen Macht von Musik, Worten und Geschichten herrührt. Seine Magie entspringt der schöpferischen Energie des Multiversums.",
+  "hit_die": 8,
+  "saving_throws": ["dexterity", "charisma"],
+  "proficiencies": {
+    "armor": ["Leichte Rüstung"],
+    "weapons": ["Einfache Waffen", "Handarmbrüste", "Langschwerter", "Rapier", "Kurzschwerter"],
+    "tools": ["Drei Musikinstrumente deiner Wahl"],
+    "skills": { "choose": 3, "from": "any" }
   },
+  "features": [
+    { "level": 1, "name": "Zauber wirken", "description": "Du lernst, Magie durch Musik, Worte und Bewegung zu kanalisieren. Siehe Bardenzaubertabelle für bekannte Zauber, Zauberplätze und Zauberattribute (Charisma ist dein Zauberattribut)." },
+    { "level": 1, "name": "Bardische Inspiration (W6)", "description": "Als Bonusaktion kannst du eine Kreatur inspirieren. Sie kann einen W6 zu einem Attributs-, Angriffs- oder Rettungswurf addieren. Du kannst dies pro Langrast so oft einsetzen wie dein Charisma-Modifikator (mindestens einmal)." },
+    { "level": 2, "name": "Hansdampf in allen Gassen", "description": "Du kannst die Hälfte deines Übungsbonus zu jedem Attributswurf addieren, bei dem du nicht bereits geübt bist." },
+    { "level": 2, "name": "Lied der Erholung (W6)", "description": "Während einer kurzen Rast können du und alle Verbündeten, die dich hören, zusätzliche Trefferpunkte in Höhe eines Barden-Inspirations-Würfels wiedererlangen." },
+    { "level": 3, "name": "Barden-Kolleg", "description": "Du wählst ein Bardenkolleg, das deine künstlerische Richtung bestimmt." },
+    { "level": 3, "name": "Expertise", "description": "Wähle zwei deiner Fertigkeiten, bei denen du geübt bist. Dein Übungsbonus verdoppelt sich für diese Fertigkeiten." },
+    { "level": 5, "name": "Quelle der Inspiration", "description": "Wenn du eine kurze oder lange Rast beendest, erhältst du alle verbrauchten Anwendungen deiner Bardischen Inspiration zurück." },
+    { "level": 5, "name": "Bardische Inspiration (W8)", "description": "Dein Bardische-Inspirations-Würfel steigt auf W8." },
+    { "level": 6, "name": "Gegenbezauberung", "description": "Du kannst als Aktion eine Darbietung beginnen, die dir und Verbündeten in 9 m Umkreis Vorteil bei Rettungswürfen gegen Bezauberung und Verängstigung gewährt." },
+    { "level": 6, "name": "Lied der Erholung (W8)", "description": "Dein Lied der Erholung heilt nun W8 zusätzliche Trefferpunkte." },
+    { "level": 10, "name": "Magische Geheimnisse", "description": "Du lernst zwei Zauber deiner Wahl aus beliebigen Klassen. Sie gelten als Bardenzauber für dich." },
+    { "level": 10, "name": "Expertise (erneut)", "description": "Wähle zwei weitere Fertigkeiten, bei denen du geübt bist, um deinen Übungsbonus zu verdoppeln." },
+    { "level": 10, "name": "Bardische Inspiration (W10)", "description": "Dein Bardische-Inspirations-Würfel steigt auf W10." },
+    { "level": 14, "name": "Magische Geheimnisse (weitere)", "description": "Du lernst zwei weitere Zauber beliebiger Klassen. Sie zählen als Bardenzauber." },
+    { "level": 15, "name": "Bardische Inspiration (W12)", "description": "Dein Bardische-Inspirations-Würfel steigt auf W12." },
+    { "level": 18, "name": "Magische Geheimnisse (meisterlich)", "description": "Du lernst zwei weitere Zauber beliebiger Klassen. Diese gelten als Bardenzauber." },
+    { "level": 20, "name": "Überlegenheit der Inspiration", "description": "Wenn du Initiative würfelst und keine Anwendungen deiner Bardischen Inspiration übrig hast, erhältst du eine Anwendung zurück." }
+  ],
+  "subclasses": [
+    {
+      "key": "college_of_lore",
+      "name": "Kolleg des Wissens",
+      "description": "Du sammelst Wissen und Geheimnisse aus allen Bereichen der Welt, um sie in deine Darbietungen einfließen zu lassen.",
+      "features": [
+        { "level": 3, "name": "Zusätzliche Übungen", "description": "Du erhältst Übung in drei Fertigkeiten deiner Wahl." },
+        { "level": 3, "name": "Schneidende Worte", "description": "Wenn eine Kreatur einen Angriff-, Attributs- oder Schadenswurf macht, kannst du als Reaktion und durch Einsatz eines Bardischen Inspirationswürfels den Wurf verringern." },
+        { "level": 6, "name": "Zusätzliche Magische Geheimnisse", "description": "Du lernst zwei Zauber beliebiger Klassen. Sie zählen als Bardenzauber für dich." },
+        { "level": 14, "name": "Unübertroffene Inspiration", "description": "Wenn dein Inspirationswürfel keinen Effekt zeigt, verliert er seine Ladung nicht." }
+      ]
+    },
+    {
+      "key": "college_of_valor",
+      "name": "Kolleg des Mutes",
+      "description": "Du inspirierst andere durch Tapferkeit und Kampfkunst, führst mit Schwert und Lied.",
+      "features": [
+        { "level": 3, "name": "Bonus-Übungen", "description": "Du bist im Umgang mit mittlerer Rüstung, Schilden und Kriegswaffen geübt." },
+        { "level": 3, "name": "Kampfinspiration", "description": "Kreaturen, die deine Bardische Inspiration nutzen, können den Bonus auch auf Schadenswürfe oder ihre Rüstungsklasse gegen einen Angriff anwenden." },
+        { "level": 6, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal statt einmal angreifen, wenn du die Angriffsaktion nutzt." },
+        { "level": 14, "name": "Kampfmeisterliches Lied", "description": "Wenn du deine Aktion zum Wirken eines Zaubers verwendest, kannst du mit deiner Bonusaktion einen Waffenangriff ausführen." }
+      ]
+    },
+    {
+      "key": "college_of_swords",
+      "name": "Kolleg der Schwerter",
+      "description": "Du bist ein wandernder Schwertkünstler, der Tanz und Klinge kombiniert.",
+      "features": [
+        { "level": 3, "name": "Bonus-Übungen", "description": "Du bist im Umgang mit mittlerer Rüstung und Krummsäbeln geübt." },
+        { "level": 3, "name": "Klingenflourish", "description": "Wenn du im Nahkampf triffst, kannst du einen Inspirationswürfel ausgeben, um dich zu bewegen, zusätzlichen Schaden zu verursachen oder deine Verteidigung zu erhöhen." },
+        { "level": 6, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal statt einmal angreifen, wenn du die Angriffsaktion nutzt." },
+        { "level": 14, "name": "Meisterhafte Flourish", "description": "Dein Flourish fügt immer mindestens +1W6 Schaden hinzu, selbst ohne Einsatz einer Inspiration." }
+      ]
+    },
+    {
+      "key": "college_of_glamour",
+      "name": "Kolleg des Glamours",
+      "description": "Deine Magie ist von den Fey inspiriert und betört durch Schönheit und Anmut.",
+      "features": [
+        { "level": 3, "name": "Mantel der Inspiration", "description": "Als Bonusaktion kannst du eine Anzahl an Kreaturen inspirieren, die temporäre Trefferpunkte erhalten und sich bewegen dürfen, ohne Gelegenheitsangriffe zu provozieren." },
+        { "level": 3, "name": "Verlockende Präsenz", "description": "Du erhältst Vorteil auf Charisma-(Überzeugen)-Würfe gegen Kreaturen, die dich sehen können." },
+        { "level": 6, "name": "Mantel der Majestät", "description": "Du kannst den Zauber *Befehl* als Bonusaktion wirken, während du von einem majestätischen Glanz umgeben bist." },
+        { "level": 14, "name": "Unsterblicher Charme", "description": "Wenn du eine Kreatur bezauberst, kannst du die Wirkung aufrechterhalten, ohne Konzentration zu verlieren." }
+      ]
+    },
+    {
+      "key": "college_of_whispers",
+      "name": "Kolleg des Flüsterns",
+      "description": "Du nutzt Furcht und Manipulation, um andere zu lenken und zu zerstören.",
+      "features": [
+        { "level": 3, "name": "Psychische Klingen", "description": "Wenn du triffst, kannst du eine Inspiration ausgeben, um zusätzlichen psychischen Schaden zu verursachen." },
+        { "level": 3, "name": "Worte des Terrors", "description": "Wenn du 1 Min mit jemandem sprichst, kannst du ihn mit Furcht erfüllen (Rettungswurf gegen SG 8 + Übungsbonus + CHA-Modifikator)." },
+        { "level": 6, "name": "Mantel der Flüster", "description": "Wenn eine Kreatur stirbt, kannst du ihre Gestalt magisch annehmen und ihre Stimme imitieren." },
+        { "level": 14, "name": "Schattenhafte Worte", "description": "Du kannst Angst und Paranoia in die Herzen anderer pflanzen und sie gegeneinander wenden." }
+      ]
+    },
+    {
+      "key": "college_of_eloquence",
+      "name": "Kolleg der Eloquenz",
+      "description": "Deine Worte sind makellos, dein Auftreten überzeugend und deine Sprache eine Waffe.",
+      "features": [
+        { "level": 3, "name": "Silberne Zunge", "description": "Wenn du 9 oder niedriger auf einem Charisma-(Überzeugen) oder (Täuschen)-Wurf würfelst, behandelst du ihn als 10." },
+        { "level": 3, "name": "Unfehlbare Inspiration", "description": "Wenn jemand deine Inspiration nutzt und den Wurf verfehlt, verliert er die Ladung nicht." },
+        { "level": 6, "name": "Verbindende Worte", "description": "Wenn eine Kreatur in deiner Nähe Schaden nimmt, kannst du eine Inspiration einsetzen, um diesen Schaden zu verringern." },
+        { "level": 14, "name": "Infizierende Inspiration", "description": "Wenn eine Kreatur deine Inspiration erfolgreich nutzt, kannst du dieselbe Wirkung auf eine zweite Kreatur in Reichweite ausdehnen." }
+      ]
+    }
+  ]
+},
   {
     "key": "cleric",
     "name": "Kleriker",
@@ -116,344 +260,425 @@
     ]
   },
   {
-    "key": "druid",
-    "name": "Druide",
-    "icon": "Class_Druid_Icon.png",
-    "description": "Ein Priester der Alten Weise, der seine Macht aus der Natur selbst schöpft und die Gestalt wilder Tiere annehmen kann.",
-    "hit_die": 8,
-    "saving_throws": ["intelligence", "wisdom"],
-    "proficiencies": {
-      "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde (nicht aus Metall)"],
-      "weapons": ["Keulen", "Dolche", "Wurfspeere", "Streitkolben", "Kampfstäbe", "Krummsäbel", "Sicheln", "Schleudern"],
-      "tools": ["Kräuterkunde-Set"],
-      "skills": {
-        "choose": 2,
-        "from": ["Tierkunde", "Arkanum", "Einblick", "Medizin", "Naturkunde", "Wahrnehmung", "Religion", "Überlebenskunst"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Druidisch", "description": "Du kennst Druidisch, die Geheimsprache der Druiden." },
-      { "level": 1, "name": "Zauber wirken", "description": "Du kannst Druidenzauber wirken." },
-      { "level": 2, "name": "Tiergestalt", "description": "Du kannst deine Aktion verwenden, um dich in ein Tier zu verwandeln, das du gesehen hast." },
-      { "level": 2, "name": "Druidenzirkel", "description": "Du wählst einen Zirkel, dem du angehörst, der deine druidischen Kräfte formt." },
-      { "level": 4, "name": "Tiergestalt-Verbesserung", "description": "Deine Tiergestalten können nun eine höhere Herausforderung haben." },
-      { "level": 8, "name": "Tiergestalt-Verbesserung", "description": "Deine Tiergestalten können nun eine höhere Herausforderung haben und fliegen." },
-      { "level": 10, "name": "Zeitloser Körper", "description": "Du alterst langsamer. Für alle 10 Jahre, die vergehen, altert dein Körper nur um 1 Jahr." }
-    ],
-    "subclasses": [
-      {
-        "key": "circle_of_the_land",
-        "name": "Zirkel des Landes",
-        "description": "Du bist ein Hüter des alten Glaubens, dessen Magie und Weisheit mit einem bestimmten Terrain verbunden ist.",
-        "features": [
-          { "level": 2, "name": "Bonus-Zaubertrick", "description": "Du lernst einen zusätzlichen Druiden-Zaubertrick deiner Wahl." },
-          { "level": 2, "name": "Natürliche Erholung", "description": "Während einer kurzen Rast kannst du einen Teil deiner verbrauchten Zauberplätze zurückgewinnen." },
-          { "level": 3, "name": "Zirkel-Zauber", "description": "Deine mystische Verbindung zu einem bestimmten Land (Arktis, Küste, Wüste, Wald, Grasland, Gebirge, Sumpf) gewährt dir zusätzliche Zauber." },
-          { "level": 6, "name": "Land wandelnd", "description": "Die Bewegung durch schwieriges, nicht-magisches Gelände kostet dich keine zusätzliche Bewegung. Du hast Vorteil bei Rettungswürfen gegen magisch erschaffene oder manipulierte Pflanzen." },
-          { "level": 10, "name": "Natur's Schutz", "description": "Du kannst nicht mehr bezaubert oder verängstigt werden durch Elementare oder Feenwesen, und du bist immun gegen Gift und Krankheiten." }
-        ]
-      }
-    ]
+  "key": "druid",
+  "name": "Druide",
+  "icon": "Class_Druid_Icon.png",
+  "description": "Ein Priester der Alten Weise, der seine Macht aus der Natur selbst schöpft und die Gestalt wilder Tiere annehmen kann.",
+  "hit_die": 8,
+  "saving_throws": ["intelligence", "wisdom"],
+  "proficiencies": {
+    "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde (nicht aus Metall)"],
+    "weapons": ["Keulen", "Dolche", "Wurfspeere", "Streitkolben", "Kampfstäbe", "Krummsäbel", "Sicheln", "Schleudern"],
+    "tools": ["Kräuterkunde-Set"],
+    "skills": {
+      "choose": 2,
+      "from": ["Tierkunde", "Arkanum", "Einblick", "Medizin", "Naturkunde", "Wahrnehmung", "Religion", "Überlebenskunst"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Druidisch", "description": "Du kennst Druidisch, die Geheimsprache der Druiden." },
+    { "level": 1, "name": "Zauber wirken", "description": "Du kannst Druidenzauber wirken." },
+    { "level": 2, "name": "Tiergestalt", "description": "Du kannst deine Aktion verwenden, um dich in ein Tier zu verwandeln, das du gesehen hast." },
+    { "level": 2, "name": "Druidenzirkel", "description": "Du wählst einen Zirkel, dem du angehörst, der deine druidischen Kräfte formt." },
+    { "level": 4, "name": "Tiergestalt-Verbesserung", "description": "Deine Tiergestalten können nun eine höhere Herausforderung haben." },
+    { "level": 8, "name": "Tiergestalt-Verbesserung", "description": "Deine Tiergestalten können nun eine höhere Herausforderung haben und fliegen." },
+    { "level": 10, "name": "Zeitloser Körper", "description": "Du alterst langsamer. Für alle 10 Jahre, die vergehen, altert dein Körper nur um 1 Jahr." }
+  ],
+  "subclasses": [
+    {
+      "key": "circle_of_the_land",
+      "name": "Zirkel des Landes",
+      "description": "Du bist ein Hüter des alten Glaubens, dessen Magie und Weisheit mit einem bestimmten Terrain verbunden ist.",
+      "features": [
+        { "level": 2, "name": "Zusätzlicher Zaubertrick", "description": "Du lernst einen zusätzlichen Druiden-Zaubertrick deiner Wahl." },
+        { "level": 2, "name": "Natürliche Erholung", "description": "Während einer kurzen Rast kannst du einen Teil deiner verbrauchten Zauberplätze zurückgewinnen." },
+        { "level": 3, "name": "Zirkelzauber", "description": "Deine mystische Verbindung zu einem bestimmten Land (Arktis, Küste, Wüste, Wald, Grasland, Gebirge, Sumpf) gewährt dir zusätzliche Zauber." },
+        { "level": 6, "name": "Land wandelnd", "description": "Die Bewegung durch schwieriges, nicht-magisches Gelände kostet dich keine zusätzliche Bewegung. Du hast Vorteil bei Rettungswürfen gegen magisch erschaffene oder manipulierte Pflanzen." },
+        { "level": 10, "name": "Schutz der Natur", "description": "Du kannst nicht mehr bezaubert oder verängstigt werden durch Elementare oder Feenwesen, und du bist immun gegen Gift und Krankheiten." }
+      ]
+    }
+  ]
+},
   {
-    "key": "fighter",
-    "name": "Kämpfer",
-    "icon": "Class_Fighter_Icon.png",
-    "description": "Ein Meister der Kampfkunst, der in jeder Waffe und Rüstung geübt ist und über unübertroffene Fähigkeiten auf dem Schlachtfeld verfügt.",
-    "hit_die": 10,
-    "saving_throws": ["strength", "constitution"],
-    "proficiencies": {
-      "armor": ["Alle Rüstungen", "Schilde"],
-      "weapons": ["Einfache Waffen", "Kriegswaffen"],
-      "skills": {
-        "choose": 2,
-        "from": ["Akrobatik", "Tierkunde", "Athletik", "Geschichte", "Einblick", "Einschüchtern", "Wahrnehmung", "Überlebenskunst"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Kampfstil", "description": "Du nimmst einen besonderen Kampfstil als deine Spezialität an (z.B. Bogenschießen, Verteidigung, Duellieren)." },
-      { "level": 1, "name": "Zweite Luft", "description": "Du kannst eine Bonusaktion verwenden, um Trefferpunkte in Höhe von 1W10 + deinem Kämpferlevel zurückzugewinnen." },
-      { "level": 2, "name": "Tatendrang", "description": "Du kannst dich selbst über deine normalen Grenzen hinaus anspornen. In deinem Zug kannst du eine zusätzliche Aktion ausführen." },
-      { "level": 3, "name": "Kriegerischer Archetyp", "description": "Du wählst einen Archetyp, der deinen Kampfstil prägt." },
-      { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
-      { "level": 9, "name": "Unbezwingbar", "description": "Du kannst einen Rettungswurf wiederholen, bei dem du versagt hast." },
-      { "level": 11, "name": "Zusätzlicher Angriff (2)", "description": "Du kannst dreimal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." }
-    ],
-    "subclasses": [
-      {
-        "key": "champion",
-        "name": "Champion",
-        "description": "Der Archetyp des Champions konzentriert sich auf die Entwicklung roher körperlicher Kraft, die zu tödlicher Perfektion geschliffen wurde.",
-        "features": [
-          { "level": 3, "name": "Verbesserter kritischer Treffer", "description": "Deine Waffenangriffe erzielen einen kritischen Treffer bei einem Würfelergebnis von 19 oder 20." },
-          { "level": 7, "name": "Bemerkenswerter Athlet", "description": "Du kannst die Hälfte deines Übungsbonus zu jedem Stärke-, Geschicklichkeits- oder Konstitutionswurf addieren, bei dem du nicht bereits geübt bist. Außerdem erhöht sich die Weite deines Weit- und Hochsprungs." },
-          { "level": 10, "name": "Zusätzlicher Kampfstil", "description": "Du wählst einen zweiten Kampfstil." }
-        ]
-      }
-    ]
+  "key": "fighter",
+  "name": "Kämpfer",
+  "icon": "Class_Fighter_Icon.png",
+  "description": "Ein Meister der Kampfkunst, der in jeder Waffe und Rüstung geübt ist und über unübertroffene Fähigkeiten auf dem Schlachtfeld verfügt.",
+  "hit_die": 10,
+  "saving_throws": ["strength", "constitution"],
+  "proficiencies": {
+    "armor": ["Alle Rüstungen", "Schilde"],
+    "weapons": ["Einfache Waffen", "Kriegswaffen"],
+    "skills": {
+      "choose": 2,
+      "from": ["Akrobatik", "Tierkunde", "Athletik", "Geschichte", "Einblick", "Einschüchtern", "Wahrnehmung", "Überlebenskunst"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Kampfstil", "description": "Du nimmst einen besonderen Kampfstil als deine Spezialität an (z.B. Bogenschießen, Verteidigung, Duellieren)." },
+    { "level": 1, "name": "Zweite Luft", "description": "Du kannst eine Bonusaktion verwenden, um Trefferpunkte in Höhe von 1W10 + deinem Kämpferlevel zurückzugewinnen." },
+    { "level": 2, "name": "Tatendrang", "description": "Du kannst dich selbst über deine normalen Grenzen hinaus anspornen. In deinem Zug kannst du eine zusätzliche Aktion ausführen." },
+    { "level": 3, "name": "Kriegerischer Archetyp", "description": "Du wählst einen Archetyp, der deinen Kampfstil prägt." },
+    { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
+    { "level": 6, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 7, "name": "Bemerkenswerter Athlet", "description": "Du kannst die Hälfte deines Übungsbonus zu jedem Stärke-, Geschicklichkeits- oder Konstitutionswurf addieren, bei dem du nicht bereits geübt bist. Außerdem erhöht sich die Weite deines Weit- und Hochsprungs." },
+    { "level": 8, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 9, "name": "Unbezwingbar", "description": "Du kannst einen Rettungswurf wiederholen, bei dem du versagt hast." },
+    { "level": 10, "name": "Zusätzlicher Kampfstil", "description": "Du wählst einen zweiten Kampfstil." },
+    { "level": 11, "name": "Zusätzlicher Angriff (2)", "description": "Du kannst dreimal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
+    { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 14, "name": "Indomitable (2. Nutzung)", "description": "Du darfst einen fehlgeschlagenen Rettungswurf erneut wiederholen." },
+    { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 20, "name": "Unaufhaltsamer Kämpfer", "description": "Du erreichst die Spitze deiner Kampfkraft. Dein Archetyp kann auf Level 20 zusätzliche Fähigkeiten oder Feats erhalten." }
+  ],
+  "subclasses": [
+    {
+      "key": "champion",
+      "name": "Champion",
+      "description": "Der Archetyp des Champions konzentriert sich auf die Entwicklung roher körperlicher Kraft, die zu tödlicher Perfektion geschliffen wurde.",
+      "features": [
+        { "level": 3, "name": "Verbesserter kritischer Treffer", "description": "Deine Waffenangriffe erzielen einen kritischen Treffer bei einem Würfelergebnis von 19 oder 20." },
+        { "level": 7, "name": "Bemerkenswerter Athlet", "description": "Du kannst die Hälfte deines Übungsbonus zu jedem Stärke-, Geschicklichkeits- oder Konstitutionswurf addieren, bei dem du nicht bereits geübt bist. Außerdem erhöht sich die Weite deines Weit- und Hochsprungs." },
+        { "level": 10, "name": "Zusätzlicher Kampfstil", "description": "Du wählst einen zweiten Kampfstil." },
+        { "level": 15, "name": "Verbesserter kritischer Treffer (Superior Critical)", "description": "Deine Waffenangriffe erzielen nun einen kritischen Treffer bei einem Würfelergebnis von 18–20." }
+      ]
+    }
+  ]
+},
   {
-    "key": "monk",
-    "name": "Mönch",
-    "icon": "Class_Monk_Icon.png",
-    "description": "Ein Meister der Kampfkünste, der die Kraft des Körpers und des Geistes nutzt, um die mystische Energie des Ki zu kanalisieren.",
-    "hit_die": 8,
-    "saving_throws": ["strength", "dexterity"],
-    "proficiencies": {
-      "weapons": ["Einfache Waffen", "Kurzschwerter"],
-      "tools": ["Ein Handwerkerwerkzeug oder ein Musikinstrument deiner Wahl"],
-      "skills": {
-        "choose": 2,
-        "from": ["Akrobatik", "Athletik", "Geschichte", "Einblick", "Religion", "Heimlichkeit"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung oder Schild trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Weisheitsmodifikator." },
-      { "level": 1, "name": "Kampfkunst", "description": "Du kannst Geschicklichkeit anstelle von Stärke für Angriffs- und Schadenswürfe mit unbewaffneten Schlägen und Mönchswaffen verwenden. Du kannst einen W4 anstelle des normalen Schadens für deine Schläge verwenden. Wenn du mit einem unbewaffneten Schlag oder einer Mönchswaffe angreifst, kannst du einen unbewaffneten Schlag als Bonusaktion ausführen." },
-      { "level": 2, "name": "Ki", "description": "Du hast Ki-Punkte, die du ausgeben kannst, um erstaunliche Fähigkeiten zu aktivieren." },
-      { "level": 2, "name": "Ungepanzerte Bewegung", "description": "Deine Bewegungsrate erhöht sich, solange du keine Rüstung oder Schild trägst." },
-      { "level": 3, "name": "Mönchstradition", "description": "Du wählst eine Tradition, die deinen mönchischen Weg formt." },
-      { "level": 3, "name": "Geschosse ablenken", "description": "Du kannst deine Reaktion verwenden, um den Schaden eines Fernkampfwaffenangriffs zu reduzieren oder sogar das Geschoss zurückzuwerfen." },
-      { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
-      { "level": 5, "name": "Betäubender Schlag", "description": "Wenn du eine andere Kreatur mit einem Nahkampfwaffenangriff triffst, kannst du einen Ki-Punkt ausgeben, um einen Betäubenden Schlag zu versuchen. Das Ziel muss einen Konstitutions-Rettungswurf bestehen oder ist bis zum Ende deines nächsten Zuges betäubt." },
-      { "level": 6, "name": "Ki-gestärkte Schläge", "description": "Deine unbewaffneten Schläge gelten als magisch, um Resistenzen und Immunitäten gegen nicht-magische Angriffe zu überwinden." },
-      { "level": 7, "name": "Entrinnen", "description": "Wenn du einem Effekt unterworfen bist, der einen Geschicklichkeits-Rettungswurf für halben Schaden erlaubt, nimmst du bei Erfolg keinen und bei Misserfolg nur halben Schaden." },
-      { "level": 7, "name": "Stille des Geistes", "description": "Du kannst deine Aktion verwenden, um einen Effekt auf dir zu beenden, der dich bezaubert oder verängstigt." },
-      { "level": 10, "name": "Reinheit des Körpers", "description": "Du bist immun gegen Krankheiten und Gift." }
-    ],
-    "subclasses": [
-      {
-        "key": "way_of_the_open_hand",
-        "name": "Weg der offenen Hand",
-        "description": "Mönche des Weges der offenen Hand sind die ultimativen Meister der Kampfkunst, die mit bloßen Händen kämpfen.",
-        "features": [
-          { "level": 3, "name": "Technik der offenen Hand", "description": "Immer wenn du ein Ziel mit einem der Angriffe triffst, die dir durch 'Hagel der Schläge' gewährt werden, kannst du einen der folgenden Effekte auslösen: Das Ziel muss einen Geschicklichkeits-Rettungswurf bestehen oder es wird zu Boden geworfen; es muss einen Stärke-Rettungswurf bestehen oder du kannst es bis zu 4,5 Meter von dir wegstoßen; es kann bis zum Ende deines nächsten Zuges keine Reaktionen ausführen." },
-          { "level": 6, "name": "Ganzheit des Körpers", "description": "Du kannst deine Aktion verwenden, um eine Anzahl von Trefferpunkten in Höhe deines dreifachen Mönch-Levels wiederzuerlangen." },
-          { "level": 11, "name": "Bebende Handfläche", "description": "Wenn du eine Kreatur mit einem unbewaffneten Schlag triffst, kannst du einen Ki-Punkt ausgeben, um unsichtbare Vibrationen in ihrem Körper zu erzeugen. Diese halten für eine Anzahl von Tagen an, die deinem Mönch-Level entspricht. Du kannst jederzeit deine Aktion verwenden, um diese Vibrationen zu beenden. Wenn du dies tust, muss das Ziel einen Konstitutions-Rettungswurf bestehen oder es fällt auf 0 Trefferpunkte." }
-        ]
-      }
-    ]
+  "key": "monk",
+  "name": "Mönch",
+  "icon": "Class_Monk_Icon.png",
+  "description": "Ein Meister der Kampfkünste, der die Kraft von Körper und Geist nutzt, um die mystische Energie des Ki zu kanalisieren.",
+  "hit_die": 8,
+  "saving_throws": ["strength", "dexterity"],
+  "proficiencies": {
+    "weapons": ["Einfache Waffen", "Kurzschwerter"],
+    "tools": ["Ein Handwerkerwerkzeug oder ein Musikinstrument deiner Wahl"],
+    "skills": {
+      "choose": 2,
+      "from": ["Akrobatik", "Athletik", "Geschichte", "Einblick", "Religion", "Heimlichkeit"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung oder Schild trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Weisheitsmodifikator." },
+    { "level": 1, "name": "Kampfkunst", "description": "Du kannst Geschicklichkeit anstelle von Stärke für Angriffs- und Schadenswürfe mit unbewaffneten Schlägen und Mönchswaffen verwenden. Du kannst W4 als Schadenswürfel nutzen. Wenn du mit einem unbewaffneten Schlag oder einer Mönchswaffe angreifst, kannst du einen unbewaffneten Schlag als Bonusaktion ausführen." },
+    { "level": 2, "name": "Ki", "description": "Du hast Ki-Punkte, die du ausgeben kannst, um erstaunliche Fähigkeiten zu aktivieren." },
+    { "level": 2, "name": "Ungepanzerte Bewegung", "description": "Deine Bewegungsrate erhöht sich, solange du keine Rüstung oder Schild trägst." },
+    { "level": 3, "name": "Mönchstradition", "description": "Du wählst eine Tradition, die deinen mönchischen Weg formt." },
+    { "level": 3, "name": "Geschosse ablenken", "description": "Du kannst deine Reaktion verwenden, um den Schaden eines Fernkampfwaffenangriffs zu reduzieren oder das Geschoss zurückzuwerfen." },
+    { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
+    { "level": 5, "name": "Betäubender Schlag", "description": "Wenn du eine Kreatur mit einem Nahkampfwaffenangriff triffst, kannst du einen Ki-Punkt ausgeben, um einen Betäubenden Schlag zu versuchen. Das Ziel muss einen Konstitutions-Rettungswurf bestehen oder ist bis zum Ende deines nächsten Zuges betäubt." },
+    { "level": 6, "name": "Ki-gestärkte Schläge", "description": "Deine unbewaffneten Schläge gelten als magisch, um Resistenzen und Immunitäten gegen nicht-magische Angriffe zu überwinden." },
+    { "level": 6, "name": "Ganzheit des Körpers", "description": "Du kannst deine Aktion verwenden, um Trefferpunkte in Höhe deines dreifachen Mönch-Levels wiederherzustellen." },
+    { "level": 7, "name": "Entrinnen", "description": "Wenn du einem Effekt unterworfen bist, der einen Geschicklichkeits-Rettungswurf für halben Schaden erlaubt, nimmst du bei Erfolg keinen und bei Misserfolg nur halben Schaden." },
+    { "level": 7, "name": "Stille des Geistes", "description": "Du kannst deine Aktion verwenden, um einen Effekt auf dir zu beenden, der dich bezaubert oder verängstigt." },
+    { "level": 10, "name": "Reinheit des Körpers", "description": "Du bist immun gegen Krankheiten und Gift." },
+    { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 14, "name": "Indomitable Ki", "description": "Du kannst einen fehlgeschlagenen Rettungswurf erneut versuchen, während du Ki einsetzt." },
+    { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 20, "name": "Meister des Ki", "description": "Du erreichst die volle Meisterschaft deiner Ki-Fähigkeiten. Alle Ki-Fähigkeiten nutzen deine maximale Ki-Punkte effizient und gewähren zusätzliche Effekte nach Archetyp." }
+  ],
+  "subclasses": [
+    {
+      "key": "way_of_the_open_hand",
+      "name": "Weg der offenen Hand",
+      "description": "Mönche des Weges der offenen Hand sind die ultimativen Meister der Kampfkunst, die mit bloßen Händen kämpfen.",
+      "features": [
+        { "level": 3, "name": "Technik der offenen Hand", "description": "Wenn du ein Ziel mit einem Angriff triffst, der durch 'Hagel der Schläge' gewährt wird, kannst du einen der Effekte auslösen: Das Ziel muss einen Geschicklichkeits-Rettungswurf bestehen oder wird zu Boden geworfen; es muss einen Stärke-Rettungswurf bestehen oder wird bis zu 4,5 Meter von dir weggestoßen; es kann bis zum Ende deines nächsten Zuges keine Reaktionen ausführen." },
+        { "level": 6, "name": "Ganzheit des Körpers", "description": "Du kannst deine Aktion verwenden, um Trefferpunkte in Höhe deines dreifachen Mönch-Levels wiederherzustellen." },
+        { "level": 11, "name": "Bebende Handfläche", "description": "Wenn du eine Kreatur mit einem unbewaffneten Schlag triffst, kannst du einen Ki-Punkt ausgeben, um unsichtbare Vibrationen zu erzeugen. Diese halten für eine Anzahl von Tagen, die deinem Mönch-Level entspricht. Du kannst jederzeit deine Aktion verwenden, um diese Vibrationen zu beenden. Dann muss das Ziel einen Konstitutions-Rettungswurf bestehen oder fällt auf 0 Trefferpunkte." }
+      ]
+    }
+  ]
+},
   {
-    "key": "paladin",
-    "name": "Paladin",
-    "icon": "Class_Paladin_Icon.png",
-    "description": "Ein heiliger Krieger, gebunden an einen Eid, der als Leuchtfeuer der Hoffnung in einer von Dunkelheit geplagten Welt dient.",
-    "hit_die": 10,
-    "saving_throws": ["wisdom", "charisma"],
-    "proficiencies": {
-      "armor": ["Alle Rüstungen", "Schilde"],
-      "weapons": ["Einfache Waffen", "Kriegswaffen"],
-      "skills": {
-        "choose": 2,
-        "from": ["Athletik", "Einblick", "Einschüchtern", "Medizin", "Überzeugen", "Religion"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Göttliches Gespür", "description": "Du kannst deine Aktion verwenden, um die Anwesenheit von starkem Bösen oder Gutem, sowie von Himmlischen, Unholden oder Untoten in deiner Nähe zu spüren." },
-      { "level": 1, "name": "Handauflegen", "description": "Du hast einen Vorrat an Heilkraft, den du verwenden kannst, um Trefferpunkte wiederherzustellen. Du kannst auch 5 Punkte aus diesem Vorrat verwenden, um eine Krankheit zu heilen oder ein Gift zu neutralisieren." },
-      { "level": 2, "name": "Kampfstil", "description": "Du nimmst einen besonderen Kampfstil als deine Spezialität an." },
-      { "level": 2, "name": "Zauber wirken", "description": "Du kannst Paladinzauber wirken." },
-      { "level": 2, "name": "Göttliches Niederstrecken", "description": "Wenn du eine Kreatur mit einem Nahkampfwaffenangriff triffst, kannst du einen Zauberplatz verbrauchen, um zusätzlichen gleißenden Schaden zu verursachen." },
-      { "level": 3, "name": "Göttliche Gesundheit", "description": "Du bist immun gegen Krankheiten." },
-      { "level": 3, "name": "Heiliger Eid", "description": "Du leistest einen heiligen Eid, der deine Hingabe an eine gerechte Sache bekräftigt." },
-      { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
-      { "level": 6, "name": "Aura des Schutzes", "description": "Immer wenn du oder eine befreundete Kreatur innerhalb von 3 Metern von dir einen Rettungswurf machen muss, erhält die Kreatur einen Bonus auf den Rettungswurf, der deinem Charisma-Modifikator entspricht." },
-      { "level": 10, "name": "Aura des Mutes", "description": "Du und befreundete Kreaturen innerhalb von 3 Metern von dir können nicht verängstigt werden." },
-      { "level": 11, "name": "Verbessertes Göttliches Niederstrecken", "description": "Immer wenn du eine Kreatur mit einem Nahkampfwaffenangriff triffst, verursacht der Angriff zusätzlich 1W8 gleißenden Schaden." }
-    ],
-    "subclasses": [
-      {
-        "key": "oath_of_devotion",
-        "name": "Eid der Hingabe",
-        "description": "Der Eid der Hingabe bindet einen Paladin an die höchsten Ideale von Gerechtigkeit, Tugend und Ordnung.",
-        "features": [
-          { "level": 3, "name": "Göttliche Macht fokussieren", "description": "Du erhältst zwei Optionen: 'Heilige Waffe', mit der du deine Waffe mit positiver Energie durchdringen kannst, und 'Böses vertreiben', mit der du Unholde und Untote zurückschrecken lassen kannst." },
-          { "level": 7, "name": "Aura der Hingabe", "description": "Du und befreundete Kreaturen innerhalb von 3 Metern von dir können nicht bezaubert werden." }
-        ]
-      }
-    ]
+  "key": "paladin",
+  "name": "Paladin",
+  "icon": "Class_Paladin_Icon.png",
+  "description": "Ein heiliger Krieger, gebunden an einen Eid, der als Leuchtfeuer der Hoffnung in einer von Dunkelheit geplagten Welt dient.",
+  "hit_die": 10,
+  "saving_throws": ["wisdom", "charisma"],
+  "proficiencies": {
+    "armor": ["Alle Rüstungen", "Schilde"],
+    "weapons": ["Einfache Waffen", "Kriegswaffen"],
+    "skills": {
+      "choose": 2,
+      "from": ["Athletik", "Einblick", "Einschüchtern", "Medizin", "Überzeugen", "Religion"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Göttliches Gespür", "description": "Du kannst deine Aktion verwenden, um die Anwesenheit von starkem Bösen oder Gutem sowie von Himmlischen, Unholden oder Untoten in deiner Nähe zu spüren." },
+    { "level": 1, "name": "Handauflegen", "description": "Du hast einen Vorrat an Heilkraft, den du verwenden kannst, um Trefferpunkte wiederherzustellen. Du kannst auch 5 Punkte aus diesem Vorrat verwenden, um eine Krankheit zu heilen oder ein Gift zu neutralisieren." },
+    { "level": 2, "name": "Kampfstil", "description": "Du nimmst einen besonderen Kampfstil als deine Spezialität an." },
+    { "level": 2, "name": "Zauber wirken", "description": "Du kannst Paladinzauber wirken." },
+    { "level": 2, "name": "Göttliches Niederstrecken", "description": "Wenn du eine Kreatur mit einem Nahkampfwaffenangriff triffst, kannst du einen Zauberplatz verbrauchen, um zusätzlichen gleißenden Schaden zu verursachen." },
+    { "level": 3, "name": "Göttliche Gesundheit", "description": "Du bist immun gegen Krankheiten." },
+    { "level": 3, "name": "Heiliger Eid", "description": "Du leistest einen heiligen Eid, der deine Hingabe an eine gerechte Sache bekräftigt." },
+    { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
+    { "level": 6, "name": "Aura des Schutzes", "description": "Immer wenn du oder eine befreundete Kreatur innerhalb von 3 Metern von dir einen Rettungswurf macht, erhält die Kreatur einen Bonus auf den Rettungswurf in Höhe deines Charisma-Modifikators." },
+    { "level": 8, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 10, "name": "Aura des Mutes", "description": "Du und befreundete Kreaturen innerhalb von 3 Metern von dir können nicht verängstigt werden." },
+    { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 14, "name": "Aura des Heiligen Eides", "description": "Die Reichweite deiner Aura-Effekte erhöht sich auf 9 Meter." },
+    { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 20, "name": "Eid der Hingabe (Meisterpaladin)", "description": "Du erreichst die Spitze deiner paladinischen Kräfte. Deine Auraeffekte und göttlichen Fähigkeiten wirken effizienter und erhalten zusätzliche Effekte nach deinem Eid." }
+  ],
+  "subclasses": [
+    {
+      "key": "oath_of_devotion",
+      "name": "Eid der Hingabe",
+      "description": "Der Eid der Hingabe bindet einen Paladin an die höchsten Ideale von Gerechtigkeit, Tugend und Ordnung.",
+      "features": [
+        { "level": 3, "name": "Göttliche Macht fokussieren", "description": "Du erhältst zwei Optionen: 'Heilige Waffe', mit der du deine Waffe mit positiver Energie durchdringen kannst, und 'Böses vertreiben', mit der du Unholde und Untote zurückschrecken lassen kannst." },
+        { "level": 7, "name": "Aura der Hingabe", "description": "Du und befreundete Kreaturen innerhalb von 3 Metern von dir können nicht bezaubert werden." }
+      ]
+    }
+  ]
+},
   {
-    "key": "ranger",
-    "name": "Waldläufer",
-    "icon": "Class_Ranger_Icon.png",
-    "description": "Ein Krieger der Wildnis, der Feinde mit geschärften Sinnen, tödlichen Waffen und einer tiefen Verbindung zur Natur jagt.",
-    "hit_die": 10,
-    "saving_throws": ["strength", "dexterity"],
-    "proficiencies": {
-      "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
-      "weapons": ["Einfache Waffen", "Kriegswaffen"],
-      "skills": {
-        "choose": 3,
-        "from": ["Tierkunde", "Athletik", "Einblick", "Nachforschungen", "Naturkunde", "Wahrnehmung", "Heimlichkeit", "Überlebenskunst"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Bevorzugter Feind", "description": "Du wählst eine Art von Kreatur als deinen bevorzugten Feind. Du hast Vorteil bei Weisheits (Überlebenskunst)-Würfen, um sie aufzuspüren, und bei Intelligenz-Würfen, um Informationen über sie in Erfahrung zu bringen." },
-      { "level": 1, "name": "Natürlicher Entdecker", "description": "Du wählst ein bevorzugtes Gelände. Wenn du dich in diesem Gelände befindest, hast du mehrere Vorteile, wie z.B. dass du dich nicht verirren kannst und beim Spurenlesen aufmerksamer für Bedrohungen bist." },
-      { "level": 2, "name": "Kampfstil", "description": "Du nimmst einen besonderen Kampfstil als deine Spezialität an." },
-      { "level": 2, "name": "Zauber wirken", "description": "Du kannst Waldläuferzauber wirken." },
-      { "level": 3, "name": "Archetyp des Waldläufers", "description": "Du wählst einen Archetyp, der deinen Weg als Waldläufer prägt." },
-      { "level": 3, "name": "Ursprüngliches Bewusstsein", "description": "Du kannst deine Aktion und einen Waldläufer-Zauberplatz verwenden, um zu spüren, ob bestimmte Kreaturenarten in deiner Nähe sind." },
-      { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
-      { "level": 8, "name": "Land wandelnd", "description": "Die Bewegung durch schwieriges, nicht-magisches Gelände kostet dich keine zusätzliche Bewegung." },
-      { "level": 10, "name": "Spurlos", "description": "Du kannst deine Aktion verwenden, um es für eine Stunde lang schwierig zu machen, deine Gruppe aufzuspüren." }
-    ],
-    "subclasses": [
-      {
-        "key": "hunter",
-        "name": "Jäger",
-        "description": "Der Archetyp des Jägers verkörpert die Meisterschaft im Kampf gegen jede Art von Bedrohung, von wilden Bestien bis zu monströsen Unholden.",
-        "features": [
-          { "level": 3, "name": "Beute des Jägers", "description": "Du wählst eine von drei Fähigkeiten: 'Koloss-Töter', mit dem du einmal pro Zug zusätzlichen Schaden gegen eine bereits verletzte Kreatur verursachen kannst; 'Riesen-Mörder', mit dem du gegen große oder größere Kreaturen angreifen kannst; oder 'Horden-Brecher', mit dem du einen weiteren Angriff gegen eine andere Kreatur in der Nähe machen kannst." },
-          { "level": 7, "name": "Verteidigungstaktiken", "description": "Du wählst eine von drei defensiven Fähigkeiten: 'Flucht vor der Horde', 'Multiangriffs-Verteidigung' oder 'Stählerner Wille'." },
-          { "level": 11, "name": "Multiangriff", "description": "Du wählst eine von zwei Fähigkeiten: 'Wirbelwind-Angriff', mit dem du alle Kreaturen in deiner Reichweite angreifen kannst, oder 'Salve', mit der du alle Kreaturen in einem Bereich mit einer Fernkampfwaffe angreifen kannst." }
-        ]
-      }
-    ]
+  "key": "ranger",
+  "name": "Waldläufer",
+  "icon": "Class_Ranger_Icon.png",
+  "description": "Ein Krieger der Wildnis, der Feinde mit geschärften Sinnen, tödlichen Waffen und einer tiefen Verbindung zur Natur jagt.",
+  "hit_die": 10,
+  "saving_throws": ["strength", "dexterity"],
+  "proficiencies": {
+    "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
+    "weapons": ["Einfache Waffen", "Kriegswaffen"],
+    "skills": {
+      "choose": 3,
+      "from": ["Tierkunde", "Athletik", "Einblick", "Nachforschungen", "Naturkunde", "Wahrnehmung", "Heimlichkeit", "Überlebenskunst"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Bevorzugter Feind", "description": "Du wählst eine Art von Kreatur als deinen bevorzugten Feind. Du hast Vorteil bei Weisheits (Überlebenskunst)-Würfen, um sie aufzuspüren, und bei Intelligenz-Würfen, um Informationen über sie zu sammeln." },
+    { "level": 1, "name": "Natürlicher Entdecker", "description": "Du wählst ein bevorzugtes Gelände. In diesem Gelände erhältst du Vorteile, z.B. beim Spurenlesen und bei der Orientierung." },
+    { "level": 2, "name": "Kampfstil", "description": "Du wählst einen besonderen Kampfstil als Spezialität." },
+    { "level": 2, "name": "Zauber wirken", "description": "Du kannst Waldläuferzauber wirken." },
+    { "level": 3, "name": "Archetyp des Waldläufers", "description": "Du wählst einen Archetyp, der deinen Weg als Waldläufer prägt." },
+    { "level": 3, "name": "Ursprüngliches Bewusstsein", "description": "Du kannst deine Aktion und einen Waldläufer-Zauberplatz verwenden, um zu spüren, ob bestimmte Kreaturenarten in deiner Nähe sind." },
+    { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 5, "name": "Zusätzlicher Angriff", "description": "Du kannst zweimal anstatt einmal angreifen, wenn du die Angriffsaktion in deinem Zug nutzt." },
+    { "level": 8, "name": "Land wandelnd", "description": "Die Bewegung durch schwieriges, nicht-magisches Gelände kostet dich keine zusätzliche Bewegung." },
+    { "level": 10, "name": "Spurlos", "description": "Du kannst deine Aktion verwenden, um es für eine Stunde schwierig zu machen, deine Gruppe aufzuspüren." },
+    { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 14, "name": "Verbesserte Jagd", "description": "Dein bevorzugter Feind und dein bevorzugtes Gelände geben nun noch größere Vorteile." },
+    { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 20, "name": "Meister der Wildnis", "description": "Du erreichst die Spitze deiner Fähigkeiten als Waldläufer. Bevorzugte Feinde und Gelände gewähren maximalen Vorteil, deine Kampffähigkeiten sind extrem effizient." }
+  ],
+  "subclasses": [
+    {
+      "key": "hunter",
+      "name": "Jäger",
+      "description": "Der Archetyp des Jägers verkörpert die Meisterschaft im Kampf gegen jede Art von Bedrohung, von wilden Bestien bis zu monströsen Unholden.",
+      "features": [
+        { "level": 3, "name": "Beute des Jägers", "description": "Du wählst eine von drei Fähigkeiten: 'Koloss-Töter', 'Riesen-Mörder' oder 'Horden-Brecher'." },
+        { "level": 7, "name": "Verteidigungstaktiken", "description": "Du wählst eine von drei defensiven Fähigkeiten: 'Flucht vor der Horde', 'Multiangriffs-Verteidigung' oder 'Stählerner Wille'." },
+        { "level": 11, "name": "Multiangriff", "description": "Du wählst eine von zwei Fähigkeiten: 'Wirbelwind-Angriff' oder 'Salve'." },
+        { "level": 15, "name": "Jagdmeister", "description": "Du erhältst zusätzliche Boni gegen bevorzugte Feinde und kannst ein zusätzliches Ziel pro Angriff angreifen." },
+        { "level": 18, "name": "Unaufhaltsamer Jäger", "description": "Deine Angriffe und Bewegungen sind extrem effizient, du erhältst Vorteile gegen alle bekannten Feindarten." }
+      ]
+    }
+  ]
+},
   {
-    "key": "rogue",
-    "name": "Schurke",
-    "icon": "Class_Rogue_Icon.png",
-    "description": "Ein listiger und schwer fassbarer Abenteurer, der mit Geschick, Heimlichkeit und den Schwächen seiner Feinde zum Erfolg kommt.",
-    "hit_die": 8,
-    "saving_throws": ["dexterity", "intelligence"],
-    "proficiencies": {
-      "armor": ["Leichte Rüstung"],
-      "weapons": ["Einfache Waffen", "Handarmbrüste", "Langschwerter", "Rapier", "Kurzschwerter"],
-      "tools": ["Diebeswerkzeug"],
-      "skills": {
-        "choose": 4,
-        "from": ["Akrobatik", "Athletik", "Täuschung", "Einblick", "Einschüchtern", "Nachforschungen", "Wahrnehmung", "Darbietung", "Überzeugen", "Fingerfertigkeit", "Heimlichkeit"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Expertise", "description": "Wähle zwei deiner Fertigkeitsübungen, oder eine Fertigkeitsübung und deine Übung mit Diebeswerkzeug. Dein Übungsbonus wird für jeden Attributswurf, den du mit einer der gewählten Fertigkeiten machst, verdoppelt." },
-      { "level": 1, "name": "Hinterhältiger Angriff", "description": "Einmal pro Zug kannst du zusätzlichen 1W6 Schaden bei einem Treffer verursachen, wenn du Vorteil beim Angriffswurf hast oder wenn ein anderer Feind des Ziels innerhalb von 1,5 Metern von ihm steht." },
-      { "level": 1, "name": "Diebesjargon", "description": "Du kennst eine geheime Mischung aus Dialekt, Jargon und Code, die es dir ermöglicht, geheime Botschaften zu übermitteln." },
-      { "level": 2, "name": "Listige Aktion", "description": "Du kannst in jedem deiner Züge eine Bonusaktion verwenden, um die Spurt-, Rückzugs- oder Verstecken-Aktion auszuführen." },
-      { "level": 3, "name": "Schurken-Archetyp", "description": "Du wählst einen Archetyp, der deine schurkischen Talente prägt." },
-      { "level": 5, "name": "Unheimliches Gespür", "description": "Wenn ein Angreifer, den du sehen kannst, dich mit einem Angriff trifft, kannst du deine Reaktion verwenden, um den Schaden zu halbieren." },
-      { "level": 7, "name": "Entrinnen", "description": "Wenn du einem Effekt unterworfen bist, der einen Geschicklichkeits-Rettungswurf für halben Schaden erlaubt, nimmst du bei Erfolg keinen und bei Misserfolg nur halben Schaden." },
-      { "level": 11, "name": "Verlässliches Talent", "description": "Immer wenn du einen Attributswurf machst, bei dem du deinen Übungsbonus anwenden darfst, kannst du jeden W20-Wurf von 9 oder niedriger als 10 behandeln." }
-    ],
-    "subclasses": [
-      {
-        "key": "thief",
-        "name": "Dieb",
-        "description": "Du verfeinerst deine Fähigkeiten in den Diebeskünsten. Einbrecher, Banditen, Taschendiebe und andere Kriminelle folgen typischerweise diesem Archetyp.",
-        "features": [
-          { "level": 3, "name": "Flinke Hände", "description": "Du kannst die Bonusaktion, die du durch deine Listige Aktion erhältst, auch verwenden, um einen Geschicklichkeits (Fingerfertigkeit)-Wurf zu machen, dein Diebeswerkzeug zu benutzen, um ein Schloss zu knacken oder eine Falle zu entschärfen, oder die 'Gegenstand benutzen'-Aktion auszuführen." },
-          { "level": 3, "name": "Zweitstöckiges Arbeiten", "description": "Das Klettern kostet dich keine zusätzliche Bewegung. Außerdem kannst du einen Anlauf für einen Weitsprung machen, der nur 1,5 Meter statt 3 Meter lang ist." },
-          { "level": 9, "name": "Höchst unauffällig", "description": "Du hast einen Vorteil bei einem Geschicklichkeits (Heimlichkeit)-Wurf, wenn du dich in deinem Zug nicht mehr als die Hälfte deiner Bewegungsrate bewegst." }
-        ]
-      }
-    ]
+  "key": "rogue",
+  "name": "Schurke",
+  "icon": "Class_Rogue_Icon.png",
+  "description": "Ein listiger und schwer fassbarer Abenteurer, der mit Geschick, Heimlichkeit und den Schwächen seiner Feinde zum Erfolg kommt.",
+  "hit_die": 8,
+  "saving_throws": ["dexterity", "intelligence"],
+  "proficiencies": {
+    "armor": ["Leichte Rüstung"],
+    "weapons": ["Einfache Waffen", "Handarmbrüste", "Langschwerter", "Rapier", "Kurzschwerter"],
+    "tools": ["Diebeswerkzeug"],
+    "skills": {
+      "choose": 4,
+      "from": ["Akrobatik", "Athletik", "Täuschung", "Einblick", "Einschüchtern", "Nachforschungen", "Wahrnehmung", "Darbietung", "Überzeugen", "Fingerfertigkeit", "Heimlichkeit"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Expertise", "description": "Wähle zwei Fertigkeiten oder eine Fertigkeit und dein Diebeswerkzeug. Dein Übungsbonus wird für diese verdoppelt." },
+    { "level": 1, "name": "Hinterhältiger Angriff", "description": "Einmal pro Zug verursachst du 1W6 zusätzlichen Schaden, wenn du Vorteil beim Angriff hast oder ein Verbündeter nahe beim Ziel ist." },
+    { "level": 1, "name": "Diebesjargon", "description": "Du kennst eine geheime Mischung aus Dialekt, Jargon und Codes zur Übermittlung geheimer Botschaften." },
+    { "level": 2, "name": "Listige Aktion", "description": "Du kannst eine Bonusaktion verwenden, um Spurt-, Rückzugs- oder Verstecken-Aktion auszuführen." },
+    { "level": 3, "name": "Schurken-Archetyp", "description": "Du wählst einen Archetyp, der deine schurkischen Talente prägt." },
+    { "level": 5, "name": "Unheimliches Gespür", "description": "Wenn ein Angreifer dich trifft, kannst du deine Reaktion verwenden, um den Schaden zu halbieren." },
+    { "level": 7, "name": "Entrinnen", "description": "Wenn du einem Effekt unterworfen bist, der einen Geschicklichkeits-Rettungswurf für halben Schaden erlaubt, nimmst du bei Erfolg keinen und bei Misserfolg nur halben Schaden." },
+    { "level": 11, "name": "Verlässliches Talent", "description": "Du kannst jeden W20-Wurf von 9 oder niedriger als 10 behandeln, wenn du deinen Übungsbonus anwendest." },
+    { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 8, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 10, "name": "Hinterhältiger Angriff (Steigerung)", "description": "Dein Hinterhältiger Angriff erhöht sich auf 2W6 zusätzlichen Schaden." },
+    { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 14, "name": "Hinterhältiger Angriff (Steigerung)", "description": "Dein Hinterhältiger Angriff erhöht sich auf 3W6 zusätzlichen Schaden." },
+    { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 17, "name": "Hinterhältiger Angriff (Steigerung)", "description": "Dein Hinterhältiger Angriff erhöht sich auf 4W6 zusätzlichen Schaden." },
+    { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 20, "name": "Meisterschurke", "description": "Du erreichst die Spitze deiner Fähigkeiten. Hinterhältiger Angriff erhöht sich auf 5W6, und alle Fähigkeiten werden besonders effizient eingesetzt." }
+  ],
+  "subclasses": [
+    {
+      "key": "thief",
+      "name": "Dieb",
+      "description": "Du verfeinerst deine Fähigkeiten in den Diebeskünsten. Einbrecher, Banditen und Taschendiebe folgen typischerweise diesem Archetyp.",
+      "features": [
+        { "level": 3, "name": "Flinke Hände", "description": "Du kannst die Bonusaktion durch Listige Aktion nutzen, um Geschicklichkeitswürfe oder Diebeswerkzeuge einzusetzen oder die 'Gegenstand benutzen'-Aktion auszuführen." },
+        { "level": 3, "name": "Zweitstöckiges Arbeiten", "description": "Klettern kostet keine zusätzliche Bewegung, Anlauf für Weitsprung nur 1,5 m statt 3 m." },
+        { "level": 9, "name": "Höchst unauffällig", "description": "Vorteil bei Heimlichkeit, wenn du dich nicht mehr als die Hälfte deiner Bewegungsrate bewegst." },
+        { "level": 13, "name": "Geschickter Dieb", "description": "Du kannst deine Bewegungsrate und Heimlichkeitsaktionen weiter verbessern." },
+        { "level": 17, "name": "Unvergleichlicher Dieb", "description": "Deine List und Heimlichkeit erreichen die höchste Stufe, Hinterhältiger Angriff profitiert maximal." }
+      ]
+    }
+  ]
+},
   {
-    "key": "sorcerer",
-    "name": "Zauberer",
-    "icon": "Class_Sorcerer_Icon.png",
-    "description": "Ein Zauberwirker, der seine Magie aus einer angeborenen Gabe oder einer übernatürlichen Blutlinie schöpft.",
-    "hit_die": 6,
-    "saving_throws": ["constitution", "charisma"],
-    "proficiencies": {
-      "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
-      "skills": {
-        "choose": 2,
-        "from": ["Arkanum", "Täuschung", "Einblick", "Einschüchtern", "Überzeugen", "Religion"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Zauber wirken", "description": "Du kannst Zaubererzauber wirken." },
-      { "level": 1, "name": "Zauberhafter Ursprung", "description": "Du wählst den Ursprung deiner magischen Kraft." },
-      { "level": 2, "name": "Quelle der Magie", "description": "Du hast einen Vorrat an Zaubereipunkten, die du verwenden kannst, um Zauberplätze zu erstellen oder deine Zauber mit Metamagie zu modifizieren." },
-      { "level": 3, "name": "Metamagie", "description": "Du erhältst zwei Metamagie-Optionen deiner Wahl, um deine Zauber zu formen (z.B. 'Behutsamer Zauber', 'Verstärkter Zauber')." },
-      { "level": 10, "name": "Metamagie", "description": "Du lernst eine weitere Metamagie-Option deiner Wahl." }
-    ],
-    "subclasses": [
-      {
-        "key": "draconic_bloodline",
-        "name": "Drakonische Blutlinie",
-        "description": "Deine angeborene Magie stammt von drakonischer Magie, die mit deiner Blutlinie oder deiner Familie vermischt wurde.",
-        "features": [
-          { "level": 1, "name": "Drachenahne", "description": "Du wählst eine Drachenart als deinen Ahnen. Der Schadenstyp, der mit dieser Drachenart verbunden ist, wird in späteren Fähigkeiten verwendet." },
-          { "level": 1, "name": "Drakonische Widerstandsfähigkeit", "description": "Deine Trefferpunktemaximum erhöht sich um 1 für jede Zaubererstufe. Wenn du keine Rüstung trägst, ist deine Rüstungsklasse 13 + dein Geschicklichkeitsmodifikator." },
-          { "level": 6, "name": "Elementare Affinität", "description": "Wenn du einen Zauber wirkst, der Schaden des mit deinem Drachenahnen verbundenen Typs verursacht, kannst du deinen Charisma-Modifikator zum Schaden addieren. Du kannst auch einen Zaubereipunkt ausgeben, um eine Stunde lang Resistenz gegen diesen Schadenstyp zu erhalten." }
-        ]
-      }
-    ]
+  "key": "sorcerer",
+  "name": "Zauberer",
+  "icon": "Class_Sorcerer_Icon.png",
+  "description": "Ein Zauberwirker, der seine Magie aus einer angeborenen Gabe oder einer übernatürlichen Blutlinie schöpft.",
+  "hit_die": 6,
+  "saving_throws": ["constitution", "charisma"],
+  "proficiencies": {
+    "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
+    "skills": {
+      "choose": 2,
+      "from": ["Arkanum", "Täuschung", "Einblick", "Einschüchtern", "Überzeugen", "Religion"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Zauber wirken", "description": "Du kannst Zaubererzauber wirken." },
+    { "level": 1, "name": "Zauberhafter Ursprung", "description": "Du wählst den Ursprung deiner magischen Kraft." },
+    { "level": 2, "name": "Quelle der Magie", "description": "Du erhältst Zauberpunkte, die du einsetzen kannst, um Zauberplätze zu erzeugen oder Zauber mit Metamagie zu verändern." },
+    { "level": 3, "name": "Metamagie", "description": "Du wählst zwei Metamagie-Optionen, um deine Zauber zu modifizieren (z. B. 'Behutsamer Zauber', 'Verstärkter Zauber')." },
+    { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 5, "name": "Zauberer-Fortschritt", "description": "Du lernst weitere Zauber entsprechend deiner Stufe." },
+    { "level": 6, "name": "Drakonische Affinität / Blutsverbindung", "description": "Wenn dein Ursprung drakonisch ist, wende Elementare Affinität an." },
+    { "level": 8, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 10, "name": "Metamagie-Erweiterung", "description": "Du lernst eine weitere Metamagie-Option deiner Wahl." },
+    { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 14, "name": "Zauberer-Fortschritt", "description": "Du lernst Zauber höherer Stufen entsprechend deiner Zaubererstufe." },
+    { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 18, "name": "Drakonische Meisterschaft", "description": "Deine Drachenblut-Fähigkeiten verstärken sich, z. B. Elementare Affinität Schadenserhöhung." },
+    { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 20, "name": "Archmage", "description": "Du erreichst die Spitze deiner Zaubererfähigkeiten: maximale Zauberstufe, Metamagie-Meisterschaft und höchste Zauberpunkte." }
+  ],
+  "subclasses": [
+    {
+      "key": "draconic_bloodline",
+      "name": "Drakonische Blutlinie",
+      "description": "Deine angeborene Magie stammt von drakonischer Herkunft, die mit deiner Blutlinie oder Familie verbunden ist.",
+      "features": [
+        { "level": 1, "name": "Drachenahne", "description": "Wähle einen Drachen als Ahnen. Der Schadenstyp dieses Drachenahns wird für spätere Fähigkeiten genutzt." },
+        { "level": 1, "name": "Drakonische Widerstandsfähigkeit", "description": "Maximale Trefferpunkte +1 pro Zauberstufe. Rüstungsklasse 13 + Geschicklichkeitsmodifikator, falls ungerüstet." },
+        { "level": 6, "name": "Elementare Affinität", "description": "Bei Zaubern des Drachenahnen-Schadentyps kannst du Charisma-Modifikator zum Schaden addieren oder 1 Zauberpunkt ausgeben, um Resistenz 1 Stunde zu erlangen." },
+        { "level": 14, "name": "Drakonische Resilienz", "description": "Du erhältst Resistenz gegen den Schadenstyp deines Drachenahnen bei bestimmten Zaubern." },
+        { "level": 18, "name": "Meisterhafte Drakonische Magie", "description": "Deine Zauber und Elementare Affinität wirken besonders mächtig, Schadensboni steigen weiter." }
+      ]
+    }
+  ]
+},
   {
-    "key": "warlock",
-    "name": "Hexenmeister",
-    "icon": "Class_Warlock_Icon.png",
-    "description": "Ein Zauberwirker, der seine Macht durch einen Pakt mit einem außerweltlichen Wesen erlangt hat.",
-    "hit_die": 8,
-    "saving_throws": ["wisdom", "charisma"],
-    "proficiencies": {
-      "armor": ["Leichte Rüstung"],
-      "weapons": ["Einfache Waffen"],
-      "skills": {
-        "choose": 2,
-        "from": ["Arkanum", "Täuschung", "Geschichte", "Einschüchtern", "Nachforschungen", "Naturkunde", "Religion"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Außerweltlicher Schutzpatron", "description": "Du schließt einen Pakt mit einem mächtigen Wesen." },
-      { "level": 1, "name": "Paktmagie", "description": "Deine Zauberplätze sind begrenzt, regenerieren sich aber nach einer kurzen Rast." },
-      { "level": 2, "name": "Mystische Anrufungen", "description": "Du lernst mystische Anrufungen, magische Fragmente, die dir dauerhafte magische Fähigkeiten verleihen." },
-      { "level": 3, "name": "Pakt-Segen", "description": "Dein Schutzpatron gewährt dir einen Segen (z.B. 'Pakt der Kette', 'Pakt der Klinge', 'Pakt des Wälzers')." },
-      { "level": 11, "name": "Mystisches Arkanum", "description": "Du kannst einen mächtigen Zauber des 6. Grades einmal pro langer Rast wirken." }
-    ],
-    "subclasses": [
-      {
-        "key": "the_fiend",
-        "name": "Der Unhold",
-        "description": "Du hast einen Pakt mit einem Unhold aus den niederen Ebenen geschlossen, einem Wesen, dessen Ziele böse sind, selbst wenn du es nicht bist.",
-        "features": [
-          { "level": 1, "name": "Erweiterte Zauberliste", "description": "Der Unhold lässt dich aus einer erweiterten Liste von Zaubern wählen." },
-          { "level": 1, "name": "Segen des Dunklen", "description": "Wenn du eine feindliche Kreatur auf 0 Trefferpunkte reduzierst, erhältst du temporäre Trefferpunkte in Höhe deines Charisma-Modifikators + deines Hexenmeister-Levels." },
-          { "level": 6, "name": "Gunst des Dunklen", "description": "Wenn du einen Attributs- oder Rettungswurf machst, kannst du einen W10 zu dem Wurf addieren." },
-          { "level": 10, "name": "Unholdische Widerstandsfähigkeit", "description": "Du kannst einen Schadenstyp deiner Wahl wählen, gegen den du Resistenz erhältst. Diese Wahl kannst du nach einer kurzen oder langen Rast ändern." }
-        ]
-      }
-    ]
+  "key": "warlock",
+  "name": "Hexenmeister",
+  "icon": "Class_Warlock_Icon.png",
+  "description": "Ein Zauberwirker, der seine Macht durch einen Pakt mit einem außerweltlichen Wesen erlangt hat.",
+  "hit_die": 8,
+  "saving_throws": ["wisdom", "charisma"],
+  "proficiencies": {
+    "armor": ["Leichte Rüstung"],
+    "weapons": ["Einfache Waffen"],
+    "skills": {
+      "choose": 2,
+      "from": ["Arkanum", "Täuschung", "Geschichte", "Einschüchtern", "Nachforschungen", "Naturkunde", "Religion"]
+    }
   },
+  "features": [
+    { "level": 1, "name": "Außerweltlicher Schutzpatron", "description": "Du schließt einen Pakt mit einem mächtigen Wesen." },
+    { "level": 1, "name": "Paktmagie", "description": "Deine Zauberplätze sind begrenzt, regenerieren sich aber nach einer kurzen Rast." },
+    { "level": 2, "name": "Mystische Anrufungen", "description": "Du lernst mystische Anrufungen, magische Fragmente, die dir dauerhafte magische Fähigkeiten verleihen." },
+    { "level": 3, "name": "Pakt-Segen", "description": "Du wählst einen Pakt, den dein Schutzpatron dir gewährt (z. B. 'Pakt der Kette', 'Pakt der Klinge', 'Pakt des Wälzers')." },
+    { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 5, "name": "Zusätzlicher Paktzauber", "description": "Du lernst weitere Zauber, die dein Pakt erlaubt." },
+    { "level": 6, "name": "Gunst deines Schutzpatrons", "description": "Du erhältst eine besondere Fähigkeit, die deinen Schutzpatron widerspiegelt (abhängig vom gewählten Pakt)." },
+    { "level": 7, "name": "Energie der Anrufungen", "description": "Einige Anrufungen verstärken sich oder gewinnen neue Effekte." },
+    { "level": 8, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 9, "name": "Verbesserte Anrufungen", "description": "Deine Anrufungen werden mächtiger, z. B. längere Dauer oder größere Reichweite." },
+    { "level": 10, "name": "Unholdische Widerstandsfähigkeit", "description": "Du wählst einen Schadenstyp, gegen den du Resistenz erhältst. Diese Wahl kann nach kurzer oder langer Rast geändert werden." },
+    { "level": 11, "name": "Mystisches Arkanum", "description": "Du kannst einmal pro langer Rast einen mächtigen Zauber des 6. Grades wirken." },
+    { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 14, "name": "Verbessertes Mystisches Arkanum", "description": "Du erhältst weitere mächtige Zauber, z. B. 7. oder 8. Grad." },
+    { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 18, "name": "Mystische Meisterschaft", "description": "Deine Anrufungen und Paktfähigkeiten verstärken sich deutlich." },
+    { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 20, "name": "Patronen-Erleuchtung", "description": "Du erreichst die Spitze deiner Hexenmeister-Fähigkeiten: maximale Zauberstufe, mächtigste Anrufungen und vollkommene Paktkraft." }
+  ],
+  "subclasses": [
+    {
+      "key": "the_fiend",
+      "name": "Der Unhold",
+      "description": "Du hast einen Pakt mit einem Unhold aus den niederen Ebenen geschlossen, einem Wesen, dessen Ziele böse sind, selbst wenn du es nicht bist.",
+      "features": [
+        { "level": 1, "name": "Erweiterte Zauberliste", "description": "Der Unhold erlaubt dir, Zauber aus einer erweiterten Liste zu lernen." },
+        { "level": 1, "name": "Segen des Dunklen", "description": "Wenn du eine feindliche Kreatur auf 0 Trefferpunkte reduzierst, erhältst du temporäre Trefferpunkte in Höhe deines Charisma-Modifikators + Hexenmeisterlevel." },
+        { "level": 6, "name": "Gunst des Dunklen", "description": "Du kannst einen W10 zu einem Attributs- oder Rettungswurf hinzufügen." },
+        { "level": 10, "name": "Unholdische Widerstandsfähigkeit", "description": "Wähle einen Schadenstyp, gegen den du Resistenz erhältst. Nach kurzer oder langer Rast änderbar." },
+        { "level": 14, "name": "Finstere Anrufung", "description": "Deine Anrufungen erhalten neue Effekte oder verlängerte Dauer." },
+        { "level": 18, "name": "Meisterlicher Pakt", "description": "Deine Paktkräfte verstärken sich, z. B. zusätzliche Zauberwirkungen oder Boni." }
+      ]
+    }
+  ]
+},
   {
-    "key": "wizard",
-    "name": "Magier",
-    "icon": "Class_Wizard_Icon.png",
-    "description": "Ein gelehrter Zauberwirker, der die arkanen Energien durch jahrelanges Studium und unermüdliche Forschung zu meistern gelernt hat.",
-    "hit_die": 6,
-    "saving_throws": ["intelligence", "wisdom"],
-    "proficiencies": {
-      "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
-      "skills": {
-        "choose": 2,
-        "from": ["Arkanum", "Geschichte", "Einblick", "Nachforschungen", "Medizin", "Religion"]
-      }
-    },
-    "features": [
-      { "level": 1, "name": "Zauber wirken", "description": "Du kannst Magierzauber wirken." },
-      { "level": 1, "name": "Arkane Erholung", "description": "Einmal pro Tag, wenn du eine kurze Rast beendest, kannst du eine Anzahl von Zauberplätzen zurückgewinnen, deren kombinierter Grad die Hälfte deines Magier-Levels nicht übersteigt." },
-      { "level": 2, "name": "Arkane Tradition", "description": "Du wählst eine Schule der Magie als deine Spezialität." },
-      { "level": 10, "name": "Meisterschaft der Zauber", "description": "Du kannst einen Zauber des 1. und einen des 2. Grades aus deinem Zauberbuch als deine Signaturzauber wählen. Du kannst diese Zauber einmal pro kurzer Rast auf ihrem niedrigsten Grad wirken, ohne einen Zauberplatz zu verbrauchen." }
-    ],
-    "subclasses": [
-      {
-        "key": "school_of_evocation",
-        "name": "Schule der Hervorrufung",
-        "description": "Du konzentrierst dein Studium auf die Magie, die mächtige elementare Effekte erzeugt, wie beißende Kälte, sengendes Feuer, rollenden Donner, zuckende Blitze und brennende Säure.",
-        "features": [
-          { "level": 2, "name": "Hervorrufungs-Gelehrter", "description": "Die Zeit und das Gold, die du benötigst, um einen Hervorrufungszauber in dein Zauberbuch zu kopieren, sind halbiert." },
-          { "level": 2, "name": "Zauber formen", "description": "Wenn du einen Hervorrufungszauber wirkst, kannst du eine Anzahl von Kreaturen in dem Effektbereich wählen, die automatisch bei ihren Rettungswürfen gegen den Zauber erfolgreich sind und keinen Schaden nehmen." },
-          { "level": 6, "name": "Mächtige Zaubertricks", "description": "Wenn eine Kreatur bei einem Rettungswurf gegen einen deiner Magier-Zaubertricks erfolgreich ist, erleidet die Kreatur dennoch halben Schaden, aber keine zusätzlichen Effekte des Zaubertricks." },
-          { "level": 10, "name": "Ermächtigte Hervorrufung", "description": "Du kannst deinen Intelligenz-Modifikator zu den Schadenswürfen deiner Hervorrufungszauber addieren." }
-        ]
-      }
-    ]
-  }
+  "key": "wizard",
+  "name": "Magier",
+  "icon": "Class_Wizard_Icon.png",
+  "description": "Ein gelehrter Zauberwirker, der die arkanen Energien durch jahrelanges Studium und unermüdliche Forschung zu meistern gelernt hat.",
+  "hit_die": 6,
+  "saving_throws": ["intelligence", "wisdom"],
+  "proficiencies": {
+    "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
+    "skills": {
+      "choose": 2,
+      "from": ["Arkanum", "Geschichte", "Einblick", "Nachforschungen", "Medizin", "Religion"]
+    }
+  },
+  "features": [
+    { "level": 1, "name": "Zauber wirken", "description": "Du kannst Magierzauber wirken." },
+    { "level": 1, "name": "Arkane Erholung", "description": "Einmal pro Tag, wenn du eine kurze Rast beendest, kannst du eine Anzahl von Zauberplätzen zurückgewinnen, deren kombinierter Grad die Hälfte deines Magier-Levels nicht übersteigt." },
+    { "level": 2, "name": "Arkane Tradition", "description": "Du wählst eine Schule der Magie als deine Spezialität." },
+    { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 6, "name": "Verbesserte Arkane Erholung", "description": "Du kannst jetzt Zauberplätze mit kombinierter Stufe bis zu deinem gesamten Magier-Level während einer kurzen Rast zurückgewinnen." },
+    { "level": 8, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 10, "name": "Meisterschaft der Zauber", "description": "Du wählst einen Zauber des 1. und einen des 2. Grades aus deinem Zauberbuch als Signaturzauber. Diese kannst du einmal pro kurzer Rast auf ihrem niedrigsten Grad wirken, ohne einen Zauberplatz zu verbrauchen." },
+    { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 14, "name": "Intensive Forschung", "description": "Du kannst Zauber, die du kopierst, schneller studieren und benötigst nur die Hälfte der Zeit und Kosten." },
+    { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 18, "name": "Magische Meisterschaft", "description": "Einmal pro langer Rast kannst du einen beliebigen Zauber wirken, ohne Zauberplatz zu verbrauchen." },
+    { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
+    { "level": 20, "name": "Archmage", "description": "Du erreichst die Spitze deiner Magier-Fähigkeiten: maximale Zauberstufe, zusätzliche Signaturzauber und volle Kontrolle über deine arkanen Kräfte." }
+  ],
+  "subclasses": [
+    {
+      "key": "school_of_evocation",
+      "name": "Schule der Hervorrufung",
+      "description": "Du konzentrierst dein Studium auf die Magie, die mächtige elementare Effekte erzeugt, wie beißende Kälte, sengendes Feuer, rollenden Donner, zuckende Blitze und brennende Säure.",
+      "features": [
+        { "level": 2, "name": "Hervorrufungs-Gelehrter", "description": "Die Zeit und das Gold, die du benötigst, um einen Hervorrufungszauber in dein Zauberbuch zu kopieren, sind halbiert." },
+        { "level": 2, "name": "Zauber formen", "description": "Wenn du einen Hervorrufungszauber wirkst, kannst du eine Anzahl von Kreaturen in dem Effektbereich wählen, die automatisch bei ihren Rettungswürfen erfolgreich sind und keinen Schaden nehmen." },
+        { "level": 6, "name": "Mächtige Zaubertricks", "description": "Wenn eine Kreatur bei einem Rettungswurf gegen einen deiner Magier-Zaubertricks erfolgreich ist, erleidet die Kreatur dennoch halben Schaden, aber keine zusätzlichen Effekte des Zaubertricks." },
+        { "level": 10, "name": "Ermächtigte Hervorrufung", "description": "Du kannst deinen Intelligenz-Modifikator zu den Schadenswürfen deiner Hervorrufungszauber addieren." },
+        { "level": 14, "name": "Intensive Hervorrufung", "description": "Du kannst die automatische Rettung für Kreaturen in deinem Zauberbereich aufheben und sie vollen Schaden erleiden lassen." },
+        { "level": 18, "name": "Ultimative Hervorrufung", "description": "Alle deine Hervorrufungszauber erhalten maximalen Schaden ohne Würfelwurf für Schaden, einmal pro kurzer Rast." }
+      ]
+    }
+  ]
+}
 ]

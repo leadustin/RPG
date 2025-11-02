@@ -1,5 +1,5 @@
 import allArmor from "../data/items/armor.json";
-// *** 1. IMPORT HINZUGEFÜGT ***
+import allClassData from "../data/classes.json";
 import { LEVEL_XP_TABLE } from "../utils/helpers";
 
 /**
@@ -479,13 +479,33 @@ export const checkForLevelUp = (character) => {
       `STUFENAUFSTIEG ANSTEHEND: ${character.name} ist bereit für Stufe ${nextLevel}!`
     );
 
+    // *** 2. ZUSÄTZLICHE DATEN FÜR DAS MODAL SAMMELN ***
+    const classData = allClassData.find(c => c.key === character.class.key);
+    
+    // Prüfen, ob eine Subklassen-Wahl ansteht (basierend auf Feature-Namen)
+    const isSubclassChoiceLevel = classData?.features.some(f => 
+      f.level === nextLevel && (
+        f.name.toLowerCase().includes("archetyp") || 
+        f.name.toLowerCase().includes("pfad") || 
+        f.name.toLowerCase().includes("domäne") || 
+        f.name.toLowerCase().includes("zirkel") || 
+        f.name.toLowerCase().includes("kolleg") || 
+        f.name.toLowerCase().includes("tradition") || 
+        f.name.toLowerCase().includes("eid") || 
+        f.name.toLowerCase().includes("ursprung") || 
+        f.name.toLowerCase().includes("schutzpatron")
+      )
+    );
+
     // Bereite die Daten für das Modal vor
     return {
       ...character,
       pendingLevelUp: {
         newLevel: nextLevel,
         hpRollFormula: getHpRollFormula(character),
-        isAbilityIncrease: nextLevel % 4 === 0, // Info für später
+        isAbilityIncrease: nextLevel % 4 === 0, // Info für ASI
+        // Nur als Subklassen-Wahl markieren, wenn noch keine Subklasse gewählt wurde
+        isSubclassChoice: isSubclassChoiceLevel && !character.subclassKey, 
       },
     };
   }
@@ -494,14 +514,59 @@ export const checkForLevelUp = (character) => {
   return character;
 };
 
+
 /**
  * WENDET STUFENAUFSTIEG AN (NEUE FUNKTION)
- * Wendet die gewürfelten HP und das neue Level an.
+ * Wendet die gewürfelten HP, das neue Level und die AUSWAHL (ASI, Subklasse) an.
  */
-export const applyLevelUp = (character, hpRollResult) => {
+export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   if (!character.pendingLevelUp) return character;
 
   const { newLevel } = character.pendingLevelUp;
+
+  // --- Start: ASI anwenden ---
+  const newAbilities = { ...character.abilities };
+  if (levelUpChoices?.asi) {
+    console.log("Wende ASI an:", levelUpChoices.asi);
+    for (const key in levelUpChoices.asi) {
+      if (newAbilities[key] !== undefined) {
+        newAbilities[key] += levelUpChoices.asi[key];
+      }
+    }
+  }
+  // --- Ende: ASI anwenden ---
+
+  // --- Start: Subklasse anwenden ---
+  // Nimm die neue Subklasse, falls eine gewählt wurde, sonst behalte die alte
+  const newSubclassKey = levelUpChoices?.subclassKey || character.subclassKey;
+  // --- Ende: Subklasse anwenden ---
+
+
+  // --- Start: Neue Fähigkeiten hinzufügen ---
+  const classData = allClassData.find(c => c.key === character.class.key);
+  let newFeatures = [];
+  let newSubclassFeatures = [];
+
+  if (classData) {
+    // 2. Finde alle Features der Hauptklasse für das newLevel
+    newFeatures = classData.features.filter(f => f.level === newLevel);
+    
+    // 3. Finde Features der Subklasse (basierend auf der newSubclassKey)
+    if (newSubclassKey && classData.subclasses) {
+      const subclassData = classData.subclasses.find(sc => sc.key === newSubclassKey);
+      if (subclassData && subclassData.features) {
+        newSubclassFeatures = subclassData.features.filter(f => f.level === newLevel);
+      }
+    }
+  }
+
+  // 4. Kombiniere alle neuen Fähigkeiten
+  const allNewFeatures = [...newFeatures, ...newSubclassFeatures];
+  
+  if (allNewFeatures.length > 0) {
+    console.log(`Neue Fähigkeiten für ${character.name} auf Stufe ${newLevel}:`, allNewFeatures.map(f => f.name));
+  }
+  // --- Ende: Neue Fähigkeiten hinzufügen ---
 
   // Alte HP berechnen (basierend auf dem Level *vor* dem Aufstieg)
   const oldMaxHP = calculateMaxHP(character);
@@ -520,11 +585,18 @@ export const applyLevelUp = (character, hpRollResult) => {
   const updatedCharacter = {
     ...restOfCharacter,
     level: newLevel,
+    abilities: newAbilities, // <-- NEUE Abilities (mit ASI)
+    subclassKey: newSubclassKey,
     stats: {
       ...character.stats,
       maxHp: newMaxHP,
       hp: newCurrentHP,
     },
+    // 5. Füge die neuen Fähigkeiten zu den bestehenden hinzu
+    features: [
+      ...(character.features || []), // Alte Features
+      ...allNewFeatures             // Neue Features
+    ],
   };
 
   // Wichtig: Erneut prüfen, falls genug EP für *noch* einen Stufenaufstieg vorhanden sind

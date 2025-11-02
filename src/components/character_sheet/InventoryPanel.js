@@ -30,7 +30,7 @@ const InventoryPanel = ({ character, onMoveItem }) => {
 
   return (
     <div className="inventory-container">
-      <h3>Inventory</h3>
+      <h3>Inventar</h3>
       <div className="inventory-grid">
         {inventory.map((item, index) => (
           <DroppableSlot

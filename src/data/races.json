@@ -2,9 +2,17 @@
   {
     "key": "human",
     "name": "Mensch",
+    "description": "Menschen sind die anpassungsfähigsten und ehrgeizigsten unter den Völkern, die stets bestrebt sind, ihre Spuren in der Welt zu hinterlassen.",
     "ability_bonuses": {
       "text": "+1 auf alle Attributswerte",
-      "fixed": { "str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1 }
+      "fixed": {
+        "str": 1,
+        "dex": 1,
+        "con": 1,
+        "int": 1,
+        "wis": 1,
+        "cha": 1
+      }
     },
     "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
     "size": "Mittel",
@@ -15,6 +23,7 @@
   {
     "key": "elf",
     "name": "Elf",
+    "description": "Elfen sind anmutige, langlebige Wesen mit einer tiefen Verbindung zu Natur und Magie. Sie streben nach Harmonie, schätzen Freiheit und leben oft zurückgezogen in uralten Wäldern oder mystischen Reichen.",
     "ability_bonuses": {
       "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
       "floating": [2, 1]
@@ -24,37 +33,76 @@
     "speed": 9,
     "languages": ["Gemeinsprache", "Elfisch"],
     "traits": [
-      { "name": "Dunkelsicht", "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen." },
-      { "name": "Geschärfte Sinne", "description": "Du bist geübt in der Fertigkeit Wahrnehmung." },
-      { "name": "Feen-Abstammung", "description": "Du hast Vorteil bei Rettungswürfen gegen Bezauberung." },
-      { "name": "Trance", "description": "Du musst nicht schlafen und benötigst nur 4 Stunden für eine lange Rast." }
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Geschärfte Sinne",
+        "description": "Du bist geübt in der Fertigkeit Wahrnehmung."
+      },
+      {
+        "name": "Feen-Abstammung",
+        "description": "Du hast Vorteil bei Rettungswürfen gegen Bezauberung."
+      },
+      {
+        "name": "Trance",
+        "description": "Du musst nicht schlafen und benötigst nur 4 Stunden für eine lange Rast."
+      }
     ],
     "subraces": [
-      { 
-        "key": "high-elf", 
-        "name": "Hochelf", 
-        "traits": [ 
-          { "name": "Waffenübung der Elfen", "description": "Du bist geübt im Umgang mit Langschwert, Kurzschwert, Kurzbogen und Langbogen." },
-          { "name": "Zaubertrick", "description": "Du kennst einen Zaubertrick deiner Wahl aus der Zauberliste des Magiers." } 
-        ] 
+      {
+        "key": "high-elf",
+        "name": "Hochelf",
+        "traits": [
+          {
+            "name": "Waffenübung der Elfen",
+            "description": "Du bist geübt im Umgang mit Langschwert, Kurzschwert, Kurzbogen und Langbogen."
+          },
+          {
+            "name": "Zaubertrick",
+            "description": "Du kennst einen Zaubertrick deiner Wahl aus der Zauberliste des Magiers."
+          }
+        ]
       },
       {
         "key": "wood-elf",
         "name": "Waldelf",
         "traits": [
-          { "name": "Waffenübung der Elfen", "description": "Du bist geübt im Umgang mit Langschwert, Kurzschwert, Kurzbogen und Langbogen." },
-          { "name": "Flink", "description": "Deine Bewegungsrate ist auf 10,5 Meter erhöht." },
-          { "name": "Maske der Wildnis", "description": "Du kannst versuchen, dich zu verstecken, selbst wenn du nur leicht von Laub, starkem Regen, fallendem Schnee, Nebel oder anderen natürlichen Phänomenen verdeckt bist." }
+          {
+            "name": "Waffenübung der Elfen",
+            "description": "Du bist geübt im Umgang mit Langschwert, Kurzschwert, Kurzbogen und Langbogen."
+          },
+          {
+            "name": "Flink",
+            "description": "Deine Bewegungsrate ist auf 10,5 Meter erhöht."
+          },
+          {
+            "name": "Maske der Wildnis",
+            "description": "Du kannst versuchen, dich zu verstecken, selbst wenn du nur leicht von Laub, starkem Regen, fallendem Schnee, Nebel oder anderen natürlichen Phänomenen verdeckt bist."
+          }
         ]
       },
       {
         "key": "drow",
         "name": "Drow (Dunkelelf)",
         "traits": [
-          { "name": "Überlegene Dunkelsicht", "description": "Deine Dunkelsicht hat einen Radius von 36 Metern." },
-          { "name": "Sonnenlicht-Empfindlichkeit", "description": "Du hast Nachteil bei Angriffs- und Wahrnehmungswürfen, die auf Sicht basieren, wenn du, das Ziel deines Angriffs oder das, was du wahrzunehmen versuchst, in direktem Sonnenlicht steht." },
-          { "name": "Drow-Magie", "description": "Du kennst den Zaubertrick 'Tanzende Lichter'. Ab Stufe 3 kannst du 'Feenfeuer' und ab Stufe 5 'Dunkelheit' einmal pro langer Rast wirken." },
-          { "name": "Waffenübung der Drow", "description": "Du bist geübt im Umgang mit Rapier, Kurzschwert und Handarmbrust." }
+          {
+            "name": "Überlegene Dunkelsicht",
+            "description": "Deine Dunkelsicht hat einen Radius von 36 Metern."
+          },
+          {
+            "name": "Sonnenlicht-Empfindlichkeit",
+            "description": "Du hast Nachteil bei Angriffs- und Wahrnehmungswürfen, die auf Sicht basieren, wenn du, das Ziel deines Angriffs oder das, was du wahrzunehmen versuchst, in direktem Sonnenlicht steht."
+          },
+          {
+            "name": "Drow-Magie",
+            "description": "Du kennst den Zaubertrick 'Tanzende Lichter'. Ab Stufe 3 kannst du 'Feenfeuer' und ab Stufe 5 'Dunkelheit' einmal pro langer Rast wirken."
+          },
+          {
+            "name": "Waffenübung der Drow",
+            "description": "Du bist geübt im Umgang mit Rapier, Kurzschwert und Handarmbrust."
+          }
         ]
       }
     ]
@@ -71,33 +119,55 @@
     "speed": 7.5,
     "languages": ["Gemeinsprache", "Zwergisch"],
     "traits": [
-      { "name": "Dunkelsicht", "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen." },
-      { "name": "Zwergen-Zähigkeit", "description": "Du hast Vorteil bei Rettungswürfen gegen Gift und Resistenz gegen Giftschaden." },
-      { "name": "Stein-Gespür", "description": "Du verdoppelst deinen Übungsbonus für Intelligenz (Geschichte)-Würfe in Bezug auf Steinmetzarbeiten." }
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Zwergen-Zähigkeit",
+        "description": "Du hast Vorteil bei Rettungswürfen gegen Gift und Resistenz gegen Giftschaden."
+      },
+      {
+        "name": "Stein-Gespür",
+        "description": "Du verdoppelst deinen Übungsbonus für Intelligenz (Geschichte)-Würfe in Bezug auf Steinmetzarbeiten."
+      }
     ],
     "subraces": [
-      { 
-        "key": "hill-dwarf", 
-        "name": "Hügelzwerg", 
-        "traits": [ 
-          { "name": "Waffenübung der Zwerge", "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer." },
-          { "name": "Zwergen-Zähigkeit (HP)", "description": "Dein Trefferpunkte-Maximum erhöht sich pro Stufe um 1." } 
-        ] 
+      {
+        "key": "hill-dwarf",
+        "name": "Hügelzwerg",
+        "traits": [
+          {
+            "name": "Waffenübung der Zwerge",
+            "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer."
+          },
+          {
+            "name": "Zwergen-Zähigkeit (HP)",
+            "description": "Dein Trefferpunkte-Maximum erhöht sich pro Stufe um 1."
+          }
+        ]
       },
       {
         "key": "mountain-dwarf",
         "name": "Bergzwerg",
         "traits": [
-          { "name": "Waffenübung der Zwerge", "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer." },
-          { "name": "Rüstungsübung der Zwerge", "description": "Du bist geübt im Umgang mit leichten und mittelschweren Rüstungen." }
+          {
+            "name": "Waffenübung der Zwerge",
+            "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer."
+          },
+          {
+            "name": "Rüstungsübung der Zwerge",
+            "description": "Du bist geübt im Umgang mit leichten und mittelschweren Rüstungen."
+          }
         ]
       }
-    ]
+    ],
+    "description": "Zwerge sind standhafte und zähe Völker, bekannt für ihre unerschütterliche Loyalität, ihr handwerkliches Können und ihre Liebe zu Stein und Metall. Sie leben in mächtigen Hallen tief unter den Bergen."
   },
   {
     "key": "halfling",
     "name": "Halbling",
-     "ability_bonuses": {
+    "ability_bonuses": {
       "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
       "floating": [2, 1]
     },
@@ -106,13 +176,32 @@
     "speed": 7.5,
     "languages": ["Gemeinsprache", "Halblingisch"],
     "traits": [
-      { "name": "Glückspilz", "description": "Wenn du bei einem Wurf eine 1 würfelst, kannst du den Würfel erneut werfen." },
-      { "name": "Mutig", "description": "Du hast Vorteil bei Rettungswürfen gegen Verängstigung." },
-      { "name": "Flink", "description": "Du kannst dich durch den Raum größerer Kreaturen bewegen." }
+      {
+        "name": "Glückspilz",
+        "description": "Wenn du bei einem Wurf eine 1 würfelst, kannst du den Würfel erneut werfen."
+      },
+      {
+        "name": "Mutig",
+        "description": "Du hast Vorteil bei Rettungswürfen gegen Verängstigung."
+      },
+      {
+        "name": "Flink",
+        "description": "Du kannst dich durch den Raum größerer Kreaturen bewegen."
+      }
     ],
     "subraces": [
-      { "key": "lightfoot-halfling", "name": "Leichtfuß-Halbling", "traits": [ { "name": "Von Natur aus heimlich", "description": "Du kannst versuchen, dich zu verstecken, auch wenn du nur von einer Kreatur verdeckt wirst." } ] }
-    ]
+      {
+        "key": "lightfoot-halfling",
+        "name": "Leichtfuß-Halbling",
+        "traits": [
+          {
+            "name": "Von Natur aus heimlich",
+            "description": "Du kannst versuchen, dich zu verstecken, auch wenn du nur von einer Kreatur verdeckt wirst."
+          }
+        ]
+      }
+    ],
+    "description": "Halblinge sind lebensfrohe, friedliebende Menschen mit einem starken Sinn für Gemeinschaft. Sie bevorzugen Komfort, gutes Essen und ruhige Dörfer, sind jedoch in der Not erstaunlich mutig und geschickt."
   },
   {
     "key": "dragonborn",
@@ -126,20 +215,74 @@
     "speed": 9,
     "languages": ["Gemeinsprache", "Drakonisch"],
     "traits": [
-        { "name": "Odemwaffe", "description": "Deine Abstammung bestimmt deine Odemwaffe und Schadensresistenz." }
+      {
+        "name": "Odemwaffe",
+        "description": "Deine Abstammung bestimmt deine Odemwaffe und Schadensresistenz."
+      }
     ],
     "ancestries": [
-      { "key": "black", "name": "Schwarz", "damage_type": "Säure", "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)" },
-      { "key": "blue", "name": "Blau", "damage_type": "Blitz", "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)" },
-      { "key": "brass", "name": "Messing", "damage_type": "Feuer", "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)" },
-      { "key": "bronze", "name": "Bronze", "damage_type": "Blitz", "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)" },
-      { "key": "copper", "name": "Kupfer", "damage_type": "Säure", "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)" },
-      { "key": "gold", "name": "Gold", "damage_type": "Feuer", "breath_weapon": "15-Fuß-Kegel (GES-Rettungswurf)" },
-      { "key": "green", "name": "Grün", "damage_type": "Gift", "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)" },
-      { "key": "red", "name": "Rot", "damage_type": "Feuer", "breath_weapon": "15-Fuß-Kegel (GES-Rettungswurf)" },
-      { "key": "silver", "name": "Silber", "damage_type": "Kälte", "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)" },
-      { "key": "white", "name": "Weiß", "damage_type": "Kälte", "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)" }
-    ]
+      {
+        "key": "black",
+        "name": "Schwarz",
+        "damage_type": "Säure",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "blue",
+        "name": "Blau",
+        "damage_type": "Blitz",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "brass",
+        "name": "Messing",
+        "damage_type": "Feuer",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "bronze",
+        "name": "Bronze",
+        "damage_type": "Blitz",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "copper",
+        "name": "Kupfer",
+        "damage_type": "Säure",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "gold",
+        "name": "Gold",
+        "damage_type": "Feuer",
+        "breath_weapon": "15-Fuß-Kegel (GES-Rettungswurf)"
+      },
+      {
+        "key": "green",
+        "name": "Grün",
+        "damage_type": "Gift",
+        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
+      },
+      {
+        "key": "red",
+        "name": "Rot",
+        "damage_type": "Feuer",
+        "breath_weapon": "15-Fuß-Kegel (GES-Rettungswurf)"
+      },
+      {
+        "key": "silver",
+        "name": "Silber",
+        "damage_type": "Kälte",
+        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
+      },
+      {
+        "key": "white",
+        "name": "Weiß",
+        "damage_type": "Kälte",
+        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
+      }
+    ],
+    "description": "Drachenblütige sind stolze, mächtige Wesen mit dem Blut der Drachen in ihren Adern. Ihr drakonisches Erbe verleiht ihnen Ehrgefühl, Stärke und oft ein feuriges Temperament."
   },
   {
     "key": "gnome",
@@ -153,12 +296,28 @@
     "speed": 7.5,
     "languages": ["Gemeinsprache", "Gnomisch"],
     "traits": [
-      { "name": "Dunkelsicht", "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen." },
-      { "name": "Gnomische List", "description": "Du hast Vorteil bei Intelligenz-, Weisheits- und Charisma-Rettungswürfen gegen Magie." }
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Gnomische List",
+        "description": "Du hast Vorteil bei Intelligenz-, Weisheits- und Charisma-Rettungswürfen gegen Magie."
+      }
     ],
     "subraces": [
-        { "key": "rock-gnome", "name": "Felsengnom", "traits": [ { "name": "Wissen des Tüftlers", "description": "Dein Übungsbonus wird bei Würfen auf die Geschichte von magischen/alchemistischen Objekten verdoppelt." } ] }
-    ]
+      {
+        "key": "rock-gnome",
+        "name": "Felsengnom",
+        "traits": [
+          {
+            "name": "Wissen des Tüftlers",
+            "description": "Dein Übungsbonus wird bei Würfen auf die Geschichte von magischen/alchemistischen Objekten verdoppelt."
+          }
+        ]
+      }
+    ],
+    "description": "Gnome sind neugierige, erfinderische Wesen mit einem unstillbaren Durst nach Wissen und Kreativität. Sie lieben Magie, Maschinen und das Lösen von Problemen auf unkonventionelle Weise."
   },
   {
     "key": "half-elf",
@@ -170,11 +329,24 @@
     "age": "Halbelfen leben oft über 180 Jahre.",
     "size": "Mittel",
     "speed": 9,
-    "languages": ["Gemeinsprache", "Elfisch", "Eine zusätzliche Sprache deiner Wahl"],
+    "languages": [
+      "Gemeinsprache",
+      "Elfisch",
+      "Eine zusätzliche Sprache deiner Wahl"
+    ],
     "traits": [
-      { "name": "Dunkelsicht", "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen." },
-      { "name": "Feen-Abstammung", "description": "Du hast Vorteil bei Rettungswürfen gegen Bezauberung." },
-      { "name": "Fertigkeits-Vielseitigkeit", "description": "Du erhältst Übung in zwei Fertigkeiten deiner Wahl." }
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Feen-Abstammung",
+        "description": "Du hast Vorteil bei Rettungswürfen gegen Bezauberung."
+      },
+      {
+        "name": "Fertigkeits-Vielseitigkeit",
+        "description": "Du erhältst Übung in zwei Fertigkeiten deiner Wahl."
+      }
     ]
   },
   {
@@ -189,10 +361,22 @@
     "speed": 9,
     "languages": ["Gemeinsprache", "Orkisch"],
     "traits": [
-      { "name": "Dunkelsicht", "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen." },
-      { "name": "Bedrohlich", "description": "Du bist geübt in der Fertigkeit Einschüchtern." },
-      { "name": "Unbarmherzige Ausdauer", "description": "Wenn du auf 0 TP fällst, fällst du stattdessen auf 1 TP (einmal pro langer Rast)." },
-      { "name": "Wilde Angriffe", "description": "Bei einem kritischen Treffer kannst du einen zusätzlichen Waffenschadenswürfel werfen." }
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Bedrohlich",
+        "description": "Du bist geübt in der Fertigkeit Einschüchtern."
+      },
+      {
+        "name": "Unbarmherzige Ausdauer",
+        "description": "Wenn du auf 0 TP fällst, fällst du stattdessen auf 1 TP (einmal pro langer Rast)."
+      },
+      {
+        "name": "Wilde Angriffe",
+        "description": "Bei einem kritischen Treffer kannst du einen zusätzlichen Waffenschadenswürfel werfen."
+      }
     ]
   },
   {
@@ -207,8 +391,15 @@
     "speed": 9,
     "languages": ["Gemeinsprache", "Infernalisch"],
     "traits": [
-      { "name": "Dunkelsicht", "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen." },
-      { "name": "Höllische Resistenz", "description": "Du hast Resistenz gegen Feuerschaden." }
-    ]
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Höllische Resistenz",
+        "description": "Du hast Resistenz gegen Feuerschaden."
+      }
+    ],
+    "description": "Tieflinge tragen das Erbe infernaler Mächte in sich. Trotz ihres teuflischen Aussehens kämpfen viele darum, ihren eigenen Weg zu finden – zwischen Misstrauen, Stolz und innerer Macht."
   }
 ]
