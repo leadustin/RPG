@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react'; // 'useMemo' importiert
+import React, { useState, useMemo, useEffect, useRef } from 'react'; // 'useMemo' importiert
+import DiceBox from "@3d-dice/dice-box";
 import { 
   rollDiceFormula, 
   getRacialAbilityBonus // 'getRacialAbilityBonus' importiert
@@ -65,7 +66,6 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
   );
 };
 
-
 // KORREKTUR: 'export const' entfernt, um 'export default' am Ende zu verwenden
 const LevelUpModal = ({ character, onConfirm }) => {
   
@@ -81,6 +81,10 @@ const LevelUpModal = ({ character, onConfirm }) => {
   const [asiChoices, setAsiChoices] = useState({});
   const [selectedSubclass, setSelectedSubclass] = useState(null);
 
+  // useRef für DiceBox Instanz
+  const diceContainerRef = useRef(null);
+  const diceBoxRef = useRef(null);
+
   // 'useMemo' (Hook) muss vor dem Return stehen
   const finalAbilities = useMemo(() => {
     if (!character) return {}; // Sicherstellen, dass character existiert
@@ -94,6 +98,33 @@ const LevelUpModal = ({ character, onConfirm }) => {
     };
   }, [character]); // Abhängigkeit von 'character'
 
+  // KORREKTUR: useEffect (Hook) muss ebenfalls vor dem early return stehen
+  // initialize DiceBox when modal mounts / container available
+  useEffect(() => {
+    let mounted = true;
+    async function initDice() {
+      if (!diceContainerRef.current) return;
+      if (!diceBoxRef.current) {
+        try {
+          diceBoxRef.current = new DiceBox("#dice-box", {
+            assetPath: '/assets/dice-box/',
+            scale: 20,
+            width: 500,  // z.B. 500 Pixel breit
+            height: 400
+          });
+          await diceBoxRef.current.init();
+        } catch (err) {
+          console.error('Failed to init DiceBox', err);
+        }
+      }
+      if (mounted && diceBoxRef.current) {
+        // no-op
+      }
+    }
+    initDice();
+    return () => { mounted = false; };
+  }, []);
+
   // *** (Early return ist jetzt sicher) ***
   if (!character || !character.pendingLevelUp) {
     return null;
@@ -102,9 +133,8 @@ const LevelUpModal = ({ character, onConfirm }) => {
   // Datenextraktion (jetzt nach dem Guard und nach den Hooks)
   const { newLevel, hpRollFormula, isAbilityIncrease, isSubclassChoice } = character.pendingLevelUp;
 
-  
-  // *** (Restliche Funktionen bleiben unverändert) ***
-  
+
+  // *** (Restliche Funktionen bleiben unverändert, außer handleRoll) ***
   const getNextStep = (currentStep) => {
     if (currentStep === 'hp') {
       if (isAbilityIncrease) return 'asi';
@@ -121,26 +151,68 @@ const LevelUpModal = ({ character, onConfirm }) => {
     return 'summary';
   };
 
-  const handleRoll = () => {
+  // helper to map class to die type
+  const classToDieSides = () => {
+    const c = (character.class?.key || '').toLowerCase();
+    if (c.includes('barb')) return 12;
+    if (c.includes('fight') || c.includes('kämpf')) return 10;
+    if (c.includes('wizard') || c.includes('mage')) return 6;
+    return 8;
+  };
+
+  const handleRoll = async () => {
     if (isRolling) return;
     setIsRolling(true);
     setRollResult(null);
 
-    let rollCount = 0;
-    const interval = setInterval(() => {
-      rollCount++;
-      // Zeigt eine zufällige Zahl des Würfels (ohne Boni) an
-      const dieSides = parseInt(hpRollFormula.split(/[d+-]/)[1], 10) || 8;
-      setRollResult(Math.floor(Math.random() * dieSides) + 1);
-      
-      if (rollCount > 10) { 
-        clearInterval(interval);
-        // Das endgültige Ergebnis ist der Wurf *inklusive* Boni
+    const sides = classToDieSides();
+    const notation = `1d${sides}`;
+    try {
+      if (!diceBoxRef.current) {
+        console.warn('DiceBox not initialized');
+        // fallback to existing simulated roll
         const finalRoll = rollDiceFormula(hpRollFormula);
         setRollResult(finalRoll);
         setIsRolling(false);
+        return;
       }
-    }, 100);
+
+      // Box.roll may return a promise with the result or trigger onRollComplete
+      const ret = diceBoxRef.current.roll(notation);
+      let results;
+      if (ret && typeof ret.then === 'function') {
+        results = await ret;
+      } else {
+        // wait for callback once
+        results = await new Promise((resolve) => {
+          const prev = diceBoxRef.current.onRollComplete;
+          diceBoxRef.current.onRollComplete = (res) => {
+            diceBoxRef.current.onRollComplete = prev;
+            resolve(res);
+          };
+          // safety timeout
+          setTimeout(() => {
+            diceBoxRef.current.onRollComplete = prev;
+            resolve({ error: 'timeout', rolls: [], total: 0 });
+          }, 15000);
+        });
+      }
+
+      const individual = results && (results.rolls || results.individual || results.results || results.rolled) || [];
+      const total = typeof results.total === 'number' ? results.total : individual.reduce((s, v) => s + v, 0);
+
+      // If dice-box returns nothing useful, fallback to engine
+      const finalTotal = total || rollDiceFormula(hpRollFormula);
+
+      setRollResult(finalTotal);
+      setIsRolling(false);
+    } catch (err) {
+      console.error('Error rolling dice-box', err);
+      // fallback
+      const finalRoll = rollDiceFormula(hpRollFormula);
+      setRollResult(finalRoll);
+      setIsRolling(false);
+    }
   };
 
   const handleHpConfirm = () => {
@@ -177,8 +249,11 @@ const LevelUpModal = ({ character, onConfirm }) => {
       <p>Dein Wurf: {hpRollFormula}</p>
       
       <div className="dice-roll-area">
+        {/* container for dice-box canvas */}
+        <div ref={diceContainerRef} id="dice-box" />
+
         {rollResult !== null && (
-          <span className={`dice-result ${isRolling ? 'rolling' : ''}`}>
+          <span className={`dice-result ${isRolling ? 'rolling' : ''}`}> 
             {rollResult}
           </span>
         )}
@@ -186,7 +261,7 @@ const LevelUpModal = ({ character, onConfirm }) => {
       
       {rollResult === null ? (
         <button onClick={handleRoll} disabled={isRolling} className="roll-button">
-          {isRolling ? 'Würfeln...' : 'Würfeln!'}
+          {isRolling ? 'Würfelt...' : 'Würfeln!'}
         </button>
       ) : (
         <button onClick={handleHpConfirm} disabled={isRolling} className="confirm-button">

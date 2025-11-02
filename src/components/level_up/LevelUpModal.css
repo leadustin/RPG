@@ -17,7 +17,7 @@
   border-radius: 8px;
   padding: 20px;
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   color: #f0e6d2;
   box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
   text-align: center;
@@ -46,18 +46,31 @@
 }
 
 .dice-roll-area {
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  min-height: 400px; 
   margin: 15px 0;
+  
+  /* POSITIONIERUNG: Mache dies zum "Anker" für das Kind-Element */
+  position: relative; 
 }
 
 .dice-result {
-  font-size: 3em;
+  /* Deine Stile (sind super!) */
+  font-size: 5em; /* Ich habe es etwas größer gemacht */
   font-weight: bold;
   color: #fff;
   text-shadow: 0 0 10px #d4af37;
+
+  /* POSITIONIERUNG: Absolut in der Mitte des Eltern-Containers */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  /* STAPELN: Stelle sicher, dass es ÜBER dem Canvas liegt */
+  z-index: 10;
+  
+  /* KLICKEN: Erlaube Klicks "durch" die Zahl hindurch zum Canvas */
+  pointer-events: none; 
 }
 
 .dice-result.rolling {
@@ -216,4 +229,25 @@
 }
 .summary-section p {
   font-size: 1.1em;
+}
+
+.dice-roll-area #dice-box {
+  width: 100%;
+  margin-bottom: 1rem; /* Fügt etwas Abstand zum Button hinzu */
+}
+#dice-box .dice-box-canvas {
+  /* Zwingt das Canvas, die Breite seines Eltern-Containers (#dice-box) 
+    anzunehmen.
+  */
+  width: 100% !important; 
+  
+  /* Zwingt das Canvas auf eine feste Höhe. 
+    Passe die 400px nach Bedarf an.
+  */
+  height: 400px !important; 
+
+  /* Stellt sicher, dass das gestreckte Objekt gut aussieht, 
+    falls es das Seitenverhältnis ändert.
+  */
+  object-fit: contain; 
 }
