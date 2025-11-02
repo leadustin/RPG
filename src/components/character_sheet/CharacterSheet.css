@@ -451,7 +451,7 @@ header {
   width: 100%;
   padding-bottom: 15px; /* Abstand zu den Attributen */
   border-bottom: 1px solid var(--border-color); /* Trennlinie */
-  margin-bottom: 15px; /* Abstand nach der Trennlinie */
+  margin-bottom: 0px; /* Abstand nach der Trennlinie */
 }
 
 .char-race-centered {
@@ -492,14 +492,6 @@ header {
   text-align: center;
 }
 
-/* Anpassung an primary-stats, falls es jetzt zu nah ist */
-.primary-stats {
-    /* (Stellen Sie sicher, dass border-bottom hier entfernt wird, 
-       da die Trennlinie jetzt im .character-info-centered ist) */
-    padding-bottom: 0; 
-    border-bottom: none;
-}
-
 .class-icon {
     width: 64px;
     height: 64px;
@@ -514,7 +506,9 @@ header {
 
 .primary-stats {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 0px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border-color);
 }

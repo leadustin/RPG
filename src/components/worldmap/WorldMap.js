@@ -20,7 +20,7 @@ const MAX_ZOOM = 2.0;
 const OVERLAP = 0.5; // Pixel-Überlappung, um Lücken zu vermeiden
 
 // --- Player Speed ---
-const PLAYER_SPEED_PIXELS_PER_SECOND = 100;
+const PLAYER_SPEED_PIXELS_PER_SECOND = 200;
 
 // --- Helper Function ---
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
