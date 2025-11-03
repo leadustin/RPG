@@ -13,6 +13,7 @@ import { TileMap } from "./components/maps/TileMap";
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
 import { loadAutoSave, getSaveSlots } from "./utils/persistence"; // loadAutoSave importiert
 import locationsData from "./data/locations.json";
+import { EventLog } from "./components/event_log/EventLog";
 import "./App.css";
 
 function App() {
@@ -160,6 +161,13 @@ function App() {
             />
           )}
         </div>
+
+        {/* --- 2. NEUES LOG-SYSTEM --- */}
+        {/* Wird außerhalb des game-containers gerendert, um frei beweglich zu sein */}
+        {gameState.screen === "game" && (
+          <EventLog entries={gameState.logEntries} />
+        )}
+        
       </div>
     </DndProvider>
   );

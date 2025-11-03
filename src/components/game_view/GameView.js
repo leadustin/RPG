@@ -4,7 +4,7 @@ import React from "react";
 import { PartyPortraits } from "./PartyPortraits";
 import ActionBar from "./ActionBar";
 import { WorldMap } from "../worldmap/WorldMap";
-import { CombatLog } from "../combat/CombatLog";
+// import { CombatLog } from "../combat/CombatLog"; // <-- 1. ENTFERNT
 import "./GameView.css";
 
 function GameView({
@@ -14,7 +14,7 @@ function GameView({
   onSaveGame,
   onLoadGame,
   onUpdatePosition,
-  onDiscoverLocation, // <--- 1. HIER PROP EMPFANGEN (NEU)
+  onDiscoverLocation, // (Prop bleibt erhalten)
   saveFileExists,
 }) {
   if (!character || !character.stats) {
@@ -42,15 +42,21 @@ function GameView({
             character={character}
             onEnterLocation={onEnterLocation}
             onUpdatePosition={onUpdatePosition}
-            onDiscoverLocation={onDiscoverLocation} // <--- 2. HIER PROP WEITERGEBEN (NEU)
+            onDiscoverLocation={onDiscoverLocation} // (Prop bleibt erhalten)
           />
         </div>
       </div>
 
       <div className="bottom-section">
+        {/* 2. LOG-BEREICH KOMPLETT ENTFERNT */}
+        {/*
         <div className="log-area">
           <CombatLog />
         </div>
+        */}
+
+        {/* Die Action-Bar ist jetzt das einzige Element 
+            und füllt den Bereich gemäß GameView.css aus */}
         <div className="action-bar-area">
           <ActionBar
             character={character}

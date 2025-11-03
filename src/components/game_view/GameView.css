@@ -21,12 +21,16 @@
 
 /* Untere Sektion: Feste Höhe */
 .bottom-section {
-    height: 235px; /* Feste Höhe für Log und Aktionen */
-    flex-shrink: 0; /* Verhindert, dass die Sektion schrumpft */
-    display: grid;
-    grid-template-columns: 350px 1fr; /* Breite für Log und Rest für Aktionen */
-    gap: 15px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: "action";
+  
+  gap: 10px;
+  height: 235px; /* Höhe angepasst, z.B. 15% */
+  padding: 0 0px 0px 0px; /* Padding angepasst */
+  box-sizing: border-box;
 }
+
 
 /* Zuweisung der Komponenten zu den Bereichen */
 .party-portraits-area {
@@ -43,10 +47,6 @@
     border-radius: 5px;
     overflow: hidden;
     position: relative;
-}
-
-.log-area {
-    /* Nimmt automatisch die 1. Spalte in .bottom-section ein */
 }
 
 .action-bar-area {

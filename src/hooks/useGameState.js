@@ -8,13 +8,13 @@ import {
   saveToSlot,
   loadFromSlot,
 } from "../utils/persistence";
-// *** 1. IMPORT ERWEITERT ***
-import { 
-  calculateInitialHP, 
-  calculateAC, 
+// *** 1. IMPORT ERWEITERT (aus vorherigem Schritt, bleibt gleich) ***
+import {
+  calculateInitialHP,
+  calculateAC,
   grantXpToCharacter,
-  applyLevelUp, 
-  rollDiceFormula
+  applyLevelUp,
+  rollDiceFormula,
 } from "../engine/characterEngine";
 import allRaceData from "../data/races.json";
 import locationsData from "../data/locations.json";
@@ -42,10 +42,20 @@ const allItems = [
   ...headsData,
 ];
 
+// --- NEUE HELPER-FUNKTION FÜR LOG-EINTRÄGE ---
+const createLogEntry = (message, type = "general") => ({
+  id: Date.now() + Math.random(), // Sorge für Einzigartigkeit
+  timestamp: new Date(),
+  type, // 'general', 'combat', 'xp', 'level', 'item', 'dialog'
+  message,
+});
+// --- ENDE HELPER-FUNKTION ---
+
 export const useGameState = () => {
   const [gameState, setGameState] = useState({
     screen: "start",
     character: null,
+    logEntries: [], // <-- 1. LOG-ARRAY HINZUGEFÜGT
   });
 
   // Initiales Laden: ENTFERNT. Wir starten immer mit screen: "start".
@@ -61,7 +71,7 @@ export const useGameState = () => {
   // Autosave: Speichere bei JEDER Änderung, wenn im Spiel
   useEffect(() => {
     if (gameState.screen === "game" && gameState.character) {
-      saveAutoSave(gameState);
+      saveAutoSave(gameState); // Speichert jetzt auch logEntries mit
     }
   }, [gameState]);
 
@@ -69,6 +79,17 @@ export const useGameState = () => {
   const handleLoadAutoSaveGame = () => {
     const loadedState = loadAutoSave();
     if (loadedState) {
+      // --- LOG-ANPASSUNG ---
+      // Stelle sicher, dass alte Saves auch das Log-Array bekommen
+      if (!loadedState.logEntries) {
+        loadedState.logEntries = [createLogEntry("Spielstand geladen.")];
+      }
+      // Konvertiere alte Timestamps (falls als String gespeichert) zurück in Date-Objekte
+      loadedState.logEntries = loadedState.logEntries.map((entry) => ({
+        ...entry,
+        timestamp: new Date(entry.timestamp),
+      }));
+      // --- ENDE LOG-ANPASSUNG ---
       setGameState(loadedState);
     } else {
       // Fallback, falls Autosave gelöscht wurde
@@ -77,24 +98,31 @@ export const useGameState = () => {
   };
 
   const handleNewGame = () => {
+    // --- LOG-ANPASSUNG ---
     setGameState((prevState) => ({
       ...prevState,
       screen: "character-creation",
+      logEntries: [], // Logs zurücksetzen
+      character: null, // Charakter zurücksetzen
     }));
+    // --- ENDE LOG-ANPASSUNG ---
   };
 
   const handleDeleteGame = () => {
     deleteAutoSave();
+    // --- LOG-ANPASSUNG ---
     setGameState({
       screen: "start",
       character: null,
+      logEntries: [], // Logs zurücksetzen
     });
+    // --- ENDE LOG-ANPASSUNG ---
   };
 
   const handleSaveToSlot = useCallback(
     (slotId, saveName) => {
       if (gameState.character) {
-        saveToSlot(slotId, gameState, saveName);
+        saveToSlot(slotId, gameState, saveName); // Speichert automatisch den gesamten gameState inkl. Logs
       }
     },
     [gameState]
@@ -103,7 +131,19 @@ export const useGameState = () => {
   const handleLoadFromSlot = useCallback(
     (slotData) => {
       if (slotData && slotData.gameState) {
-        setGameState(slotData.gameState);
+        // --- LOG-ANPASSUNG ---
+        const loadedState = slotData.gameState;
+        // Stelle sicher, dass auch hier Logs korrekt behandelt werden
+        if (!loadedState.logEntries) {
+          loadedState.logEntries = [createLogEntry("Spielstand geladen.")];
+        }
+        // Konvertiere Timestamps
+        loadedState.logEntries = loadedState.logEntries.map((entry) => ({
+          ...entry,
+          timestamp: new Date(entry.timestamp),
+        }));
+        setGameState(loadedState);
+        // --- ENDE LOG-ANPASSUNG ---
       }
     },
     [setGameState]
@@ -160,19 +200,26 @@ export const useGameState = () => {
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
       discoveredLocations: [],
-      // HINZUGEFÜGT (aus vorherigem Schritt)
       level: 1,
       experience: 0,
     };
 
+    // --- LOG-ANPASSUNG ---
     setGameState({
       screen: "game",
       character: characterWithStats,
+      logEntries: [
+        createLogEntry(
+          `Willkommen, ${characterWithStats.name}! Dein Abenteuer beginnt.`,
+          "general"
+        ),
+      ],
     });
+    // --- ENDE LOG-ANPASSUNG ---
   };
 
-// *** 2. handleDiscoverLocation ANGEPASST ***
-const handleDiscoverLocation = useCallback((locationId) => {
+  // *** handleDiscoverLocation ANGEPASST ***
+  const handleDiscoverLocation = useCallback((locationId) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
 
@@ -190,26 +237,61 @@ const handleDiscoverLocation = useCallback((locationId) => {
         locationId,
       ];
 
-      // --- START DER ÄNDERUNG ---
+      // --- START DER LOG-ÄNDERUNG ---
       let updatedCharacter = {
         ...prevState.character,
         discoveredLocations: newDiscoveredLocations,
       };
 
-      // EP-Logik für Entdeckung
-      const locationData = locationsData.find(loc => loc.id === locationId);
-      if (locationData && locationData.xp > 0) {
-        // Rufe die neue Engine-Funktion auf
-        updatedCharacter = grantXpToCharacter(updatedCharacter, locationData.xp);
+      let newLogEntries = [...prevState.logEntries];
+      const locationData = locationsData.find((loc) => loc.id === locationId);
+
+      if (locationData) {
+        // Standard-Entdeckungs-Log
+        newLogEntries.push(
+          createLogEntry(
+            `Neuer Ort entdeckt: ${locationData.name}`,
+            "general"
+          )
+        );
+
+        // EP-Logik für Entdeckung
+        if (locationData.xp > 0) {
+          // Rufe die Engine-Funktion auf
+          updatedCharacter = grantXpToCharacter(
+            updatedCharacter,
+            locationData.xp
+          );
+          newLogEntries.push(
+            createLogEntry(
+              `Du erhältst ${locationData.xp} EP für das Entdecken von ${locationData.name}.`,
+              "xp"
+            )
+          );
+
+          // Prüfen, ob dies ein Level Up ausgelöst hat
+          if (
+            updatedCharacter.pendingLevelUp &&
+            !prevState.character.pendingLevelUp
+          ) {
+            newLogEntries.push(
+              createLogEntry(
+                `${updatedCharacter.name} ist bereit für ein Level Up!`,
+                "level"
+              )
+            );
+          }
+        }
       }
-      // --- ENDE DER ÄNDERUNG ---
+      // --- ENDE DER LOG-ÄNDERUNG ---
 
       return {
         ...prevState,
-        character: updatedCharacter, // Speichere den potenziell aufgestiegenen Charakter
+        character: updatedCharacter,
+        logEntries: newLogEntries, // Speichere die neuen Logs
       };
     });
-  }, []); //
+  }, []);
 
   const handleEnterLocation = useCallback((locationId, currentPosition) => {
     setGameState((prevState) => {
@@ -217,7 +299,19 @@ const handleDiscoverLocation = useCallback((locationId) => {
       const character = { ...prevState.character };
       character.worldMapPosition = currentPosition;
       character.currentLocation = locationId;
-      return { ...prevState, character };
+
+      // Optional: Log-Eintrag hinzufügen
+      const locationData = locationsData.find((loc) => loc.id === locationId);
+      const newLogEntry = createLogEntry(
+        `Betritt ${locationData?.name || "einen Ort"}.`,
+        "general"
+      );
+
+      return {
+        ...prevState,
+        character,
+        logEntries: [...prevState.logEntries, newLogEntry],
+      };
     });
   }, []);
 
@@ -247,7 +341,17 @@ const handleDiscoverLocation = useCallback((locationId) => {
       character.position = newPosition;
       character.currentLocation = "worldmap";
 
-      return { ...prevState, character };
+      // Optional: Log-Eintrag hinzufügen
+      const newLogEntry = createLogEntry(
+        `Verlässt ${currentLocationData?.name || "Ort"} und kehrt zur Weltkarte zurück.`,
+        "general"
+      );
+
+      return {
+        ...prevState,
+        character,
+        logEntries: [...prevState.logEntries, newLogEntry],
+      };
     });
   }, []);
 
@@ -267,9 +371,17 @@ const handleDiscoverLocation = useCallback((locationId) => {
         inventory.push(previouslyEquippedItem);
       }
       equipment[targetSlot] = item;
+
+      // Log-Eintrag
+      const newLogEntry = createLogEntry(
+        `${item.name} ausgerüstet (${targetSlot}).`,
+        "item"
+      );
+
       return {
         ...prevState,
         character: { ...character, inventory, equipment },
+        logEntries: [...prevState.logEntries, newLogEntry],
       };
     });
   }, []);
@@ -278,17 +390,31 @@ const handleDiscoverLocation = useCallback((locationId) => {
     setGameState((prevGameState) => {
       const newCharacter = { ...prevGameState.character };
       const weapon = newCharacter.equipment[slotId];
+      let newLogEntries = [...prevGameState.logEntries];
 
       if (weapon && weapon.properties.some((p) => p.startsWith("Vielseitig"))) {
         const currentState = weapon.isTwoHanded || false;
         weapon.isTwoHanded = !currentState;
-        if (weapon.isTwoHanded && newCharacter.equipment["off-hand"]) {
-          const offHandItem = newCharacter.equipment["off-hand"];
-          newCharacter.inventory.push(offHandItem);
-          newCharacter.equipment["off-hand"] = null;
+
+        if (weapon.isTwoHanded) {
+          newLogEntries.push(
+            createLogEntry(`${weapon.name} wird jetzt zweihändig geführt.`, "item")
+          );
+          if (newCharacter.equipment["off-hand"]) {
+            const offHandItem = newCharacter.equipment["off-hand"];
+            newCharacter.inventory.push(offHandItem);
+            newCharacter.equipment["off-hand"] = null;
+            newLogEntries.push(
+              createLogEntry(`${offHandItem.name} abgelegt (in Inventar).`, "item")
+            );
+          }
+        } else {
+          newLogEntries.push(
+            createLogEntry(`${weapon.name} wird jetzt einhändig geführt.`, "item")
+          );
         }
       }
-      return { ...prevGameState, character: newCharacter };
+      return { ...prevGameState, character: newCharacter, logEntries: newLogEntries };
     });
   };
 
@@ -307,9 +433,17 @@ const handleDiscoverLocation = useCallback((locationId) => {
       }
       inventory.push(equipment[sourceSlot]);
       equipment[sourceSlot] = null;
+
+      // Log-Eintrag
+      const newLogEntry = createLogEntry(
+        `${item.name} abgelegt (in Inventar).`,
+        "item"
+      );
+
       return {
         ...prevState,
         character: { ...character, inventory, equipment },
+        logEntries: [...prevState.logEntries, newLogEntry],
       };
     });
   }, []);
@@ -327,29 +461,37 @@ const handleDiscoverLocation = useCallback((locationId) => {
     });
   }, []);
 
-  const handleConfirmLevelUp = useCallback((hpRollResult, levelUpChoices) => { // <-- 1. HIER 'levelUpChoices' HINZUFÜGEN
+  const handleConfirmLevelUp = useCallback((hpRollResult, levelUpChoices) => {
     setGameState((prevState) => {
       if (!prevState.character || !prevState.character.pendingLevelUp) {
         return prevState;
       }
-      
+
       // 2. Beide Argumente an die Engine-Funktion übergeben
       const updatedCharacter = applyLevelUp(
-        prevState.character, 
-        hpRollResult, 
+        prevState.character,
+        hpRollResult,
         levelUpChoices // <-- 3. HIER 'levelUpChoices' WEITERGEBEN
+      );
+
+      // --- LOG-ANPASSUNG ---
+      const newLogEntry = createLogEntry(
+        `${updatedCharacter.name} hat Stufe ${updatedCharacter.level} erreicht!`,
+        "level"
       );
 
       return {
         ...prevState,
         character: updatedCharacter,
+        logEntries: [...prevState.logEntries, newLogEntry], // Log hinzufügen
       };
+      // --- ENDE LOG-ANPASSUNG ---
     });
   }, []);
 
   return {
     gameState,
-    setGameState,
+    setGameState, // <-- WICHTIG: setGameState exponieren
     handleNewGame,
     handleLoadAutoSaveGame,
     handleDeleteGame,
