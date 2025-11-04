@@ -28,6 +28,14 @@ export const EventLog = ({ entries = [] }) => {
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [fontSize, setFontSize] = useState('medium');
+  const [position, setPosition] = useState({
+    x: 20,
+    y: window.innerHeight - 350,
+  });
+  const [size, setSize] = useState({
+    width: 400,
+    height: 300,
+  });
   const listRef = useRef(null);
 
   const handleFilterChange = (type) => {
@@ -70,12 +78,8 @@ export const EventLog = ({ entries = [] }) => {
       {isVisible && (
         <Rnd
           className={clsx('event-log-rnd-container', { 'is-hovered': isHovered })}
-          default={{
-            x: 20,
-            y: window.innerHeight - 350,
-            width: 400,
-            height: 300,
-          }}
+          position={position}
+          size={size}
           minWidth={250}
           minHeight={200}
           bounds="window"
@@ -86,6 +90,16 @@ export const EventLog = ({ entries = [] }) => {
             bottom: { cursor: 'ns-resize' },
             right: { cursor: 'ew-resize' },
             bottomRight: { cursor: 'nwse-resize' },
+          }}
+          onDragStop={(e, d) => {
+            setPosition({ x: d.x, y: d.y });
+          }}
+          onResizeStop={(e, direction, ref, delta, position) => {
+            setSize({
+              width: ref.offsetWidth,
+              height: ref.offsetHeight,
+            });
+            setPosition(position);
           }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
