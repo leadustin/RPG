@@ -97,6 +97,10 @@
   transition: all 0.3s;
   z-index: 999;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .event-log-toggle-btn:hover {
@@ -104,6 +108,27 @@
   transform: translateY(-2px);
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
   color: #fff;
+}
+
+.new-entries-badge {
+  background-color: #f44;
+  color: white;
+  font-size: 0.75em;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* Settings & Filter Bereich (ausgeklappt) */
