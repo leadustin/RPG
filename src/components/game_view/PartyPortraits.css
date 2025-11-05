@@ -1,74 +1,99 @@
 /* src/components/game_view/PartyPortraits.css */
+
 .party-portraits-container {
     display: flex;
-    flex-direction: column;
+    justify-content: center; /* NEU: Zentriert die Porträts horizontal */
     gap: 10px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    align-items: flex-start; 
+    height: 100%; 
 }
 
+/* --- GEÄNDERT: Übergänge entfernt und 'border' sichergestellt --- */
 .portrait-item {
     position: relative;
-    width: 120px; /* Feste Breite */
-    height: 120px; /* Feste Höhe */
-    border: 2px solid #555;
+    width: 120px;
+    height: 120px;
+    /* WICHTIG: Der transparente Rand (2px) ist der Platz, 
+       durch den der Hintergrund-Gradient (der Rand) scheint */
+    border: 2px solid transparent;
     border-radius: 5px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* Stellt sicher, dass das img die Ecken abrundet */
+    cursor: pointer; 
+    
+    /* Setzt Standard-Hintergründe (gut für 'active' Umschaltung) */
+    background-image: none;
+    background-origin: padding-box;
+    background-clip: padding-box;
 }
 
-.portrait-item .character-portrait-img {
+/* --- NEU: Styling für den aktiven Rahmen (wie in OptionsMenu.css) --- */
+.portrait-item.active {
+    /* 1. Hintergrund (Füllung) - wird vom img verdeckt, aber das ist OK */
+    background-image: linear-gradient(rgba(20, 20, 20, 0.95), rgba(20, 20, 20, 0.95)),
+                      /* 2. Hintergrund (Rand) */
+                      linear-gradient(to bottom, #8c7853, #5c4e34);
+    
+    /* Zeigt Hintergrund 1 im Padding, Hintergrund 2 im Border */
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
+
+    /* Leuchteffekt im Farbton des Randes */
+    box-shadow: 0 0 8px #8c7853; 
+}
+
+.character-portrait-img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Stellt sicher, dass das Bild den Raum füllt */
+    object-fit: cover; 
     display: block;
 }
 
-/* KORREKTUR: Hintergrund des Overlays ist jetzt komplett transparent */
-.portrait-item .character-overlay {
+.character-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: transparent; /* HINTERGRUND ENTFERNT */
-    padding: 5px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); 
     color: white;
-    text-align: center;
-    /* Optional: Ein leichter Verlauf, um den Text unten abzuheben */
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    padding: 5px;
+    font-size: 0.8em;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    pointer-events: none; 
 }
 
-.portrait-item .name {
-    font-size: 14px;
+.character-overlay .name {
     font-weight: bold;
-    /* Stärkerer Schatten für bessere Lesbarkeit */
-    text-shadow: 2px 2px 4px black, 0 0 5px black; 
-    display: block;
-    margin-bottom: 4px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
 }
 
-.portrait-item .hp-bar-wrapper {
-    background-color: rgba(0, 0, 0, 0.5); /* Leichter abgedunkelt für Kontrast */
-    border-radius: 5px;
-    height: 12px;
-    position: relative;
-    border: 1px solid #222;
+.hp-bar-wrapper {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(50, 50, 50, 0.7);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 3px;
 }
 
-.portrait-item .hp-bar {
-    background-color: #c0392b;
+.hp-bar {
     height: 100%;
-    border-radius: 4px;
+    background-color: #e74c3c; 
+    width: 100%; 
     transition: width 0.3s ease-in-out;
 }
 
-.portrait-item .hp-text {
+.hp-text {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 10px;
+    bottom: 5px; 
+    left: 5px;
+    right: 5px;
+    text-align: center;
+    font-size: 0.7em;
     font-weight: bold;
-    color: white;
-    /* Stärkerer Schatten für bessere Lesbarkeit */
-    text-shadow: 1px 1px 2px black, 0 0 3px black; 
-    white-space: nowrap;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
 }

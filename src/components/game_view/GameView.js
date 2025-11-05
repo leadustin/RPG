@@ -1,10 +1,9 @@
 // src/components/game_view/GameView.js
 
-import React from "react";
+import React, { useState, useEffect } from "react"; 
 import { PartyPortraits } from "./PartyPortraits";
 import ActionBar from "./ActionBar";
 import { WorldMap } from "../worldmap/WorldMap";
-// import { CombatLog } from "../combat/CombatLog"; // <-- 1. ENTFERNT
 import "./GameView.css";
 
 function GameView({
@@ -14,52 +13,64 @@ function GameView({
   onSaveGame,
   onLoadGame,
   onUpdatePosition,
-  onDiscoverLocation, // (Prop bleibt erhalten)
+  onDiscoverLocation,
   saveFileExists,
 }) {
+
+  // --- KORREKTUR: Hooks an den Anfang verschoben ---
+  // Initialisiere den State mit der ID des Charakters (falls vorhanden) oder einem Fallback.
+  const [activeCharacterId, setActiveCharacterId] = useState(character?.id || 'player');
+
+  // Effekt, um die aktive ID zu aktualisieren, wenn der Hauptcharakter wechselt
+  // (z.B. beim Laden eines neuen Spiels).
+  useEffect(() => {
+    // Synchronisiere die activeCharacterId mit der ID des Hauptcharakters.
+    const mainCharacterId = character?.id || 'player';
+    setActiveCharacterId(mainCharacterId);
+  }, [character?.id]); // Abhängig nur von der ID des Hauptcharakters
+
+  // --- FRÜHERER RETURN (BLEIBT GLEICH) ---
+  // Diese Prüfung ist jetzt sicher, da die Hooks davor aufgerufen wurden.
   if (!character || !character.stats) {
     return <div>Lade Charakterdaten...</div>;
   }
 
+  // --- Party-Erstellung (Bleibt gleich) ---
+  const playerCharacter = { ...character, id: character.id || 'player' };
   const party = [
-    {
-      id: "player",
-      name: character.name,
-      hp: character.stats.hp,
-      maxHp: character.stats.maxHp,
-      portrait: character.portrait,
-    },
+    playerCharacter,
+    // Zukünftige Partymitglieder kommen hierhin
   ];
+  
+  // --- Aktiven Charakter finden (Bleibt gleich) ---
+  // Wir können activeCharacterId sicher verwenden, da es durch useState/useEffect verwaltet wird.
+  const activeCharacter = party.find(m => m.id === activeCharacterId) || playerCharacter;
+
 
   return (
     <div className="game-view-container">
       <div className="top-section">
         <div className="party-portraits-area">
-          <PartyPortraits party={party} />
+          <PartyPortraits 
+            party={party} 
+            activeCharacterId={activeCharacterId} // Benutze die State-ID
+            onSelectCharacter={setActiveCharacterId} // Erlaube Klicks, dies zu ändern
+          />
         </div>
         <div className="world-map-area">
           <WorldMap
-            character={character}
+            character={character} 
             onEnterLocation={onEnterLocation}
             onUpdatePosition={onUpdatePosition}
-            onDiscoverLocation={onDiscoverLocation} // (Prop bleibt erhalten)
+            onDiscoverLocation={onDiscoverLocation}
           />
         </div>
       </div>
 
       <div className="bottom-section">
-        {/* 2. LOG-BEREICH KOMPLETT ENTFERNT */}
-        {/*
-        <div className="log-area">
-          <CombatLog />
-        </div>
-        */}
-
-        {/* Die Action-Bar ist jetzt das einzige Element 
-            und füllt den Bereich gemäß GameView.css aus */}
         <div className="action-bar-area">
           <ActionBar
-            character={character}
+            character={activeCharacter} 
             onToggleCharacterSheet={onToggleCharacterSheet}
             onSaveGame={onSaveGame}
             onLoadGame={onLoadGame}
