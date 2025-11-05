@@ -85,29 +85,35 @@
 /* Toggle Button wenn Log ausgeblendet */
 .event-log-toggle-btn {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
+  /* Position wird dynamisch per inline-style gesetzt */
   padding: 10px 16px;
   background-color: rgba(10, 10, 15, 0.9);
   border: 1px solid #555;
   border-radius: 8px;
   color: #ccc;
-  cursor: pointer;
+  cursor: grab;
   font-size: 0.9em;
-  transition: all 0.3s;
+  transition: background-color 0.3s, box-shadow 0.3s;
   z-index: 999;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
+  user-select: none;
+  white-space: nowrap;
+  min-width: fit-content;
+  width: auto;
+  height: auto;
 }
 
 .event-log-toggle-btn:hover {
   background-color: rgba(15, 15, 20, 0.95);
-  transform: translateY(-2px);
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
   color: #fff;
+}
+
+.event-log-toggle-btn:active {
+  cursor: grabbing;
 }
 
 .new-entries-badge {
@@ -181,6 +187,88 @@
   background-color: rgba(100, 150, 255, 0.3);
   border-color: #6496ff;
   color: #fff;
+}
+
+/* Suche Input */
+.search-input {
+  flex: 1;
+  padding: 4px 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 0.85em;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #6496ff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+/* Transparenz Slider */
+.opacity-slider {
+  flex: 1;
+  height: 4px;
+  background: linear-gradient(to right, rgba(255,255,255,0.3), rgba(255,255,255,1));
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #6496ff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.opacity-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #6496ff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Max Entries Input */
+.max-entries-input {
+  width: 80px;
+  padding: 4px 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 0.85em;
+  outline: none;
+  text-align: center;
+}
+
+.max-entries-input:focus {
+  border-color: #6496ff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Checkbox Label */
+.setting-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 0.85em;
+}
+
+.setting-checkbox-label input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
 }
 
 /* Filter-Bereich */
