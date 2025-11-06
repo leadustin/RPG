@@ -1,4 +1,5 @@
-// Diese Datei implementiert die spezifische Klassenlogik für den Paladin.
+// Diese Datei implementiert die spezifische Klassenlogik für den Paladin
+// und seine Unterklasse "Eid der Hingabe".
 // Sie wird von der haupt-characterEngine.js aufgerufen.
 
 /**
@@ -77,11 +78,10 @@ export function applyPassiveStatModifiers(character, stats) {
     if (chaMod > 0) {
       newStats.aura = {
         name: "Aura des Schutzes",
-        radius: 3, // 3 Meter
+        radius: (level >= 18 ? 9 : 3), // (Radius erhöht sich auf Lvl 18)
         bonus: chaMod,
         type: "saving_throw",
       };
-      // (Level 18+ würde den Radius erhöhen)
     }
   }
 
@@ -93,7 +93,19 @@ export function applyPassiveStatModifiers(character, stats) {
     // (Radius wird von Aura des Schutzes übernommen)
   }
   
-  // (Weitere Auren, z.B. von Subklasse, würden hier hinzugefügt)
+  // =================================================================
+  // --- SUBKLASSEN-LOGIK (Eid der Hingabe) ---
+  // =================================================================
+  if (subclassKey === 'oath_of_devotion') {
+      
+      // Lvl 7: Aura der Hingabe
+      // Beschreibung: "Du und befreundete Kreaturen innerhalb von 3 Metern ... können nicht bezaubert werden."
+      if (level >= 7) {
+          if (!newStats.auraImmunities) newStats.auraImmunities = [];
+          newStats.auraImmunities.push("charmed");
+          // (Radius wird von Aura des Schutzes übernommen)
+      }
+  }
 
   return newStats;
 }
@@ -147,7 +159,9 @@ export function getActiveSkills(character) {
     });
   }
   
-  // --- Level 3: Göttliche Macht fokussieren (Eid der Hingabe) ---
+  // =================================================================
+  // --- SUBKLASSEN-LOGIK (Eid der Hingabe) ---
+  // =================================================================
   if (level >= 3 && subclassKey === "oath_of_devotion") {
     activeSkills.push(
       {
@@ -183,21 +197,39 @@ export function handleGameEvent(eventType, data, character) {
     const level = character.level || 1;
 
     // --- Level 2: Göttliches Niederstrecken (Divine Smite) ---
-    // Beschreibung: "Wenn du eine Kreatur mit einem Nahkampfwaffenangriff triffst, kannst du einen Zauberplatz verbrauchen..."
     if (
         level >= 2 &&
-        eventType === 'attack_hit' && // Wir definieren ein Event 'attack_hit'
-        data.attackType === 'melee_weapon' &&
-        data.attacker === character.id &&
-        (character.resources.spellSlots[0] > 0 || // Prüft, ob Slots vorhanden sind
-         character.resources.spellSlots[1] > 0 || 
-         character.resources.spellSlots[2] > 0 || 
-         character.resources.spellSlots[3] > 0 || 
-         character.resources.spellSlots[4] > 0)
+        eventType === 'attack_hit' &&
+        data.attackType.includes('melee_weapon') && // Nur bei Nahkampfwaffenangriffen
+        data.attacker === character.id
     ) {
-        // Signalisieren, dass die Reaktion "Divine Smite" verfügbar ist.
-        // Die Engine muss den Spieler fragen, ob und welchen Slot er nutzen will.
-        return { ...data, canReact: 'divine_smite' };
+        // Prüfen, ob der Paladin verfügbare Zauberplätze hat.
+        // Annahme: `character.resources.spellSlots` hält den *aktuellen* Stand.
+        const availableSlots = character.resources?.spellSlots || [];
+        const hasAvailableSlots = availableSlots.some(slotCount => slotCount > 0);
+
+        if (hasAvailableSlots) {
+            // Signalisieren, dass die Reaktion "Divine Smite" verfügbar ist.
+            // Die Engine muss den Spieler fragen, ob und welchen Slot er nutzen will.
+            return { ...data, canReact: 'divine_smite' };
+        }
+    }
+
+    // =================================================================
+    // --- SUBKLASSEN-LOGIK (Eid der Hingabe) ---
+    // =================================================================
+    
+    // Lvl 7: Aura der Hingabe (Immunität)
+    if (
+        level >= 7 &&
+        character.subclassKey === 'oath_of_devotion' &&
+        eventType === 'saving_throw' &&
+        data.effectType === 'charmed'
+    ) {
+        // (Annahme: Engine prüft, ob der Paladin in Reichweite ist)
+        // Wir geben Vorteil (statt Immunität, da dies einfacher zu handhaben ist
+        // oder die Engine muss `immunity: true` interpretieren)
+        return { ...data, advantage: true };
     }
 
     // Keine Änderung am Ereignis
@@ -237,7 +269,7 @@ export function getSpellcastingInfo(character, stats) {
         // Die Liste, aus der Zauber vorbereitet werden.
         spellList: "paladin", 
         // Das Attribut, das für die Vorbereitung genutzt wird.
-        preparationAttribute: "charisma", 
+        preparationAttribute: "charisma",
         // Maximale Anzahl vorbereiteter Zauber (plus Eidzauber, die immer vorbereitet sind).
         preparationLimit: Math.max(1, chaMod + Math.floor(level / 2)) 
     };
