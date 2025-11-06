@@ -65,12 +65,11 @@ export function applyPassiveStatModifiers(character, stats) {
     const style = character.choices?.fightingStyle; // Dieselbe Logik wie beim Kämpfer
 
     if (style === "defense") {
-      if (character.equipment.armor) {
-        newStats.armorClass += 1;
-      }
+      // Wird von `calculateAC` in der Engine geprüft
+      newStats.fightingStyle = "defense";
     } else if (style === "archery") {
-      // "Du erhältst einen Bonus von +2 auf Angriffswürfe mit Fernkampfwaffen."
-      newStats.rangedAttackBonus = (newStats.rangedAttackBonus || 0) + 2;
+      // Wird von `getAttackModifiers` in der Engine geprüft
+      newStats.fightingStyle = "archery";
     }
     // (Andere Stile wie 'Dueling' oder 'Two-Weapon Fighting' würden hier implementiert)
   }
@@ -141,7 +140,9 @@ export function handleGameEvent(eventType, data, character) {
     const level = character.level || 1;
     const subclassKey = character.subclassKey;
 
-    // --- Level 3: Beute des Jägers (Jäger-Archetyp) ---
+    // =================================================================
+    // --- NEUE HINZUFÜGUNG: Level 3: Koloss-Töter ---
+    // =================================================================
     const hunterPreyChoice = character.choices?.huntersPrey; // z.B. 'colossus_slayer'
 
     // Beschreibung: "Koloss-Töter: ...einmal pro Zug zusätzlich 1W8 Schaden verursachen, wenn das Ziel unter seinen maximalen Trefferpunkten liegt."
@@ -150,12 +151,21 @@ export function handleGameEvent(eventType, data, character) {
         subclassKey === 'hunter' &&
         hunterPreyChoice === 'colossus_slayer' &&
         eventType === 'attack_hit' && // Beim Treffer
-        data.attacker === character.id &&
-        data.target.currentHp < data.target.maxHp && // Ziel ist verletzt
-        !character.status.hasUsedColossusSlayerThisTurn // Nur 1x pro Zug
+        data.attackType.includes('weapon') && // Nur bei Waffenangriffen
+        !character.status?.hasUsedColossusSlayerThisTurn && // Nur 1x pro Zug
+        data.target.currentHp < data.target.maxHp // Ziel ist verletzt
     ) {
-        // Füge den Bonusschaden direkt dem Event hinzu (oder signalisiere es)
-        return { ...data, bonusDamage: '1d8', usedAbility: 'colossus_slayer' };
+        const dice = "1d8";
+        
+        // Füge den Bonusschaden hinzu
+        return { 
+            ...data, 
+            bonusDamage: (data.bonusDamage || "") + `+${dice}`, 
+            // Fügt den Schaden für Kritische Treffer hinzu
+            bonusDamageCrit: (data.bonusDamageCrit || "") + `+${dice}`,
+            // Setze das Flag, damit es nur 1x pro Zug passiert
+            setStatus: 'hasUsedColossusSlayerThisTurn' 
+        };
     }
 
     // Keine Änderung am Ereignis
@@ -172,6 +182,7 @@ function getProficiencyBonus(level) {
   if (level < 17) return 5;
   return 6; // Stufe 17-20
 }
+
 
 /**
  * (NEU) Holt die spezifischen Zauber-Regeln für den Waldläufer.
