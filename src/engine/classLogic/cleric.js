@@ -76,11 +76,12 @@ export function applyPassiveStatModifiers(character, stats) {
   
   // Level 8: Göttlicher Schlag (Domäne des Lebens)
   // Beschreibung: "Du verursachst zusätzlich 1W8 gleißenden Schaden..."
+  // (Wir fügen dies als Flag hinzu, `handleGameEvent` kümmert sich um die Ausführung)
   if (level >= 8 && subclassKey === "life_domain") {
-      newStats.divineStrike = { dice: "1d8", damageType: "radiant" };
-      if (level >= 14) {
-          newStats.divineStrike.dice = "2d8";
-      }
+      newStats.divineStrike = { 
+          dice: (level >= 14 ? "2d8" : "1d8"), 
+          damageType: "radiant" 
+      };
   }
 
   return newStats;
@@ -178,6 +179,29 @@ export function handleGameEvent(eventType, data, character) {
         const selfHealAmount = 2 + data.spell.level;
         // Signalisieren, dass die Engine den Kleriker heilen soll
         return { ...data, selfHeal: selfHealAmount }; 
+    }
+
+    // =================================================================
+    // --- NEUE HINZUFÜGUNG: Level 8: Göttlicher Schlag ---
+    // =================================================================
+    if (
+        level >= 8 &&
+        subclassKey === 'life_domain' &&
+        eventType === 'attack_hit' &&
+        data.attackType.includes('weapon') && // Trifft bei Waffenangriffen
+        !character.status?.hasUsedDivineStrikeThisTurn // Nur 1x pro Zug
+    ) {
+        const dice = (level >= 14 ? "2d8" : "1d8");
+        
+        return {
+            ...data,
+            // Fügt den gleißenden Schaden hinzu
+            bonusDamage: (data.bonusDamage || "") + `+${dice}`,
+            // Fügt den Schaden für Kritische Treffer hinzu
+            bonusDamageCrit: (data.bonusDamageCrit || "") + `+${dice}`,
+            // Setze das Flag, damit es nur 1x pro Zug passiert
+            setStatus: 'hasUsedDivineStrikeThisTurn'
+        };
     }
 
     // Keine Änderung am Ereignis
