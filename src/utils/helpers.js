@@ -30,13 +30,28 @@ export const LEVEL_XP_TABLE = {
  * @returns {number} Der Modifikator (z.B. +2).
  */
 export const getModifier = (score) => {
+  if (typeof score !== 'number') return 0;
   return Math.floor((score - 10) / 2);
 };
 
 /**
- * Ordnet D&D-Fertigkeiten ihren zugehörigen Attributen zu.
+ * (NEU & ERFORDERLICH)
+ * Berechnet den Übungsbonus (Proficiency Bonus) basierend auf dem Charakter-Level.
+ * @param {number} level Das Charakter-Level
+ * @returns {number} Der Übungsbonus (z.B. +2 auf Level 1-4)
  */
-const skillToAbilityMap = {
+export const getProficiencyBonus = (level) => {
+  if (level < 5) return 2;
+  if (level < 9) return 3;
+  if (level < 13) return 4;
+  if (level < 17) return 5;
+  return 6;
+};
+
+/**
+ * Bildet Fertigkeitsnamen auf die zugehörigen Attributs-Kürzel ab.
+ */
+export const skillToAbilityMap = {
   // Stärke
   "Athletik": "str",
   // Geschicklichkeit
@@ -46,8 +61,8 @@ const skillToAbilityMap = {
   // Intelligenz
   "Arkanum": "int",
   "Geschichte": "int",
-  "Nachforschung": "int",
-  "Natur": "int",
+  "Nachforschungen": "int",
+  "Naturkunde": "int",
   "Religion": "int",
   // Weisheit
   "Tierkunde": "wis",
@@ -63,39 +78,40 @@ const skillToAbilityMap = {
 };
 
 /**
- * Berechnet den Gesamtbonus für eine bestimmte Fertigkeit.
- * @param {object} character Das Charakterobjekt.
+ * (KORRIGIERT & FINAL)
+ * Berechnet den Gesamtbonus für eine bestimmte Fertigkeit dynamisch.
+ * @param {object} character Das Charakterobjekt (muss abilities, level, race, class, background haben).
  * @param {string} skillName Der Name der Fertigkeit (z.B. "Heimlichkeit").
  * @returns {number} Der gesamte Fertigkeitsbonus.
  */
 export const getSkillBonus = (character, skillName) => {
-  if (!character || !character.abilities || !character.background || !character.class) {
+  if (!character || !character.abilities || !character.background || !character.class || !character.race || !character.level) {
+      console.error("getSkillBonus: Charakter-Objekt ist unvollständig.", character);
       return 0;
   }
   
   const abilityKey = skillToAbilityMap[skillName];
-  if (!abilityKey) return 0;
+  if (!abilityKey) {
+      console.error(`getSkillBonus: Ke Nü-Sleutel (Key) für Fertigkeit '${skillName}' gefunden.`);
+      return 0;
+  }
 
   const abilityScore = character.abilities[abilityKey];
   const modifier = getModifier(abilityScore);
 
-  // Annahme: Übungsbonus ist +2 auf Stufe 1. 
-  const proficiencyBonus = 2; 
+  // KORREKTUR 1: Übungsbonus dynamisch vom Level ableiten.
+  const proficiencyBonus = getProficiencyBonus(character.level); 
 
-  const isProficient = [
-      ...(character.background.skill_proficiencies || []),
-      ...(character.class.skill_proficiencies || []),
-      ...(character.skill_proficiencies_choice || [])
-  ].includes(skillName);
+  // KORREKTUR 2: Alle Quellen für Übung prüfen (Rasse, Klasse, Hintergrund).
+  // Wir gehen davon aus, dass *gewählte* Fertigkeiten in einem 'chosen'-Array gespeichert sind.
+  const allProficiencies = [
+      ...(character.race.skill_proficiencies || []), // Feste Rassen-Boni (z.B. Elf -> Wahrnehmung)
+      ...(character.race.skill_proficiencies_options?.chosen || []), // Gewählte Rassen-Boni (z.B. Halb-Elf)
+      ...(character.class.skill_proficiencies_options?.chosen || []), // Gewählte Klassen-Boni
+      ...(character.background.skill_proficiencies || []) // Feste Hintergrund-Boni
+  ];
 
-  return modifier + (isProficient ? proficiencyBonus : 0);
-};
+  const isProficient = allProficiencies.includes(skillName);
 
-/**
- * Formatiert die Attributswerte für die Anzeige.
- */
-export const formatAbilityScores = (scores) => {
-  return Object.entries(scores)
-    .map(([key, value]) => `${key.toUpperCase()}: ${value}`)
-    .join(" | ");
+  return isProficient ? (modifier + proficiencyBonus) : modifier;
 };

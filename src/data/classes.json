@@ -393,7 +393,30 @@
         { "level": 6, "name": "Ganzheit des Körpers", "description": "Du kannst deine Aktion verwenden, um Trefferpunkte in Höhe deines dreifachen Mönch-Levels wiederherzustellen." },
         { "level": 11, "name": "Bebende Handfläche", "description": "Wenn du eine Kreatur mit einem unbewaffneten Schlag triffst, kannst du einen Ki-Punkt ausgeben, um unsichtbare Vibrationen zu erzeugen. Diese halten für eine Anzahl von Tagen, die deinem Mönch-Level entspricht. Du kannst jederzeit deine Aktion verwenden, um diese Vibrationen zu beenden. Dann muss das Ziel einen Konstitutions-Rettungswurf bestehen oder fällt auf 0 Trefferpunkte." }
       ]
-    }
+    },
+    {
+    "key": "way_of_shadow",
+    "name": "Weg des Schattens",
+    "description": "Mönche des Weges des Schattens folgen einer Tradition, die Heimlichkeit und Täuschung nutzt, um ihre Feinde zu jagen.",
+    "features": [
+      { "level": 3, "name": "Schattenkünste", "description": "Du lernst, Ki zu nutzen, um magische Effekte zu duplizieren. Als Aktion kannst du 2 Ki-Punkte ausgeben, um 'Dunkelheit', 'Dunkelsicht', 'Spurlos' oder 'Stille' zu wirken, ohne Komponenten zu benötigen." },
+      { "level": 6, "name": "Schattenschritt", "description": "Wenn du dich in dämmrigem Licht oder Dunkelheit befindest, kannst du als Bonusaktion bis zu 18 Meter zu einem anderen Punkt in dämmrigem Licht oder Dunkelheit teleportieren. Du hast danach Vorteil bei deinem ersten Nahkampfangriff vor dem Ende des Zuges." },
+      { "level": 11, "name": "Schattenmantel", "description": "Wenn du in dämmrigem Licht oder Dunkelheit bist, kannst du als Aktion unsichtbar werden. Du bleibst unsichtbar, bis du angreifst, einen Zauber wirkst oder in helles Licht trittst." },
+      { "level": 17, "name": "Opportunist", "description": "Wenn eine Kreatur (außer dir) von einem Verbündeten in 1,5m Nähe getroffen wird, kannst du als Reaktion einen Nahkampfangriff gegen diese Kreatur ausführen." }
+    ]
+  },
+  {
+    "key": "way_of_the_four_elements",
+    "name": "Weg der vier Elemente",
+    "description": "Mönche dieses Weges lernen, die Elemente zu bändigen und Ki in elementare Angriffe und Verteidigungen zu kanalisieren.",
+    "features": [
+      { "level": 3, "name": "Jünger der Elemente", "description": "Du lernst den Zaubertrick 'Elementare Einstimmung' (oder einen anderen) und eine Elementar-Disziplin deiner Wahl. Du lernst eine weitere Disziplin auf Stufe 6, 11 und 17." },
+      { "level": 3, "name": "Elementar-Disziplinen", "description": "Du kannst Ki-Punkte ausgeben, um magische Disziplinen zu wirken, z.B. 'Faust der ungerbrochenen Luft' (Wegstoßen), 'Wasserpeitsche' (Heranziehen/Umwerfen) oder 'Reißzahn der Feuer-Schlange' (Feuerschaden-Schlag)." },
+      { "level": 6, "name": "Zusätzliche Elementar-Disziplin", "description": "Du lernst eine weitere Elementar-Disziplin." },
+      { "level": 11, "name": "Zusätzliche Elementar-Disziplin", "description": "Du lernst eine weitere Elementar-Disziplin." },
+      { "level": 17, "name": "Zusätzliche Elementar-Disziplin", "description": "Du lernst eine weitere Elementar-Disziplin." }
+    ]
+  }
   ]
 },
   {
@@ -536,7 +559,31 @@
         { "level": 13, "name": "Geschickter Dieb", "description": "Du kannst deine Bewegungsrate und Heimlichkeitsaktionen weiter verbessern." },
         { "level": 17, "name": "Unvergleichlicher Dieb", "description": "Deine List und Heimlichkeit erreichen die höchste Stufe, Hinterhältiger Angriff profitiert maximal." }
       ]
-    }
+    },
+    {
+    "key": "assassin",
+    "name": "Meuchelmörder",
+    "description": "Du konzentrierst deine Ausbildung auf die grausame und effiziente Kunst des Tötens. Du bist ein Meister der Tarnung, des Gifts und des tödlichen Überraschungsangriffs.",
+    "features": [
+      { "level": 3, "name": "Zusätzliche Übungen", "description": "Du erhältst Übung mit dem Verkleidungszeug und dem Giftmischer-Set." },
+      { "level": 3, "name": "Meucheln (Assassinate)", "description": "Du hast Vorteil bei Angriffswürfen gegen Kreaturen, die noch nicht gehandelt haben. Jeder Treffer gegen eine 'überraschte' (surprised) Kreatur ist ein kritischer Treffer." },
+      { "level": 9, "name": "Infiltrations-Expertise", "description": "Du kannst 7 Tage und 25 GM aufwenden, um eine falsche Identität (inkl. Dokumente, Kontakte) zu erschaffen. Du kannst die Sprache und das Verhalten anderer überzeugend imitieren." },
+      { "level": 13, "name": "Hochstapler (Impostor)", "description": "Du kannst 3 Stunden damit verbringen, eine Person zu beobachten, um ihr Verhalten, ihre Sprache und ihr Aussehen meisterhaft zu imitieren (GE (Täuschung) vs. WE (Einblick) des Ziels)." },
+      { "level": 17, "name": "Todesstoß (Death Strike)", "description": "Wenn du eine 'überraschte' (surprised) Kreatur triffst, muss sie einen Konstitutions-Rettungswurf (SG 8 + GE-Mod + Übungsbonus) bestehen oder erleidet doppelten Schaden durch deinen Angriff." }
+    ]
+  },
+  {
+    "key": "arcane_trickster",
+    "name": "Arkaner Betrüger",
+    "description": "Einige Schurken verbessern ihre Heimlichkeit und Gewandtheit mit Magie. Sie nutzen Illusion und Verzauberung, um ihre Ziele abzulenken, zu täuschen und zu ermorden.",
+    "features": [
+      { "level": 3, "name": "Zauberwirken (Arcane Trickster)", "description": "Du erhältst die Fähigkeit, Magierzauber (Intelligenz) zu wirken (1/3-Zauberwirker), hauptsächlich aus den Schulen der Illusion und Verzauberung." },
+      { "level": 3, "name": "Magierhand-Taschentrick", "description": "Du lernst den Zaubertrick 'Magierhand' (zählt nicht gegen bekannte Zaubertricks). Du kannst die Hand unsichtbar machen und sie nutzen, um Objekte in Behältern (die andere tragen) zu verstauen/zu holen oder Diebeswerkzeug aus der Ferne zu benutzen." },
+      { "level": 9, "name": "Magischer Hinterhalt", "description": "Wenn du aus dem Verborgenen einen Zauber wirkst, hat das Ziel Nachteil auf seinen ersten Rettungswurf gegen diesen Zauber." },
+      { "level": 13, "name": "Vielseitiger Betrüger", "description": "Als Bonusaktion kannst du deine 'Magierhand' nutzen, um eine Kreatur abzulenken. Du erhältst Vorteil bei Angriffswürfen gegen diese Kreatur bis zum Ende des Zuges." },
+      { "level": 17, "name": "Zauberdieb", "description": "Wenn eine Kreatur einen Zauber (Grad 1+) auf dich zielt, kannst du (als Reaktion) versuchen, den Zauber zu stehlen. Du musst einen INT-Rettungswurf (SG 10 + Zaubergrad) bestehen. Bei Erfolg wird der Zauber negiert, und du 'kennst' diesen Zauber für 8 Stunden (mit INT als Attribut)." }
+    ]
+  }
   ]
 },
   {

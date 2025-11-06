@@ -1,0 +1,92 @@
+[
+  {
+    "key": "boar",
+    "name": "Eber",
+    "cr": 0.25,
+    "size": "Medium",
+    "hp": 11,
+    "ac": 11,
+    "movement": { "walk": 12, "swim": 0, "fly": 0 },
+    "abilities": { "str": 13, "dex": 11, "con": 12, "int": 2, "wis": 9, "cha": 5 },
+    "senses": { "passive_perception": 9 },
+    "features": [
+      { "name": "Sturmangriff (Charge)", "description": "Wenn der Eber 6m Anlauf nimmt und trifft, erleidet das Ziel 1W6 Hieb-Schaden extra (im Hauer-Angriff enthalten) und muss ST-RW (SG 11) bestehen oder stürzt (prone)." },
+      { "name": "Unverwüstlich (Relentless)", "description": "Wenn der Eber auf 0 TP fällt (nicht durch krit. Treffer), kann er 1x pro Tag KO-RW (SG 10) machen, um auf 1 TP zu bleiben." }
+    ],
+    "actions": [
+      { "name": "Hauer (Tusk)", "type": "melee_attack", "bonus": 3, "damage": "2d6+1", "damage_type": "hieb" }
+    ]
+  },
+  {
+    "key": "wolf",
+    "name": "Wolf",
+    "cr": 0.25,
+    "size": "Medium",
+    "hp": 11,
+    "ac": 13,
+    "movement": { "walk": 12, "swim": 0, "fly": 0 },
+    "abilities": { "str": 12, "dex": 15, "con": 12, "int": 3, "wis": 12, "cha": 6 },
+    "skills": { "perception": 3, "stealth": 4 },
+    "senses": { "passive_perception": 13, "keen_hearing_smell": true },
+    "features": [
+      { "name": "Rudel-Taktik (Pack Tactics)", "description": "Der Wolf hat Vorteil bei Angriffswürfen gegen eine Kreatur, wenn ein Verbündeter des Wolfs (nicht handlungsunfähig) in 1,5m Nähe zum Ziel steht." }
+    ],
+    "actions": [
+      { "name": "Biss (Bite)", "type": "melee_attack", "bonus": 4, "damage": "2d4+2", "damage_type": "stich", "effect": "Ziel muss ST-RW (SG 11) bestehen oder stürzt (prone)." }
+    ]
+  },
+  {
+    "key": "giant_frog",
+    "name": "Riesenfrosch",
+    "cr": 0.25,
+    "size": "Medium",
+    "hp": 18,
+    "ac": 11,
+    "movement": { "walk": 9, "swim": 9, "fly": 0 },
+    "abilities": { "str": 12, "dex": 13, "con": 11, "int": 2, "wis": 10, "cha": 3 },
+    "skills": { "perception": 2, "stealth": 3 },
+    "senses": { "passive_perception": 12, "darkvision": 9 },
+    "features": [
+      { "name": "Amphibie", "description": "Kann an Land und unter Wasser atmen." },
+      { "name": "Aufrechter Sprung (Standing Leap)", "description": "Kann 6m weit und 3m hoch springen (mit oder ohne Anlauf)." }
+    ],
+    "actions": [
+      { "name": "Biss (Bite)", "type": "melee_attack", "bonus": 3, "damage": "1d6+1", "damage_type": "stich", "effect": "Ziel ist 'gepackt' (grappled) (SG 11). Wenn Ziel klein oder kleiner, ist es 'festgehalten' (restrained)." },
+      { "name": "Verschlingen (Swallow)", "description": "Wenn ein Ziel (klein oder kleiner) gepackt ist, macht der Frosch einen weiteren Biss-Angriff. Bei Treffer wird das Ziel verschlungen. Es ist 'geblendet', 'festgehalten' und erleidet 5 (2W4) Säureschaden zu Beginn jedes Zuges des Frosches." }
+    ]
+  },
+  {
+    "key": "brown_bear",
+    "name": "Braunbär",
+    "cr": 1.0,
+    "size": "Large",
+    "hp": 34,
+    "ac": 11,
+    "movement": { "walk": 12, "swim": 0, "fly": 0, "climb": 9 },
+    "abilities": { "str": 19, "dex": 10, "con": 16, "int": 2, "wis": 13, "cha": 7 },
+    "skills": { "perception": 3 },
+    "senses": { "passive_perception": 13, "keen_smell": true },
+    "actions": [
+      { "name": "Multiangriff", "description": "Der Bär führt zwei Angriffe aus: 1x Biss, 1x Klauen." },
+      { "name": "Biss (Bite)", "type": "melee_attack", "bonus": 5, "damage": "1d8+4", "damage_type": "stich" },
+      { "name": "Klauen (Claws)", "type": "melee_attack", "bonus": 5, "damage": "2d6+4", "damage_type": "hieb" }
+    ]
+  },
+  {
+    "key": "giant_eagle",
+    "name": "Riesenadler",
+    "cr": 1.0,
+    "size": "Large",
+    "hp": 26,
+    "ac": 13,
+    "movement": { "walk": 3, "swim": 0, "fly": 24 },
+    "abilities": { "str": 16, "dex": 17, "con": 13, "int": 8, "wis": 14, "cha": 10 },
+    "skills": { "perception": 4 },
+    "senses": { "passive_perception": 14, "keen_sight": true },
+    "actions": [
+      { "name": "Multiangriff", "description": "Der Adler führt zwei Angriffe aus: 1x Schnabel, 1x Klauen." },
+      { "name": "Schnabel (Beak)", "type": "melee_attack", "bonus": 5, "damage": "1d6+3", "damage_type": "stich" },
+      { "name": "Klauen (Talons)", "type": "melee_attack", "bonus": 5, "damage": "2d6+3", "damage_type": "hieb" }
+    ]
+  }
+]
