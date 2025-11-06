@@ -1,17 +1,18 @@
-// Diese Datei implementiert die spezifische Klassenlogik für den Barbaren.
+// Diese Datei implementiert die spezifische Klassenlogik für den Barbaren
+// und ALLE seine Unterklassen.
 // Sie wird von der haupt-characterEngine.js aufgerufen.
 
 /**
  * Eine private Hilfsfunktion zur Berechnung von Attributsmodifikatoren.
  */
 function calculateModifier(score) {
-  // Diese Funktion existiert auch in characterEngine.js, wird hier aber
-  // der Einfachheit halber neu definiert, um Abhängigkeiten zu minimieren.
   return Math.floor((score - 10) / 2);
 }
 
-// (NEU) Hilfsfunktion, um den Kampfrausch-Schadensbonus basierend auf dem Level zu erhalten.
-// (Basierend auf 'rage_progression' in classes.json)
+/**
+ * Hilfsfunktion, um den Kampfrausch-Schadensbonus basierend auf dem Level zu erhalten.
+ * (Basierend auf 'rage_progression' in classes.json)
+ */
 function getRageDamageBonus(level) {
     if (level >= 16) return 4;
     if (level >= 9) return 3;
@@ -20,34 +21,25 @@ function getRageDamageBonus(level) {
 }
 
 /**
- * Wendet alle passiven Stat-Modifikatoren für den Barbaren an.
- * Diese Funktion wird aufgerufen, NACHDEM Basis-Stats und Attributssteigerungen (ASI)
- * berechnet wurden, aber BEVOR finale Ausrüstungs-Stats (wie Rüstungs-AC) angewendet werden.
- * * @param {object} character - Das vollständige Charakterobjekt.
- * @param {object} stats - Das aktuelle Stats-Objekt (mit Basiswerten, ASI etc.).
+ * Wendet alle passiven Stat-Modifikatoren für den Barbaren und seine Unterklasse an.
+ * @param {object} character - Das vollständige Charakterobjekt.
+ * @param {object} stats - Das aktuelle Stats-Objekt.
  * @returns {object} - Das modifizierte Stats-Objekt.
  */
 export function applyPassiveStatModifiers(character, stats) {
-    // Erstelle eine Kopie, um das Original nicht zu verändern (Immutability)
     const newStats = { ...stats };
-    
-    // Annahme: abilities-Werte sind in stats bereits final berechnet (inkl. Rasse)
     const abilities = stats; 
     const level = character.level || 1;
+    const subclassKey = character.subclassKey;
+    const isRaging = character.status?.isRaging || false; // Annahme
 
     // --- Level 1: Ungepanzerte Verteidigung ---
-    // Beschreibung: "Solange du keine Rüstung trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Konstitutionsmodifikator."
     if (level >= 1) {
-        // Wir gehen davon aus, dass `character.equipment.chest` null oder undefined ist, wenn nichts getragen wird.
-        const isUnarmored = !character.equipment.armor; // (Angepasst an calculateAC-Logik)
-        
+        const isUnarmored = !character.equipment.armor;
         if (isUnarmored) {
             const dexMod = calculateModifier(abilities.dexterity);
             const conMod = calculateModifier(abilities.constitution);
             const barbarianAC = 10 + dexMod + conMod;
-            
-            // Wende die Barbaren-AC nur an, wenn sie besser ist als die aktuelle AC.
-            // (Die Standard-AC ist 10 + Dex-Mod)
             if (barbarianAC > newStats.armorClass) {
                 newStats.armorClass = barbarianAC;
             }
@@ -55,75 +47,188 @@ export function applyPassiveStatModifiers(character, stats) {
     }
 
     // --- Level 5: Schnelle Bewegung ---
-    // Beschreibung: "Deine Bewegungsrate erhöht sich um 3 Meter, solange du keine schwere Rüstung trägst."
     if (level >= 5) {
         let isWearingHeavyArmor = false;
         if (character.equipment.armor) {
-             // Annahme: Rüstungs-Namen (aus calculateAC)
              const armorName = character.equipment.armor.name.toLowerCase();
              if (armorName.includes("plattenpanzer") || armorName.includes("kettenrüstung") || armorName.includes("ringpanzer")) {
                  isWearingHeavyArmor = true;
              }
         }
-        
         if (!isWearingHeavyArmor) {
-            // Annahme: `newStats.speed` ist in Metern (Standard 9m)
             newStats.speed += 3; 
         }
     }
 
     // --- Level 7: Instinktives Zuschlagen ---
-    // Beschreibung: "Du hast Vorteil auf Initiativewürfe."
     if (level >= 7) {
-        // Initiative ist im Grunde ein Dex-Wurf. Wir fügen ein Flag hinzu,
-        // das die Würfel-Engine später prüfen kann.
         newStats.initiativeAdvantage = true;
     }
 
     // --- Level 20: Urtümlicher Champion ---
-    // Beschreibung: "Dein Stärkewert und dein Konstitutionswert steigen um 4 (max. 24)."
     if (level >= 20) {
         newStats.strength = Math.min(24, newStats.strength + 4);
         newStats.constitution = Math.min(24, newStats.constitution + 4);
     }
     
-    // Gib die modifizierten Stats zurück
+    // =================================================================
+    // --- SUBKLASSEN-LOGIK (PASSIV) ---
+    // =================================================================
+
+    switch (subclassKey) {
+        case "path_of_the_totem_warrior":
+            // Lvl 3: Totemgeist (Bär)
+            // Annahme: Wahl ist gespeichert in character.choices.totemSpirit[3]
+            if (level >= 3 && character.choices?.totemSpirit?.[3] === 'bear' && isRaging) {
+                if (!newStats.resistances) newStats.resistances = [];
+                newStats.resistances.push("poison", "acid", "cold", "fire", "force", "lightning", "necrotic", "radiant", "thunder");
+                // (Hieb, Stich, Wunde sind bereits durch Kampfrausch abgedeckt)
+            }
+            
+            // Lvl 6: Aspekt des Tieres
+            // (Beispiel: Aspekt des Bären)
+            if (level >= 6 && character.choices?.totemSpirit?.[6] === 'bear') {
+                newStats.carryingCapacityMultiplier = 2; // (Doppelte Tragekapazität)
+            }
+            break;
+            
+        case "path_of_the_storm_herald":
+            // Lvl 6: Sturmseele
+            // Annahme: Wahl ist in character.choices.stormAura
+            if (level >= 6 && character.choices?.stormAura) {
+                if (!newStats.resistances) newStats.resistances = [];
+                const auraType = character.choices.stormAura;
+                if (auraType === 'desert') newStats.resistances.push('fire');
+                if (auraType === 'sea') newStats.resistances.push('lightning');
+                if (auraType === 'tundra') newStats.resistances.push('cold');
+            }
+            break;
+            
+        case "path_of_the_zealot":
+            // Lvl 6: Krieger des Glaubens
+            if (level >= 6) {
+                // Zauber wie "Wiederbeleben" kosten kein Material, um diesen Barbaren wiederzubeleben.
+                newStats.freeResurrection = true; 
+            }
+            break;
+        
+        case "path_of_the_ancestral_guardian":
+             // Lvl 10: Beruhigender Geist (Heilung)
+             // (In 5e ist dies 'Consult the Spirits', aber JSON sagt 'heilen'. Wir fügen es als Aktion hinzu.)
+            break;
+
+        case "path_of_the_beast":
+            // Lvl 6: Bestienspürsinn
+            // "Verstärkte Sinne" - wir interpretieren dies als Vorteil bei Wahrnehmung.
+            if (level >= 6) {
+                newStats.skillAdvantages = (newStats.skillAdvantages || []);
+                if (!newStats.skillAdvantages.includes('perception')) {
+                    newStats.skillAdvantages.push('perception');
+                }
+            }
+            break;
+    }
+
     return newStats;
 }
 
 /**
- * Holt alle aktiven Fähigkeiten (Aktionen, Bonusaktionen),
- * die dem Charakter durch die Barbaren-Klasse zur Verfügung stehen.
- * * @param {object} character - Das vollständige Charakterobjekt.
+ * Holt alle aktiven Fähigkeiten (Aktionen, Bonusaktionen) für den Barbaren und seine Unterklasse.
+ * @param {object} character - Das vollständige Charakterobjekt.
  * @returns {Array<object>} - Eine Liste von Fähigkeits-Objekten für die UI/Action-Bar.
  */
 export function getActiveSkills(character) {
     const activeSkills = [];
+    const level = character.level || 1;
+    const subclassKey = character.subclassKey;
 
     // --- Level 1: Kampfrausch ---
-    // Beschreibung: "Als Bonusaktion kannst du in einen Kampfrausch verfallen."
-    if (character.level >= 1) {
+    if (level >= 1) {
         activeSkills.push({
             key: "rage",
             name: "Kampfrausch",
-            type: "bonus_action", // Wichtig für die UI-Sortierung
+            type: "bonus_action",
             description: "Als Bonusaktion in einen Kampfrausch verfallen. (Vorteil auf ST-Würfe, +Schaden, Resistenz...)"
-            // `uses` könnten hier basierend auf `rage_progression` berechnet werden
         });
     }
 
     // --- Level 2: Tollkühner Angriff ---
-    // Beschreibung: "Du kannst bei deinem ersten Angriff in einem Zug Vorteil erhalten..."
-    if (character.level >= 2) {
+    if (level >= 2) {
         activeSkills.push({
             key: "reckless_attack",
             name: "Tollkühner Angriff",
-            type: "action_modifier", // Dies ist keine Aktion, sondern modifiziert eine Aktion (Angriff)
+            type: "action_modifier",
             description: "Vorteil bei deinem ersten ST-Angriff in diesem Zug. Gegner haben Vorteil gegen dich bis zu deinem nächsten Zug."
         });
     }
 
-    // Zukünftige aktive Skills (z.B. von Subklassen) würden hier hinzugefügt...
+    // =================================================================
+    // --- SUBKLASSEN-LOGIK (AKTIV) ---
+    // =================================================================
+
+    switch (subclassKey) {
+        case "path_of_the_berserker":
+            // Lvl 3: Raserei
+            if (level >= 3) {
+                activeSkills.push({
+                    key: "frenzy_attack",
+                    name: "Raserei: Angriff",
+                    type: "bonus_action",
+                    description: "WÄHREND Kampfrausch: Mache einen zusätzlichen Waffenangriff als Bonusaktion. Erleide danach 1 Erschöpfung."
+                });
+            }
+            // Lvl 10: Einschüchternde Präsenz
+            if (level >= 10) {
+                activeSkills.push({
+                    key: "intimidating_presence",
+                    name: "Einschüchternde Präsenz",
+                    type: "action",
+                    description: "Als Aktion eine Kreatur in 9m Umkreis einschüchtern (verängstigen)."
+                });
+            }
+            break;
+
+        case "path_of_the_storm_herald":
+            // Lvl 3: Sturmaura
+            if (level >= 3) {
+                // Annahme: Wahl (Wüste, Meer, Tundra) ist in character.choices.stormAura gespeichert
+                const auraType = character.choices?.stormAura || "Wüste";
+                activeSkills.push({
+                    key: "storm_aura",
+                    name: `Sturmaura (${auraType})`,
+                    type: "bonus_action",
+                    description: `Als Bonusaktion (im Kampfrausch) deine Aura aktivieren (${auraType}-Effekt).`
+                });
+            }
+            break;
+
+        case "path_of_the_beast":
+            // Lvl 3: Form der Bestie
+            // (Dies sind keine Aktionen, die man auswählt, sondern Modifikatoren,
+            // die 'Angriff' während des Kampfrauschs ändern. `handleGameEvent` ist besser.)
+            break;
+            
+        case "path_of_the_ancestral_guardian":
+            // Lvl 6: Geisterschilde
+            if (level >= 6) {
+                activeSkills.push({
+                    key: "spirit_shield",
+                    name: "Geisterschilde",
+                    type: "reaction",
+                    description: "Als Reaktion den Schaden an einem Verbündeten in 9m Umkreis reduzieren."
+                });
+            }
+            // Lvl 10: Beruhigender Geist (Heilung)
+            if (level >= 10) {
+                 activeSkills.push({
+                    key: "ancestral_healing", // (Name angepasst an Beschreibung)
+                    name: "Beruhigender Geist",
+                    type: "action",
+                    description: "Als Aktion Geister rufen, um dich oder einen Verbündeten zu heilen."
+                });
+            }
+            break;
+    }
     
     return activeSkills;
 }
@@ -131,58 +236,119 @@ export function getActiveSkills(character) {
 /**
  * Diese Funktion wird aufgerufen, wenn ein Ereignis im Spiel passiert (z.B. ein Rettungswurf).
  * Sie prüft, ob der Barbar auf dieses Ereignis reagieren muss.
- * * @param {string} eventType - Die Art des Ereignisses (z.B. 'saving_throw', 'damage_taken').
- * @param {object} data - Die Daten des Ereignisses (z.B. { type: 'dexterity', target: character }).
+ * @param {string} eventType - Die Art des Ereignisses.
+ * @param {object} data - Die Daten des Ereignisses.
  * @param {object} character - Das Charakterobjekt des Barbaren.
- * @returns {object} - Modifizierte Ereignisdaten (z.B. { ...data, advantage: true }).
+ * @returns {object} - Modifizierte Ereignisdaten.
  */
 export function handleGameEvent(eventType, data, character) {
     const level = character.level || 1;
-    // Annahme: Der Status des Kampfrauschs wird auf dem Charakterobjekt verfolgt
+    const subclassKey = character.subclassKey;
     const isRaging = character.status?.isRaging || false; 
 
-    // --- Level 2: Gefahrensinn ---
+    // --- Basis-Klasse Events ---
+
+    // Lvl 2: Gefahrensinn
     if (level >= 2 && eventType === 'saving_throw' && data.ability === 'dexterity') {
-        // (Bedingungen aus 5e: nicht blind, taub oder handlungsunfähig)
         const canReact = !character.status?.isBlinded && !character.status?.isDeafened && !character.status?.isIncapacitated;
         if (canReact) {
             return { ...data, advantage: true };
         }
     }
 
-    // --- Level 11: Unnachgiebiger Zorn ---
+    // Lvl 11: Unnachgiebiger Zorn
     if (level >= 11 && eventType === 'damage_taken' && data.newHp <= 0) {
         if (isRaging) {
-            // Signalisiere der Engine, dass ein Rettungswurf (SG 10 KON) erforderlich ist.
-            // Wenn erfolgreich, sollte die Engine die HP auf 1 setzen.
             return { ...data, requiresSave: { type: 'constitution', dc: 10, effect: 'relentless_rage' } };
         }
     }
     
-    // --- (NEU) Level 2: Tollkühner Angriff ---
+    // Lvl 2: Tollkühner Angriff (Aktivierung)
     if (level >= 2 && eventType === 'before_attack_roll') {
-        // Die characterEngine hat `askForReckless: true` gesendet.
-        // Der Spieler (UI) hat geantwortet, indem er das Event mit `choice: 'reckless_attack'` erneut ausgelöst hat.
-        // (Annahme: `data.attackType` wird von `getAttackModifiers` hinzugefügt)
         if (data.choice === 'reckless_attack' && data.attackType === 'melee_weapon_str') {
-            // (Die Engine muss nun auch einen Status 'isReckless' auf den Barbaren setzen,
-            // damit Feinde Vorteil gegen ihn haben)
             return { ...data, advantage: true, setStatus: 'isReckless' };
         }
     }
     
-    // --- (NEU) Level 1: Kampfrausch-Schaden ---
+    // Lvl 1: Kampfrausch-Schaden
     if (level >= 1 && eventType === 'attack_hit') {
-        // Bedingungen: Im Kampfrausch UND ein Nahkampfangriff, der STR verwendet.
         if (isRaging && data.attackType === 'melee_weapon_str') {
             const rageBonus = getRageDamageBonus(level);
-            const currentFlatBonus = data.flatBonusDamage || 0;
-            
-            // Wir fügen flachen Schaden hinzu (keine Würfel)
-            return { ...data, flatBonusDamage: currentFlatBonus + rageBonus };
+            return { ...data, flatBonusDamage: (data.flatBonusDamage || 0) + rageBonus };
         }
     }
     
+    // =================================================================
+    // --- SUBKLASSEN-LOGIK (REAKTION/EVENT) ---
+    // =================================================================
+
+    switch (subclassKey) {
+        case "path_of_the_berserker":
+            // Lvl 6: Geistesgegenwärtiger Zorn
+            if (level >= 6 && isRaging && eventType === 'saving_throw') {
+                if (data.effectType === 'charmed' || data.effectType === 'frightened') {
+                    // (In 5e ist es Immunität, Vorteil ist ein guter Kompromiss)
+                    return { ...data, advantage: true };
+                }
+            }
+            // Lvl 14: Vergeltender Zorn
+            if (level >= 14 && eventType === 'damage_taken' && data.sourceType === 'melee_attack') {
+                // Signalisieren, dass eine Reaktion (Angriff) möglich ist
+                return { ...data, canReact: 'retaliation_attack' };
+            }
+            break;
+            
+        case "path_of_the_ancestral_guardian":
+            // Lvl 3: Ahnenbeschützer
+            if (level >= 3 && isRaging && eventType === 'attack_hit' && !character.status?.hasUsedAncestralProtectors) {
+                // Erster Treffer im Zug
+                return { 
+                    ...data, 
+                    // Wendet einen Debuff auf das Ziel an (Engine muss 'ancestral_marked' interpretieren)
+                    targetDebuff: { effect: 'ancestral_marked', duration: 1, source: character.id },
+                    setStatus: 'hasUsedAncestralProtectors'
+                };
+            }
+            break;
+            
+        case "path_of_the_zealot":
+            // Lvl 3: Göttliche Raserei
+            if (level >= 3 && isRaging && eventType === 'attack_hit' && !character.status?.hasUsedDivineFury) {
+                const dice = `1d6`;
+                const flatDamage = Math.floor(level / 2);
+                const damageType = "radiant"; // (oder 'necrotic', Annahme: Wahl gespeichert)
+                
+                return {
+                    ...data,
+                    bonusDamage: (data.bonusDamage || "") + `+${dice}`,
+                    bonusDamageCrit: (data.bonusDamageCrit || "") + `+${dice}`,
+                    flatBonusDamage: (data.flatBonusDamage || 0) + flatDamage,
+                    setStatus: 'hasUsedDivineFury'
+                };
+            }
+            break;
+            
+        case "path_of_wild_magic":
+            // Lvl 3: Magische Wut
+            if (level >= 3 && eventType === 'action' && data.action === 'rage') {
+                // Signalisiert der Engine, auf der Wild-Magic-Tabelle zu würfeln
+                return { ...data, triggerEffect: 'wild_magic_surge' };
+            }
+            break;
+    }
+
     // Keine Änderung am Ereignis
     return data;
+}
+
+/**
+ * (NEU) Holt die Zauber-Fähigkeiten (falls vorhanden, z.B. für Wild Magic).
+ * Barbaren sind keine Zauberwirker, aber diese Funktion ist für die Vollständigkeit da.
+ * @param {object} character - Das Charakterobjekt.
+ * @param {object} stats - Die finalen Stats des Charakters.
+ * @returns {object} - Ein Objekt mit den Zauber-Regeln.
+ */
+export function getSpellcastingInfo(character, stats) {
+    // Barbaren (außer Wild Magic vielleicht) haben kein Zauberwirken
+    return null;
 }
