@@ -344,6 +344,31 @@
         { "level": 10, "name": "Zusätzlicher Kampfstil", "description": "Du wählst einen zweiten Kampfstil." },
         { "level": 15, "name": "Verbesserter kritischer Treffer (Superior Critical)", "description": "Deine Waffenangriffe erzielen nun einen kritischen Treffer bei einem Würfelergebnis von 18–20." }
       ]
+    },
+    {
+      "key": "battle_master",
+      "name": "Kampfmeister",
+      "description": "Ein Meister der Taktik, der spezielle Manöver einsetzt, um das Schlachtfeld zu kontrollieren und seine Verbündeten zu führen.",
+      "features": [
+        { "level": 3, "name": "Überlegenheit im Kampf", "description": "Du lernst Manöver, die durch Überlegenheitswürfel (anfangs 4x W8) angetrieben werden, um Angriffe zu verstärken oder Gegner zu behindern." },
+        { "level": 3, "name": "Kriegskunststudent", "description": "Du erhältst Übung mit einem Handwerkerwerkzeug deiner Wahl." },
+        { "level": 7, "name": "Kenne deinen Feind", "description": "Nach 1 Minute Beobachtung kannst du 2 Werte eines Gegners (z.B. ST-Wert, RK, max. TP) im Vergleich zu dir selbst lernen." },
+        { "level": 10, "name": "Verbesserte Überlegenheit", "description": "Deine Überlegenheitswürfel werden zu W10." },
+        { "level": 15, "name": "Unermüdlich", "description": "Wenn du die Initiative würfelst und keine Überlegenheitswürfel mehr hast, erhältst du einen zurück." }
+      ]
+    },
+    {
+      "key": "eldritch_knight",
+      "name": "Mystischer Ritter",
+      "description": "Ein Kämpfer, der traditionelle Kampfkunst mit der Macht der Magie (hauptsächlich Bann- und Hervorrufungszauber) verbindet.",
+      "features": [
+        { "level": 3, "name": "Zauberwirken", "description": "Du erhältst die Fähigkeit, Magierzauber (Intelligenz) zu wirken, hauptsächlich aus den Schulen der Bann- und Hervorrufungsmagie (1/3-Zauberwirker)." },
+        { "level": 3, "name": "Waffenbindung", "description": "Als Bonusaktion kannst du eine Waffe in deiner Hand binden. Sie kann nicht entwaffnet werden und du kannst sie als Bonusaktion zu dir rufen." },
+        { "level": 7, "name": "Kriegsmagie", "description": "Wenn du deine Aktion nutzt, um einen Zaubertrick zu wirken, kannst du als Bonusaktion einen Waffenangriff machen." },
+        { "level": 10, "name": "Mystischer Schlag", "description": "Wenn du eine Kreatur mit einem Waffenangriff triffst, hat sie beim nächsten Rettungswurf gegen einen deiner Zauber Nachteil." },
+        { "level": 15, "name": "Arkane Aufladung", "description": "Wenn du deinen Tatendrang (Action Surge) einsetzt, kannst du dich vor oder nach der Aktion bis zu 9m teleportieren." },
+        { "level": 18, "name": "Verbesserte Kriegsmagie", "description": "Wenn du deine Aktion nutzt, um einen Zauber zu wirken, kannst du als Bonusaktion einen Waffenangriff machen." }
+      ]
     }
   ]
 },
