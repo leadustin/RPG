@@ -1,4 +1,5 @@
-// Diese Datei implementiert die spezifische Klassenlogik für den Druiden.
+// Diese Datei implementiert die spezifische Klassenlogik für den Druiden
+// und seine Unterklasse "Zirkel des Landes".
 // Sie wird von der haupt-characterEngine.js aufgerufen.
 
 /**
@@ -63,15 +64,56 @@ export function applyPassiveStatModifiers(character, stats) {
   
   // --- Rüstungsbeschränkung (Passiv) ---
   // Beschreibung: "...(nicht aus Metall)"
-  // Die characterEngine (calculateAC) muss dieses Flag prüfen und Boni von Metallrüstungen ignorieren.
+  // Die characterEngine (calculateAC) muss dieses Flag prüfen.
   newStats.armorRestriction = "no_metal_armor";
 
   // --- Level 18: Zeitloser Körper ---
   // (In D&D 5e ist dies Level 18)
   // Beschreibung: "Du alterst langsamer."
   if (level >= 18) {
-      // (Dies ist ein narrativer/passiver Effekt, der keine Stats ändert)
       newStats.timelessBody = true;
+  }
+
+  // =================================================================
+  // --- SUBKLASSEN-LOGIK (Zirkel des Landes) ---
+  // =================================================================
+  if (subclassKey === 'circle_of_the_land') {
+      
+      // Lvl 2: Zusätzlicher Zaubertrick
+      if (level >= 2) {
+          // Die Engine (getSpellcastingCapabilities) muss dies lesen
+          // und einen zusätzlichen Zaubertrick erlauben.
+          newStats.bonusCantrips = (newStats.bonusCantrips || 0) + 1;
+      }
+      
+      // Lvl 3: Zirkelzauber
+      if (level >= 3) {
+          // Annahme: Die Wahl des Landes (z.B. 'forest', 'mountain') ist gespeichert
+          const landChoice = character.choices?.landCircle;
+          // Die Engine (getSpellcastingCapabilities) muss dies lesen
+          // und die Zauber des gewählten Landes zur Liste hinzufügen.
+          newStats.circleSpellsLand = landChoice; 
+      }
+
+      // Lvl 6: Land wandelnd
+      if (level >= 6) {
+          // Bewegung durch schwieriges, nicht-magisches Gelände kostet nichts extra.
+          newStats.ignoreDifficultTerrain = "non_magical_terrain";
+          // Vorteil bei Rettungswürfen gegen magisch erschaffene Pflanzen
+          newStats.advantageOnSaveVs = (newStats.advantageOnSaveVs || []);
+          newStats.advantageOnSaveVs.push("magical_plants");
+      }
+      
+      // Lvl 10: Schutz der Natur
+      if (level >= 10) {
+          if (!newStats.immunities) newStats.immunities = [];
+          // Immunität gegen Gift und Krankheiten
+          newStats.immunities.push("poison", "disease");
+          // Immunität gegen Bezauberung/Verängstigung durch Elementare oder Feenwesen
+          newStats.conditionImmunitiesFrom = (newStats.conditionImmunitiesFrom || []);
+          newStats.conditionImmunitiesFrom.push({ type: 'charmed', from: ['elemental', 'fey'] });
+          newStats.conditionImmunitiesFrom.push({ type: 'frightened', from: ['elemental', 'fey'] });
+      }
   }
 
   return newStats;
@@ -129,8 +171,17 @@ export function getActiveSkills(character) {
  */
 export function handleGameEvent(eventType, data, character) {
     const level = character.level || 1;
+    const subclassKey = character.subclassKey;
 
-    // (Keine spezifischen Event-Handler in der Basis-Klasse oder Zirkel des Landes implementiert)
+    // Lvl 6: Land wandelnd (Vorteil bei Rettungswürfen)
+    if (
+        level >= 6 &&
+        subclassKey === 'circle_of_the_land' &&
+        eventType === 'saving_throw' &&
+        data.sourceType === 'magical_plant' // Annahme: Das Event enthält diese Info
+    ) {
+        return { ...data, advantage: true };
+    }
     
     // Keine Änderung am Ereignis
     return data;
@@ -164,7 +215,7 @@ export function getSpellcastingInfo(character, stats) {
         // Die Liste, aus der Zauber vorbereitet werden.
         spellList: "druid", 
         // Das Attribut, das für die Vorbereitung genutzt wird.
-        preparationAttribute: "wisdom", 
+        preparationAttribute: "wisdom",
         // Maximale Anzahl vorbereiteter Zauber.
         preparationLimit: Math.max(1, wisMod + level) 
     };
