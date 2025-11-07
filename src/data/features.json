@@ -77,8 +77,6 @@
     "name": "Pakt des Wälzers",
     "description": "Du erhältst ein 'Buch der Schatten'. Wähle 3 Zaubertricks (Cantrips) von einer beliebigen Klasse. Sie zählen als Hexenmeister-Zauber für dich, aber nicht gegen deine bekannten Zaubertricks."
   },
-
-  // --- MYSTISCHE ANRUFUNGEN (VOLLSTÄNDIGE PHB-LISTE) ---
   {
     "key": "invocation_agonizing_blast",
     "name": "Qualvoller Strahl",
@@ -278,8 +276,6 @@
     "description": "Wenn eine Kreatur, die du sehen kannst, ein Ziel (außer dir) in 1,5m Nähe angreift, kannst du (als Reaktion) deine Schild heben und dem Angreifer Nachteil auf den Angriffswurf geben.",
     "classes": ["fighter", "paladin"]
   },
-  
-  // --- PALADIN: GÖTTLICHE MACHT FOKUSSIEREN (HINGABE) ---
   {
     "key": "channel_divinity_sacred_weapon",
     "name": "Göttliche Macht fokussieren: Heilige Waffe",
@@ -320,8 +316,6 @@
     "description": "Wenn du mit zwei Waffen kämpfst, kannst du deinen Attributsmodifikator zum Schaden des zweiten Angriffs (Bonusaktion) addieren.",
     "classes": ["fighter", "ranger"]
   },
-
-  // --- WALDLÄUFER: JÄGER (STUFE 3 WAHL) ---
   {
     "key": "hunter_prey_colossus_slayer",
     "name": "Beute des Jägers: Koloss-Töter",
@@ -373,8 +367,6 @@
     "prerequisite": { "level": 14, "archetype": "path_of_the_totem_warrior" },
     "feature_type": "choice"
   },
-
-  // --- Pfad des Ahnenbeschützers ---
   {
     "key": "ancestral_guardian_ancestral_protectors",
     "name": "Ahnenbeschützer",
@@ -400,8 +392,6 @@
     "description": "Stufe 14: Wenn du 'Geisterschilde' nutzt, erleidet der Angreifer denselben Schaden, den du verhindert hast (als Energieschaden).",
     "prerequisite": { "level": 14, "archetype": "path_of_the_ancestral_guardian" }
   },
-
-  // --- Pfad des Sturmboten ---
   {
     "key": "storm_herald_storm_aura",
     "name": "Sturmaura",
@@ -427,8 +417,6 @@
     "description": "Stufe 14: Deine Aura wird mächtiger und erhält zusätzliche Effekte (z.B. Gegner zurückstoßen, Angreifer schädigen).",
     "prerequisite": { "level": 14, "archetype": "path_of_the_storm_herald" }
   },
-
-  // --- Pfad der Bestie ---
   {
     "key": "beast_form_of_the_beast",
     "name": "Form der Bestie",
@@ -453,8 +441,6 @@
     "description": "Stufe 14: Wenn du in Kampfrausch verfällst, wähle bis zu 5 Verbündete. Sie erhalten 5 temporäre TP. Deine 'Infektiöse Wut' kann nun öfter genutzt werden.",
     "prerequisite": { "level": 14, "archetype": "path_of_the_beast" }
   },
-
-  // --- Pfad der Wilden Magie ---
   {
     "key": "wild_magic_magical_surge",
     "name": "Magische Wut (Magic Surge)",
@@ -480,8 +466,6 @@
     "description": "Stufe 14: Wenn du auf der Wildmagie-Tabelle würfelst, kannst du zweimal würfeln und das Ergebnis wählen.",
     "prerequisite": { "level": 14, "archetype": "path_of_wild_magic" }
   },
-
-  // --- Pfad des Zeloten ---
   {
     "key": "zealot_divine_fury",
     "name": "Göttliche Raserei",
@@ -549,8 +533,6 @@
     "description": "Wenn du mit zwei Waffen kämpfst, kannst du deinen Attributsmodifikator zum Schaden des zweiten Angriffs (Bonusaktion) addieren.",
     "classes": ["fighter", "ranger"]
   },
-
-  // --- KÄMPFER: CHAMPION ---
   {
     "key": "champion_improved_critical",
     "name": "Verbesserter kritischer Treffer",
@@ -576,8 +558,6 @@
     "description": "Stufe 15: Deine Waffenangriffe erzielen nun einen kritischen Treffer bei einem Würfelergebnis von 18–20.",
     "prerequisite": { "level": 15, "archetype": "champion" }
   },
-
-  // --- KÄMPFER: KAMPFMEISTER (BATTLE MASTER) ---
   {
     "key": "battle_master_combat_superiority",
     "name": "Überlegenheit im Kampf",
@@ -608,10 +588,6 @@
     "description": "Stufe 15: Wenn du die Initiative würfelst und keine Überlegenheitswürfel mehr hast, erhältst du einen zurück.",
     "prerequisite": { "level": 15, "archetype": "battle_master" }
   },
-  // (HINWEIS: Die 'Manöver' selbst (z.B. Riposte, Pushing Attack) müssten als separate Features hinzugefügt werden,
-  // ähnlich wie die 'Mystischen Anrufungen' des Hexenmeisters, da der Spieler sie auswählt.)
-
-  // --- KÄMPFER: MYSTISCHER RITTER (ELDRITCH KNIGHT) ---
   {
     "key": "eldritch_knight_spellcasting",
     "name": "Zauberwirken (Mystischer Ritter)",
@@ -676,8 +652,6 @@
     "prerequisite": { "level": 17, "archetype": "way_of_shadow" },
     "action_type": "reaction"
   },
-
-  // --- MÖNCH: WEG DER VIER ELEMENTE (DISZIPLINEN-BEISPIELE) ---
   {
     "key": "elemental_discipline_fist_of_four_thunders",
     "name": "Faust der vier Donner",
@@ -800,8 +774,6 @@
     "description": "Stufe 17: Du darfst in der ersten Runde eines Kampfes zwei Züge machen (einen bei deinem normalen Initiative-Wurf, einen bei Initiative - 10).",
     "prerequisite": { "level": 17, "archetype": "thief" }
   },
-
-  // --- SCHURKE: MEUCHELMÖRDER (ASSASSIN) ---
   {
     "key": "assassin_bonus_proficiencies",
     "name": "Zusätzliche Übungen (Meuchelmörder)",
@@ -832,8 +804,6 @@
     "description": "Stufe 17: Wenn du eine 'überraschte' (surprised) Kreatur triffst, muss sie einen KO-Rettungswurf (SG 8 + GE-Mod + Übungsbonus) bestehen oder erleidet doppelten Schaden durch deinen Angriff.",
     "prerequisite": { "level": 17, "archetype": "assassin" }
   },
-
-  // --- SCHURKE: ARKANER BETRÜGER (ARCANE TRICKSTER) ---
   {
     "key": "arcane_trickster_spellcasting",
     "name": "Zauberwirken (Arkaner Betrüger)",

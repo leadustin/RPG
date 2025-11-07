@@ -149,7 +149,7 @@
     "damage": "1d12",
     "damage_type": "poison",
     "saving_throw": "constitution",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["bard", "sorcerer", "warlock", "wizard"]
   },
   {
     "key": "prestidigitation",
@@ -465,7 +465,7 @@
     "duration": "1 Stunde",
     "description": "Berühre eine Kreatur. Ihre Bewegungsrate erhöht sich für 1 Stunde um 3 Meter.",
     "scaling": "Wähle eine zusätzliche Kreatur pro Zaubergrad über 1.",
-    "classes": ["druid", "ranger", "wizard"]
+    "classes": ["druid", "ranger", "wizard", "bard"]
   },
   {
     "key": "mage_armor",
@@ -808,7 +808,7 @@
     "description": "Ziel (Kreatur oder Objekt) muss KO-Rettungswurf bestehen. Fehlschlag: Wird eine Größenkategorie größer (Vorteil ST-Würfe, +1W4 Schaden) oder kleiner (Nachteil ST-Würfe, -1W4 Schaden).",
     "scaling": null,
     "saving_throw": "constitution",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard", "bard"]
   },
   {
     "key": "flaming_sphere",
@@ -825,7 +825,7 @@
     "damage": "2d6",
     "damage_type": "fire",
     "saving_throw": "dexterity",
-    "classes": ["wizard"]
+    "classes": ["wizard", "druid"]
   },
   {
     "key": "gentle_repose",
@@ -1253,7 +1253,7 @@
     "duration": "1 Stunde",
     "description": "Du versetzt eine willige Kreatur in einen scheintoten Zustand. Sie ist 'gelähmt', immun gegen Gift/Krankheit, hat Resistenz gegen allen Schaden (außer psychisch). Für alle (auch magische) Inspektionen erscheint sie tot.",
     "scaling": null,
-    "classes": ["cleric", "wizard"]
+    "classes": ["cleric", "wizard", "bard"]
   },
   {
     "key": "fireball",
@@ -1418,7 +1418,7 @@
     "duration": "8 Stunden",
     "description": "Ziel (Kreatur oder Objekt) wird 8 Stunden lang vor Spähmagie (Divination) geschützt. Es kann nicht durch Magie anvisiert oder wahrgenommen werden.",
     "scaling": null,
-    "classes": ["ranger", "wizard"]
+    "classes": ["ranger", "wizard", "bard"]
   },
   {
     "key": "phantom_steed",
@@ -3638,79 +3638,6 @@
     "classes": ["bard", "cleric", "paladin"]
   }, 
   {
-    "key": "blindness_deafness",
-    "name": "Blind- oder Taubheit",
-    "level": 2,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V"],
-    "duration": "1 Minute",
-    "description": "Ziel muss KO-Rettungswurf bestehen oder wird (deiner Wahl) blind oder taub. Darf RW am Ende jedes Zuges wiederholen.",
-    "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 2.",
-    "saving_throw": "constitution",
-    "classes": ["bard", "cleric", "sorcerer", "wizard"]
-  },
-  {
-    "key": "continual_flame",
-    "name": "Dauerhafte Flamme",
-    "level": 2,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Rubinstaub 50 GM, wird verbraucht)"],
-    "duration": "Bis gebannt",
-    "description": "Eine Fackel-große Flamme, die nicht brennt und keinen Sauerstoff braucht.",
-    "scaling": null,
-    "classes": ["cleric", "wizard"]
-  },
-  {
-    "key": "gentle_repose",
-    "name": "Sanfte Ruhe",
-    "level": 2,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "10 Tage",
-    "description": "Schützt eine Leiche 10 Tage lang vor Verwesung und davor, untot zu werden.",
-    "scaling": null,
-    "classes": ["cleric", "wizard"]
-  },
-  {
-    "key": "hold_person",
-    "name": "Person festhalten",
-    "level": 2,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ein Humanoid muss WE-Rettungswurf bestehen oder ist 'gelähmt' (paralyzed). Darf RW am Ende jedes Zuges wiederholen.",
-    "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 2.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "locate_object",
-    "name": "Gegenstand aufspüren",
-    "level": 2,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst (300m Radius)",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Spürt die Richtung zu einem bekannten Objekt in 300m Umkreis.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-  {
     "key": "create_food_and_water",
     "name": "Nahrung und Wasser erschaffen",
     "level": 3,
@@ -3737,23 +3664,6 @@
     "description": "Eine Kugel (18m Radius) aus hellem Licht entsteht an einem Punkt in Reichweite. (Vertreibt magische Dunkelheit von Grad 3 oder niedriger).",
     "scaling": null,
     "classes": ["cleric", "druid", "paladin", "ranger", "sorcerer"]
-  },
-  {
-    "key": "glyph_of_warding",
-    "name": "Glyphe des Schutzes",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Weihrauch/Diamantstaub 200 GM, wird verbraucht)"],
-    "duration": "Bis gebannt oder ausgelöst",
-    "description": "Du schreibst eine Glyphe, die bei Auslösung explodiert (5W8 Schaden) oder einen Zauber (Grad 3 oder niedriger) speichert.",
-    "scaling": "Schaden +1W8 pro Grad über 3. Kann Zauber des gleichen Grades wie der Slot speichern.",
-    "damage": "5d8",
-    "damage_type": "variable",
-    "saving_throw": "dexterity",
-    "classes": ["bard", "cleric", "wizard"]
   },
   {
     "key": "mass_healing_word",
@@ -3787,34 +3697,6 @@
     "classes": ["cleric", "druid"]
   },
   {
-    "key": "protection_from_energy",
-    "name": "Schutz vor Energie",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Ziel erhält Resistenz gegen einen Energietyp (Säure, Kälte, Feuer, Blitz oder Donner).",
-    "scaling": null,
-    "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "remove_curse",
-    "name": "Fluch brechen",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Beendet alle Flüche, die auf einem Ziel (Kreatur oder Objekt) lasten. (Nicht bei verfluchten magischen Gegenständen).",
-    "scaling": null,
-    "classes": ["cleric", "paladin", "warlock", "wizard"]
-  },
-  {
     "key": "revivify",
     "name": "Wiederbeleben",
     "level": 3,
@@ -3827,20 +3709,6 @@
     "description": "Du bringst eine Kreatur, die innerhalb der letzten Minute gestorben ist, mit 1 TP ins Leben zurück.",
     "scaling": null,
     "classes": ["cleric", "paladin"]
-  },
-  {
-    "key": "sending",
-    "name": "Senden",
-    "level": 3,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Unbegrenzt (gleiche Ebene)",
-    "components": ["V", "S", "M"],
-    "duration": "1 Runde",
-    "description": "Sendet eine Botschaft (max 25 Wörter) an eine Kreatur. Sie kann mental antworten (max 25 Wörter).",
-    "scaling": null,
-    "classes": ["bard", "cleric", "wizard"]
   },
   {
     "key": "speak_with_dead",
@@ -3872,137 +3740,7 @@
     "damage_type": "radiant_or_necrotic",
     "saving_throw": "wisdom",
     "classes": ["cleric"]
-  },
-  {
-    "key": "tongues",
-    "name": "Zungen",
-    "level": 3,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "M"],
-    "duration": "1 Stunde",
-    "description": "Ziel kann 1 Stunde lang jede Sprache sprechen und verstehen.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "water_walk",
-    "name": "Wasserwandeln",
-    "level": 3,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "1 Stunde",
-    "description": "Bis zu 10 willige Kreaturen können 1 Stunde lang über Flüssigkeiten (Wasser, Lava etc.) laufen, als wäre es fester Boden.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"]
   }, 
-  {
-    "key": "animate_dead",
-    "name": "Tote erwecken",
-    "level": 3,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "3 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Erweckt 1 Skelett oder Zombie (max. 4 kontrollierbar).",
-    "scaling": "Erweckt 2 zusätzliche Untote pro Grad über 3.",
-    "classes": ["cleric", "wizard"]
-  },
-  {
-    "key": "bestow_curse",
-    "name": "Fluch",
-    "level": 3,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel muss WE-RW bestehen oder ist verflucht (Nachteil auf Würfe, Angriffe gegen dich, oder verliert Aktion).",
-    "scaling": "Dauer erhöht sich mit höheren Graden.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "clairvoyance",
-    "name": "Hellsehen",
-    "level": 3,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "10 Minuten",
-    "range": "1,5 Kilometer",
-    "components": ["V", "S", "M (Fokus 100 GM)"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Erschafft einen unsichtbaren Sensor (Hören oder Sehen) an einem bekannten Ort.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "sorcerer", "wizard"]
-  },
-  {
-    "key": "dispel_magic",
-    "name": "Magie bannen",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Beendet einen magischen Effekt (Grad 3 oder niedriger automatisch, höhere Grade erfordern Attributswurf).",
-    "scaling": "Beendet höhere Grade automatisch, wenn mit höherem Slot gewirkt.",
-    "classes": ["bard", "cleric", "druid", "paladin", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "feign_death",
-    "name": "Scheintod",
-    "level": 3,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "1 Stunde",
-    "description": "Ziel (willig) erscheint 1 Stunde lang tot ('Gelähmt', Resistenz gegen allen Schaden außer psychisch).",
-    "scaling": null,
-    "classes": ["cleric", "wizard"]
-  },
-  {
-    "key": "magic_circle",
-    "name": "Magischer Kreis",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "3 Meter",
-    "components": ["V", "S", "M (Material 100 GM)"],
-    "duration": "1 Stunde",
-    "description": "Erschafft einen 3m-Radius-Zylinder, der bestimmte Kreaturtypen (z.B. Unholde) blockiert oder fesselt.",
-    "scaling": "Dauer erhöht sich mit höheren Graden.",
-    "classes": ["cleric", "paladin", "warlock", "wizard"]
-  },
-  {
-    "key": "control_water",
-    "name": "Wasser kontrollieren",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "90 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Du kontrollierst Wasser in einem 30m-Würfel. Du kannst (als Aktion) das Wasser heben/senken, es teilen (z.B. ein Flussbett freilegen), es umleiten oder einen 15m hohen Wasserstrudel erzeugen.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "wizard"]
-  },
   {
     "key": "death_ward",
     "name": "Todesschutz",
@@ -4064,49 +3802,6 @@
     "classes": ["cleric"]
   },
   {
-    "key": "banishment",
-    "name": "Verbannung",
-    "level": 4,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel muss CH-RW bestehen oder wird auf eine harmlose Halbebene verbannt (oder permanent in die Heimat-Ebene zurückgeschickt).",
-    "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 4.",
-    "saving_throw": "charisma",
-    "classes": ["cleric", "paladin", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "locate_creature",
-    "name": "Kreatur aufspüren",
-    "level": 4,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst (300m Radius)",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Spürt die Richtung zu einer bekannten Kreatur in 300m Umkreis.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-  {
-    "key": "stone_shape",
-    "name": "Stein formen",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Du formst ein Steinobjekt (max 1,5m Kantenlänge) oder einen Teil einer Steinstruktur um.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "wizard"]
-  },
-  {
     "key": "commune",
     "name": "Gemeinschaft",
     "level": 5,
@@ -4119,7 +3814,7 @@
     "duration": "1 Minute",
     "description": "Du kontaktierst deine Gottheit (oder ihre Diener) und stellst drei Fragen (Ja/Nein). Du erhältst für jede eine korrekte Antwort. (Du erhältst möglicherweise 'unklar', wenn die Antwort dein Wissen übersteigen würde).",
     "scaling": null,
-    "classes": ["cleric"]
+    "classes": ["cleric", "paladin"]
   },
   {
     "key": "contagion",
@@ -4181,7 +3876,7 @@
     "duration": "Sofort",
     "description": "Du beendest einen Effekt beim Ziel. Wähle: 1. 1 Stufe Erschöpfung. 2. 1 Effekt, der das Ziel 'Bezaubert' oder 'Versteinert' (Petrified). 3. 1 Fluch (inkl. verfluchte Gegenstände). 4. Jede Reduzierung von Attributswerten. 5. 1 Effekt, der die TP-Maximalwerte reduziert.",
     "scaling": null,
-    "classes": ["bard", "cleric", "druid"]
+    "classes": ["bard", "cleric", "druid", "ranger", "paladin"]
   },
   {
     "key": "hallow",
@@ -4195,7 +3890,7 @@
     "duration": "Bis gebannt",
     "description": "Du berührst einen Punkt und weihst einen Bereich (18m Radius) permanent. Kreaturtypen (Himmlische, Elementare, Feen, Unholde, Untote) können den Bereich nicht betreten oder sind 'Verängstigt'/'Bezaubert'. Du kannst zusätzliche Effekte (Mut, Dunkelheit, Ewige Ruhe, Furcht, Stille etc.) hinzufügen.",
     "scaling": null,
-    "classes": ["cleric"]
+    "classes": ["cleric", "paladin"]
   },
   {
     "key": "insect_plague",
@@ -4245,67 +3940,6 @@
     "classes": ["bard", "cleric", "paladin"]
   },
   {
-    "key": "geas",
-    "name": "Mächtiger Befehl (Geas)",
-    "level": 5,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "18 Meter",
-    "components": ["V"],
-    "duration": "30 Tage",
-    "description": "Ziel muss WE-RW bestehen oder ist 'Bezaubert' (charmed) und muss einem Befehl folgen. Erleidet 5W10 psychischen Schaden pro Tag, an dem es dem Befehl widerspricht.",
-    "scaling": "Dauer erhöht sich mit höheren Graden.",
-    "saving_throw": "wisdom",
-    "damage": "5d10",
-    "damage_type": "psychic",
-    "classes": ["bard", "cleric", "druid", "paladin", "wizard"]
-  },
-  {
-    "key": "legend_lore",
-    "name": "Sagenkunde",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Selbst",
-    "components": ["V", "S", "M (Weihrauch 250 GM, Elfenbein-Streifen 50 GM)"],
-    "duration": "Sofort",
-    "description": "Du erhältst legendäres Wissen (in metaphorischer Form) über eine Person, einen Ort oder ein Objekt.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "planar_binding",
-    "name": "Ebenenbindung",
-    "level": 5,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "18 Meter",
-    "components": ["V", "S", "M (Juwel 1000 GM, wird verbraucht)"],
-    "duration": "24 Stunden",
-    "description": "Ziel (Himmlischer, Elementar, Fee, Unhold) muss CH-RW bestehen oder ist 24 Std. an dich gebunden und muss dir gehorchen.",
-    "scaling": "Dauer erhöht sich mit höheren Graden.",
-    "saving_throw": "charisma",
-    "classes": ["bard", "cleric", "druid", "wizard"]
-  },
-  {
-    "key": "scrying",
-    "name": "Ausspähung (Scrying)",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Selbst",
-    "components": ["V", "S", "M (Fokus 1000 GM)"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Du versuchst, eine Kreatur oder einen Ort auszuspähen. Ziel (falls Kreatur) muss WE-RW bestehen (abhängig von deiner Kenntnis).",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "cleric", "druid", "warlock", "wizard"]
-  },
-  {
     "key": "blade_barrier",
     "name": "Klingen-Barriere",
     "level": 6,
@@ -4321,20 +3955,6 @@
     "damage_type": "slashing",
     "saving_throw": "dexterity",
     "classes": ["cleric"]
-  },
-  {
-    "key": "create_undead",
-    "name": "Untote erschaffen",
-    "level": 6,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "3 Meter",
-    "components": ["V", "S", "M (Schwarzer Onyx 150 GM pro Leiche, wird verbraucht)"],
-    "duration": "Sofort",
-    "description": "Du erweckst bis zu 3 Leichen als Ghule. Sie gehorchen dir 24 Std. lang.",
-    "scaling": "Mit Grad 7: 4 Ghule. Mit Grad 8: 5 Ghule oder 2 Ghasts/Wights. Mit Grad 9: 6 Ghule oder 3 Ghasts/Wights.",
-    "classes": ["cleric", "warlock", "wizard"]
   },
   {
     "key": "find_the_path",
@@ -4432,20 +4052,6 @@
     "classes": ["cleric"]
   },
   {
-    "key": "true_seeing",
-    "name": "Wahrer Blick",
-    "level": 6,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Salbe 25 GM, wird verbraucht)"],
-    "duration": "1 Stunde",
-    "description": "Ziel erhält 'Wahrer Blick' (Truesight) mit 36m Reichweite (sieht durch Dunkelheit, Unsichtbarkeit, Illusionen, Gestaltwandel).",
-    "scaling": null,
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
-  {
     "key": "word_of_recall",
     "name": "Wort des Rückrufs",
     "level": 6,
@@ -4458,18 +4064,6 @@
     "description": "Du (und bis zu 5 willige Kreaturen) teleportiert euch sofort zu deinem zuvor festgelegten Heiligtum (z.B. dein Tempel). (Du musst den Ort 1 Jahr lang mit diesem Zauber verbunden haben).",
     "scaling": null,
     "classes": ["cleric"]
-  },
-  {
-    "key": "glyph_of_warding", // Bereits von Kleriker Stufe 3 hinzugefügt
-    "name": "Glyphe des Schutzes",
-    "level": 3,
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "magic_circle", // Bereits von Kleriker Stufe 3 hinzugefügt
-    "name": "Magischer Kreis",
-    "level": 3,
-    "classes": ["cleric", "paladin", "warlock", "wizard"]
   },
   {
     "key": "conjure_celestial",
@@ -4549,84 +4143,6 @@
     "scaling": null,
     "classes": ["bard", "cleric"]
   },
-
-  // --- ZAUBER, DIE AKTUALISIERT WERDEN MÜSSEN (FALLS VORHANDEN) ---
-  // (Sicherstellen, dass "cleric" im "classes"-Array enthalten ist)
-  
-  {
-    "key": "etherealness",
-    "name": "Ätherisch werden",
-    "level": 7,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst",
-    "components": ["V", "S"],
-    "duration": "Bis zu 8 Stunden",
-    "description": "Du betrittst die Ätherebene. Du kannst dich dort normal bewegen, aber nichts auf der Materiellen Ebene beeinflussen (und umgekehrt).",
-    "scaling": "Mit Grad 8+: Du kannst 2 zusätzliche willige Kreaturen pro Grad über 7 mitnehmen.",
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "plane_shift",
-    "name": "Ebenenwechsel",
-    "level": 7,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Stimmgabel für die Zielebene)"],
-    "duration": "Sofort",
-    "description": "Du (und bis zu 8 willige Kreaturen) reist auf eine andere Existenzebene. (Oder: Verbannung einer unwilligen Kreatur, Nahkampf-Zauberangriff + CH-RW).",
-    "scaling": null,
-    "attack_roll": "melee_spell",
-    "saving_throw": "charisma",
-    "classes": ["cleric", "druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "symbol",
-    "name": "Symbol",
-    "level": 7,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Pulver 1000 GM, wird verbraucht)"],
-    "duration": "Bis gebannt oder ausgelöst",
-    "description": "Du zeichnest eine Glyphe, die bei Auslösung einen magischen Effekt (Tod, Zwietracht, Furcht, Schlaf etc.) in 18m Umkreis verursacht.",
-    "scaling": null,
-    "damage_type": "variable",
-    "saving_throw": "variable",
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "antimagic_field",
-    "name": "Antimagisches Feld",
-    "level": 8,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst (3m Radius Kugel)",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Erschafft eine Kugel (3m Radius), die Magie unterdrückt. Zauber (und magische Effekte, Gegenstände, Kreaturen) können darin nicht wirken. Magische Gegenstände werden temporär zu normalen Gegenständen.",
-    "scaling": null,
-    "classes": ["cleric", "wizard"]
-  },
-  {
-    "key": "control_weather",
-    "name": "Wetterkontrolle",
-    "level": 8,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Selbst (7,5 km Radius)",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 8 Stunden",
-    "description": "Du übernimmst die Kontrolle über das Wetter in einem 7,5 km Radius. Du kannst das Wetter (Niederschlag, Temperatur, Wind) in Stufen ändern (1 Stufe pro 10 Min. Konzentration).",
-    "scaling": null,
-    "classes": ["cleric", "druid", "wizard"]
-  },
   {
     "key": "earthquake",
     "name": "Erdbeben",
@@ -4658,51 +4174,6 @@
     "scaling": null,
     "saving_throw": "constitution",
     "classes": ["cleric"]
-  },
-  {
-    "key": "sunburst",
-    "name": "Sonnenexplosion",
-    "level": 8,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "45 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Gleißendes Licht explodiert (18m Radius Kugel). Kreaturen müssen KO-RW bestehen. Fehlschlag: 12W6 gleißender Schaden und 'Geblendet' (blinded) für 1 Minute. Erfolg: Halber Schaden. (Untote/Schleime haben Nachteil auf RW).",
-    "scaling": null,
-    "damage": "12d6",
-    "damage_type": "radiant",
-    "saving_throw": "constitution",
-    "classes": ["druid", "sorcerer", "wizard", "cleric"]
-  },
-  {
-    "key": "astral_projection",
-    "name": "Astrale Projektion",
-    "level": 9,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "3 Meter",
-    "components": ["V", "S", "M (Jazinth 1000 GM + Silberbarren 100 GM pro Kreatur, wird verbraucht)"],
-    "duration": "Speziell",
-    "description": "Du und bis zu 8 willige Kreaturen projiziert eure Astralkörper in die Astralebene. Eure materiellen Körper bleiben 'bewusstlos' (unconscious) zurück. Eure Astralkörper sind mit einer Silberschnur verbunden. Wird die Schnur durchtrennt, sterbt ihr.",
-    "scaling": null,
-    "classes": ["cleric", "warlock", "wizard"]
-  },
-  {
-    "key": "gate",
-    "name": "Tor",
-    "level": 9,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S", "M (Diamant im Wert von 5000 GM)"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Du erschaffst ein Portal (bis 6m Durchmesser) zu einer anderen Existenzebene. (Du kannst auch 1 Kreatur (Name oder Typ) von einer anderen Ebene herbeirufen).",
-    "scaling": null,
-    "classes": ["cleric", "sorcerer", "wizard"]
   },
   {
     "key": "mass_heal",
@@ -4747,23 +4218,6 @@
     "description": "Du erschaffst kleine, harmlose Natur-Effekte: Lässt eine Blüte blühen, eine Samenkapsel platzen, eine Flamme flackern, erzeugst ein Geräusch (Tier, Wind) oder sagst das Wetter für die nächsten 24 Std. voraus.",
     "scaling": null,
     "classes": ["druid"]
-  },
-  {
-    "key": "poison_spray", // UPDATE: "druid" hinzufügen
-    "name": "Gift versprühen",
-    "level": 0,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "3 Meter",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Ziel muss KO-RW bestehen oder 1W12 Giftschaden erleiden.",
-    "scaling": "Schaden erhöht sich auf 2W12 (Stufe 5), 3W12 (Stufe 11) und 4W12 (Stufe 17).",
-    "damage": "1d12",
-    "damage_type": "poison",
-    "saving_throw": "constitution",
-    "classes": ["sorcerer", "wizard", "druid"]
   },
   {
     "key": "produce_flame",
@@ -4815,9 +4269,6 @@
     "attack_roll": "melee_spell",
     "classes": ["druid"]
   },
-  
-  // --- DRUIDEN ZAUBER (STUFE 1) ---
-  
   {
     "key": "animal_friendship",
     "name": "Tierfreundschaft",
@@ -4832,36 +4283,6 @@
     "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 1.",
     "saving_throw": "wisdom",
     "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "charm_person", // UPDATE: "druid" hinzufügen
-    "name": "Person bezaubern",
-    "level": 1,
-    "classes": ["bard", "druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "create_or_destroy_water", // UPDATE: "druid" hinzufügen
-    "name": "Wasser erschaffen/vernichten",
-    "level": 1,
-    "classes": ["cleric", "druid"]
-  },
-  {
-    "key": "cure_wounds", // UPDATE: "druid" hinzufügen
-    "name": "Heilwunde",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "detect_magic", // UPDATE: "druid" hinzufügen
-    "name": "Magie entdecken",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "detect_poison_and_disease", // UPDATE: "druid" hinzufügen
-    "name": "Gift/Krankheit entdecken",
-    "level": 1,
-    "classes": ["cleric", "druid", "paladin", "ranger"]
   },
   {
     "key": "entangle",
@@ -4894,12 +4315,6 @@
     "classes": ["bard", "druid"]
   },
   {
-    "key": "fog_cloud", // UPDATE: "druid" hinzufügen
-    "name": "Nebelwolke",
-    "level": 1,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
     "key": "goodberry",
     "name": "Gute Beere",
     "level": 1,
@@ -4916,30 +4331,6 @@
     "classes": ["druid", "ranger"]
   },
   {
-    "key": "healing_word", // UPDATE: "druid" hinzufügen
-    "name": "Heilendes Wort",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
-    "key": "jump", // UPDATE: "druid" hinzufügen
-    "name": "Springen",
-    "level": 1,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "longstrider", // UPDATE: "druid" hinzufügen
-    "name": "Langsamer Schritt",
-    "level": 1,
-    "classes": ["druid", "ranger", "wizard"]
-  },
-  {
-    "key": "purify_food_and_drink", // UPDATE: "druid" hinzufügen
-    "name": "Nahrung/Trank reinigen",
-    "level": 1,
-    "classes": ["cleric", "druid", "paladin"]
-  },
-  {
     "key": "speak_with_animals",
     "name": "Mit Tieren sprechen",
     "level": 1,
@@ -4953,12 +4344,6 @@
     "description": "Du kannst 10 Minuten lang mit Tieren (Beasts) kommunizieren. Sie verstehen dich und du verstehst sie. (Beeinflusst nicht ihre Intelligenz oder Freundlichkeit).",
     "scaling": null,
     "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "thunderwave", // UPDATE: "druid" hinzufügen
-    "name": "Donnerwelle",
-    "level": 1,
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
   },
   {
     "key": "animal_messenger",
@@ -5100,64 +4485,6 @@
     "damage_type": "piercing",
     "classes": ["druid", "ranger"]
   },
-
-  // --- ZAUBER, DIE AKTUALISIERT WERDEN MÜSSEN (FALLS VORHANDEN) ---
-  // (Sicherstellen, dass "druid" im "classes"-Array enthalten ist)
-  
-  {
-    "key": "darkvision",
-    "name": "Dunkelsicht",
-    "level": 2,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "enhance_ability",
-    "name": "Attribut verbessern",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "sorcerer"]
-  },
-  {
-    "key": "find_traps",
-    "name": "Fallen finden",
-    "level": 2,
-    "classes": ["cleric", "druid", "ranger"]
-  },
-  {
-    "key": "flaming_sphere",
-    "name": "Flammenkugel",
-    "level": 2,
-    "classes": ["wizard", "druid"]
-  },
-  {
-    "key": "gust_of_wind",
-    "name": "Windstoß",
-    "level": 2,
-    "classes": ["druid", "wizard"]
-  },
-  {
-    "key": "hold_person",
-    "name": "Person festhalten",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "lesser_restoration",
-    "name": "Kleine Wiederherstellung",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "locate_object",
-    "name": "Gegenstand aufspüren",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-  {
-    "key": "protection_from_poison",
-    "name": "Schutz vor Gift",
-    "level": 2,
-    "classes": ["cleric", "druid", "paladin", "ranger"]
-  },
   {
     "key": "call_lightning",
     "name": "Blitz herbeirufen",
@@ -5218,21 +4545,6 @@
     "classes": ["bard", "druid", "ranger"]
   },
   {
-    "key": "water_breathing",
-    "name": "Wasseratmung",
-    "level": 3,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "24 Stunden",
-    "description": "Bis zu 10 willige Kreaturen erhalten die Fähigkeit, 24 Stunden lang unter Wasser zu atmen.",
-    "scaling": null,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
     "key": "wind_wall",
     "name": "Windwall",
     "level": 3,
@@ -5245,89 +4557,6 @@
     "description": "Erschafft eine Wand aus starkem Wind (bis 15m lang, 4,5m hoch). Kleine fliegende Kreaturen können sie nicht passieren. Normale Geschosse (Pfeile, Bolzen) werden abgelenkt und verfehlen automatisch. (Belagerungswaffen haben Nachteil).",
     "scaling": null,
     "classes": ["druid", "ranger"]
-  },
-
-  // --- ZAUBER, DIE AKTUALISIERT WERDEN MÜSSEN (FALLS VORHANDEN) ---
-  // (Sicherstellen, dass "druid" im "classes"-Array enthalten ist)
-
-  {
-    "key": "charm_person",
-    "name": "Person bezaubern",
-    "level": 1,
-    "classes": ["bard", "druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "dispel_magic",
-    "name": "Magie bannen",
-    "level": 3,
-    "classes": ["bard", "cleric", "druid", "paladin", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "geas",
-    "name": "Mächtiger Befehl (Geas)",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "paladin", "wizard"]
-  },
-  {
-    "key": "meld_into_stone",
-    "name": "Mit Stein verschmelzen",
-    "level": 3,
-    "classes": ["cleric", "druid"]
-  },
-  {
-    "key": "planar_binding",
-    "name": "Ebenenbindung",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "wizard"]
-  },
-  {
-    "key": "protection_from_energy",
-    "name": "Schutz vor Energie",
-    "level": 3,
-    "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "sleet_storm",
-    "name": "Schneesturm",
-    "level": 3,
-    "classes": ["druid", "sorcerer", "wizard"]
-  },
-  {
-    "key": "water_walk",
-    "name": "Wasserwandeln",
-    "level": 3,
-    "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "blight",
-    "name": "Kümmernis",
-    "level": 4,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Nekrotische Energie trifft eine Kreatur. Ziel muss KO-Rettungswurf bestehen. Fehlschlag: 8W8 nekrotischer Schaden. Erfolg: Halber Schaden. (Pflanzenkreaturen/Wasserelementare haben Nachteil auf den RW und erleiden maximalen Schaden).",
-    "scaling": "Erhöht Schaden um 1W8 pro Zaubergrad über 4.",
-    "damage": "8d8",
-    "damage_type": "necrotic",
-    "saving_throw": "constitution",
-    "classes": ["druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "conjure_minor_elementals",
-    "name": "Niedere Elementare beschwören",
-    "level": 4,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "27 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du beschwörst Elementare (Herausforderungsgrad 2 oder niedriger), deren kombinierter HG 2 nicht übersteigt (z.B. 1x HG 2, 2x HG 1, 4x HG 1/2, 8x HG 1/4). Sie sind dir freundlich gesinnt und gehorchen.",
-    "scaling": "Mit Grad 6+: doppelter HG (z.B. 2x HG 2). Mit Grad 8+: dreifacher HG (z.B. 3x HG 2).",
-    "classes": ["druid", "wizard"]
   },
   {
     "key": "conjure_woodland_beings",
@@ -5342,20 +4571,6 @@
     "description": "Du beschwörst Feen-Kreaturen (Herausforderungsgrad 2 oder niedriger), deren kombinierter HG 2 nicht übersteigt (z.B. 1x HG 2, 2x HG 1, 4x HG 1/2, 8x HG 1/4). Sie sind dir freundlich gesinnt und gehorchen.",
     "scaling": "Mit Grad 6+: doppelter HG. Mit Grad 8+: dreifacher HG.",
     "classes": ["druid", "ranger"]
-  },
-  {
-    "key": "control_water",
-    "name": "Wasser kontrollieren",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "90 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Du kontrollierst Wasser in einem 30m-Würfel. Du kannst (als Aktion) das Wasser heben/senken, es teilen (z.B. ein Flussbett freilegen), es umleiten oder einen 15m hohen Wasserstrudel erzeugen.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "wizard"]
   },
   {
     "key": "dominate_beast",
@@ -5400,101 +4615,7 @@
     "scaling": null,
     "saving_throw": "dexterity",
     "classes": ["druid", "ranger"]
-  },
-  {
-    "key": "polymorph",
-    "name": "Verwandlung",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du verwandelst eine Kreatur in ein 'Tier' (Beast) mit HG gleich oder niedriger als das Ziel (oder Ziellvl). Ziel muss WE-RW bestehen (falls unwillig). Die Spielwerte (inkl. TP, mentale Werte) werden durch die des Tieres ersetzt.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
-  },
-  {
-    "key": "stone_shape",
-    "name": "Stein formen",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Du formst ein Steinobjekt (max 1,5m Kantenlänge) oder einen Teil einer Steinstruktur um.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "wizard"]
-  },
-  {
-    "key": "stoneskin",
-    "name": "Steinhaut",
-    "level": 4,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Diamantstaub 100 GM, wird verbraucht)"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Ziel erhält Resistenz gegen nicht-magischen Wucht-, Hieb- und Stichschaden.",
-    "scaling": null,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "wall_of_fire",
-    "name": "Feuerwand",
-    "level": 4,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Erschafft eine Wand aus Feuer (max 18m lang ODER ein Ring 6m Radius). Kreaturen, die der 'heißen' Seite zu nahe kommen oder die Wand durchqueren, müssen GE-RW bestehen oder 5W8 Feuerschaden erleiden (halber Schaden bei Erfolg).",
-    "scaling": "Erhöht Schaden um 1W8 pro Zaubergrad über 4.",
-    "damage": "5d8",
-    "damage_type": "fire",
-    "saving_throw": "dexterity",
-    "classes": ["druid", "sorcerer", "wizard"]
-  },
-
-  // --- ZAUBER, DIE AKTUALISIERT WERDEN MÜSSEN (FALLS VORHANDEN) ---
-  // (Sicherstellen, dass "druid" im "classes"-Array enthalten ist)
-  
-  {
-    "key": "confusion",
-    "name": "Verwirrung",
-    "level": 4,
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
-  },
-  {
-    "key": "freedom_of_movement",
-    "name": "Bewegungsfreiheit",
-    "level": 4,
-    "classes": ["bard", "cleric", "druid", "ranger"]
-  },
-  {
-    "key": "hallucinatory_terrain",
-    "name": "Halluzinatorisches Gelände",
-    "level": 4,
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "ice_storm",
-    "name": "Eissturm",
-    "level": 4,
-    "classes": ["druid", "sorcerer", "wizard"]
-  },
-  {
-    "key": "locate_creature",
-    "name": "Kreatur aufspüren",
-    "level": 4,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
+  }, 
   {
     "key": "antilife_shell",
     "name": "Lebensfeindliche Hülle",
@@ -5565,66 +4686,7 @@
     "description": "Du betrittst einen Baum (Groß oder größer) und kannst (als Teil deiner Bewegung) zu einem beliebigen Baum derselben Art in 150m Entfernung reisen. Du erscheinst in 1,5m Nähe zum Zielbaum.",
     "scaling": null,
     "classes": ["druid", "ranger"]
-  },
-
-  // --- ZAUBER (STUFE 5), DIE AKTUALISIERT WERDEN MÜSSEN ---
-  {
-    "key": "conjure_elemental",
-    "name": "Elementar beschwören",
-    "level": 5,
-    "classes": ["druid", "wizard"]
-  },
-  {
-    "key": "contagion",
-    "name": "Ansteckung",
-    "level": 5,
-    "classes": ["cleric", "druid"]
-  },
-  {
-    "key": "geas",
-    "name": "Mächtiger Befehl (Geas)",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "paladin", "wizard"]
-  },
-  {
-    "key": "greater_restoration",
-    "name": "Mächtige Wiederherstellung",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
-    "key": "insect_plague",
-    "name": "Insektenplage",
-    "level": 5,
-    "classes": ["cleric", "druid", "sorcerer"]
-  },
-  {
-    "key": "mass_cure_wounds",
-    "name": "Massen-Heilwunde",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
-    "key": "planar_binding",
-    "name": "Ebenenbindung",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "wizard"]
-  },
-  {
-    "key": "scrying",
-    "name": "Ausspähung (Scrying)",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "wall_of_stone",
-    "name": "Steinwand",
-    "level": 5,
-    "classes": ["druid", "sorcerer", "wizard"]
-  },
-
-  // --- DRUIDEN ZAUBER (STUFE 6) ---
-  
+  }, 
   {
     "key": "conjure_fey",
     "name": "Fee herbeirufen",
@@ -5684,39 +4746,6 @@
     "scaling": null,
     "classes": ["druid"]
   },
-
-  // --- ZAUBER (STUFE 6), DIE AKTUALISIERT WERDEN MÜSSEN ---
-  
-  {
-    "key": "find_the_path",
-    "name": "Weg finden",
-    "level": 6,
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
-    "key": "heal",
-    "name": "Heilung",
-    "level": 6,
-    "classes": ["cleric", "druid"]
-  },
-  {
-    "key": "heroes_feast",
-    "name": "Heldenmahl",
-    "level": 6,
-    "classes": ["cleric", "druid"]
-  },
-  {
-    "key": "move_earth",
-    "name": "Erde bewegen",
-    "level": 6,
-    "classes": ["druid", "sorcerer", "wizard"]
-  },
-  {
-    "key": "sunbeam",
-    "name": "Sonnenstrahl",
-    "level": 6,
-    "classes": ["druid", "sorcerer", "wizard"]
-  },
   {
     "key": "changestaff",
     "name": "Stabverwandlung",
@@ -5730,23 +4759,6 @@
     "description": "Du verwandelst einen Kampfstab in eine 'Baumwächter'-Kreatur (Treant, HG 9). Der Baumwächter ist dir freundlich gesinnt und gehorcht. Wenn er auf 0 TP fällt oder der Zauber endet, verwandelt er sich zurück in einen Stab.",
     "scaling": null,
     "classes": ["druid"]
-  },
-  {
-    "key": "fire_storm",
-    "name": "Feuersturm",
-    "level": 7,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "45 Meter",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Ein Feuersturm füllt bis zu zehn 3m-Würfel. Kreaturen im Bereich müssen GE-Rettungswurf bestehen. Fehlschlag: 7W10 Feuerschaden. Erfolg: Halber Schaden.",
-    "scaling": "Erhöht Schaden um 1W10 pro Zaubergrad über 7.",
-    "damage": "7d10",
-    "damage_type": "fire",
-    "saving_throw": "dexterity",
-    "classes": ["cleric", "druid", "sorcerer"]
   },
   {
     "key": "mirage_arcane",
@@ -5763,56 +4775,6 @@
     "classes": ["bard", "druid", "wizard"]
   },
   {
-    "key": "plane_shift",
-    "name": "Ebenenwechsel",
-    "level": 7,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Stimmgabel für die Zielebene)"],
-    "duration": "Sofort",
-    "description": "Du (und bis zu 8 willige Kreaturen) reist auf eine andere Existenzebene. (Oder: Verbannung einer unwilligen Kreatur, Nahkampf-Zauberangriff + CH-RW).",
-    "scaling": null,
-    "attack_roll": "melee_spell",
-    "saving_throw": "charisma",
-    "classes": ["cleric", "druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "regenerate",
-    "name": "Regeneration",
-    "level": 7,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "1 Stunde",
-    "description": "Ziel erhält 4W8 + 15 TP sofort. Für 1 Stunde regeneriert es 1 TP zu Beginn jedes seiner Züge. Abgetrennte Gliedmaßen wachsen nach (2 Minuten).",
-    "scaling": "Erhöht die *sofortige* Heilung um 1W8 pro Zaubergrad über 7.",
-    "damage": "4d8+15",
-    "damage_type": "healing",
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
-    "key": "reverse_gravity",
-    "name": "Schwerkraft umkehren",
-    "level": 7,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "30 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Kehrt die Schwerkraft in einem Zylinder (15m Radius, 30m hoch) um. Kreaturen müssen GE-RW bestehen oder fallen nach oben.",
-    "scaling": null,
-    "saving_throw": "dexterity",
-    "classes": ["druid", "sorcerer", "wizard"]
-  },
-
-  // --- DRUIDEN ZAUBER (STUFE 8) ---
-  
-  {
     "key": "animal_shapes",
     "name": "Tiergestalten",
     "level": 8,
@@ -5825,86 +4787,6 @@
     "description": "Du verwandelst eine beliebige Anzahl williger Kreaturen in Reichweite in 'Tiere' (Beasts) mit HG 4 oder niedriger. (Wie 'Verwandlung', aber sie behalten ihre INT-, WE- und CH-Werte).",
     "scaling": null,
     "classes": ["druid"]
-  },
-  {
-    "key": "antipathy_sympathy",
-    "name": "Antipathie/Sympathie",
-    "level": 8,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "18 Meter",
-    "components": ["V", "S", "M (Pulver 1500 GM, wird verbraucht)"],
-    "duration": "10 Tage",
-    "description": "Du belegst einen Ort (max 60m Würfel) oder ein Objekt mit Antipathie (Kreaturentyp muss fliehen, WE-RW) oder Sympathie (Kreaturentyp wird angezogen, WE-RW).",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["druid", "wizard"]
-  },
-  {
-    "key": "control_weather",
-    "name": "Wetterkontrolle",
-    "level": 8,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Selbst (7,5 km Radius)",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 8 Stunden",
-    "description": "Du übernimmst die Kontrolle über das Wetter in einem 7,5 km Radius (Niederschlag, Temperatur, Wind).",
-    "scaling": null,
-    "classes": ["cleric", "druid", "wizard"]
-  },
-  {
-    "key": "earthquake",
-    "name": "Erdbeben",
-    "level": 8,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "150 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Du erschütterst den Boden (30m-Radius). Bereich wird schwieriges Gelände. Kreaturen müssen GE-RW bestehen oder stürzen. Strukturen erleiden Schaden. Spalten können sich öffnen.",
-    "scaling": null,
-    "damage": "50",
-    "damage_type": "bludgeoning",
-    "saving_throw": "dexterity",
-    "classes": ["cleric", "druid", "sorcerer"]
-  },
-  {
-    "key": "feeblemind",
-    "name": "Geistesschwund",
-    "level": 8,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "45 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Ziel muss INT-RW bestehen. Fehlschlag: 4W6 psychischer Schaden, und INT- und CH-Werte werden 1. Kann nicht zaubern oder sprechen. Darf RW alle 30 Tage wiederholen.",
-    "scaling": null,
-    "damage": "4d6",
-    "damage_type": "psychic",
-    "saving_throw": "intelligence",
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "sunburst",
-    "name": "Sonnenexplosion",
-    "level": 8,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "45 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Gleißendes Licht explodiert (18m Radius Kugel). Kreaturen müssen KO-RW bestehen. Fehlschlag: 12W6 gleißender Schaden und 'Geblendet' (blinded) für 1 Minute. Erfolg: Halber Schaden. (Untote/Schleime haben Nachteil auf RW).",
-    "scaling": null,
-    "damage": "12d6",
-    "damage_type": "radiant",
-    "saving_throw": "constitution",
-    "classes": ["druid", "sorcerer", "wizard", "cleric"]
   },
   {
     "key": "tsunami",
@@ -5924,34 +4806,6 @@
     "classes": ["druid"]
   },
   {
-    "key": "foresight",
-    "name": "Voraussicht",
-    "level": 9,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "8 Stunden",
-    "description": "Ziel erhält 8 Stunden lang eine mächtige Voraussicht. Es kann nicht überrascht werden, hat Vorteil auf Angriffswürfe, Attributswürfe und Rettungswürfe. Angriffswürfe gegen das Ziel haben Nachteil.",
-    "scaling": null,
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "shapechange",
-    "name": "Gestaltwandel",
-    "level": 9,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst",
-    "components": ["V", "S", "M (Jadestab 1500 GM, Fokus)"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du nimmst die Gestalt einer anderen Kreatur (jeder Typ, kein Konstrukt/Untoter) an. HG muss gleich deinem Level oder niedriger sein. Du behältst deine INT-, WE-, CH-Werte, Fertigkeiten und Rettungswürfe. Du erhältst die TP und alle physischen Werte und Fähigkeiten der neuen Form. Als Aktion kannst du die Form wechseln.",
-    "scaling": null,
-    "classes": ["druid", "wizard"]
-  },
-  {
     "key": "storm_of_vengeance",
     "name": "Sturm der Vergeltung",
     "level": 9,
@@ -5967,20 +4821,6 @@
     "damage_type": "thunder_acid_lightning_bludgeoning",
     "saving_throw": "constitution_dexterity",
     "classes": ["druid"]
-  },
-  {
-    "key": "true_resurrection",
-    "name": "Wahre Wiederauferstehung",
-    "level": 9,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Diamanten im Wert von 25.000 GM, wird verbraucht)"],
-    "duration": "Sofort",
-    "description": "Du bringst eine Kreatur (max. 200 Jahre tot) ins Leben zurück (volle TP). Stellt alle Körperteile wieder her, auch wenn der Körper fehlt (solange du den Namen kennst).",
-    "scaling": null,
-    "classes": ["cleric", "druid"]
   },
   {
     "key": "blade_ward",
@@ -6013,50 +4853,6 @@
     "saving_throw": "wisdom",
     "classes": ["bard"]
   },
-
-  // --- BARDEN ZAUBER (STUFE 1) ---
-  {
-    "key": "animal_friendship",
-    "name": "Tierfreundschaft",
-    "level": 1,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "bane",
-    "name": "Verderben",
-    "level": 1,
-    "classes": ["bard", "cleric"]
-  },
-  {
-    "key": "charm_person",
-    "name": "Person bezaubern",
-    "level": 1,
-    "classes": ["bard", "druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "comprehend_languages",
-    "name": "Sprachen verstehen",
-    "level": 1,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "cure_wounds",
-    "name": "Heilwunde",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "detect_magic",
-    "name": "Magie entdecken",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "disguise_self",
-    "name": "Selbstverkleidung",
-    "level": 1,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
   {
     "key": "dissonant_whispers",
     "name": " dissonante Stimmen",
@@ -6075,24 +4871,6 @@
     "classes": ["bard"]
   },
   {
-    "key": "faerie_fire",
-    "name": "Feenfeuer",
-    "level": 1,
-    "classes": ["bard", "druid"]
-  },
-  {
-    "key": "feather_fall",
-    "name": "Federfall",
-    "level": 1,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "healing_word",
-    "name": "Heilendes Wort",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
     "key": "heroism",
     "name": "Heldentum",
     "level": 1,
@@ -6105,12 +4883,6 @@
     "description": "Ein williges Ziel ist immun gegen 'Verängstigt' (Frightened) und erhält zu Beginn jedes seiner Züge temporäre Trefferpunkte in Höhe deines Zauberattributs-Modifikators.",
     "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 1.",
     "classes": ["bard", "paladin"]
-  },
-  {
-    "key": "identify",
-    "name": "Identifizieren",
-    "level": 1,
-    "classes": ["bard", "wizard"]
   },
   {
     "key": "illusionary_script",
@@ -6128,793 +4900,6 @@
     "classes": ["bard", "warlock", "wizard"]
   },
   {
-    "key": "longstrider",
-    "name": "Langsamer Schritt",
-    "level": 1,
-    "classes": ["druid", "ranger", "wizard", "bard"]
-  },
-  {
-    "key": "silent_image",
-    "name": "Stilles Trugbild",
-    "level": 1,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "sleep",
-    "name": "Schlaf",
-    "level": 1,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "speak_with_animals",
-    "name": "Mit Tieren sprechen",
-    "level": 1,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "tashas_hideous_laughter",
-    "name": "Tashas grässlicher Lachanfall",
-    "level": 1,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "thunderwave",
-    "name": "Donnerwelle",
-    "level": 1,
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
-  },
-  {
-    "key": "unseen_servant",
-    "name": "Unsichtbarer Diener",
-    "level": 1,
-    "classes": ["bard", "warlock", "wizard"]
-  },
-
-  // --- BARDEN ZAUBER (STUFE 2) ---
-  
-  {
-    "key": "animal_messenger",
-    "name": "Tierbotschafter",
-    "level": 2,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "blindness_deafness",
-    "name": "Blind- oder Taubheit",
-    "level": 2,
-    "classes": ["bard", "cleric", "sorcerer", "wizard"]
-  },
-  {
-    "key": "calm_emotions",
-    "name": "Gefühle besänftigen",
-    "level": 2,
-    "classes": ["bard", "cleric"]
-  },
-  {
-    "key": "cloud_of_daggers",
-    "name": "Dolchwolke",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "crown_of_madness",
-    "name": "Krone des Wahnsinns",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "detect_thoughts",
-    "name": "Gedanken wahrnehmen",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "enhance_ability",
-    "name": "Attribut verbessern",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "sorcerer"]
-  },
-  {
-    "key": "enlarge_reduce",
-    "name": "Vergrößern/Verkleinern",
-    "level": 2,
-    "classes": ["sorcerer", "wizard", "bard"]
-  },
-  {
-    "key": "heat_metal",
-    "name": "Metall erhitzen",
-    "level": 2,
-    "classes": ["bard", "druid"]
-  },
-  {
-    "key": "hold_person",
-    "name": "Person festhalten",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "invisibility",
-    "name": "Unsichtbarkeit",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "knock",
-    "name": "Klopfen",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "lesser_restoration",
-    "name": "Kleine Wiederherstellung",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "locate_animals_or_plants",
-    "name": "Tiere oder Pflanzen aufspüren",
-    "level": 2,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "locate_object",
-    "name": "Gegenstand aufspüren",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-  {
-    "key": "magic_mouth",
-    "name": "Magischer Mund",
-    "level": 2,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "phantasmal_force",
-    "name": "Phantasiekraft",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "see_invisibility",
-    "name": "Unsichtbares sehen",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "shatter",
-    "name": "Zerbersten",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "silence",
-    "name": "Stille",
-    "level": 2,
-    "classes": ["bard", "cleric", "ranger"]
-  },
-  {
-    "key": "suggestion",
-    "name": "Einflüsterung",
-    "level": 2,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "zone_of_truth",
-    "name": "Zone der Wahrheit",
-    "level": 2,
-    "classes": ["bard", "cleric", "paladin"]
-  },
-
-  // --- BARDEN ZAUBER (STUFE 3) ---
-  
-  {
-    "key": "bestow_curse",
-    "name": "Fluch",
-    "level": 3,
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "clairvoyance",
-    "name": "Hellsehen",
-    "level": 3,
-    "classes": ["bard", "cleric", "sorcerer", "wizard"]
-  },
-  {
-    "key": "dispel_magic",
-    "name": "Magie bannen",
-    "level": 3,
-    "classes": ["bard", "cleric", "druid", "paladin", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "fear",
-    "name": "Furcht",
-    "level": 3,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "feign_death",
-    "name": "Scheintod",
-    "level": 3,
-    "classes": ["cleric", "wizard", "bard"]
-  },
-  {
-    "key": "glyph_of_warding",
-    "name": "Glyphe des Schutzes",
-    "level": 3,
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "hypnotic_pattern",
-    "name": "Hypnotisches Muster",
-    "level": 3,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "leomunds_tiny_hut",
-    "name": "Leomunds winzige Hütte",
-    "level": 3,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "major_image",
-    "name": "Großes Trugbild",
-    "level": 3,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "nondetection",
-    "name": "Unauffindbarkeit",
-    "level": 3,
-    "classes": ["ranger", "wizard", "bard"]
-  },
-  {
-    "key": "plant_growth",
-    "name": "Pflanzenwuchs",
-    "level": 3,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "sending",
-    "name": "Senden",
-    "level": 3,
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "speak_with_dead",
-    "name": "Mit Toten sprechen",
-    "level": 3,
-    "classes": ["bard", "cleric"]
-  },
-  {
-    "key": "speak_with_plants",
-    "name": "Mit Pflanzen sprechen",
-    "level": 3,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "stinking_cloud",
-    "name": "Stinkende Wolke",
-    "level": 3,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "tongues",
-    "name": "Zungen",
-    "level": 3,
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "compulsion",
-    "name": "Zwang",
-    "level": 4,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Kreaturen deiner Wahl im Bereich müssen WE-RW bestehen oder werden gezwungen, sich in jedem ihrer Züge (als Aktion) in eine von dir bestimmte Richtung zu bewegen.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "dimension_door",
-    "name": "Dimensionstür",
-    "level": 4,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "150 Meter",
-    "components": ["V"],
-    "duration": "Sofort",
-    "description": "Du teleportierst dich und (optional) 1 willige Kreatur (deiner Größe oder kleiner) an einen Ort in Reichweite.",
-    "scaling": null,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "freedom_of_movement",
-    "name": "Bewegungsfreiheit",
-    "level": 4,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "1 Stunde",
-    "description": "Ziel ist 1 Stunde lang von schwierigem Gelände unbeeinflusst und kann nicht magisch 'Gelähmt' (Paralyzed) oder 'Festgehalten' (Restrained) werden.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "druid", "ranger"]
-  },
-  {
-    "key": "greater_invisibility",
-    "name": "Mächtige Unsichtbarkeit",
-    "level": 4,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel wird unsichtbar. Der Zauber endet NICHT, wenn das Ziel angreift oder Zauber wirkt.",
-    "scaling": null,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "hallucinatory_terrain",
-    "name": "Halluzinatorisches Gelände",
-    "level": 4,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "90 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "24 Stunden",
-    "description": "Du veränderst das Aussehen von Gelände in einem 45m-Würfel (z.B. lässt einen Hügel wie einen Sumpf aussehen).",
-    "scaling": null,
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "locate_creature",
-    "name": "Kreatur aufspüren",
-    "level": 4,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst (300m Radius)",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Spürt die Richtung zu einer bekannten Kreatur in 300m Umkreis.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-  
-  // --- ZAUBER (STUFE 4), DIE AKTUALISIERT WERDEN MÜSSEN ---
-  {
-    "key": "confusion",
-    "name": "Verwirrung",
-    "level": 4,
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
-  },
-  {
-    "key": "polymorph",
-    "name": "Verwandlung",
-    "level": 4,
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
-  },
-
-  // --- BARDEN ZAUBER (STUFE 5) ---
-  {
-    "key": "animate_objects",
-    "name": "Gegenstände beleben",
-    "level": 5,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Du erweckst bis zu 10 nicht-magische Objekte zum Leben. Als Bonusaktion kannst du sie befehligen (z.B. 10 Winzige Objekte, +8 Angriff, 1W4+4 Schaden).",
-    "scaling": "Mit Grad 6+: 2 zusätzliche Objekte pro Grad über 5.",
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "awaken",
-    "name": "Erwecken",
-    "level": 5,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "8 Stunden",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Achat 1000 GM, wird verbraucht)"],
-    "duration": "Sofort",
-    "description": "Du berührst ein Tier (Beast) oder eine Pflanze. Es erhält Intelligenz 10 und kann eine Sprache sprechen. Es ist dir 30 Tage 'Bezaubert' (charmed).",
-    "scaling": null,
-    "classes": ["bard", "druid"]
-  },
-  {
-    "key": "dominate_person",
-    "name": "Person beherrschen",
-    "level": 5,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ein Humanoid muss WE-RW bestehen oder ist 'Bezaubert' (charmed) und wird von dir telepathisch kontrolliert (als Aktion). Darf RW bei Schaden wiederholen.",
-    "scaling": "Dauer erhöht sich mit höheren Graden.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "dream",
-    "name": "Traum",
-    "level": 5,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "Speziell (gleiche Ebene)",
-    "components": ["V", "S", "M"],
-    "duration": "8 Stunden",
-    "description": "Du betrittst den Traum einer schlafenden Kreatur (Konversation) oder sendest einen Albtraum (WE-RW oder 3W6 psych. Schaden, keine Erholung).",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "damage": "3d6",
-    "damage_type": "psychic",
-    "classes": ["bard", "warlock", "wizard"]
-  },
-  {
-    "key": "hold_monster",
-    "name": "Monster festhalten",
-    "level": 5,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "27 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Eine Kreatur (jeder Typ, außer Untote) muss WE-RW bestehen oder ist 'gelähmt' (paralyzed). Darf RW am Ende jedes Zuges wiederholen.",
-    "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 5.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "legend_lore",
-    "name": "Sagenkunde",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Selbst",
-    "components": ["V", "S", "M (Weihrauch 250 GM, Elfenbein-Streifen 50 GM)"],
-    "duration": "Sofort",
-    "description": "Du erhältst legendäres Wissen (metaphorisch) über eine Person, einen Ort oder ein Objekt.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "mislead",
-    "name": "Irreführung",
-    "level": 5,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst",
-    "components": ["S"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du wirst unsichtbar und erschaffst gleichzeitig ein illusionäres Abbild von dir. Du kannst deine Sinne (als Aktion) auf das Abbild verlagern.",
-    "scaling": null,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "modify_memory",
-    "name": "Erinnerung verändern",
-    "level": 5,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel muss WE-RW bestehen oder ist 'Bezaubert' (charmed). Du kannst eine Erinnerung (max 10 Min.) aus den letzten 24 Std. löschen, verändern oder erschaffen.",
-    "scaling": "Ziel-Zeitraum (24 Std) erhöht sich mit höheren Graden.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "planar_binding",
-    "name": "Ebenenbindung",
-    "level": 5,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "18 Meter",
-    "components": ["V", "S", "M (Juwel 1000 GM, wird verbraucht)"],
-    "duration": "24 Stunden",
-    "description": "Ziel (Himmlischer, Elementar, Fee, Unhold) muss CH-RW bestehen oder ist 24 Std. an dich gebunden und muss dir gehorchen.",
-    "scaling": "Dauer erhöht sich mit höheren Graden.",
-    "saving_throw": "charisma",
-    "classes": ["bard", "cleric", "druid", "wizard"]
-  },
-  {
-    "key": "raise_dead",
-    "name": "Tote erwecken (Raise Dead)",
-    "level": 5,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Diamant 500 GM, wird verbraucht)"],
-    "duration": "Sofort",
-    "description": "Du bringst eine Kreatur (max. 10 Tage tot) mit 1 TP ins Leben zurück. Erhält -4 auf alle Würfe (regeneriert sich über 4 lange Rasten).",
-    "scaling": null,
-    "classes": ["bard", "cleric", "paladin"]
-  },
-  {
-    "key": "scrying",
-    "name": "Ausspähung (Scrying)",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Selbst",
-    "components": ["V", "S", "M (Fokus 1000 GM)"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Du versuchst, eine Kreatur oder einen Ort auszuspähen. Ziel (falls Kreatur) muss WE-RW bestehen.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "cleric", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "seeming",
-    "name": "Schein",
-    "level": 5,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "8 Stunden",
-    "description": "Du veränderst das Aussehen (inkl. Kleidung) einer beliebigen Anzahl von Kreaturen in Reichweite für 8 Stunden.",
-    "scaling": null,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  {
-    "key": "teleportation_circle",
-    "name": "Teleportationskreis",
-    "level": 5,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "3 Meter",
-    "components": ["V", "M (Kreide/Tinte 50 GM, wird verbraucht)"],
-    "duration": "1 Runde",
-    "description": "Erschafft einen Teleportationskreis, der zu einem bekannten, permanenten Kreis auf derselben Ebene führt.",
-    "scaling": null,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-  
-  // --- ZAUBER (STUFE 5), DIE AKTUALISIERT WERDEN MÜSSEN ---
-  {
-    "key": "geas",
-    "name": "Mächtiger Befehl (Geas)",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "paladin", "wizard"]
-  },
-  {
-    "key": "greater_restoration",
-    "name": "Mächtige Wiederherstellung",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
-    "key": "mass_cure_wounds",
-    "name": "Massen-Heilwunde",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid"]
-  },
-
-  // --- BARDEN ZAUBER (STUFE 6) ---
-  
-  {
-    "key": "eyebite",
-    "name": "Blick des Verderbens",
-    "level": 6,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Deine Augen werden schwarz. Als Aktion kannst du 1 Kreatur ansehen (WE-RW). Fehlschlag: Wähle 1. Eingeschlafen (Asleep). 2. Verängstigt (Panicked). 3. Kränkelnd (Sickened, Nachteil auf Angriffe/Attributswürfe).",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "find_the_path",
-    "name": "Weg finden",
-    "level": 6,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Fokus, Knochen etc.)"],
-    "duration": "Konzentration, bis zu 1 Tag",
-    "description": "Du (oder das Ziel) findest den direktesten, sichersten Weg zu einem bekannten Ort auf derselben Ebene.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
-    "key": "guards_and_wards",
-    "name": "Wachen und Schutzzauber",
-    "level": 6,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Weihrauch, Silberdraht etc. 100 GM, wird verbraucht)"],
-    "duration": "24 Stunden",
-    "description": "Du schützt einen Bereich (bis 2250 qm) mit multiplen magischen Effekten (Nebel, Schlösser, Verwirrung, 'Netz'/'Stinkende Wolke'-Fallen, 'Magischer Mund').",
-    "scaling": null,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "irresistible_dance",
-    "name": "Unwiderstehlicher Tanz",
-    "level": 6,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel muss WE-RW bestehen (Nachteil, wenn es Musik hört) oder beginnt zu tanzen. Es hat Nachteil auf GE-RW, Angriffe gegen es haben Vorteil. Es muss seine Aktion nutzen, um zu tanzen. Darf WE-RW am Ende des Zuges wiederholen.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "mass_suggestion",
-    "name": "Massen-Einflüsterung",
-    "level": 6,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "M"],
-    "duration": "24 Stunden",
-    "description": "Bis zu 12 Kreaturen müssen WE-RW bestehen oder sind 'Bezaubert' (charmed) und müssen einem Vorschlag von dir folgen (wie 'Einflüsterung', aber ohne Konzentration).",
-    "scaling": "Dauer erhöht sich mit höheren Graden.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "programmed_illusion",
-    "name": "Programmierte Illusion",
-    "level": 6,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Bis gebannt",
-    "description": "Du erschaffst eine Illusion (wie 'Stilles Trugbild' oder 'Großes Trugbild', aber nur 5 Min. lang), die bei einem festgelegten Auslöser erscheint.",
-    "scaling": null,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "true_seeing",
-    "name": "Wahrer Blick",
-    "level": 6,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Salbe 25 GM, wird verbraucht)"],
-    "duration": "1 Stunde",
-    "description": "Ziel erhält 'Wahrer Blick' (Truesight) mit 36m Reichweite.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
-  
-  // --- ZAUBER (STUFE 6), DIE AKTUALISIERT WERDEN MÜSSEN ---
-  {
-    "key": "forcecage",
-    "name": "Käfig der Kraft",
-    "level": 7, // Dieser ist Stufe 7, nicht 6.
-    "classes": ["bard", "warlock", "wizard"]
-  },
-  {
-    "key": "mordenkainens_sword",
-    "name": "Mordenkainens Schwert",
-    "level": 7, // Dieser ist Stufe 7, nicht 6.
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "mordenkainens_magnificent_mansion",
-    "name": "Mordenkainens Fantastisches Herrenhaus",
-    "level": 7,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "etherealness",
-    "name": "Ätherisch werden",
-    "level": 7,
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "forcecage",
-    "name": "Käfig der Kraft",
-    "level": 7,
-    "classes": ["bard", "warlock", "wizard"]
-  },
-  {
-    "key": "mirage_arcane",
-    "name": "Fata Morgana",
-    "level": 7,
-    "classes": ["bard", "druid", "wizard"]
-  },
-  {
-    "key": "mordenkainens_sword",
-    "name": "Mordenkainens Schwert",
-    "level": 7,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "plane_shift",
-    "name": "Ebenenwechsel",
-    "level": 7,
-    "classes": ["cleric", "druid", "sorcerer", "warlock", "wizard", "bard"]
-  },
-  {
-    "key": "project_image",
-    "name": "Abbild projizieren",
-    "level": 7,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "regenerate",
-    "name": "Regeneration",
-    "level": 7,
-    "classes": ["bard", "cleric", "druid"]
-  },
-  {
-    "key": "resurrection",
-    "name": "Wiederauferstehung",
-    "level": 7,
-    "classes": ["bard", "cleric"]
-  },
-  {
-    "key": "symbol",
-    "name": "Symbol",
-    "level": 7,
-    "classes": ["bard", "cleric", "wizard"]
-  },
-  {
-    "key": "teleport",
-    "name": "Teleportieren",
-    "level": 7,
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
-
-  // --- BARDEN ZAUBER (STUFE 8) ---
-  // (Sicherstellen, dass "bard" im "classes"-Array enthalten ist)
-
-  {
-    "key": "dominate_monster",
-    "name": "Monster beherrschen",
-    "level": 8,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "feeblemind",
-    "name": "Geistesschwund",
-    "level": 8,
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
-  {
     "key": "glibness",
     "name": "Wortgewandtheit",
     "level": 8,
@@ -6927,28 +4912,6 @@
     "description": "Für 1 Stunde behandelst du jeden W20-Wurf für einen Charisma-Wurf (Täuschung, Einschüchtern, Darbietung, Überzeugen) als 15. (Du kannst nicht niedriger als 15 würfeln).",
     "scaling": null,
     "classes": ["bard", "warlock"]
-  },
-  {
-    "key": "mind_blank",
-    "name": "Gedankenleere",
-    "level": 8,
-    "classes": ["bard", "wizard"]
-  },
-  {
-    "key": "power_word_stun",
-    "name": "Mächtiges Wort: Betäubung",
-    "level": 8,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-
-  // --- BARDEN ZAUBER (STUFE 9) ---
-  // (Sicherstellen, dass "bard" im "classes"-Array enthalten ist)
-
-  {
-    "key": "foresight",
-    "name": "Voraussicht",
-    "level": 9,
-    "classes": ["bard", "druid", "warlock", "wizard"]
   },
   {
     "key": "mass_polymorph",
@@ -6982,27 +4945,6 @@
     "classes": ["bard"]
   },
   {
-    "key": "power_word_kill",
-    "name": "Mächtiges Wort: Tod",
-    "level": 9,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "true_polymorph",
-    "name": "Wahre Verwandlung",
-    "level": 9,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Verwandle 1 Kreatur in eine andere Kreatur (HG gleich/niedriger als Ziel-Lvl/HG), 1 Objekt in eine Kreatur (HG 9 oder niedriger) ODER 1 Kreatur in ein Objekt. Wird permanent, wenn Konzentration 1 Std. hält.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "warlock", "wizard"]
-  },
-  {
     "key": "eldritch_blast",
     "name": "Schauriger Strahl",
     "level": 0,
@@ -7019,46 +4961,6 @@
     "attack_roll": "ranged_spell",
     "classes": ["warlock"]
   },
-  
-  // (Aktualisiere bestehende Zaubertricks, um "warlock" hinzuzufügen)
-  {
-    "key": "chill_touch",
-    "name": "Berührung des Grabes",
-    "level": 0,
-    "classes": ["sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "mage_hand",
-    "name": "Magierhand",
-    "level": 0,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "minor_illusion",
-    "name": "Kleine Illusion",
-    "level": 0,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "poison_spray",
-    "name": "Gift versprühen",
-    "level": 0,
-    "classes": ["sorcerer", "wizard", "druid", "warlock"]
-  },
-  {
-    "key": "prestidigitation",
-    "name": "Taschenspielertrick",
-    "level": 0,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "true_strike",
-    "name": "Zielsicherer Schlag",
-    "level": 0,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-
-  // --- HEXENMEISTER ZAUBER (STUFE 1) ---
   {
     "key": "armor_of_agathys",
     "name": "Rüstung von Agathys",
@@ -7125,280 +5027,6 @@
     "damage_type": "necrotic",
     "classes": ["warlock"]
   },
-  
-  // (Aktualisiere bestehende Zauber, um "warlock" hinzuzufügen)
-  { "key": "charm_person", "level": 1, "classes": ["bard", "druid", "sorcerer", "warlock", "wizard"] },
-  { "key": "comprehend_languages", "level": 1, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-  { "key": "expeditious_retreat", "level": 1, "classes": ["sorcerer", "warlock", "wizard"] },
-  { "key": "illusionary_script", "level": 1, "classes": ["bard", "warlock", "wizard"] },
-  { "key": "protection_from_evil_and_good", "level": 1, "classes": ["cleric", "paladin", "warlock", "wizard"] },
-  { "key": "unseen_servant", "level": 1, "classes": ["bard", "warlock", "wizard"] },
-  { "key": "witch_bolt", "level": 1, "classes": ["sorcerer", "warlock", "wizard"] },
-
-  // --- HEXENMEISTER ZAUBER (STUFE 2) ---
-  
-  { "key": "cloud_of_daggers", "level": 2, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-  { "key": "crown_of_madness", "level": 2, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-  { "key": "darkness", "level": 2, "classes": ["sorcerer", "warlock", "wizard"] },
-  { "key": "hold_person", "level": 2, "classes": ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"] },
-  { "key": "invisibility", "level": 2, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-  { "key": "mirror_image", "level": 2, "classes": ["sorcerer", "warlock", "wizard"] },
-  { "key": "misty_step", "level": 2, "classes": ["sorcerer", "warlock", "wizard"] },
-  { "key": "ray_of_enfeeblement", "level": 2, "classes": ["warlock", "wizard"] },
-  { "key": "shatter", "level": 2, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-  { "key": "spider_climb", "level": 2, "classes": ["sorcerer", "warlock", "wizard"] },
-  { "key": "suggestion", "level": 2, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-
-  // --- HEXENMEISTER ZAUBER (STUFE 3) ---
-
-  {
-    "key": "counterspell",
-    "name": "Gegenzauber",
-    "level": 3,
-    "classes": ["sorcerer", "warlock", "wizard"]
-  },
-  { "key": "dispel_magic", "level": 3, "classes": ["bard", "cleric", "druid", "paladin", "sorcerer", "warlock", "wizard"] },
-  { "key": "fear", "level": 3, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-  { "key": "fly", "level": 3, "classes": ["sorcerer", "warlock", "wizard"] },
-  { "key": "gaseous_form", "level": 3, "classes": ["sorcerer", "warlock", "wizard"] },
-  { "key": "hypnotic_pattern", "level": 3, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-  { "key": "magic_circle", "level": 3, "classes": ["cleric", "paladin", "warlock", "wizard"] },
-  { "key": "major_image", "level": 3, "classes": ["bard", "sorcerer", "warlock", "wizard"] },
-  { "key": "remove_curse", "level": 3, "classes": ["cleric", "paladin", "warlock", "wizard"] },
-  { "key": "tongues", "level": 3, "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"] },
-  { "key": "vampiric_touch", "level": 3, "classes": ["warlock", "wizard"] },
-  {
-    "key": "banishment",
-    "name": "Verbannung",
-    "level": 4,
-    "classes": ["cleric", "paladin", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "blight",
-    "name": "Kümmernis",
-    "level": 4,
-    "classes": ["druid", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "dimension_door",
-    "name": "Dimensionstür",
-    "level": 4,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "hallucinatory_terrain",
-    "name": "Halluzinatorisches Gelände",
-    "level": 4,
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
-
-  // --- HEXENMEISTER ZAUBER (STUFE 5) ---
-  // (Dies ist die höchste Stufe für Paktmagie-Plätze)
-  
-  {
-    "key": "contact_other_plane",
-    "name": "Kontakt zu anderer Ebene",
-    "level": 5,
-    "classes": ["warlock", "wizard"]
-  },
-  {
-    "key": "dream",
-    "name": "Traum",
-    "level": 5,
-    "classes": ["bard", "warlock", "wizard"]
-  },
-  {
-    "key": "hold_monster",
-    "name": "Monster festhalten",
-    "level": 5,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "planar_binding",
-    "name": "Ebenenbindung",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "scrying",
-    "name": "Ausspähung (Scrying)",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "telekinesis",
-    "name": "Telekinese",
-    "level": 5,
-    "classes": ["sorcerer", "wizard", "warlock"]
-  },
-  
-  // --- HEXENMEISTER ZAUBER (STUFE 6 - Mystisches Arkanum) ---
-  {
-    "key": "arcane_gate",
-    "name": "Arkanes Tor",
-    "level": 6,
-    "classes": ["sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "chain_lightning",
-    "name": "Kettenblitz",
-    "level": 6,
-    "classes": ["sorcerer", "wizard", "warlock"]
-  },
-  {
-    "key": "circle_of_death",
-    "name": "Kreis des Todes",
-    "level": 6,
-    "classes": ["sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "conjure_fey",
-    "name": "Fee herbeirufen",
-    "level": 6,
-    "classes": ["druid", "warlock"]
-  },
-  {
-    "key": "create_undead",
-    "name": "Untote erschaffen",
-    "level": 6,
-    "classes": ["cleric", "warlock", "wizard"]
-  },
-  {
-    "key": "eyebite",
-    "name": "Blick des Verderbens",
-    "level": 6,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "flesh_to_stone",
-    "name": "Fleisch zu Stein",
-    "level": 6,
-    "classes": ["warlock", "wizard"]
-  },
-  {
-    "key": "mass_suggestion",
-    "name": "Massen-Einflüsterung",
-    "level": 6,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "true_seeing",
-    "name": "Wahrer Blick",
-    "level": 6,
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "etherealness",
-    "name": "Ätherisch werden",
-    "level": 7,
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "finger_of_death",
-    "name": "Finger des Todes",
-    "level": 7,
-    "classes": ["sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "forcecage",
-    "name": "Käfig der Kraft",
-    "level": 7,
-    "classes": ["bard", "warlock", "wizard"]
-  },
-  {
-    "key": "plane_shift",
-    "name": "Ebenenwechsel",
-    "level": 7,
-    "classes": ["cleric", "druid", "sorcerer", "warlock", "wizard", "bard"]
-  },
-
-  // --- HEXENMEISTER ZAUBER (STUFE 8 - Mystisches Arkanum) ---
-  // (Sicherstellen, dass "warlock" im "classes"-Array enthalten ist)
-  
-  {
-    "key": "demiplane",
-    "name": "Halbebene",
-    "level": 8,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["S"],
-    "duration": "1 Stunde",
-    "description": "Du erschaffst eine Tür zu einer kleinen Halbebene (max 9m Würfel).",
-    "scaling": null,
-    "classes": ["warlock", "wizard"]
-  },
-  {
-    "key": "dominate_monster",
-    "name": "Monster beherrschen",
-    "level": 8,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "feeblemind",
-    "name": "Geistesschwund",
-    "level": 8,
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "glibness",
-    "name": "Wortgewandtheit",
-    "level": 8,
-    "classes": ["bard", "warlock"]
-  },
-  {
-    "key": "power_word_stun",
-    "name": "Mächtiges Wort: Betäubung",
-    "level": 8,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-
-  // --- HEXENMEISTER ZAUBER (STUFE 9 - Mystisches Arkanum) ---
-  // (Sicherstellen, dass "warlock" im "classes"-Array enthalten ist)
-  
-  {
-    "key": "astral_projection",
-    "name": "Astrale Projektion",
-    "level": 9,
-    "classes": ["cleric", "warlock", "wizard"]
-  },
-  {
-    "key": "foresight",
-    "name": "Voraussicht",
-    "level": 9,
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
-  {
-    "key": "imprisonment",
-    "name": "Einkerkerung",
-    "level": 9,
-    "classes": ["warlock", "wizard"]
-  },
-  {
-    "key": "power_word_kill",
-    "name": "Mächtiges Wort: Tod",
-    "level": 9,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "true_polymorph",
-    "name": "Wahre Verwandlung",
-    "level": 9,
-    "classes": ["bard", "warlock", "wizard"]
-  },
-  {
-    "key": "bless",
-    "name": "Segnen",
-    "level": 1,
-    "classes": ["cleric", "paladin"]
-  },
-  {
-    "key": "command",
-    "name": "Befehl",
-    "level": 1,
-    "classes": ["bard", "cleric", "paladin"]
-  },
   {
     "key": "compelled_duel",
     "name": "Duell erzwingen",
@@ -7413,30 +5041,6 @@
     "scaling": null,
     "saving_throw": "wisdom",
     "classes": ["paladin"]
-  },
-  {
-    "key": "cure_wounds",
-    "name": "Heilwunde",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "detect_evil_and_good",
-    "name": "Gutes/Böses entdecken",
-    "level": 1,
-    "classes": ["cleric", "paladin"]
-  },
-  {
-    "key": "detect_magic",
-    "name": "Magie entdecken",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "detect_poison_and_disease",
-    "name": "Gift/Krankheit entdecken",
-    "level": 1,
-    "classes": ["cleric", "druid", "paladin", "ranger"]
   },
   {
     "key": "divine_favor",
@@ -7455,24 +5059,6 @@
     "classes": ["paladin"]
   },
   {
-    "key": "heroism",
-    "name": "Heldentum",
-    "level": 1,
-    "classes": ["bard", "paladin"]
-  },
-  {
-    "key": "protection_from_evil_and_good",
-    "name": "Schutz vor Gut und Böse",
-    "level": 1,
-    "classes": ["cleric", "paladin", "warlock", "wizard"]
-  },
-  {
-    "key": "purify_food_and_drink",
-    "name": "Nahrung/Trank reinigen",
-    "level": 1,
-    "classes": ["cleric", "druid", "paladin"]
-  },
-  {
     "key": "searing_smite",
     "name": "Sengendes Niederstrecken",
     "level": 1,
@@ -7488,12 +5074,6 @@
     "damage_type": "fire",
     "saving_throw": "constitution",
     "classes": ["paladin"]
-  },
-  {
-    "key": "shield_of_faith",
-    "name": "Schild des Glaubens",
-    "level": 1,
-    "classes": ["cleric", "paladin"]
   },
   {
     "key": "thunderous_smite",
@@ -7529,15 +5109,6 @@
     "saving_throw": "wisdom",
     "classes": ["paladin"]
   },
-
-  // --- PALADIN ZAUBER (STUFE 2) ---
-  
-  {
-    "key": "aid",
-    "name": "Hilfe",
-    "level": 2,
-    "classes": ["cleric", "paladin"]
-  },
   {
     "key": "branding_smite",
     "name": "Zeichenendes Niederstrecken",
@@ -7568,39 +5139,6 @@
     "scaling": null,
     "classes": ["paladin"]
   },
-  {
-    "key": "lesser_restoration",
-    "name": "Kleine Wiederherstellung",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "locate_object",
-    "name": "Gegenstand aufspüren",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-  {
-    "key": "magic_weapon",
-    "name": "Magische Waffe",
-    "level": 2,
-    "classes": ["paladin", "wizard"]
-  },
-  {
-    "key": "protection_from_poison",
-    "name": "Schutz vor Gift",
-    "level": 2,
-    "classes": ["cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "zone_of_truth",
-    "name": "Zone der Wahrheit",
-    "level": 2,
-    "classes": ["bard", "cleric", "paladin"]
-  },
-
-  // --- PALADIN ZAUBER (STUFE 3) ---
-
   {
     "key": "aura_of_vitality",
     "name": "Aura der Vitalität",
@@ -7635,12 +5173,6 @@
     "classes": ["paladin"]
   },
   {
-    "key": "create_food_and_water",
-    "name": "Nahrung und Wasser erschaffen",
-    "level": 3,
-    "classes": ["cleric", "paladin"]
-  },
-  {
     "key": "crusaders_mantle",
     "name": "Mantel des Kreuzfahrers",
     "level": 3,
@@ -7657,18 +5189,6 @@
     "classes": ["paladin"]
   },
   {
-    "key": "daylight",
-    "name": "Tageslicht",
-    "level": 3,
-    "classes": ["cleric", "druid", "paladin", "ranger", "sorcerer"]
-  },
-  {
-    "key": "dispel_magic",
-    "name": "Magie bannen",
-    "level": 3,
-    "classes": ["bard", "cleric", "druid", "paladin", "sorcerer", "warlock", "wizard"]
-  },
-  {
     "key": "elemental_weapon",
     "name": "Elementarwaffe",
     "level": 3,
@@ -7682,25 +5202,7 @@
     "scaling": "Mit Grad 5+: Bonus +2, Schaden 2W4. Mit Grad 7+: Bonus +3, Schaden 3W4.",
     "damage": "1d4",
     "damage_type": "variable",
-    "classes": ["paladin"]
-  },
-  {
-    "key": "magic_circle",
-    "name": "Magischer Kreis",
-    "level": 3,
-    "classes": ["cleric", "paladin", "warlock", "wizard"]
-  },
-  {
-    "key": "remove_curse",
-    "name": "Fluch brechen",
-    "level": 3,
-    "classes": ["cleric", "paladin", "warlock", "wizard"]
-  },
-  {
-    "key": "revivify",
-    "name": "Wiederbeleben",
-    "level": 3,
-    "classes": ["cleric", "paladin"]
+    "classes": ["paladin", "ranger"]
   },
   {
     "key": "aura_of_life",
@@ -7747,41 +5249,6 @@
     "saving_throw": "wisdom",
     "classes": ["paladin"]
   },
-
-  // (Aktualisiere bestehende Stufe 4 Zauber, um "paladin" hinzuzufügen)
-  {
-    "key": "banishment",
-    "level": 4,
-    "classes": ["cleric", "paladin", "sorcerer", "warlock", "wizard"]
-  },
-  {
-    "key": "death_ward",
-    "level": 4,
-    "classes": ["cleric", "paladin"]
-  },
-  {
-    "key": "dimension_door",
-    "level": 4,
-    "classes": ["bard", "sorcerer", "warlock", "wizard", "paladin"]
-  },
-  {
-    "key": "freedom_of_movement",
-    "level": 4,
-    "classes": ["bard", "cleric", "druid", "ranger", "paladin"]
-  },
-  {
-    "key": "guardian_of_faith",
-    "level": 4,
-    "classes": ["cleric", "paladin"]
-  },
-  {
-    "key": "locate_creature",
-    "level": 4,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-
-  // --- PALADIN ZAUBER (STUFE 5) ---
-  
   {
     "key": "banishing_smite",
     "name": "Verbannendes Niederstrecken",
@@ -7830,74 +5297,6 @@
     "saving_throw": "constitution",
     "classes": ["paladin"]
   },
-  
-  // (Aktualisiere bestehende Stufe 5 Zauber, um "paladin" hinzuzufügen)
-  {
-    "key": "commune",
-    "level": 5,
-    "classes": ["cleric", "paladin"]
-  },
-  {
-    "key": "dispel_evil_and_good",
-    "level": 5,
-    "classes": ["cleric", "paladin"]
-  },
-  {
-    "key": "geas",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "paladin", "wizard"]
-  },
-  {
-    "key": "greater_restoration",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "paladin"]
-  },
-  {
-    "key": "hallow",
-    "level": 5,
-    "classes": ["cleric", "paladin"]
-  },
-  {
-    "key": "planar_binding",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "wizard", "paladin"]
-  },
-  {
-    "key": "raise_dead",
-    "name": "Tote erwecken (Raise Dead)",
-    "level": 5,
-    "classes": ["bard", "cleric", "paladin"]
-  },
-  {
-    "key": "alarm",
-    "name": "Alarm",
-    "level": 1,
-    "classes": ["ranger", "wizard"]
-  },
-  {
-    "key": "animal_friendship",
-    "name": "Tierfreundschaft",
-    "level": 1,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "cure_wounds",
-    "name": "Heilwunde",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "detect_magic",
-    "name": "Magie entdecken",
-    "level": 1,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "detect_poison_and_disease",
-    "name": "Gift/Krankheit entdecken",
-    "level": 1,
-    "classes": ["cleric", "druid", "paladin", "ranger"]
-  },
   {
     "key": "ensnaring_strike",
     "name": "Umklammernder Schlag",
@@ -7914,18 +5313,6 @@
     "damage_type": "piercing",
     "saving_throw": "strength",
     "classes": ["ranger"]
-  },
-  {
-    "key": "fog_cloud",
-    "name": "Nebelwolke",
-    "level": 1,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "goodberry",
-    "name": "Gute Beere",
-    "level": 1,
-    "classes": ["druid", "ranger"]
   },
   {
     "key": "hail_of_thorns",
@@ -7961,45 +5348,6 @@
     "classes": ["ranger"]
   },
   {
-    "key": "jump",
-    "name": "Springen",
-    "level": 1,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "longstrider",
-    "name": "Langsamer Schritt",
-    "level": 1,
-    "classes": ["druid", "ranger", "wizard", "bard"]
-  },
-  {
-    "key": "speak_with_animals",
-    "name": "Mit Tieren sprechen",
-    "level": 1,
-    "classes": ["bard", "druid", "ranger"]
-  },
-
-  // --- WALDLÄUFER ZAUBER (STUFE 2) ---
-  
-  {
-    "key": "animal_messenger",
-    "name": "Tierbotschafter",
-    "level": 2,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "barkskin",
-    "name": "Borkenhaut",
-    "level": 2,
-    "classes": ["druid", "ranger"]
-  },
-  {
-    "key": "beast_sense",
-    "name": "Tiersinne",
-    "level": 2,
-    "classes": ["druid", "ranger"]
-  },
-  {
     "key": "cordon_of_arrows",
     "name": "Pfeilband",
     "level": 2,
@@ -8017,69 +5365,6 @@
     "classes": ["ranger"]
   },
   {
-    "key": "darkvision",
-    "name": "Dunkelsicht",
-    "level": 2,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "find_traps",
-    "name": "Fallen finden",
-    "level": 2,
-    "classes": ["cleric", "druid", "ranger"]
-  },
-  {
-    "key": "lesser_restoration",
-    "name": "Kleine Wiederherstellung",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "locate_animals_or_plants",
-    "name": "Tiere oder Pflanzen aufspüren",
-    "level": 2,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "locate_object",
-    "name": "Gegenstand aufspüren",
-    "level": 2,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-  {
-    "key": "pass_without_trace",
-    "name": "Spurlos",
-    "level": 2,
-    "classes": ["druid", "ranger"]
-  },
-  {
-    "key": "protection_from_poison",
-    "name": "Schutz vor Gift",
-    "level": 2,
-    "classes": ["cleric", "druid", "paladin", "ranger"]
-  },
-  {
-    "key": "silence",
-    "name": "Stille",
-    "level": 2,
-    "classes": ["bard", "cleric", "ranger"]
-  },
-  {
-    "key": "spike_growth",
-    "name": "Stachelwuchs",
-    "level": 2,
-    "classes": ["druid", "ranger"]
-  },
-
-  // --- WALDLÄUFER ZAUBER (STUFE 3) ---
-  
-  {
-    "key": "conjure_animals",
-    "name": "Tiere herbeirufen",
-    "level": 3,
-    "classes": ["druid", "ranger"]
-  },
-  {
     "key": "conjure_barrage",
     "name": "Pfeilhagel",
     "level": 3,
@@ -8095,18 +5380,6 @@
     "damage_type": "weapon_type",
     "saving_throw": "dexterity",
     "classes": ["ranger"]
-  },
-  {
-    "key": "daylight",
-    "name": "Tageslicht",
-    "level": 3,
-    "classes": ["cleric", "druid", "paladin", "ranger", "sorcerer"]
-  },
-  {
-    "key": "elemental_weapon",
-    "name": "Elementarwaffe",
-    "level": 3,
-    "classes": ["paladin", "ranger"]
   },
   {
     "key": "flame_arrows",
@@ -8142,96 +5415,6 @@
     "classes": ["ranger"]
   },
   {
-    "key": "nondetection",
-    "name": "Unauffindbarkeit",
-    "level": 3,
-    "classes": ["ranger", "wizard", "bard"]
-  },
-  {
-    "key": "plant_growth",
-    "name": "Pflanzenwuchs",
-    "level": 3,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "protection_from_energy",
-    "name": "Schutz vor Energie",
-    "level": 3,
-    "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "speak_with_plants",
-    "name": "Mit Pflanzen sprechen",
-    "level": 3,
-    "classes": ["bard", "druid", "ranger"]
-  },
-  {
-    "key": "water_breathing",
-    "name": "Wasseratmung",
-    "level": 3,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "water_walk",
-    "name": "Wasserwandeln",
-    "level": 3,
-    "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"]
-  },
-  {
-    "key": "wind_wall",
-    "name": "Windwall",
-    "level": 3,
-    "classes": ["druid", "ranger"]
-  },
-  {
-    "key": "conjure_woodland_beings",
-    "name": "Waldwesen herbeirufen",
-    "level": 4,
-    "classes": ["druid", "ranger"]
-  },
-  {
-    "key": "freedom_of_movement",
-    "name": "Bewegungsfreiheit",
-    "level": 4,
-    "classes": ["bard", "cleric", "druid", "ranger"]
-  },
-  {
-    "key": "grasping_vine",
-    "name": "Greifranke",
-    "level": 4,
-    "classes": ["druid", "ranger"]
-  },
-  {
-    "key": "locate_creature",
-    "name": "Kreatur aufspüren",
-    "level": 4,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
-  {
-    "key": "stoneskin",
-    "name": "Steinhaut",
-    "level": 4,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
-  },
-
-  // --- WALDLÄUFER ZAUBER (STUFE 5) ---
-  
-  {
-    "key": "commune_with_nature",
-    "name": "Mit der Natur kommunizieren",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Minute",
-    "range": "Selbst (4,5 km Radius, im Freien)",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Du erhältst Wissen über das Land in 4,5 km Umkreis. Du erfährst 3 Fakten über Gelände, Gewässer, Pflanzen, Tiere, Mineralien oder die Anwesenheit von Himmlischen/Feen/Unholden.",
-    "scaling": null,
-    "classes": ["druid", "ranger"]
-  },
-  {
     "key": "conjure_volley",
     "name": "Pfeilsalve",
     "level": 5,
@@ -8261,23 +5444,5 @@
     "description": "Du berührst einen Köcher. Er produziert unendlich viel nicht-magische Munition für die Waffe, für die er gedacht ist. In jedem deiner Züge kannst du (als Bonusaktion) zwei Angriffe mit dieser Waffe ausführen.",
     "scaling": null,
     "classes": ["ranger"]
-  },
-  {
-    "key": "tree_stride",
-    "name": "Baumwanderung",
-    "level": 5,
-    "classes": ["druid", "ranger"]
-  },
-  
-  // (Aktualisiere bestehende Stufe 5 Zauber, um "ranger" hinzuzufügen)
-  {
-    "key": "greater_restoration",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "ranger"]
-  },
-  {
-    "key": "mass_cure_wounds",
-    "level": 5,
-    "classes": ["bard", "cleric", "druid", "ranger"]
-  },
+  }  
 ]
