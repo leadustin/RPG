@@ -1,9 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'; // 'useMemo' importiert
 import DiceBox from "@3d-dice/dice-box";
-import { 
-  rollDiceFormula, 
-  getRacialAbilityBonus // 'getRacialAbilityBonus' importiert
-} from '../../engine/characterEngine';
+import { getRacialAbilityBonus } from '../../engine/characterEngine';
+import { rollDiceFormula } from '../../utils/helpers';
 import allClassData from '../../data/classes.json'; 
 import './LevelUpModal.css';
 

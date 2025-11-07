@@ -1,156 +1,162 @@
 import { getModifier, getProficiencyBonus } from '../../../utils/helpers';
+import allFeatures from '../../../data/features.json'; 
+import spells from '../../../data/spells.json'; // Für Arkaner Betrüger
 
-// Zauberplätze (Drittel-Zauberwirker - Mystischer Ritter, Arkaner Betrüger)
-const THIRD_CASTER_SLOTS = [
-  { level: 1, slots: {} }, { level: 2, slots: {} },
-  { level: 3, slots: { 1: 2 } }, { level: 4, slots: { 1: 3 } },
-  { level: 5, slots: { 1: 3 } }, { level: 6, slots: { 1: 3 } },
-  { level: 7, slots: { 1: 4, 2: 2 } }, { level: 8, slots: { 1: 4, 2: 2 } },
-  { level: 9, slots: { 1: 4, 2: 2 } }, { level: 10, slots: { 1: 4, 2: 3 } },
-  { level: 11, slots: { 1: 4, 2: 3 } }, { level: 12, slots: { 1: 4, 2: 3 } },
-  { level: 13, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 14, slots: { 1: 4, 2: 3, 3: 2 } },
-  { level: 15, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 16, slots: { 1: 4, 2: 3, 3: 3 } },
-  { level: 17, slots: { 1: 4, 2: 3, 3: 3 } }, { level: 18, slots: { 1: 4, 2: 3, 3: 3 } },
-  { level: 19, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } }, { level: 20, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } },
-];
-
-// Bekannte Zauber (Arcane Trickster)
-const TRICKSTER_SPELLS_KNOWN = [
-    { level: 3, known: 3 }, { level: 4, known: 4 }, { level: 7, known: 5 }, { level: 8, known: 6 },
-    { level: 10, known: 7 }, { level: 11, known: 8 }, { level: 13, known: 9 }, { level: 14, known: 10 },
-    { level: 16, known: 11 }, { level: 19, known: 12 }, { level: 20, known: 13 },
-];
-
-/**
- * Kapselt die 5E-Logik für die Schurken-Klasse.
- */
 export class RogueLogic {
-  constructor(classData, allSpells, allFeatures) {
-    this.classData = classData; // Das Schurken-Objekt aus classes.json
-    this.allSpells = allSpells;
-    this.allFeatures = allFeatures;
-    
-    // Arkane Betrüger lernen aus der Magier-Liste
-    this.wizardSpells = this.allSpells.filter(spell => spell.classes && spell.classes.includes('wizard'));
+  
+  /**
+   * Erstellt eine Instanz der Schurken-Logik, die an einen bestimmten Charakter gebunden ist.
+   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
+   */
+  constructor(character) {
+    this.character = character;
   }
 
-  getHitPointsPerLevel() {
-    return 8;
+  /**
+   * Prüft schnell, ob der Charakter ein bestimmtes Feature besitzt.
+   * @param {string} featureKey - Der Schlüssel des Features.
+   * @returns {boolean}
+   */
+  hasFeature(featureKey) {
+    return this.character.features.includes(featureKey);
   }
+
+  // --- Grundlegende Klassen-Informationen ---
 
   getSavingThrowProficiencies() {
-    return this.classData.saving_throws; // ['dexterity', 'intelligence']
+    // Schurken sind in Geschicklichkeit und Intelligenz geübt.
+    return ['dexterity', 'intelligence'];
   }
 
-  /**
-   * Holt die spezifischen Fähigkeiten für die Stufe und Unterklasse.
-   */
-  getFeaturesForLevel(level, subclassKey) {
-    const features = [];
-    const baseFeatures = this.classData.features.filter(f => f.level === level);
-    features.push(...baseFeatures);
-
-    if (subclassKey) {
-      const subclass = this.classData.subclasses.find(sc => sc.key === subclassKey);
-      if (subclass) {
-        const subclassFeatures = subclass.features.filter(f => f.level === level);
-        features.push(...subclassFeatures);
-      }
-    }
-    return features;
-  }
-
-  // --- FÄHIGKEITEN-LOGIK ---
+  // --- KAMPF-LOGIK (Hinterhältiger Angriff) ---
 
   /**
-   * Gibt den Schadenswürfel für 'Hinterhältiger Angriff' (Sneak Attack) zurück.
-   * Regel: 1W6, +1W6 alle 2 Stufen.
+   * Ruft den Schadenswürfel für den "Hinterhältigen Angriff" (Sneak Attack) ab.
+   * @returns {string} - Die Schadenswürfel-Notation (z.B. "1d6", "5d6").
    */
-  getSneakAttackDice(level) {
-    // (classes.json ist bei der Skalierung fehlerhaft, wir nutzen 5E-Regeln)
-    const diceCount = Math.ceil(level / 2);
+  getSneakAttackDamage() {
+    const level = this.character.level;
+    let diceCount = 0;
+
+    // Regel: 1W6 auf Stufe 1, erhöht sich alle 2 Stufen (ungerade Stufen)
+    if (level >= 19) diceCount = 10;
+    else if (level >= 17) diceCount = 9;
+    else if (level >= 15) diceCount = 8;
+    else if (level >= 13) diceCount = 7;
+    else if (level >= 11) diceCount = 6;
+    else if (level >= 9) diceCount = 5;
+    else if (level >= 7) diceCount = 4;
+    else if (level >= 5) diceCount = 3;
+    else if (level >= 3) diceCount = 2;
+    else if (level >= 1) diceCount = 1;
+
     return `${diceCount}d6`;
   }
 
+  // --- SUBKLASSEN-LOGIK (Signale an die Spiel-Engine) ---
+
   /**
-   * Gibt die Anzahl der 'Expertise'-Fertigkeiten zurück, die gewählt werden können.
+   * Ruft die erweiterten Optionen für "Listige Aktion" (Cunning Action) ab.
+   * (Wird von der Kampf-Engine aufgerufen, um Bonusaktionen zu bestimmen)
+   * @returns {string[]} - Ein Array von zusätzlichen Bonusaktionen.
    */
-  getExpertiseCount(level) {
-    if (level < 1) return 0;
-    if (level < 6) return 2; // Stufe 1
-    return 4; // Stufe 6 (erhält 2 weitere)
+  getFastHandsOptions() {
+    // Liest 'thief_fast_hands' aus features.json
+    if (this.hasFeature('thief_fast_hands')) {
+      const mechanics = allFeatures.find(f => f.key === 'thief_fast_hands')?.mechanics;
+      if (mechanics) {
+        return mechanics.options; // ['sleight_of_hand', 'thieves_tools', 'use_an_object']
+      }
+    }
+    return [];
   }
 
-  // --- ARKANER BETRÜGER (ARCANE TRICKSTER) LOGIK ---
+  /**
+   * Prüft auf die 'Meucheln'-Fähigkeit (Assassinate).
+   * (Wird von der Kampf-Engine zu Beginn des Kampfes und bei Angriffen aufgerufena)
+   * @returns {object|null} - Die Mechanik-Regeln oder null.
+   */
+  getAssassinateRules() {
+    if (this.hasFeature('assassin_assassinate')) {
+      const mechanics = allFeatures.find(f => f.key === 'assassin_assassinate')?.mechanics;
+      if (mechanics) {
+        // { advantage_condition: "target_has_not_acted", auto_crit_condition: "target_surprised" }
+        return mechanics;
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Prüft auf die 'Todesstoß'-Fähigkeit (Death Strike).
+   * (Wird von der Kampf-Engine aufgerufen, wenn ein Meuchelmörder-Crit trifft)
+   * @returns {object|null} - Die Mechanik-Regeln oder null.
+   */
+  getDeathStrikeRules() {
+    if (this.hasFeature('assassin_death_strike')) {
+        const mechanics = allFeatures.find(f => f.key === 'assassin_death_strike')?.mechanics;
+        if (mechanics) {
+            // { multiplier: 2, condition: "target_surprised", save_throw: "constitution", ... }
+            return mechanics;
+        }
+    }
+    return null;
+  }
+
+  // --- ARKANER BETRÜGER (Arcane Trickster) ZAUBER-LOGIK ---
+
+  /**
+   * Prüft, ob der Schurke ein Zauberwirker ist (nur Arkaner Betrüger).
+   * @returns {boolean}
+   */
+  isSpellcaster() {
+    return this.hasFeature('arcane_trickster_spellcasting');
+  }
 
   getSpellcastingAbility() {
-    // Nur relevant für Arkaner Betrüger
+    // Arkane Betrüger verwenden Intelligenz
     return 'intelligence';
   }
 
+  getSpellSaveDC() {
+    if (!this.isSpellcaster()) return null;
+    const intMod = getModifier(this.character.abilities.intelligence);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return 8 + profBonus + intMod;
+  }
+
+  getSpellAttackBonus() {
+    if (!this.isSpellcaster()) return null;
+    const intMod = getModifier(this.character.abilities.intelligence);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return profBonus + intMod;
+  }
+
   /**
-   * Holt die Zauberliste für den Arkanen Betrüger.
-   * Regel: Magier-Zauber, hauptsächlich Illusion und Verzauberung.
+   * Ruft die Zauberliste für einen Arkanen Betrüger ab.
+   * Regel: Magier-Zauber, primär aus Illusion und Verzauberung.
+   * @returns {string[]} Array von Zauberschlüsseln.
    */
-  getArcaneTricksterSpells(level) {
-    const maxSpellLevel = this.getArcaneTricksterMaxSpellLevel(level);
+  getLearnableSpells() {
+    if (!this.isSpellcaster()) return [];
     
-    return this.wizardSpells.filter(spell => {
-        if (spell.level === 0) return true; // Alle Zaubertricks sind ok
-        if (spell.level > maxSpellLevel) return false;
-        
-        // Regel: Zauber müssen Illusion oder Verzauberung sein...
-        if (spell.school === 'illusion' || spell.school === 'enchantment') {
-            return true;
-        }
-        
-        // ...AUSSER auf Stufe 3, 8, 14, 20 (freie Wahl)
-        if (level >= 3 || level >= 8 || level >= 14 || level >= 20) {
-            // (Die Logik für die *Anzahl* der freien Zauber müsste hier implementiert werden)
-            return true; // Vereinfachung: Erlaube alle Schulen
-        }
-        return false;
-    });
-  }
-
-  getArcaneTricksterMaxSpellLevel(level) {
-    if (level < 7) return 1;
-    if (level < 13) return 2;
-    if (level < 19) return 3;
-    return 4;
-  }
-  
-  getKnownCantripsCount(level, subclassKey) {
-    if (subclassKey !== 'arcane_trickster' || level < 3) return 0;
-    if (level < 10) return 3; // 2 + Magierhand
-    return 4; // 3 + Magierhand
-  }
-
-  getKnownSpellsCount(level, subclassKey) {
-    if (subclassKey !== 'arcane_trickster') return 0;
-    const entry = TRICKSTER_SPELLS_KNOWN.find(p => p.level === level);
-    return entry ? entry.known : 0;
-  }
-
-  getSpellSlots(level, subclassKey) {
-    if (subclassKey !== 'arcane_trickster' || level < 3) {
-      return {};
-    }
-    const entry = THIRD_CASTER_SLOTS.find(p => p.level === level);
-    return entry ? entry.slots : {};
-  }
-  
-  getSpellSaveDC(character) {
-    if (character.subclassKey !== 'arcane_trickster') return null;
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const intModifier = getModifier(character.abilities.intelligence);
-    return 8 + proficiencyBonus + intModifier;
-  }
-
-  getSpellAttackBonus(character) {
-    if (character.subclassKey !== 'arcane_trickster') return null;
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const intModifier = getModifier(character.abilities.intelligence);
-    return proficiencyBonus + intModifier;
+    const maxLevel = this.character.spellSlots.maxLevel;
+    
+    // 1. Alle Magier-Zauber der erlaubten Schulen
+    const allowedSchoolSpells = spells
+      .filter(s => 
+        s.classes.includes('wizard') &&
+        s.level > 0 && 
+        s.level <= maxLevel &&
+        (s.school === 'illusion' || s.school === 'enchantment')
+      )
+      .map(s => s.key);
+      
+    // 2. Zauber beliebiger Schulen (auf bestimmten Stufen)
+    // (Diese Logik ist, wie beim Mystischen Ritter, komplexer und 
+    // erfordert die Verwaltung eines 'bekannten Zauber'-Buches)
+    
+    // (Vereinfachung für dieses Modul: Wir geben nur die Hauptschulen zurück)
+    return allowedSchoolSpells;
   }
 }

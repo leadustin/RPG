@@ -114,7 +114,7 @@ export class SpellEngine {
 
   /**
    * Führt einen Zauber für einen Wirker aus.
-   * @param {object} caster - Das Charakterobjekt (muss abilities, level, classLogic, spellSlots, sorceryPoints, hp, ac, id, name haben)
+   * @param {object} caster - Das Charakterobjekt (muss ... inventory, concentration haben)
    * @param {string} spellKey - Der Schlüssel des Zaubers (z.b. "fireball").
    * @param {object[]} targets - Ein Array von Ziel-Charakterobjekten.
    * @param {object} options - { metamagic: string, slotLevel: number, protectedTargets: string[], additionalTargetId: string, originPoint: object }
@@ -129,7 +129,21 @@ export class SpellEngine {
     const slotLevel = options.slotLevel || spell.level;
     let logEntries = [`${caster.name} wirkt ${spell.name} (Grad ${slotLevel})!`];
 
+    // --- MODIFIZIERT: Konzentrations-Logik (Teil 1: Prüfen & Brechen) ---
+    const isConcentrationSpell = spell.duration.toLowerCase().includes('konzentration');
+
+    if (isConcentrationSpell && caster.concentration && caster.concentration.spellKey) {
+        logEntries.push(`${caster.name} bricht die Konzentration für ${caster.concentration.spellKey} ab, um ${spell.name} zu wirken.`);
+        // Annahme: Sie haben eine Methode, um alte Statuseffekte zu entfernen
+        if (caster.removeStatus) {
+            caster.removeStatus(caster.concentration.spellKey); 
+        }
+        caster.concentration.spellKey = null;
+    }
+    // --- Ende MODIFIZIERT ---
+
     // 1. Kosten und Ressourcen prüfen (inkl. Materialkomponenten)
+    // --- MODIFIZIERT: checkSpellCost prüft jetzt das Inventar ---
     const costCheck = this.checkSpellCost(caster, spell, slotLevel, options);
     if (!costCheck.success) {
       return { success: false, logs: [costCheck.log] };
@@ -144,6 +158,7 @@ export class SpellEngine {
 
     // 2. Ressourcen verbrauchen (mutiert das caster-Objekt)
     try {
+      // --- MODIFIZIERT: consumeResources verbraucht jetzt Inventargegenstände ---
       this.consumeResources(caster, spell, slotLevel, costCheck.metamagicCost);
     } catch (e) {
       return { success: false, logs: [e.message] };
@@ -196,12 +211,24 @@ export class SpellEngine {
 
     logEntries = [...logEntries, ...spellResult.logs];
     
+    // --- MODIFIZIERT: Konzentrations-Logik (Teil 2: Setzen) ---
+    if (isConcentrationSpell && spellResult.success !== false) { // Nur setzen, wenn Zauber nicht fehlschlug
+        caster.concentration.spellKey = spell.key;
+        logEntries.push(`${caster.name} konzentriert sich nun auf ${spell.name}.`);
+        // Annahme: Sie haben eine Methode, um Statuseffekte anzuwenden
+        if (caster.applyStatus) {
+            caster.applyStatus(spell.key, finalDuration || spell.duration, { isConcentration: true });
+        }
+    }
+    // --- Ende MODIFIZKAITON ---
+    
     // 7. Endergebnis zurückgeben
     return { success: true, logs: logEntries };
   }
 
   /**
    * Prüft Zauberplätze, Zauberpunkte und Materialkosten.
+   * --- MODIFIZIERT ---
    */
   checkSpellCost(caster, spell, slotLevel, options) {
     if (spell.level > 0) {
@@ -210,13 +237,27 @@ export class SpellEngine {
       }
     }
     
-    // Materialkomponenten prüfen
-    if (spell.material_costs && spell.material_costs.consumed) {
-        // HINWEIS: Hier müsste eine Prüfung des Inventars des Casters erfolgen (z.B. caster.inventory.hasItem(value_gp)).
-        // if (!caster.inventory.hasComponent(spell.material_costs.value_gp)) {
-        //    return { success: false, log: `Fehlende Komponente: ${spell.material_costs.description} wird verbraucht und fehlt.` };
-        // }
+    // --- NEU: Materialkomponenten-Prüfung (Inventar) ---
+    // (Annahme: caster.inventory = { "diamond_300gp": 1, "holy_water": 5 })
+    if (spell.material_costs) {
+        // 1. Prüfen, ob eine Komponente VERBRAUCHT wird
+        if (spell.material_costs.consumed) {
+            const componentKey = spell.material_costs.key; // z.B. "diamond_300gp"
+            const requiredAmount = spell.material_costs.amount || 1;
+            
+            if (!caster.inventory || !caster.inventory[componentKey] || caster.inventory[componentKey] < requiredAmount) {
+               return { success: false, log: `Fehlende verbrauchbare Komponente: ${spell.material_costs.description} (benötigt ${requiredAmount}).` };
+            }
+        }
+        // 2. Prüfen, ob eine Komponente (die nicht verbraucht wird) einen Wert hat
+        if (!spell.material_costs.consumed && spell.material_costs.value_gp > 0) {
+             const componentKey = spell.material_costs.key;
+             if (!caster.inventory || !caster.inventory[componentKey] || caster.inventory[componentKey] < 1) {
+                 return { success: false, log: `Erforderliche Komponente fehlt: ${spell.material_costs.description}.` };
+             }
+        }
     }
+    // --- Ende NEU ---
 
     let metamagicCost = 0;
     if (options.metamagic) {
@@ -238,6 +279,7 @@ export class SpellEngine {
 
   /**
    * Verbraucht die Ressourcen beim Wirken.
+   * --- MODIFIZIERT ---
    */
   consumeResources(caster, spell, slotLevel, metamagicCost = 0) {
     if (spell.level > 0) {
@@ -247,10 +289,19 @@ export class SpellEngine {
       caster.sorceryPoints -= metamagicCost;
     }
     
-    // Materialkomponenten verbrauchen (Inventarverwaltung nötig)
+    // --- NEU: Materialkomponenten verbrauchen (Inventar) ---
     if (spell.material_costs && spell.material_costs.consumed) {
-       // Hier müsste der Aufruf zur Inventarverwaltung erfolgen, um die Komponente zu entfernen.
+       const componentKey = spell.material_costs.key;
+       const consumedAmount = spell.material_costs.amount || 1;
+       if (caster.inventory && caster.inventory[componentKey]) {
+           caster.inventory[componentKey] -= consumedAmount;
+           // Optional: Logik zum Entfernen des Items, wenn Menge 0 erreicht
+           if (caster.inventory[componentKey] <= 0) {
+               delete caster.inventory[componentKey];
+           }
+       }
     }
+    // --- Ende NEU ---
   }
   
   /**
@@ -707,4 +758,64 @@ export class SpellEngine {
     
     return { success: false, logs: [`Unbekannte Fähigkeit: ${abilityKey}`] };
   }
+
+  // --- ALLES AB HIER IST NEU (Implementierung von Konzentrationsverlust) ---
+  
+  /**
+   * NEUE FUNKTION: Diese muss von Ihrer Haupt-Spiel-Engine (Game Loop / Combat Manager) 
+   * aufgerufen werden, WENN ein Charakter Schaden erleidet.
+   *
+   * @param {object} character - Der Charakter, der Schaden erleidet (muss .concentration, .abilities, .level, .classLogic haben).
+   * @param {number} damageAmount - Die Höhe des erlittenen Schadens.
+   * @returns {object} { broken: boolean, logs: string[] } - Gibt zurück, ob die Konzentration gebrochen wurde und was passiert ist.
+   */
+  handleTakeDamage(character, damageAmount) {
+    const logs = [];
+    
+    // 1. Prüfen, ob der Charakter sich überhaupt konzentriert.
+    if (!character.concentration || !character.concentration.spellKey) {
+        return { broken: false, logs: [] }; // Nichts zu tun
+    }
+
+    // 2. D&D Regel für Konzentration: SG 10 oder halber Schaden, je nachdem, was höher ist.
+    const saveDC = Math.max(10, Math.floor(damageAmount / 2));
+    const abilityKey = 'constitution'; // Konzentration ist immer Konstitution
+    
+    logs.push(`${character.name} muss einen Konstitutions-Rettungswurf (SG ${saveDC}) für Konzentration ablegen.`);
+
+    // 3. Modifikatoren für den Rettungswurf berechnen
+    const modifier = getModifier(character.abilities[abilityKey]);
+    const proficiencyBonus = getProficiencyBonus(character.level);
+    
+    let proficiency = 0;
+    // Prüfen, ob der Charakter geübt in KO-Rettungswürfen ist
+    if (character.classLogic && character.classLogic.getSavingThrowProficiencies().includes(abilityKey)) {
+        proficiency = proficiencyBonus;
+    }
+    
+    // HINWEIS: Hier könnten Boni von Features (z.B. 'Fokussierte Beschwörung' des Magiers)
+    // oder Zaubern (z.B. 'Segen') hinzugefügt werden.
+
+    // 4. Den Wurf ausführen (nutzt die lokale rollD20 Funktion)
+    const roll = rollD20(); // (Kein Vor-/Nachteil als Standard)
+    const total = roll + modifier + proficiency;
+
+    // 5. Ergebnis prüfen
+    if (total >= saveDC) {
+        logs.push(`${character.name} hält die Konzentration aufrecht! (Wurf ${total} vs SG ${saveDC})`);
+        return { broken: false, logs };
+    } else {
+        const lostSpell = character.concentration.spellKey;
+        logs.push(`${character.name} verliert die Konzentration auf ${lostSpell}! (Wurf ${total} vs SG ${saveDC})`);
+        
+        // 6. Konzentration und Status entfernen
+        character.concentration.spellKey = null;
+        if (character.removeStatus) {
+            character.removeStatus(lostSpell);
+        }
+        
+        return { broken: true, logs };
+    }
+  }
+  // --- Ende NEU ---
 }

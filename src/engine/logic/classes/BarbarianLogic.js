@@ -1,121 +1,123 @@
 import { getModifier, getProficiencyBonus } from '../../../utils/helpers';
+// Wir importieren die features.json, um Subklassen-Mechaniken zu lesen
+import allFeatures from '../../../data/features.json'; 
 
-/**
- * Kapselt die 5E-Logik für die Barbaren-Klasse.
- */
 export class BarbarianLogic {
-  constructor(classData, allFeatures) {
-    this.classData = classData; // Das Barbar-Objekt aus classes.json
-    this.allFeatures = allFeatures; // Die *gesamte* features.json
-  }
-
-  getHitPointsPerLevel() {
-    return 12;
-  }
-
-  getSavingThrowProficiencies() {
-    return this.classData.saving_throws; // ['strength', 'constitution']
-  }
-
-  /**
-   * Holt die Level-basierte Progression für den Kampfrausch.
-   * @param {number} level - Die Stufe des Barbaren
-   * @returns {object} { uses: number | string, damage_bonus: number }
-   */
-  getRageStats(level) {
-    const entry = this.classData.rage_progression.find(p => p.level === level);
-    if (entry) {
-      return { uses: entry.uses, damage_bonus: entry.damage_bonus };
-    }
-    
-    // Falls das Level nicht exakt getroffen wird (z.B. Level 4)
-    // Finde den höchsten Eintrag, der niedriger als das aktuelle Level ist.
-    const progression = this.classData.rage_progression;
-    let currentStats = progression[0];
-    for (let i = 1; i < progression.length; i++) {
-        if (progression[i].level <= level) {
-            currentStats = progression[i];
-        } else {
-            break;
-        }
-    }
-    return { uses: currentStats.uses, damage_bonus: currentStats.damage_bonus };
-  }
-
-  /**
-   * Berechnet die Rüstungsklasse (AC) für 'Ungepanzerte Verteidigung'.
-   * Regel: 10 + Geschicklichkeit-Mod + Konstitution-Mod (wenn keine Rüstung getragen wird)
-   * @param {object} character - Das Charakterobjekt (muss abilities haben)
-   */
-  getUnarmoredDefense(character) {
-    const dexModifier = getModifier(character.abilities.dexterity);
-    const conModifier = getModifier(character.abilities.constitution);
-    return 10 + dexModifier + conModifier;
-  }
   
   /**
-   * Holt die spezifischen Fähigkeiten für die Stufe und Unterklasse.
+   * Erstellt eine Instanz der Barbaren-Logik, die an einen bestimmten Charakter gebunden ist.
+   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
    */
-  getFeaturesForLevel(level, subclassKey) {
-    const features = [];
-    
-    // Basisfähigkeiten des Barbaren
-    const baseFeatures = this.classData.features.filter(f => f.level === level);
-    features.push(...baseFeatures);
+  constructor(character) {
+    this.character = character;
+  }
 
-    // Fähigkeiten der Unterklasse
-    if (subclassKey) {
-      const subclass = this.classData.subclasses.find(sc => sc.key === subclassKey);
-      if (subclass) {
-        const subclassFeatures = subclass.features.filter(f => f.level === level);
-        features.push(...subclassFeatures);
-      }
+  // --- Hilfsmethode ---
+
+  /**
+   * Prüft schnell, ob der Charakter ein bestimmtes Feature besitzt.
+   * @param {string} featureKey - Der Schlüssel des Features (z.B. 'path_of_the_berserker_frenzy').
+   * @returns {boolean}
+   */
+  hasFeature(featureKey) {
+    // Annahme: character.features ist ein Array von Feature-Keys
+    return this.character.features.includes(featureKey);
+  }
+
+  // --- Grundlegende Klassen-Informationen ---
+
+  getSavingThrowProficiencies() {
+    // Barbaren sind in Stärke und Konstitution geübt.
+    return ['strength', 'constitution'];
+  }
+
+  /**
+   * Berechnet die ungepanzerte Verteidigung des Barbaren.
+   * Regel: 10 + GES-Mod + KON-Mod (wenn 'ungepanzerte_verteidigung' vorhanden ist)
+   * @returns {number|null} - Die RK oder null, wenn nicht anwendbar.
+   */
+  getUnarmoredDefense() {
+    if (this.hasFeature('ungepanzerte_verteidigung')) { // Annahme: Key aus classes.json
+      const dexMod = getModifier(this.character.abilities.dexterity);
+      const conMod = getModifier(this.character.abilities.constitution);
+      // (Die Spiel-Engine muss prüfen, ob Rüstung getragen wird)
+      return 10 + dexMod + conMod;
     }
-    return features;
+    return null;
   }
 
-  // --- FÄHIGKEITEN-LOGIK (WIRD VOM KAMPFSYSTEM AUFGERUFEN) ---
+  // --- KAMPFRAUSCH (RAGE) LOGIK ---
 
   /**
-   * Definiert die Effekte von 'Kampfrausch' (Stufe 1).
+   * Ruft die Boni ab, die während des Kampfrauschs aktiv sind.
+   * Wird von der Kampf-Engine aufgerufen, wenn der Charakter in den Kampfrausch verfällt.
+   * @returns {object} - Ein Objekt, das die aktiven Boni beschreibt.
    */
-  applyRageEffects(caster) {
-    const rageStats = this.getRageStats(caster.level);
-    const effects = [
-      { type: 'advantage', on: 'strength_checks' },
-      { type: 'advantage', on: 'strength_saves' },
-      { type: 'damage_bonus', amount: rageStats.damage_bonus, damage_type: 'melee' },
-      { type: 'resistance', damage_type: 'bludgeoning' },
-      { type: 'resistance', damage_type: 'piercing' },
-      { type: 'resistance', damage_type: 'slashing' },
-    ];
-    return effects;
-  }
+  getActiveRageBonuses() {
+    const level = this.character.level;
+    const subclass = this.character.subclass;
+    let bonuses = {
+      advantage_on_str_checks: true,
+      advantage_on_str_saves: true,
+      damage_resistance: ['bludgeoning', 'piercing', 'slashing'],
+      melee_damage_bonus: this.getRageDamageBonus(level)
+    };
 
-  /**
-   * Definiert die Effekte von 'Raserei' (Berserker, Stufe 3).
-   */
-  applyFrenzyEffects(caster) {
-    // Erlaubt einen zusätzlichen Nahkampfangriff als Bonusaktion.
-    // Die 'combatEngine' muss dies prüfen.
-    return { type: 'allow_bonus_action_attack', value: true };
-    // Die 'combatEngine' muss auch den 'Erschöpfung'-Status nach Ende des Kampfrausches anwenden.
-  }
+    // --- Subklassen-Boni hinzufügen ---
 
-  /**
-   * Prüft 'Gefahrensinn' (Stufe 2).
-   * @param {object} effect - Der Effekt, der den Rettungswurf auslöst (z.B. ein Zauber oder eine Falle).
-   * @returns {boolean} True, wenn Vorteil gewährt wird.
-   */
-  hasDangerSenseAdvantage(caster, effect) {
-    // Regel: Vorteil auf GE-RW gegen Effekte, die du sehen kannst.
-    // (Annahme: 'effect' hat einen Typ, z.B. 'trap' or 'spell')
-    // (Annahme: 'caster' hat keinen Status 'blinded', 'deafened', 'incapacitated')
-    const isDisabled = caster.hasStatus('blinded') || caster.hasStatus('deafened') || caster.hasStatus('incapacitated');
-    
-    if (!isDisabled && (effect.type === 'trap' || effect.type === 'spell')) {
-      return true;
+    // Pfad des Totemkriegers (Bär)
+    if (this.hasFeature('totem_warrior_bear_aspect')) { // Annahme: Der Spieler wählt 'bear'
+      bonuses.damage_resistance.push('poison', 'acid', 'cold', 'fire', 'lightning', 'thunder', 'force', 'necrotic', 'radiant');
+      // (Psychic ist absichtlich ausgenommen)
     }
-    return false;
+    
+    // Pfad des Berserkers (Raserei)
+    if (subclass === 'path_of_the_berserker') {
+       // 'Raserei' (Frenzy) erlaubt eine Bonus-Aktion-Attacke.
+       // Dies muss in der Kampf-Engine/Action-Handler implementiert werden,
+       // aber wir können hier ein Flag setzen.
+       bonuses.can_attack_as_bonus_action = true;
+    }
+    
+    // Pfad des Zeloten (Göttliche Raserei)
+    if (this.hasFeature('zealot_divine_fury')) {
+        const featureMechanics = allFeatures.find(f => f.key === 'zealot_divine_fury')?.mechanics;
+        if (featureMechanics) {
+            bonuses.extra_damage_on_first_hit = {
+                dice: featureMechanics.damage_dice, // "1d6"
+                bonus: Math.floor(this.character.level / 2),
+                type: featureMechanics.damage_type, // "radiant_or_necrotic"
+            };
+        }
+    }
+
+    // (Hier könnten weitere Boni von anderen Pfaden hinzugefügt werden)
+
+    return bonuses;
+  }
+
+  /**
+   * Berechnet den Schadensbonus des Kampfrauschs basierend auf dem Level.
+   * @param {number} level - Das Barbaren-Level.
+   * @returns {number} - Der Schadensbonus (z.B. +2, +3, +4).
+   */
+  getRageDamageBonus(level) {
+    if (level >= 16) return 4;
+    if (level >= 9) return 3;
+    return 2;
+  }
+
+  /**
+   * Berechnet die maximale Anzahl der Kampfrausch-Nutzungen pro langer Rast.
+   * @returns {number|string}
+   */
+  getMaxRageUses() {
+    const level = this.character.level;
+    if (level >= 20) return '∞'; // Unbegrenzt auf Stufe 20
+    if (level >= 17) return 6;
+    if (level >= 12) return 5;
+    if (level >= 6) return 4;
+    if (level >= 3) return 3;
+    return 2;
   }
 }

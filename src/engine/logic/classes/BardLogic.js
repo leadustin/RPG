@@ -1,163 +1,183 @@
 import { getModifier, getProficiencyBonus } from '../../../utils/helpers';
+import spells from '../../../data/spells.json';
+// allFeatures wird nicht direkt benötigt, da die Engine die Features des Charakters prüft
 
-// Zauberplätze (Voll-Zauberwirker)
-const FULL_CASTER_SLOTS = [
-  { level: 1, slots: { 1: 2 } }, { level: 2, slots: { 1: 3 } }, { level: 3, slots: { 1: 4, 2: 2 } },
-  { level: 4, slots: { 1: 4, 2: 3 } }, { level: 5, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 6, slots: { 1: 4, 2: 3, 3: 3 } },
-  { level: 7, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } }, { level: 8, slots: { 1: 4, 2: 3, 3: 3, 4: 2 } },
-  { level: 9, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 } }, { level: 10, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 } },
-  { level: 11, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1 } }, { level: 12, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1 } },
-  { level: 13, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1 } }, { level: 14, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1 } },
-  { level: 15, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1 } }, { level: 16, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1 } },
-  { level: 17, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1 } }, { level: 18, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 1, 7: 1, 8: 1, 9: 1 } },
-  { level: 19, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 1, 8: 1, 9: 1 } },
-  { level: 20, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 2, 8: 1, 9: 1 } },
-];
-
-// Bekannte Zauber (Spells Known) Progression für Barden
-const BARD_SPELLS_KNOWN = [
-  { level: 1, known: 4 }, { level: 2, known: 5 }, { level: 3, known: 6 }, { level: 4, known: 7 },
-  { level: 5, known: 8 }, { level: 6, known: 9 }, { level: 7, known: 10 }, { level: 8, known: 11 },
-  { level: 9, known: 12 }, { level: 10, known: 14 }, // (10 + 2 Magische Geheimnisse)
-  { level: 11, known: 15 }, { level: 12, known: 15 },
-  { level: 13, known: 16 }, { level: 14, known: 18 }, // (14 + 4 Magische Geheimnisse)
-  { level: 15, known: 19 }, { level: 16, known: 19 },
-  { level: 17, known: 20 }, { level: 18, known: 22 }, // (15 + 7 Magische Geheimnisse - Annahme, dass 18 'meisterlich' ist)
-  { level: 19, known: 22 }, { level: 20, known: 22 },
-];
-
-/**
- * Kapselt die 5E-Logik für die Barden-Klasse.
- */
 export class BardLogic {
-  constructor(classData, allSpells) {
-    this.classData = classData; // Das Barden-Objekt aus classes.json
-    this.allSpells = allSpells; // Die *gesamte* spells.json
-    
-    // Filtert alle Zauber heraus, die in ihrem "classes"-Array "bard" enthalten
-    this.classSpells = this.allSpells.filter(spell => spell.classes && spell.classes.includes('bard'));
+  
+  /**
+   * Erstellt eine Instanz der Barden-Logik, die an einen bestimmten Charakter gebunden ist.
+   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
+   */
+  constructor(character) {
+    this.character = character;
+    // Ressourcen (z.B. Bardische Inspiration) werden auf dem Charakterobjekt verwaltet
+    // (z.B. character.resources.bardic_inspiration)
   }
 
-  getHitPointsPerLevel() {
-    return 8;
+  /**
+   * Prüft schnell, ob der Charakter ein bestimmtes Feature besitzt.
+   * @param {string} featureKey - Der Schlüssel des Features.
+   * @returns {boolean}
+   */
+  hasFeature(featureKey) {
+    return this.character.features.includes(featureKey);
   }
+
+  // --- Grundlegende Klassen-Informationen ---
+
+  getSavingThrowProficiencies() {
+    // Barden sind in Geschicklichkeit und Charisma geübt.
+    return ['dexterity', 'charisma'];
+  }
+
+  // --- Zauber-Logik (Bekannte Zauber) ---
 
   getSpellcastingAbility() {
     return 'charisma';
   }
-  
-  getSavingThrowProficiencies() {
-    return this.classData.saving_throws; // ['dexterity', 'charisma']
+
+  getSpellSaveDC() {
+    const chaMod = getModifier(this.character.abilities.charisma);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return 8 + profBonus + chaMod;
+  }
+
+  getSpellAttackBonus() {
+    const chaMod = getModifier(this.character.abilities.charisma);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return profBonus + chaMod;
   }
 
   /**
-   * Holt die *komplette* Barden-Zauberliste (gefiltert).
-   * Ein Barde wählt aus dieser Liste seine "bekannten Zauber".
+   * Ruft die Anzahl der Zauber ab, die ein Barde *kennen* kann.
+   * (Barden bereiten nicht vor, sie haben eine feste Liste bekannter Zauber).
+   * @returns {number}
    */
-  getAllClassSpells() {
-    return this.classSpells;
+  getKnownSpellsCount() {
+    const level = this.character.level;
+    // Standard Barden-Zauberprogression
+    if (level === 1) return 4;
+    if (level === 2) return 5;
+    if (level === 3) return 6;
+    if (level === 4) return 7;
+    if (level === 5) return 8;
+    if (level === 6) return 9;
+    if (level === 7) return 10;
+    if (level === 8) return 11;
+    if (level === 9) return 12;
+    if (level === 10) return 14; // Inkl. 2 Magische Geheimnisse
+    if (level === 11) return 15;
+    if (level === 12) return 15;
+    if (level === 13) return 16;
+    if (level === 14) return 18; // Inkl. 2 Magische Geheimnisse
+    if (level === 15) return 19;
+    if (level === 16) return 19;
+    if (level === 17) return 20;
+    if (level === 18) return 22; // Inkl. 2 Magische Geheimnisse
+    if (level >= 19) return 22;
+    return 0;
   }
-  
+
   /**
-   * Holt Zauber von *jeder* Klasse für "Magische Geheimnisse" (Stufe 10+).
-   * @param {number} maxLevel - Der maximale Zaubergrad, den der Barde wirken kann.
+   * Ruft die *gesamte* Liste der Zauber ab, aus denen der Barde
+   * beim Stufenaufstieg wählen kann.
+   * @returns {string[]} Array von Zauberschlüsseln.
    */
-  getMagicalSecretsSpells(maxLevel) {
-    return this.allSpells.filter(spell => spell.level <= maxLevel);
-  }
-
-  getCantrips() {
-    return this.classSpells.filter(spell => spell.level === 0);
-  }
-
   getLearnableSpells() {
-     return this.classSpells.filter(spell => spell.level > 0);
-  }
-
-  /**
-   * Gibt die Anzahl der Zaubertricks zurück, die auf einer Stufe bekannt sind.
-   */
-  getKnownCantripsCount(level) {
-    if (level < 4) return 2;
-    if (level < 10) return 3;
-    return 4;
-  }
-
-  /**
-   * Gibt die Gesamtanzahl der Zauber zurück, die auf einer Stufe bekannt sind.
-   * (Beinhaltet "Magische Geheimnisse" auf Stufe 10, 14, 18)
-   */
-  getKnownSpellsCount(level) {
-    const entry = BARD_SPELLS_KNOWN.find(p => p.level === level);
-    return entry ? entry.known : 0;
-  }
-
-  getSpellSlots(level) {
-    const entry = FULL_CASTER_SLOTS.find(p => p.level === level);
-    return entry ? entry.slots : {};
-  }
-
-  getSpellSaveDC(character) {
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const chaModifier = getModifier(character.abilities.charisma);
-    return 8 + proficiencyBonus + chaModifier;
-  }
-
-  getSpellAttackBonus(character) {
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const chaModifier = getModifier(character.abilities.charisma);
-    return proficiencyBonus + chaModifier;
-  }
-
-  // --- FÄHIGKEITEN-LOGIK ---
-
-  /**
-   * Gibt die Anzahl der "Bardische Inspiration"-Nutzungen zurück.
-   * Regel: Charisma-Modifikator (min. 1).
-   */
-  getBardicInspirationUses(character) {
-      const chaModifier = getModifier(character.abilities.charisma);
-      return Math.max(1, chaModifier);
-  }
-
-  /**
-   * Gibt den Würfeltyp für "Bardische Inspiration" zurück.
-   * (W6, W8, W10, W12)
-   */
-  getBardicInspirationDie(level) {
-    if (level < 5) return '1d6';
-    if (level < 10) return '1d8';
-    if (level < 15) return '1d10';
-    return '1d12';
+    const maxLevel = this.character.spellSlots.maxLevel;
+    
+    // Annahme: spells.json verwendet "caster_class": "bard"
+    return spells
+      .filter(s => s.caster_class === 'bard' && s.level > 0 && s.level <= maxLevel)
+      .map(s => s.key);
   }
   
   /**
-   * Gibt den Heil-Würfel für "Lied der Erholung" (Stufe 2) zurück.
-   * (Nutzt denselben Würfel wie Bardische Inspiration)
+   * Ruft die Anzahl der "Magischen Geheimnisse"-Auswahlen ab,
+   * die ein Barde auf *diesem* Level erhält.
+   * (Wird von der Level-Up-Engine aufgerufen).
+   * @returns {number}
    */
-  getSongOfRestDie(level) {
-     if (level < 2) return null;
-     // Die Beschreibung in classes.json (Stufe 6: W8) ist inkonsistent mit Stufe 5 (W8)
-     // 5E-Regel: W6 (Lvl 2), W8 (Lvl 9), W10 (Lvl 13), W12 (Lvl 17)
-     // Wir folgen der 5E-Regel:
-     if (level < 9) return '1d6';
-     if (level < 13) return '1d8';
-     if (level < 17) return '1d10';
-     return '1d12';
+  getMagicalSecretsPicksForLevel() {
+    const level = this.character.level;
+    let picks = 0;
+    
+    // Basis-Klasse
+    if (level === 10 || level === 14 || level === 18) {
+      picks += 2;
+    }
+    
+    // Subklasse: Kolleg des Wissens
+    if (level === 6 && this.hasFeature('college_of_lore_additional_magical_secrets')) { // Annahme: Key aus features.json
+      picks += 2;
+    }
+    
+    return picks;
   }
 
-  getFeaturesForLevel(level, subclassKey) {
-    const features = [];
-    const baseFeatures = this.classData.features.filter(f => f.level === level);
-    features.push(...baseFeatures);
+  // --- BARDISCHE INSPIRATION LOGIK ---
 
-    if (subclassKey) {
-      const subclass = this.classData.subclasses.find(sc => sc.key === subclassKey);
-      if (subclass) {
-        const subclassFeatures = subclass.features.filter(f => f.level === level);
-        features.push(...subclassFeatures);
+  /**
+   * Ruft den Würfeltyp für die Bardische Inspiration ab.
+   * @returns {string} - Die Schadenswürfel-Notation (z.B. "1d6", "1d8").
+   */
+  getInspirationDice() {
+    const level = this.character.level;
+    // Gelesen aus classes.json Feature-Liste
+    if (level >= 15) return '1d12';
+    if (level >= 10) return '1d10';
+    if (level >= 5) return '1d8';
+    return '1d6';
+  }
+
+  /**
+   * Ruft die maximale Anzahl der Inspiration-Nutzungen ab.
+   * Regel: Charisma-Modifikator (min. 1).
+   * @returns {number}
+   */
+  getMaxInspirationUses() {
+    return Math.max(1, getModifier(this.character.abilities.charisma));
+  }
+
+  /**
+   * Wird aufgerufen, wenn der Barde eine kurze Rast beendet.
+   */
+  onShortRest() {
+    // 'Quelle der Inspiration' (Stufe 5)
+    if (this.hasFeature('quelle_der_inspiration')) {
+      // Inspiration auffüllen
+      if (this.character.resources) {
+        this.character.resources.bardic_inspiration = this.getMaxInspirationUses();
       }
     }
-    return features;
+  }
+  
+  /**
+   * Wird aufgerufen, wenn der Barde eine lange Rast beendet.
+   */
+  onLongRest() {
+    // Inspiration immer auffüllen
+    if (this.character.resources) {
+      this.character.resources.bardic_inspiration = this.getMaxInspirationUses();
+    }
+  }
+
+  // --- SUBKLASSEN-LOGIK (Signale an die Kampf-Engine) ---
+
+  /**
+   * Prüft, ob der Barde die Reaktion "Schneidende Worte" (Cutting Words) nutzen kann.
+   * @returns {boolean}
+   */
+  canUseCuttingWords() {
+    return this.hasFeature('schneidende_worte'); // Key aus classes.json
+  }
+
+  /**
+   * Prüft, ob der Barde "Kampfinspiration" (Combat Inspiration) hat.
+   * (Signalisiert der Engine, dass Inspirationswürfel für Schaden/RK genutzt werden können)
+   * @returns {boolean}
+   */
+  hasCombatInspiration() {
+    return this.hasFeature('kampfinspiration'); // Key aus classes.json
   }
 }

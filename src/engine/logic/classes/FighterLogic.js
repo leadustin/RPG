@@ -1,185 +1,172 @@
 import { getModifier, getProficiencyBonus } from '../../../utils/helpers';
+import allFeatures from '../../../data/features.json'; 
+// (spells.json wird für den Mystischen Ritter benötigt)
+import spells from '../../../data/spells.json'; 
 
-// Zauberplätze (Drittel-Zauberwirker - Mystischer Ritter, Arkaner Trickster)
-const THIRD_CASTER_SLOTS = [
-  { level: 1, slots: {} }, { level: 2, slots: {} },
-  { level: 3, slots: { 1: 2 } }, { level: 4, slots: { 1: 3 } },
-  { level: 5, slots: { 1: 3 } }, { level: 6, slots: { 1: 3 } },
-  { level: 7, slots: { 1: 4, 2: 2 } }, { level: 8, slots: { 1: 4, 2: 2 } },
-  { level: 9, slots: { 1: 4, 2: 2 } }, { level: 10, slots: { 1: 4, 2: 3 } },
-  { level: 11, slots: { 1: 4, 2: 3 } }, { level: 12, slots: { 1: 4, 2: 3 } },
-  { level: 13, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 14, slots: { 1: 4, 2: 3, 3: 2 } },
-  { level: 15, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 16, slots: { 1: 4, 2: 3, 3: 3 } },
-  { level: 17, slots: { 1: 4, 2: 3, 3: 3 } }, { level: 18, slots: { 1: 4, 2: 3, 3: 3 } },
-  { level: 19, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } }, { level: 20, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } },
-];
-
-/**
- * Kapselt die 5E-Logik für die Kämpfer-Klasse.
- */
 export class FighterLogic {
-  constructor(classData, allSpells, allFeatures) {
-    this.classData = classData; // Das Kämpfer-Objekt aus classes.json
-    this.allSpells = allSpells;
-    this.allFeatures = allFeatures;
-    
-    // Mystische Ritter lernen aus der Magier-Liste
-    this.wizardSpells = this.allSpells.filter(spell => spell.classes && spell.classes.includes('wizard'));
+  
+  /**
+   * Erstellt eine Instanz der Kämpfer-Logik, die an einen bestimmten Charakter gebunden ist.
+   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
+   */
+  constructor(character) {
+    this.character = character;
+
+    // --- Feature-spezifische Ressourcen initialisieren ---
+
+    // Für 'battle_master_combat_superiority'
+    this.superiorityDice = {
+      current: 0,
+      max: 0,
+      dice: '1d8' // Standard
+    };
+
+    this.initializeFeatureResources();
   }
 
-  getHitPointsPerLevel() {
-    return 10;
+  /**
+   * Initialisiert Ressourcen, die von Features gewährt werden.
+   */
+  initializeFeatureResources() {
+    // Initialisiere Überlegenheitswürfel für Kampfmeister
+    if (this.hasFeature('battle_master_combat_superiority')) {
+      let diceCount = 0;
+      let diceType = '1d8';
+      
+      // Skalierung der Würfelanzahl
+      if (this.character.level >= 15) diceCount = 6;
+      else if (this.character.level >= 7) diceCount = 5;
+      else diceCount = 4;
+      
+      // Skalierung des Würfeltyps
+      if (this.hasFeature('battle_master_improved_combat_superiority_w12')) diceType = '1d12'; // Annahme für Stufe 18
+      else if (this.hasFeature('battle_master_improved_combat_superiority')) diceType = '1d10';
+
+      this.superiorityDice = {
+        current: diceCount,
+        max: diceCount,
+        dice: diceType
+      };
+    }
   }
+
+  /**
+   * Prüft schnell, ob der Charakter ein bestimmtes Feature besitzt.
+   * @param {string} featureKey - Der Schlüssel des Features.
+   * @returns {boolean}
+   */
+  hasFeature(featureKey) {
+    return this.character.features.includes(featureKey);
+  }
+
+  // --- Grundlegende Klassen-Informationen ---
 
   getSavingThrowProficiencies() {
-    return this.classData.saving_throws; // ['strength', 'constitution']
+    // Kämpfer sind in Stärke und Konstitution geübt.
+    return ['strength', 'constitution'];
+  }
+
+  // --- KAMPF-LOGIK (Wird von der Kampf-Engine aufgerufen) ---
+
+  /**
+   * Ruft die Anzahl der Angriffe ab, die der Kämpfer mit einer Angriffsaktion ausführen kann.
+   * @returns {number}
+   */
+  getExtraAttackCount() {
+    const level = this.character.level;
+    if (level >= 20) return 4;
+    if (level >= 11) return 3;
+    if (level >= 5) return 2;
+    return 1;
   }
 
   /**
-   * Holt die spezifischen Fähigkeiten für die Stufe und Unterklasse.
+   * Ruft den verbesserten kritischen Trefferbereich für Champions ab.
+   * @returns {number} - Die Zahl, bei der ein kritischer Treffer beginnt (z.B. 19 oder 18).
    */
-  getFeaturesForLevel(level, subclassKey) {
-    const features = [];
-    const baseFeatures = this.classData.features.filter(f => f.level === level);
-    features.push(...baseFeatures);
-
-    if (subclassKey) {
-      const subclass = this.classData.subclasses.find(sc => sc.key === subclassKey);
-      if (subclass) {
-        const subclassFeatures = subclass.features.filter(f => f.level === level);
-        features.push(...subclassFeatures);
-      }
+  getCriticalHitRange() {
+    // Liest die 'champion'-Features aus features.json
+    if (this.hasFeature('champion_superior_critical')) {
+      return 18;
     }
-    return features;
-  }
-  
-  /**
-   * Holt die verfügbaren Kampfstile für einen Kämpfer.
-   */
-  getFightingStyles() {
-      return this.allFeatures.filter(f => f.classes && f.classes.includes('fighter') && f.key.startsWith('fighting_style_'));
-  }
-
-  // --- FÄHIGKEITEN-LOGIK ---
-
-  /**
-   * Berechnet die Heilung für "Zweite Luft" (Stufe 1).
-   * Regel: 1W10 + Kämpfer-Level.
-   */
-  getSecondWindHeal(level) {
-    const roll = Math.floor(Math.random() * 10) + 1;
-    return roll + level;
+    if (this.hasFeature('champion_improved_critical')) {
+      return 19;
+    }
+    return 20; // Standard
   }
 
   /**
-   * Gibt die Anzahl der Nutzungen für "Tatendrang" (Stufe 2) zurück.
+   * Wird aufgerufen, wenn der Kämpfer eine kurze oder lange Rast beendet.
+   * Füllt Ressourcen wie 'Tatendrang' und 'Überlegenheitswürfel' auf.
    */
-  getActionSurgeUses(level) {
-    if (level < 2) return 0;
-    if (level < 17) return 1;
-    return 2; // Ab Stufe 17 (obwohl classes.json dies nicht erwähnt, ist es 5E-Regel)
+  onShortRest() {
+    // Tatendrang (Action Surge) auffüllen
+    // (Annahme: character.resources.action_surge)
+    
+    // Überlegenheitswürfel (Battle Master) auffüllen
+    if (this.hasFeature('battle_master_combat_superiority')) {
+      this.superiorityDice.current = this.superiorityDice.max;
+    }
+    
+    // Zweite Luft (Second Wind) auffüllen
+    // (Annahme: character.resources.second_wind)
   }
 
-  /**
-   * Gibt die Anzahl der Nutzungen für "Unbezwingbar" (Stufe 9) zurück.
-   */
-  getIndomitableUses(level) {
-    if (level < 9) return 0;
-    if (level < 13) return 1;
-    if (level < 17) return 2;
-    return 3; // Ab Stufe 17 (classes.json erwähnt nur 2 Nutzungen auf Lvl 14)
-  }
+  // --- MYSTISCHER RITTER (Eldritch Knight) ZAUBER-LOGIK ---
 
   /**
-   * Gibt die Anzahl der Angriffe für die Angriffsaktion zurück.
+   * Prüft, ob der Kämpfer ein Zauberwirker ist (nur Mystischer Ritter).
+   * @returns {boolean}
    */
-  getExtraAttacks(level) {
-    if (level < 5) return 1;
-    if (level < 11) return 2;
-    if (level < 20) return 3;
-    return 4; // Stufe 20 (classes.json erwähnt dies nicht, aber es ist die 5E-Regel)
+  isSpellcaster() {
+    return this.hasFeature('eldritch_knight_spellcasting');
   }
-  
-  // --- MYSTISCHER RITTER (ELDRITCH KNIGHT) LOGIK ---
 
   getSpellcastingAbility() {
-    // Nur relevant für Mystischer Ritter
+    // Mystische Ritter verwenden Intelligenz
     return 'intelligence';
   }
 
+  getSpellSaveDC() {
+    if (!this.isSpellcaster()) return null;
+    const intMod = getModifier(this.character.abilities.intelligence);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return 8 + profBonus + intMod;
+  }
+
+  getSpellAttackBonus() {
+    if (!this.isSpellcaster()) return null;
+    const intMod = getModifier(this.character.abilities.intelligence);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return profBonus + intMod;
+  }
+
   /**
-   * Holt die Zauberliste für den Mystischen Ritter.
-   * Regel: Magier-Zauber, hauptsächlich Bann- (Abjuration) und Hervorrufungs- (Evocation) Schulen.
+   * Ruft die Zauberliste für einen Mystischen Ritter ab.
+   * Regel: Magier-Zauber, primär aus Bannmagie (Abjuration) und Hervorrufung (Evocation).
+   * @returns {string[]} Array von Zauberschlüsseln.
    */
-  getEldritchKnightSpells(level) {
-    const maxSpellLevel = this.getEldritchKnightMaxSpellLevel(level);
+  getPreparableSpells() {
+    if (!this.isSpellcaster()) return [];
     
-    return this.wizardSpells.filter(spell => {
-        if (spell.level === 0) return true; // Alle Zaubertricks sind ok
-        if (spell.level > maxSpellLevel) return false;
-        
-        // Regel: Zauber müssen Bann oder Hervorrufung sein...
-        if (spell.school === 'abjuration' || spell.school === 'evocation') {
-            return true;
-        }
-        
-        // ...AUSSER auf Stufe 3, 8, 14, 20 (freie Wahl)
-        if (level >= 3 || level >= 8 || level >= 14 || level >= 20) {
-            // (Die Logik für die *Anzahl* der freien Zauber müsste hier implementiert werden)
-            return true; // Vereinfachung: Erlaube alle Schulen
-        }
-        return false;
-    });
-  }
-
-  getEldritchKnightMaxSpellLevel(level) {
-    if (level < 7) return 1;
-    if (level < 13) return 2;
-    if (level < 19) return 3;
-    return 4;
-  }
-  
-  getKnownCantripsCount(level) {
-     // Nur für Mystischer Ritter
-    if (level < 3) return 0;
-    if (level < 10) return 2;
-    return 3;
-  }
-
-  getKnownSpellsCount(level) {
-    // Nur für Mystischer Ritter
-    if (level < 3) return 0;
-    if (level === 3) return 3;
-    if (level < 7) return 4;
-    if (level < 10) return 5;
-    if (level < 13) return 6;
-    if (level < 16) return 7;
-    if (level < 19) return 8;
-    return 10; // (Werte variieren je nach Quelle, dies ist eine Standard-Progression)
-  }
-
-  /**
-   * Gibt die Zauberplätze für den Mystischen Ritter (1/3 Caster) zurück.
-   */
-  getSpellSlots(level, subclassKey) {
-    if (subclassKey !== 'eldritch_knight' || level < 3) {
-      return {};
-    }
-    const entry = THIRD_CASTER_SLOTS.find(p => p.level === level);
-    return entry ? entry.slots : {};
-  }
-  
-  getSpellSaveDC(character) {
-    if (character.subclassKey !== 'eldritch_knight') return null;
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const intModifier = getModifier(character.abilities.intelligence);
-    return 8 + proficiencyBonus + intModifier;
-  }
-
-  getSpellAttackBonus(character) {
-    if (character.subclassKey !== 'eldritch_knight') return null;
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const intModifier = getModifier(character.abilities.intelligence);
-    return proficiencyBonus + intModifier;
+    const maxLevel = this.character.spellSlots.maxLevel;
+    
+    // 1. Alle Magier-Zauber der erlaubten Schulen
+    const allowedSchoolSpells = spells
+      .filter(s => 
+        s.classes.includes('wizard') &&
+        s.level > 0 && 
+        s.level <= maxLevel &&
+        (s.school === 'abjuration' || s.school === 'evocation')
+      )
+      .map(s => s.key);
+      
+    // 2. Zauber beliebiger Schulen (auf bestimmten Stufen)
+    // Regel: Auf Stufe 3, 8, 14, 20 können sie einen Zauber einer *beliebigen* Schule lernen.
+    // (Diese Logik ist komplexer und erfordert die Verwaltung eines 'bekannten Zauber'-Buches
+    // statt nur 'vorbereitbarer' Zauber. Fürs Erste filtern wir die Hauptschulen.)
+    
+    // (Vereinfachung für dieses Modul: Wir geben nur die Hauptschulen zurück)
+    return allowedSchoolSpells;
   }
 }

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useGameState } from "./hooks/useGameState";
+import useGameState from './hooks/useGameState';
 import { StartScreen } from "./components/start_screen/StartScreen";
 import { CharacterCreationScreen } from "./components/character_creation/CharacterCreationScreen";
 import GameView from "./components/game_view/GameView";

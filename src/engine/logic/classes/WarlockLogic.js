@@ -1,165 +1,186 @@
 import { getModifier, getProficiencyBonus } from '../../../utils/helpers';
+import spells from '../../../data/spells.json';
+import allFeatures from '../../../data/features.json'; 
 
-// Bekannte Zauber (Spells Known) Progression für Hexenmeister
-const WARLOCK_SPELLS_KNOWN = [
-  { level: 1, known: 2 }, { level: 2, known: 3 }, { level: 3, known: 4 }, { level: 4, known: 5 },
-  { level: 5, known: 6 }, { level: 6, known: 7 }, { level: 7, known: 8 }, { level: 8, known: 9 },
-  { level: 9, known: 10 }, { level: 10, known: 10 }, { level: 11, known: 11 }, { level: 12, known: 11 },
-  { level: 13, known: 12 }, { level: 14, known: 12 }, { level: 15, known: 13 }, { level: 16, known: 13 },
-  { level: 17, known: 14 }, { level: 18, known: 14 }, { level: 19, known: 15 }, { level: 20, known: 15 },
-];
-
-// Paktmagie (Pact Magic) Progression für Hexenmeister
-// Dies definiert die *Anzahl* der Plätze und den *Grad* dieser Plätze.
-const WARLOCK_PACT_SLOTS = [
-  { level: 1, slots: 1, slotLevel: 1 }, { level: 2, slots: 2, slotLevel: 1 },
-  { level: 3, slots: 2, slotLevel: 2 }, { level: 4, slots: 2, slotLevel: 2 },
-  { level: 5, slots: 2, slotLevel: 3 }, { level: 6, slots: 2, slotLevel: 3 },
-  { level: 7, slots: 2, slotLevel: 4 }, { level: 8, slots: 2, slotLevel: 4 },
-  { level: 9, slots: 2, slotLevel: 5 }, { level: 10, slots: 2, slotLevel: 5 },
-  { level: 11, slots: 3, slotLevel: 5 }, { level: 12, slots: 3, slotLevel: 5 },
-  { level: 13, slots: 3, slotLevel: 5 }, { level: 14, slots: 3, slotLevel: 5 },
-  { level: 15, slots: 3, slotLevel: 5 }, { level: 16, slots: 3, slotLevel: 5 },
-  { level: 17, slots: 4, slotLevel: 5 }, { level: 18, slots: 4, slotLevel: 5 },
-  { level: 19, slots: 4, slotLevel: 5 }, { level: 20, slots: 4, slotLevel: 5 },
-];
-
-/**
- * Kapselt die 5E-Logik für die Hexenmeister-Klasse.
- */
 export class WarlockLogic {
-  constructor(classData, allSpells) {
-    this.classData = classData; // Das Hexenmeister-Objekt aus classes.json
-    this.allSpells = allSpells; // Die *gesamte* spells.json
-    
-    // Filtert alle Zauber heraus, die in ihrem "classes"-Array "warlock" enthalten
-    this.classSpells = this.allSpells.filter(spell => spell.classes && spell.classes.includes('warlock'));
+  
+  /**
+   * Erstellt eine Instanz der Hexenmeister-Logik, die an einen bestimmten Charakter gebunden ist.
+   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
+   */
+  constructor(character) {
+    this.character = character;
+    // Paktmagie-Plätze werden direkt auf dem Charakterobjekt verwaltet
+    // (z.B. character.resources.pact_magic_slots)
   }
 
-  getHitPointsPerLevel() {
-    return 8;
+  /**
+   * Prüft schnell, ob der Charakter ein bestimmtes Feature besitzt.
+   * @param {string} featureKey - Der Schlüssel des Features.
+   * @returns {boolean}
+   */
+  hasFeature(featureKey) {
+    return this.character.features.includes(featureKey);
   }
+
+  // --- Grundlegende Klassen-Informationen ---
+
+  getSavingThrowProficiencies() {
+    // Hexenmeister sind in Weisheit und Charisma geübt.
+    return ['wisdom', 'charisma'];
+  }
+
+  // --- Zauber-Logik (Paktmagie) ---
 
   getSpellcastingAbility() {
     return 'charisma';
   }
-  
-  getSavingThrowProficiencies() {
-    return this.classData.saving_throws; // ['wisdom', 'charisma']
+
+  getSpellSaveDC() {
+    const chaMod = getModifier(this.character.abilities.charisma);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return 8 + profBonus + chaMod;
+  }
+
+  getSpellAttackBonus() {
+    const chaMod = getModifier(this.character.abilities.charisma);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return profBonus + chaMod;
   }
 
   /**
-   * Holt die *komplette* Hexenmeister-Zauberliste (gefiltert).
-   * Ein Hexenmeister wählt aus dieser Liste seine "bekannten Zauber".
+   * Ruft die Anzahl der bekannten Zauber des Hexenmeisters ab.
+   * @returns {number}
    */
-  getAllClassSpells() {
-    return this.classSpells;
+  getKnownSpellsCount() {
+    const level = this.character.level;
+    // Standard Hexenmeister-Zauberprogression
+    if (level === 1) return 2;
+    if (level === 2) return 3;
+    if (level === 3) return 4;
+    if (level === 4) return 5;
+    if (level === 5) return 6;
+    if (level === 6) return 7;
+    if (level === 7) return 8;
+    if (level === 8) return 9;
+    if (level === 9) return 10;
+    if (level === 10) return 10;
+    if (level <= 12) return 11;
+    if (level <= 14) return 12;
+    if (level <= 16) return 13;
+    if (level <= 18) return 14;
+    if (level >= 19) return 15;
+    return 0;
   }
 
-  getCantrips() {
-    return this.classSpells.filter(spell => spell.level === 0);
-  }
-
+  /**
+   * Ruft die *gesamte* Liste der Zauber ab, aus denen der Hexenmeister
+   * beim Stufenaufstieg wählen kann.
+   * @returns {string[]} Array von Zauberschlüsseln.
+   */
   getLearnableSpells() {
-     // Hexenmeister-Paktzauber können nur bis Grad 5 gehen
-     return this.classSpells.filter(spell => spell.level > 0 && spell.level <= 5);
+    const maxLevel = this.getPactSlotLevel(); // Hexenmeister können nur bis zu ihrem Pakt-Grad lernen
+    
+    // 1. Standard-Hexenmeister-Liste
+    const warlockSpells = spells
+      .filter(s => s.classes.includes('warlock') && s.level > 0 && s.level <= maxLevel)
+      .map(s => s.key);
+      
+    // 2. Erweiterte Zauberliste des Schutzpatrons
+    const patronSpells = this.getPatronExpandedSpells(maxLevel);
+    
+    // Duplikate entfernen und zurückgeben
+    return [...new Set([...warlockSpells, ...patronSpells])];
   }
 
   /**
-   * Gibt die Anzahl der Zaubertricks zurück, die auf einer Stufe bekannt sind.
+   * Ruft die erweiterten Zauber des Schutzpatrons ab.
+   * ANNAHME: spells.json enthält Einträge wie:
+   * { "key": "burning_hands", ..., "patron_spell": { "patron": "the_fiend", "level": 1 } }
+   * @param {number} maxLevel - Der maximale Zaubergrad, den der Hexenmeister wirken kann.
+   * @returns {string[]}
    */
-  getKnownCantripsCount(level) {
-    if (level < 4) return 2;
-    if (level < 10) return 3;
-    return 4;
+  getPatronExpandedSpells(maxLevel) {
+    if (!this.character.subclass) return [];
+    
+    return spells
+      .filter(s => 
+        s.patron_spell &&
+        s.patron_spell.patron === this.character.subclass &&
+        s.patron_spell.level <= maxLevel
+      )
+      .map(s => s.key);
+  }
+
+  // --- PAKTMAGIE-LOGIK ---
+
+  /**
+   * Ruft die Anzahl der Paktmagie-Plätze ab.
+   * @returns {number}
+   */
+  getPactSlotCount() {
+    const level = this.character.level;
+    if (level === 1) return 1;
+    if (level <= 10) return 2;
+    if (level <= 16) return 3;
+    if (level >= 17) return 4;
+    return 0;
   }
 
   /**
-   * Gibt die Gesamtanzahl der Zauber zurück, die auf einer Stufe bekannt sind.
-   * (Mystisches Arkanum (Stufe 6-9 Zauber) wird separat gehandhabt)
+   * Ruft den Grad (Level) der Paktmagie-Plätze ab.
+   * @returns {number}
    */
-  getKnownSpellsCount(level) {
-    const entry = WARLOCK_SPELLS_KNOWN.find(p => p.level === level);
-    return entry ? entry.known : 0;
+  getPactSlotLevel() {
+    const level = this.character.level;
+    if (level <= 2) return 1;
+    if (level <= 4) return 2;
+    if (level <= 6) return 3;
+    if (level <= 8) return 4;
+    if (level >= 9) return 5;
+    return 1;
   }
 
   /**
-   * Gibt die Pakt-Zauberplätze zurück (einzigartig für Hexenmeister).
-   * @param {number} level - Die Stufe des Hexenmeisters
-   * @returns {object} { slots: number, slotLevel: number }
+   * Wird aufgerufen, wenn der Hexenmeister eine kurze Rast beendet.
+   * Füllt alle Paktmagie-Plätze auf.
    */
-  getPactSpellSlots(level) {
-    const entry = WARLOCK_PACT_SLOTS.find(p => p.level === level);
-    return entry ? { slots: entry.slots, slotLevel: entry.slotLevel } : { slots: 0, slotLevel: 0 };
-  }
-
-  /**
-   * HINWEIS: 'getSpellSlots' (Plural) gibt die Standard-Tabelle zurück,
-   * die für den Hexenmeister NICHT verwendet wird, außer zur Kompatibilität.
-   * Verwende 'getPactSpellSlots' für die Logik.
-   */
-  getSpellSlots(level) {
-    // Diese Methode ist für Hexenmeister-Paktmagie irrelevant,
-    // aber wir implementieren sie, falls die UI sie erwartet.
-    const pactInfo = this.getPactSpellSlots(level);
-    if (pactInfo.slotLevel > 0) {
-      // Erzeugt ein Objekt wie { 5: 2 } (für Stufe 9)
-      return { [pactInfo.slotLevel]: pactInfo.slots };
+  onShortRest() {
+    // Paktmagie auffüllen
+    // (Annahme: character.resources.pact_magic_slots)
+    if (this.character.resources) {
+      this.character.resources.pact_magic_slots = this.getPactSlotCount();
     }
-    return {};
-  }
-  
-  /**
-   * Holt "Mystisches Arkanum" (Stufe 6, 7, 8, 9 Zauber).
-   * Diese sind 1x pro langer Rast nutzbar und sind *keine* Paktzauber.
-   */
-  getMysticArcanum(level) {
-    const arcanums = {};
-    if (level >= 11) arcanums[6] = 1;
-    if (level >= 13) arcanums[7] = 1;
-    if (level >= 15) arcanums[8] = 1;
-    if (level >= 17) arcanums[9] = 1;
-    return arcanums;
   }
 
-  getSpellSaveDC(character) {
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const chaModifier = getModifier(character.abilities.charisma);
-    return 8 + proficiencyBonus + chaModifier;
-  }
-
-  getSpellAttackBonus(character) {
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const chaModifier = getModifier(character.abilities.charisma);
-    return proficiencyBonus + chaModifier;
-  }
+  // --- MYSTISCHE ANRUFUNGEN (Eldritch Invocations) ---
 
   /**
-   * Gibt die Anzahl der Mystischen Anrufungen (Invocations) zurück.
+   * Ruft alle "Mystischen Anrufungen" ab, die der Charakter gelernt hat.
+   * (Wird von der UI/Kampf-Engine aufgerufen)
+   * @returns {object[]} Array von Feature-Objekten.
    */
-  getInvocationsKnownCount(level) {
-    if (level < 2) return 0;
-    if (level < 5) return 2;
-    if (level < 7) return 3;
-    if (level < 9) return 4;
-    if (level < 12) return 5;
-    if (level < 15) return 6;
-    if (level < 18) return 7;
-    return 8;
+  getAvailableInvocations() {
+    // Filtert alle gelernten Features, die vom Typ 'invocation' sind
+    return this.character.features
+      .map(key => allFeatures.find(f => f.key === key))
+      .filter(feature => feature && feature.feature_type === 'invocation');
   }
 
-  getFeaturesForLevel(level, subclassKey) {
-    const features = [];
-    const baseFeatures = this.classData.features.filter(f => f.level === level);
-    features.push(...baseFeatures);
+  // --- SUBKLASSEN-LOGIK ---
 
-    if (subclassKey) {
-      const subclass = this.classData.subclasses.find(sc => sc.key === subclassKey);
-      if (subclass) {
-        const subclassFeatures = subclass.features.filter(f => f.level === level);
-        features.push(...subclassFeatures);
-      }
+  /**
+   * Prüft auf 'Segen des Dunklen' (Dark One's Blessing) und gibt die Temp-TP zurück.
+   * (Wird von der Kampf-Engine aufgerufen, WENN der Hexenmeister eine Kreatur auf 0 TP bringt)
+   * @returns {number} - Die Höhe der temporären TP.
+   */
+  getDarkOnesBlessingTempHp() {
+    // Liest 'the_fiend_dark_ones_blessing' aus features.json
+    if (this.hasFeature('the_fiend_dark_ones_blessing')) {
+      // Regel: CHA-Mod + Hexenmeister-Level
+      const chaMod = getModifier(this.character.abilities.charisma);
+      return chaMod + this.character.level;
     }
-    return features;
+    return 0;
   }
 }

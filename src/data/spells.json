@@ -8999,5 +8999,5 @@
     "scaling_rules": null,
     "utility_effects": ["create_infinite_ammo", "bonus_action_two_attacks"],
     "classes": ["ranger"]
-  },
+  }
 ]

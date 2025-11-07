@@ -1,6 +1,107 @@
+// --- Datei: src/engine/characterEngine.js ---
+
 import allArmor from "../data/items/armor.json";
 import allClassData from "../data/classes.json";
 import { LEVEL_XP_TABLE } from "../utils/helpers";
+
+// --- NEU: Alle 12 Klassen-Logik-Module importieren ---
+import { BarbarianLogic } from "./logic/classes/BarbarianLogic.js";
+import { BardLogic } from "./logic/classes/BardLogic.js";
+import { ClericLogic } from "./logic/classes/ClericLogic.js";
+import { DruidLogic } from "./logic/classes/DruidLogic.js";
+import { FighterLogic } from "./logic/classes/FighterLogic.js";
+import { MonkLogic } from "./logic/classes/MonkLogic.js";
+import { PaladinLogic } from "./logic/classes/PaladinLogic.js";
+import { RangerLogic } from "./logic/classes/RangerLogic.js";
+import { RogueLogic } from "./logic/classes/RogueLogic.js";
+import { SorcererLogic } from "./logic/classes/SorcererLogic.js";
+import { WarlockLogic } from "./logic/classes/WarlockLogic.js";
+import { WizardLogic } from "./logic/classes/WizardLogic.js";
+
+// --- WIEDERHERGESTELLT: Konstanten für die UI ---
+// (Diese wurden von den character_creation-Komponenten benötigt)
+
+export const ABILITY_DESCRIPTIONS_DE = {
+  str: "Mächtige Krieger und Athleten. Stärke misst rohe körperliche Kraft.",
+  dex: "Gewandte Schurken und Bogenschützen. Geschicklichkeit misst Agilität, Reflexe und Gleichgewicht.",
+  con: "Zähe Kämpfer und Abenteurer. Konstitution misst Gesundheit, Ausdauer und Lebenskraft.",
+  int: "Gelehrte Magier und Taktiker. Intelligenz misst geistige Schärfe, Gedächtnis und analytisches Denken.",
+  wis: "Wahrnehmende Kleriker und Waldläufer. Weisheit misst Wahrnehmung, Intuition und Einklang mit der Welt.",
+  cha: "Einflussreiche Barden und Zauberer. Charisma misst Selbstvertrauen, Eloquenz und Willenskraft.",
+};
+
+export const COMBAT_STATS_DESCRIPTIONS_DE = {
+  hp: "Trefferpunkte (TP): Zeigt an, wie viel Schaden du einstecken kannst. Bei 0 TP bist du kampfunfähig.",
+  ac: "Rüstungsklasse (RK): Repräsentiert deine Verteidigung. Ein Angreifer muss diesen Wert mit seinem Angriffswurf übertreffen, um dich zu treffen.",
+  speed: "Bewegungsrate: Die Distanz (in Metern), die du in einer Runde zurücklegen kannst.",
+  proficiency: "Übungsbonus (ÜB): Ein Bonus, den du auf alle Würfe addierst, in denen du 'geübt' bist (z.B. Angriffe, Rettungswürfe, Fertigkeiten). Er steigt mit deinem Level.",
+  initiative: "Initiative: Ein Geschicklichkeitswurf, der bestimmt, wann du in der Reihenfolge eines Kampfes dran bist.",
+};
+
+export const SKILL_MAP = {
+  athletics: "str",
+  acrobatics: "dex",
+  sleight_of_hand: "dex",
+  stealth: "dex",
+  arcana: "int",
+  history: "int",
+  investigation: "int",
+  nature: "int",
+  religion: "int",
+  animal_handling: "wis",
+  insight: "wis",
+  medicine: "wis",
+  perception: "wis",
+  survival: "wis",
+  deception: "cha",
+  intimidation: "cha",
+  performance: "cha",
+  persuasion: "cha",
+};
+
+export const SKILL_NAMES_DE = {
+  athletics: "Athletik",
+  acrobatics: "Akrobatik",
+  sleight_of_hand: "Fingerfertigkeit",
+  stealth: "Heimlichkeit",
+  arcana: "Arkanes Wissen",
+  history: "Geschichte",
+  investigation: "Nachforschungen",
+  nature: "Naturkunde",
+  religion: "Religion",
+  animal_handling: "Tierkunde",
+  insight: "Menschenkenntnis",
+  medicine: "Heilkunde",
+  perception: "Wahrnehmung",
+  survival: "Überlebenskunst",
+  deception: "Täuschung",
+  intimidation: "Einschüchtern",
+  performance: "Auftreten",
+  persuasion: "Überzeugen",
+};
+
+export const SKILL_DESCRIPTIONS_DE = {
+  athletics: "Stärke (Athletik) - Wurf für körperliche Anstrengungen wie Klettern, Springen oder Schwimmen.",
+  acrobatics: "Geschicklichkeit (Akrobatik) - Wurf, um das Gleichgewicht zu halten, auf schmalen Graten zu balancieren oder Fesseln zu entkommen.",
+  sleight_of_hand: "Geschicklichkeit (Fingerfertigkeit) - Wurf für Taschendiebstahl, das Verstecken von Gegenständen oder das Manipulieren von Schlössern.",
+  stealth: "Geschicklichkeit (Heimlichkeit) - Wurf, um unbemerkt zu schleichen oder dich zu verstecken.",
+  arcana: "Intelligenz (Arkanes Wissen) - Wurf, um dich an Wissen über Zauber, magische Gegenstände, Kreaturen oder die Ebenen zu erinnern.",
+  history: "Intelligenz (Geschichte) - Wurf, um dich an Wissen über historische Ereignisse, legendäre Personen, Königreiche oder Kriege zu erinnern.",
+  investigation: "Intelligenz (Nachforschungen) - Wurf, um Hinweise zu finden, Abzüge zu machen oder Rätsel zu lösen.",
+  nature: "Intelligenz (Naturkunde) - Wurf, um dich an Wissen über Gelände, Pflanzen, Tiere oder das Wetter zu erinnern.",
+  religion: "Intelligenz (Religion) - Wurf, um dich an Wissen über Gottheiten, Rituale, Kulte oder heilige Symbole zu erinnern.",
+  animal_handling: "Weisheit (Tierkunde) - Wurf, um ein Tier zu beruhigen, seine Absichten zu lesen oder es zu kontrollieren.",
+  insight: "Weisheit (Menschenkenntnis) - Wurf, um die wahren Absichten einer Kreatur zu erkennen oder eine Lüge zu durchschauen.",
+  medicine: "Weisheit (Heilkunde) - Wurf, um einen Verwundeten zu stabilisieren, eine Krankheit zu diagnostizieren oder Verletzungen zu untersuchen.",
+  perception: "Weisheit (Wahrnehmung) - Wurf, um verborgene Dinge zu sehen, zu hören oder zu riechen.",
+  survival: "Weisheit (Überlebenskunst) - Wurf, um Spuren zu lesen, zu jagen, in der Wildnis zu navigieren oder Gefahren vorherzusehen.",
+  deception: "Charisma (Täuschung) - Wurf, um die Wahrheit zu verschleiern, andere irrezuführen oder eine Verkleidung aufrechtzuerhalten.",
+  intimidation: "Charisma (Einschüchtern) - Wurf, um andere durch Drohungen, feindselige Handlungen oder deine bloße Präsenz zu beeinflussen.",
+  performance: "Charisma (Auftreten) - Wurf, um ein Publikum zu unterhalten, sei es durch Musik, Tanz, Schauspiel oder Geschichtenerzählen.",
+  persuasion: "Charisma (Überzeugen) - Wurf, um andere durch Takt, Freundlichkeit oder gute Argumente zu beeinflussen.",
+};
+
+// --- Kern-Engine-Funktionen ---
 
 /**
  * Berechnet den Modifikator für einen Attributswert.
@@ -13,7 +114,6 @@ export const getAbilityModifier = (score) => {
  * Gibt den Übungsbonus für ein gegebenes Level zurück.
  */
 export const getProficiencyBonus = (level) => {
-  // *** 2. KORRIGIERT (D&D 5e geht bis +6) ***
   if (level < 5) return 2;
   if (level < 9) return 3;
   if (level < 13) return 4;
@@ -27,585 +127,307 @@ export const getProficiencyBonus = (level) => {
  */
 export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
-
   let totalBonus = 0;
-
-  // Fixe Boni (z.B. bei Menschen)
   if (
     character.ability_bonus_assignments &&
     character.ability_bonus_assignments[abilityKey]
   ) {
     totalBonus += character.ability_bonus_assignments[abilityKey];
   }
-
-  // Floating Boni (z.B. bei Halbelfen)
-  if (
-    character.race?.ability_bonuses?.floating &&
-    character.floating_bonus_assignments
-  ) {
-    const floatingBonuses = character.race.ability_bonuses.floating;
-    const bonusIndex = character.floating_bonus_assignments[abilityKey];
-
-    if (bonusIndex !== undefined && floatingBonuses[bonusIndex] !== undefined) {
-      totalBonus += floatingBonuses[bonusIndex];
-    }
-  }
-
   return totalBonus;
 };
 
 /**
- * Berechnet die maximalen Lebenspunkte auf Stufe 1.
+ * Holt die Startausrüstung basierend auf der Klasse.
  */
-export const calculateInitialHP = (character) => {
-  if (!character.class || !character.race) return 0;
-
-  const finalCon =
-    character.abilities.con + getRacialAbilityBonus(character, "con");
-  const conModifier = getAbilityModifier(finalCon);
-  let hp = character.class.hit_die + conModifier;
-
-  if (character.subrace?.key === "hill-dwarf") {
-    hp += 1;
-  }
-  return hp;
+export const getStartingEquipment = (classKey) => {
+  const classData = allClassData.find((c) => c.key === classKey);
+  return classData ? classData.starting_equipment : [];
 };
 
 /**
- * Berechnet die Rüstungsklasse (AC) nach 5e-Regeln.
- * Berücksichtigt angelegte Rüstung, Schilde und Klassen-Features.
- * @param {object} character - Das zentrale Charakter-Objekt.
- * @returns {number} - Die finale Rüstungsklasse.
+ * Erstellt und weist die korrekte Klassen-Logik-Instanz einem Charakter zu.
  */
-export const calculateAC = (character) => {
-  if (!character || !character.abilities || !character.class) {
-    return 10; // Fallback
+const assignClassLogic = (character) => {
+  switch (character.classKey) {
+    case 'barbarian':
+      return new BarbarianLogic(character);
+    case 'bard':
+      return new BardLogic(character);
+    case 'cleric':
+      return new ClericLogic(character);
+    case 'druid':
+      return new DruidLogic(character);
+    case 'fighter':
+      return new FighterLogic(character);
+    case 'monk':
+      return new MonkLogic(character);
+    case 'paladin':
+      return new PaladinLogic(character);
+    case 'ranger':
+      return new RangerLogic(character);
+    case 'rogue':
+      return new RogueLogic(character);
+    case 'sorcerer':
+      return new SorcererLogic(character);
+    case 'warlock':
+      return new WarlockLogic(character);
+    case 'wizard':
+      return new WizardLogic(character);
+    default:
+      console.error(`Unbekannte classKey: ${character.classKey}.`);
+      return null; 
   }
-
-  // 1. Finale Attribut-Modifikatoren berechnen
-  const finalDex =
-    character.abilities.dex + getRacialAbilityBonus(character, "dex");
-  const dexModifier = getAbilityModifier(finalDex);
-
-  // 2. Ausgerüstete Items
-  const equippedArmorData = character.equipment?.armor;
-
-  // Schild-Erkennung
-  let equippedShieldData = null;
-  let shieldBonus = 0;
-
-  if (
-    character.equipment?.["off-hand"] &&
-    character.equipment["off-hand"].type === "shield"
-  ) {
-    equippedShieldData = character.equipment["off-hand"];
-    shieldBonus = equippedShieldData.ac || 2;
-  } else if (
-    character.equipment?.["off-hand"] &&
-    character.equipment["off-hand"].slot === "off-hand"
-  ) {
-    equippedShieldData = character.equipment["off-hand"];
-    shieldBonus = equippedShieldData.ac || 2;
-  } else if (character.equipment?.shield) {
-    equippedShieldData = character.equipment.shield;
-    shieldBonus = equippedShieldData.ac || 2;
-  } else if (
-    character.equipment?.["off-hand"] &&
-    character.equipment["off-hand"].ac > 0
-  ) {
-    equippedShieldData = character.equipment["off-hand"];
-    shieldBonus = equippedShieldData.ac;
-  }
-
-  // 3. Fall 1: Charakter trägt eine Rüstung
-  if (equippedArmorData) {
-    let baseAC = equippedArmorData.ac;
-    let armorDexBonus = 0;
-
-    const armorName = equippedArmorData.name.toLowerCase();
-
-    if (
-      armorName.includes("leder") ||
-      armorName.includes("wams") ||
-      armorName.includes("elfen-kettenrüstung")
-    ) {
-      armorDexBonus = dexModifier;
-    } else if (
-      armorName.includes("kettenhemd") ||
-      armorName.includes("schuppenpanzer") ||
-      armorName.includes("brustplatte") ||
-      armorName.includes("halbplatten")
-    ) {
-      armorDexBonus = Math.min(dexModifier, 2);
-    } else {
-      armorDexBonus = 0;
-    }
-
-    return baseAC + armorDexBonus + shieldBonus;
-  }
-
-  // 4. Fall 2: Charakter trägt KEINE Rüstung
-  else {
-    let unarmoredAC = 10 + dexModifier;
-
-    if (character.class.key === "barbarian") {
-      const finalCon =
-        character.abilities.con + getRacialAbilityBonus(character, "con");
-      const conModifier = getAbilityModifier(finalCon);
-      unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + conModifier);
-    } else if (character.class.key === "monk" && !equippedShieldData) {
-      const finalWis =
-        character.abilities.wis + getRacialAbilityBonus(character, "wis");
-      const wisModifier = getAbilityModifier(finalWis);
-      unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + wisModifier);
-    }
-
-    return unarmoredAC + shieldBonus;
-  }
-};
-
-// Eine Zuordnung aller Fertigkeiten zu ihren Hauptattributen
-export const SKILL_MAP = {
-  acrobatics: "dex",
-  animal_handling: "wis",
-  arcana: "int",
-  athletics: "str",
-  deception: "cha",
-  history: "int",
-  insight: "wis",
-  intimidation: "cha",
-  investigation: "int",
-  medicine: "wis",
-  nature: "int",
-  perception: "wis",
-  performance: "cha",
-  persuasion: "cha",
-  religion: "int",
-  sleight_of_hand: "dex",
-  stealth: "dex",
-  survival: "wis",
-};
-
-// Deutsche Namen für die Anzeige
-export const SKILL_NAMES_DE = {
-  acrobatics: "Akrobatik",
-  animal_handling: "Tierkunde",
-  arcana: "Arkanum",
-  athletics: "Athletik",
-  deception: "Täuschung",
-  history: "Geschichte",
-  insight: "Einblick",
-  intimidation: "Einschüchtern",
-  investigation: "Nachforschungen",
-  medicine: "Medizin",
-  nature: "Naturkunde",
-  perception: "Wahrnehmung",
-  performance: "Darbietung",
-  persuasion: "Überzeugen",
-  religion: "Religion",
-  sleight_of_hand: "Fingerfertigkeit",
-  stealth: "Heimlichkeit",
-  survival: "Überlebenskunst",
 };
 
 /**
- * Prüft, ob ein Charakter in einer Fertigkeit geübt ist.
- * @param {object} character - Das zentrale Charakter-Objekt.
- * @param {string} skillKey - Der Schlüssel der Fertigkeit (z.B. 'stealth').
- * @returns {boolean} - True, wenn geübt, sonst false.
+ * ERSTELLT EINEN NEUEN CHARAKTER (Stufe 1)
  */
-export const isProficientInSkill = (character, skillKey) => {
-  const {
-    race,
-    class: charClass,
-    background,
-    skill_proficiencies_choice,
-  } = character;
-
-  // 1. Übung durch Hintergrund
-  if (
-    background.skill_proficiencies
-      .map((s) => s.toLowerCase())
-      .includes(SKILL_NAMES_DE[skillKey].toLowerCase())
-  ) {
-    return true;
-  }
-  // 2. Übung durch Volk (z.B. Elfen in Wahrnehmung)
-  if (
-    race.traits.some(
-      (trait) => trait.name === "Geschärfte Sinne" && skillKey === "perception"
-    )
-  ) {
-    return true;
-  }
-  // 3. Übung durch die Klassen-Auswahl
-  if (
-    skill_proficiencies_choice &&
-    skill_proficiencies_choice.includes(skillKey)
-  ) {
-    return true;
-  }
-
-  return false;
-};
-
-/**
- * Berechnet den finalen Bonus für eine bestimmte Fertigkeit.
- * @param {object} character - Das zentrale Charakter-Objekt.
- * @param {string} skillKey - Der Schlüssel der Fertigkeit.
- * @returns {number} - Der finale Bonus.
- */
-export const calculateSkillBonus = (character, skillKey) => {
-  const abilityKey = SKILL_MAP[skillKey];
-  const finalAbilityScore =
-    character.abilities[abilityKey] +
-    getRacialAbilityBonus(character, abilityKey);
-  const modifier = getAbilityModifier(finalAbilityScore);
-
-  // Verwendet jetzt das tatsächliche Level des Charakters
-  const proficiencyBonus = getProficiencyBonus(character.level || 1);
-
-  if (isProficientInSkill(character, skillKey)) {
-    return modifier + proficiencyBonus;
-  }
-
-  return modifier;
-};
-
-/**
- * Berechnet den Nahkampfschaden basierend auf der Waffe und den Attributen.
- */
-export const calculateMeleeDamage = (character) => {
-  // *** 3. BUGFIX: Liest von 'character.abilities' statt 'character.stats.abilities' ***
-  const strScore =
-    character.abilities.str + getRacialAbilityBonus(character, "str");
-  const strModifier = getAbilityModifier(strScore);
-
-  // Prüfen, ob eine Waffe in der Haupthand ausgerüstet ist
-  const mainHandWeapon = character.equipment["main-hand"];
-
-  if (mainHandWeapon && mainHandWeapon.damage) {
-    // Wenn eine Waffe mit Schadenswert vorhanden ist
-    let damage = mainHandWeapon.damage;
-    const versatileProperty = mainHandWeapon.properties?.find((p) =>
-      p.startsWith("Vielseitig")
-    );
-
-    // Prüfen, ob die Waffe vielseitig ist und beidhändig geführt wird
-    if (versatileProperty && mainHandWeapon.isTwoHanded) {
-      const twoHandedDamage = versatileProperty.match(/\((.*?)\)/)?.[1];
-      if (twoHandedDamage) {
-        damage = twoHandedDamage;
-      }
-    }
-
-    const modifierString =
-      strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
-    return `${damage} ${modifierString}`;
-  } else {
-    // Standard für waffenlosen Schlag (1 + Stärke-Modifikator)
-    const unarmedDamage = 1 + strModifier;
-    return unarmedDamage.toString();
-  }
-};
-
-// Deutsche Beschreibungen für die Hauptattribute
-export const ABILITY_DESCRIPTIONS_DE = {
-  str: "Stärke: Misst die körperliche Kraft. Wichtig für Nahkampfangriffe und Athletik.",
-  dex: "Geschicklichkeit: Misst die Agilität, Reflexe und Balance. Wichtig für Rüstungsklasse, Fernkampfangriffe und Akrobatik.",
-  con: "Konstitution: Misst die Ausdauer und Lebenskraft. Bestimmt die Trefferpunkte und Widerstandsfähigkeit.",
-  int: "Intelligenz: Misst die geistige Schärfe, Gedächtnis und logisches Denken. Wichtig für arkane Magie und Nachforschungen.",
-  wis: "Weisheit: Misst die Wahrnehmung, Intuition und Willenskraft. Wichtig für göttliche Magie, Wahrnehmung und Einblick.",
-  cha: "Charisma: Misst die Überzeugungskraft, Persönlichkeit und Führungsstärke. Wichtig für soziale Interaktion und einige Magieformen.",
-};
-
-// Deutsche Beschreibungen für die Kampfwerte
-export const COMBAT_STATS_DESCRIPTIONS_DE = {
-  ac: "Gibt an, wie schwer es ist, dich im Kampf zu treffen. Basiert auf 10 + deinem Geschicklichkeits-Modifikator. Rüstung und Schilde können diesen Wert erhöhen.",
-  hp: "Deine Lebensenergie. Erreicht sie 0, bist du kampfunfähig. Basiert auf dem Trefferwürfel deiner Klasse und deinem Konstitutions-Modifikator.",
-  proficiency:
-    "Ein Bonus, den du auf alle Würfe addierst, in denen du geübt bist (Angriffe, Fertigkeiten, etc.). Er steigt mit deinem Charakterlevel an.",
-};
-
-// Deutsche Beschreibungen für die Fertigkeiten
-export const SKILL_DESCRIPTIONS_DE = {
-  acrobatics:
-    "Akrobatik (Geschicklichkeit): Die Fähigkeit, auf den Beinen zu bleiben, Sprünge zu meistern und akrobatische Manöver auszuführen.",
-  animal_handling:
-    "Tierkunde (Weisheit): Die Fähigkeit, Tiere zu beruhigen, zu verstehen und zu kontrollieren.",
-  arcana:
-    "Arkanum (Intelligenz): Das Wissen über Magie, magische Kreaturen, Zauber und arkane Symbole.",
-  athletics:
-    "Athletik (Stärke): Die Fähigkeit, zu klettern, springen, schwimmen und körperliche Kraft anzuwenden.",
-  deception:
-    "Täuschung (Charisma): Die Fähigkeit, die Wahrheit zu verbergen, sei es durch Lügen, Verkleidung oder Ablenkung.",
-  history:
-    "Geschichte (Intelligenz): Das Wissen über historische Ereignisse, legendäre Personen und vergangene Zivilisationen.",
-  insight:
-    "Einblick (Weisheit): Die Fähigkeit, die wahren Absichten einer Kreatur durch Körpersprache und Verhalten zu erkennen.",
-  intimidation:
-    "Einschüchtern (Charisma): Die Fähigkeit, andere durch Drohungen, feindselige Handlungen und körperliche Präsenz zu beeinflussen.",
-  investigation:
-    "Nachforschungen (Intelligenz): Die Fähigkeit, nach Hinweisen zu suchen, Schlussfolgerungen zu ziehen und Details zu analysieren.",
-  medicine:
-    "Medizin (Weisheit): Die Fähigkeit, Verletzungen zu stabilisieren, Krankheiten zu diagnostizieren und Wunden zu behandeln.",
-  nature:
-    "Naturkunde (Intelligenz): Das Wissen über Gelände, Pflanzen, Tiere und das Wetter.",
-  perception:
-    "Wahrnehmung (Weisheit): Die Fähigkeit, etwas zu sehen, zu hören, zu riechen oder auf andere Weise wahrzunehmen.",
-  performance:
-    "Darbietung (Charisma): Die Fähigkeit, ein Publikum durch Musik, Tanz, Schauspiel oder eine andere Form der Unterhaltung zu fesseln.",
-  persuasion:
-    "Überzeugen (Charisma): Die Fähigkeit, andere durch Takt, Freundlichkeit und gute Argumente zu beeinflussen.",
-  religion:
-    "Religion (Intelligenz): Das Wissen über Gottheiten, religiöse Riten, heilige Symbole und die Ebenen der Existenz.",
-  sleight_of_hand:
-    "Fingerfertigkeit (Geschicklichkeit): Die Fähigkeit, Taschendiebstahl zu begehen, Schlösser zu knacken und andere manuelle Tricks auszuführen.",
-  stealth:
-    "Heimlichkeit (Geschicklichkeit): Die Fähigkeit, sich ungesehen und ungehört an anderen vorbeizuschleichen.",
-  survival:
-    "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden.",
-};
-
-// --- *** 4. NEUE/WIEDERHERGESTELLTE FUNKTIONEN AB HIER *** ---
-
-/**
- * HILFSFUNKTION: Würfelt eine Würfelformel (z.B. "1d8" oder "1d10+2").
- */
-export const rollDiceFormula = (formula) => {
-  let total = 0;
-  const parts = formula.split(/([+-])/); // Trennt nach + oder -
-
-  // Würfel-Teil (z.B. "1d8")
-  const dicePart = parts[0];
-  const [numDiceStr, numSidesStr] = dicePart.split("d");
-  const numDice = parseInt(numDiceStr, 10) || 1;
-  const numSides = parseInt(numSidesStr, 10);
-
-  if (!isNaN(numSides)) {
-    for (let i = 0; i < numDice; i++) {
-      total += Math.floor(Math.random() * numSides) + 1;
-    }
-  } else {
-    // Falls es kein Würfelwurf ist, sondern nur eine Zahl (sollte nicht passieren)
-    total += parseInt(dicePart, 10) || 0;
-  }
-
-  // Bonus-Teil (z.B. "+2" oder "-1")
-  if (parts[1] && parts[2]) {
-    const operator = parts[1];
-    const bonus = parseInt(parts[2], 10);
-    if (!isNaN(bonus)) {
-      if (operator === "+") {
-        total += bonus;
-      } else if (operator === "-") {
-        total -= bonus;
-      }
-    }
-  }
-
-  return total;
-};
-
-/**
- * HILFSFUNKTION: Ermittelt die HP-Würfelformel für den Stufenaufstieg.
- */
-const getHpRollFormula = (character) => {
-  const hitDie = character.class.hit_die || 8; // z.B. 8
+export const createCharacter = (
+  name,
+  raceData,
+  classKey,
+  backgroundData,
+  abilities,
+  abilityAssignments,
+  portrait
+) => {
+  const classData = allClassData.find((c) => c.key === classKey);
   const conMod = getAbilityModifier(
-    character.abilities.con + getRacialAbilityBonus(character, "con")
+    abilities.constitution +
+      (abilityAssignments.constitution || 0)
   );
 
-  const formula = `1d${hitDie}`;
+  let character = {
+    id: `player_${new Date().getTime()}`,
+    name: name,
+    level: 1,
+    experience: 0,
+    classKey: classKey,
+    subclass: null,
+    race: raceData.key,
+    background: backgroundData.key,
+    abilities: {
+      strength: abilities.strength + (abilityAssignments.strength || 0),
+      dexterity: abilities.dexterity + (abilityAssignments.dexterity || 0),
+      constitution: abilities.constitution + (abilityAssignments.constitution || 0),
+      intelligence: abilities.intelligence + (abilityAssignments.intelligence || 0),
+      wisdom: abilities.wisdom + (abilityAssignments.wisdom || 0),
+      charisma: abilities.charisma + (abilityAssignments.charisma || 0),
+    },
+    ability_bonus_assignments: abilityAssignments,
+    portrait: portrait,
+    inventory: {},
+    equipment: {},
+    // (Skills, Proficiencies müssen hier von Rasse/Klasse/Hintergrund gesammelt werden)
+    proficiencies: {
+      skills: [...(backgroundData.skills || []), ...(classData.proficiencies.skills.from || [])], // (Vereinfacht, Auswahl fehlt)
+      // (Weitere proficiencies...)
+    },
+  };
 
-  if (conMod === 0) {
-    return formula;
-  }
+  // Klassen-Logik zuweisen
+  character.classLogic = assignClassLogic(character);
 
-  // Fügt den Modifikator hinzu (z.B. "1d8+2" or "1d8-1")
-  return `${formula}${conMod > 0 ? "+" : ""}${conMod}`;
-};
+  // HP-Berechnung
+  const hpBonus = character.classLogic.getHitPointBonus ? character.classLogic.getHitPointBonus() : 0;
+  const maxHp = classData.hit_die + conMod + hpBonus;
+  
+  character.hp = maxHp;
+  character.maxHp = maxHp;
 
-/**
- * BERECHNET MAXIMALE HP
- * (Wird für Stufenaufstiege benötigt)
- */
-export const calculateMaxHP = (character) => {
-  if (!character || !character.class || !character.abilities) return 1;
+  // Ressourcen initialisieren
+  character.resources = {
+    concentration: { spellKey: null },
+    rage_uses: { 
+      current: character.classLogic.getMaxRageUses ? character.classLogic.getMaxRageUses(1) : 0, 
+      max: character.classLogic.getMaxRageUses ? character.classLogic.getMaxRageUses(1) : 0
+    },
+    bardic_inspiration: {
+      current: character.classLogic.getMaxInspirationUses ? character.classLogic.getMaxInspirationUses() : 0,
+      max: character.classLogic.getMaxInspirationUses ? character.classLogic.getMaxInspirationUses() : 0
+    },
+    ki_points: {
+      current: character.classLogic.getMaxKiPoints ? character.classLogic.getMaxKiPoints(1) : 0,
+      max: character.classLogic.getMaxKiPoints ? character.classLogic.getMaxKiPoints(1) : 0
+    },
+    sorcery_points: {
+      current: character.classLogic.getMaxSorceryPoints ? character.classLogic.getMaxSorceryPoints(1) : 0,
+      max: character.classLogic.getMaxSorceryPoints ? character.classLogic.getMaxSorceryPoints(1) : 0
+    },
+    // (Weitere Ressourcen...)
+  };
 
-  const finalCon =
-    character.abilities.con + getRacialAbilityBonus(character, "con");
-  const conMod = getAbilityModifier(finalCon);
-  const level = character.level || 1;
+  // Zauberplätze und Features
+  character.spellSlots = getSpellSlots(1, classData.caster_type);
+  character.features = getFeaturesForLevel(1, classKey, null);
 
-  const hitDieValue = character.class.hit_die || 8;
-
-  // Level 1: Max. Würfelwert + KON
-  let hp = hitDieValue + conMod;
-
-  // Level 2+: Durchschnittlicher Wurf (aufgerundet) + KON
-  if (level > 1) {
-    // D&D 5e Durchschnitt: (Würfel / 2) + 1. (z.B. d8 -> 4 + 1 = 5)
-    const avgRoll = Math.floor(hitDieValue / 2) + 1;
-    hp += (avgRoll + conMod) * (level - 1);
-  }
-
-  if (character.subrace?.key === "hill-dwarf") {
-    hp += level;
-  }
-
-  return hp;
-};
-
-/**
- * PRÜFT AUF STUFENAUFSTIEG
- * (ANGEPASST: Bereitet Stufenaufstieg für Modal vor)
- */
-export const checkForLevelUp = (character) => {
-  // Stelle sicher, dass level und experience existieren
-  const level = character.level || 1;
-  const experience = character.experience || 0;
-
-  if (level >= 20 || character.pendingLevelUp) {
-    return character; // Max. Level oder bereits ein Stufenaufstieg ausstehend
-  }
-
-  const nextLevel = level + 1;
-  const xpForNextLevel = LEVEL_XP_TABLE[nextLevel];
-
-  if (experience >= xpForNextLevel) {
-    // STUFENAUFSTIEG AUSSTEHEND!
-    console.log(
-      `STUFENAUFSTIEG ANSTEHEND: ${character.name} ist bereit für Stufe ${nextLevel}!`
-    );
-
-    // *** 2. ZUSÄTZLICHE DATEN FÜR DAS MODAL SAMMELN ***
-    const classData = allClassData.find(c => c.key === character.class.key);
-    
-    // Prüfen, ob eine Subklassen-Wahl ansteht (basierend auf Feature-Namen)
-    const isSubclassChoiceLevel = classData?.features.some(f => 
-      f.level === nextLevel && (
-        f.name.toLowerCase().includes("archetyp") || 
-        f.name.toLowerCase().includes("pfad") || 
-        f.name.toLowerCase().includes("domäne") || 
-        f.name.toLowerCase().includes("zirkel") || 
-        f.name.toLowerCase().includes("kolleg") || 
-        f.name.toLowerCase().includes("tradition") || 
-        f.name.toLowerCase().includes("eid") || 
-        f.name.toLowerCase().includes("ursprung") || 
-        f.name.toLowerCase().includes("schutzpatron")
-      )
-    );
-
-    // Bereite die Daten für das Modal vor
-    return {
-      ...character,
-      pendingLevelUp: {
-        newLevel: nextLevel,
-        hpRollFormula: getHpRollFormula(character),
-        isAbilityIncrease: nextLevel % 4 === 0, // Info für ASI
-        // Nur als Subklassen-Wahl markieren, wenn noch keine Subklasse gewählt wurde
-        isSubclassChoice: isSubclassChoiceLevel && !character.subclassKey, 
-      },
-    };
-  }
-
-  // Kein Stufenaufstieg
   return character;
 };
 
 
+// --- ZAUBERPLATZ-TABELLEN (Unverändert) ---
+const FULL_CASTER_SLOTS = [
+  { level: 1, slots: { 1: 2 } }, { level: 2, slots: { 1: 3 } }, { level: 3, slots: { 1: 4, 2: 2 } },
+  { level: 4, slots: { 1: 4, 2: 3 } }, { level: 5, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 6, slots: { 1: 4, 2: 3, 3: 3 } },
+  { level: 7, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } }, { level: 8, slots: { 1: 4, 2: 3, 3: 3, 4: 2 } },
+  { level: 9, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 } }, { level: 10, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 } },
+  { level: 11, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1 } }, { level: 12, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1 } },
+  { level: 13, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1 } }, { level: 14, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1 } },
+  { level: 15, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1 } }, { level: 16, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1 } },
+  { level: 17, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1 } }, { level: 18, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 1, 7: 1, 8: 1, 9: 1 } },
+  { level: 19, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 1, 8: 1, 9: 1 } }, { level: 20, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 2, 8: 1, 9: 1 } }
+];
+const HALF_CASTER_SLOTS = [
+  { level: 1, slots: {} }, { level: 2, slots: { 1: 2 } }, { level: 3, slots: { 1: 3 } },
+  { level: 4, slots: { 1: 3 } }, { level: 5, slots: { 1: 4, 2: 2 } }, { level: 6, slots: { 1: 4, 2: 2 } },
+  { level: 7, slots: { 1: 4, 2: 3 } }, { level: 8, slots: { 1: 4, 2: 3 } },
+  { level: 9, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 10, slots: { 1: 4, 2: 3, 3: 2 } },
+  { level: 11, slots: { 1: 4, 2: 3, 3: 3 } }, { level: 12, slots: { 1: 4, 2: 3, 3: 3 } },
+  { level: 13, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } }, { level: 14, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } },
+  { level: 15, slots: { 1: 4, 2: 3, 3: 3, 4: 2 } }, { level: 16, slots: { 1: 4, 2: 3, 3: 3, 4: 2 } },
+  { level: 17, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 } }, { level: 18, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 } },
+  { level: 19, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 } }, { level: 20, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 } }
+];
+const THIRD_CASTER_SLOTS = [
+  { level: 1, slots: {} }, { level: 2, slots: {} }, { level: 3, slots: { 1: 2 } },
+  { level: 4, slots: { 1: 3 } }, { level: 5, slots: { 1: 3 } }, { level: 6, slots: { 1: 3 } },
+  { level: 7, slots: { 1: 4, 2: 2 } }, { level: 8, slots: { 1: 4, 2: 2 } }, { level: 9, slots: { 1: 4, 2: 2 } },
+  { level: 10, slots: { 1: 4, 2: 3 } }, { level: 11, slots: { 1: 4, 2: 3 } }, { level: 12, slots: { 1: 4, 2: 3 } },
+  { level: 13, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 14, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 15, slots: { 1: 4, 2: 3, 3: 2 } },
+  { level: 16, slots: { 1: 4, 2: 3, 3: 3 } }, { level: 17, slots: { 1: 4, 2: 3, 3: 3 } }, { level: 18, slots: { 1: 4, 2: 3, 3: 3 } },
+  { level: 19, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } }, { level: 20, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } }
+];
+const PACT_MAGIC_SLOTS = [
+  { level: 1, count: 1, slot_level: 1 }, { level: 2, count: 2, slot_level: 1 }, { level: 3, count: 2, slot_level: 2 },
+  { level: 4, count: 2, slot_level: 2 }, { level: 5, count: 2, slot_level: 3 }, { level: 6, count: 2, slot_level: 3 },
+  { level: 7, count: 2, slot_level: 4 }, { level: 8, count: 2, slot_level: 4 }, { level: 9, count: 2, slot_level: 5 },
+  { level: 10, count: 2, slot_level: 5 }, { level: 11, count: 3, slot_level: 5 }, { level: 12, count: 3, slot_level: 5 },
+  { level: 13, count: 3, slot_level: 5 }, { level: 14, count: 3, slot_level: 5 }, { level: 15, count: 3, slot_level: 5 },
+  { level: 16, count: 3, slot_level: 5 }, { level: 17, count: 4, slot_level: 5 }, { level: 18, count: 4, slot_level: 5 },
+  { level: 19, count: 4, slot_level: 5 }, { level: 20, count: 4, slot_level: 5 }
+];
+
+export const getSpellSlots = (level, casterType) => {
+  let table;
+  switch (casterType) {
+    case 'full':
+      table = FULL_CASTER_SLOTS;
+      break;
+    case 'half':
+      table = HALF_CASTER_SLOTS;
+      break;
+    case 'third':
+      table = THIRD_CASTER_SLOTS;
+      break;
+    case 'pact':
+      table = PACT_MAGIC_SLOTS;
+      const pactEntry = table.find((p) => p.level === level);
+      return pactEntry ? { pact: { count: pactEntry.count, level: pactEntry.slot_level } } : {};
+    default:
+      return {};
+  }
+  const entry = table.find((p) => p.level === level);
+  return entry ? entry.slots : {};
+};
+
 /**
- * WENDET STUFENAUFSTIEG AN (NEUE FUNKTION)
- * Wendet die gewürfelten HP, das neue Level und die AUSWAHL (ASI, Subklasse) an.
+ * Holt alle neuen Features für ein bestimmtes Level.
  */
-export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
-  if (!character.pendingLevelUp) return character;
+export const getFeaturesForLevel = (level, classKey, subclassKey) => {
+  const classData = allClassData.find((c) => c.key === classKey);
+  if (!classData) return [];
 
-  const { newLevel } = character.pendingLevelUp;
+  const features = [];
+  const baseFeatures = classData.features.filter((f) => f.level === level);
+  features.push(...baseFeatures.map(f => f.key)); 
 
-  // --- Start: ASI anwenden ---
-  const newAbilities = { ...character.abilities };
-  if (levelUpChoices?.asi) {
-    console.log("Wende ASI an:", levelUpChoices.asi);
-    for (const key in levelUpChoices.asi) {
-      if (newAbilities[key] !== undefined) {
-        newAbilities[key] += levelUpChoices.asi[key];
-      }
+  if (subclassKey) {
+    const subclass = classData.subclasses.find((sc) => sc.key === subclassKey);
+    if (subclass) {
+      const subclassFeatures = subclass.features.filter((f) => f.level === level);
+      features.push(...subclassFeatures.map(f => f.key));
     }
   }
-  // --- Ende: ASI anwenden ---
+  return features;
+};
 
-  // --- Start: Subklasse anwenden ---
-  // Nimm die neue Subklasse, falls eine gewählt wurde, sonst behalte die alte
-  const newSubclassKey = levelUpChoices?.subclassKey || character.subclassKey;
-  // --- Ende: Subklasse anwenden ---
+/**
+ * PRÜFT, OB EIN STUFENAUFSTIEG VERFÜGBAR IST
+ */
+export const checkForLevelUp = (character) => {
+  const nextLevel = (character.level || 0) + 1;
+  const xpRequired = LEVEL_XP_TABLE[nextLevel];
 
-
-  // --- Start: Neue Fähigkeiten hinzufügen ---
-  const classData = allClassData.find(c => c.key === character.class.key);
-  let newFeatures = [];
-  let newSubclassFeatures = [];
-
-  if (classData) {
-    // 2. Finde alle Features der Hauptklasse für das newLevel
-    newFeatures = classData.features.filter(f => f.level === newLevel);
-    
-    // 3. Finde Features der Subklasse (basierend auf der newSubclassKey)
-    if (newSubclassKey && classData.subclasses) {
-      const subclassData = classData.subclasses.find(sc => sc.key === newSubclassKey);
-      if (subclassData && subclassData.features) {
-        newSubclassFeatures = subclassData.features.filter(f => f.level === newLevel);
-      }
-    }
+  if (xpRequired && character.experience >= xpRequired) {
+    console.log(`${character.name} kann auf Stufe ${nextLevel} aufsteigen!`);
+    return { ...character, canLevelUp: true }; 
   }
+  return character;
+};
 
-  // 4. Kombiniere alle neuen Fähigkeiten
-  const allNewFeatures = [...newFeatures, ...newSubclassFeatures];
+/**
+ * FÜHRT EINEN STUFENAUFSTIEG DURCH
+ */
+export const levelUpCharacter = (character, choices = {}) => {
+  const newLevel = character.level + 1;
+  const classData = allClassData.find((c) => c.key === character.classKey);
   
-  if (allNewFeatures.length > 0) {
-    console.log(`Neue Fähigkeiten für ${character.name} auf Stufe ${newLevel}:`, allNewFeatures.map(f => f.name));
+  let newSubclassKey = character.subclass;
+  const subclassChoiceLevel = classData.features.find(f => f.name.includes("Archetyp") || f.name.includes("Domäne") || f.name.includes("Zirkel"))?.level;
+  if (newLevel === subclassChoiceLevel && choices.subclassKey) {
+    newSubclassKey = choices.subclassKey;
   }
-  // --- Ende: Neue Fähigkeiten hinzufügen ---
 
-  // Alte HP berechnen (basierend auf dem Level *vor* dem Aufstieg)
-  const oldMaxHP = calculateMaxHP(character);
+  const allNewFeatures = getFeaturesForLevel(newLevel, character.classKey, newSubclassKey);
 
-  // Nimm den reinen Würfelwurf
-  const finalHpGain = hpRollResult;
+  const conMod = getAbilityModifier(character.abilities.constitution);
+  const hpBonusPerLevel = character.classLogic.getHitPointBonus ? character.classLogic.getHitPointBonus() : 0;
+  const hpRoll = (classData.hit_die / 2 + 1); 
+  const newHp = character.maxHp + hpRoll + conMod + hpBonusPerLevel;
 
-  const newMaxHP = oldMaxHP + finalHpGain;
+  const newSlots = getSpellSlots(newLevel, classData.caster_type);
 
-  // Aktuelle HP um den *Gewinn* erhöhen (nicht auf max setzen)
-  const newCurrentHP = (character.stats.hp || oldMaxHP) + finalHpGain;
-
-  // Entferne das pendingLevelUp-Flag und wende die Stats an
-  const { pendingLevelUp, ...restOfCharacter } = character;
-
+  // Aktualisiertes Charakter-Objekt
   const updatedCharacter = {
-    ...restOfCharacter,
+    ...character,
     level: newLevel,
-    abilities: newAbilities, // <-- NEUE Abilities (mit ASI)
-    subclassKey: newSubclassKey,
-    stats: {
-      ...character.stats,
-      maxHp: newMaxHP,
-      hp: newMaxHP,
-    },
-    // 5. Füge die neuen Fähigkeiten zu den bestehenden hinzu
+    subclass: newSubclassKey,
+    hp: newHp + (character.hp - character.maxHp), 
+    maxHp: newHp,
+    spellSlots: newSlots,
+    canLevelUp: false, 
     features: [
-      ...(character.features || []), // Alte Features
-      ...allNewFeatures             // Neue Features
+      ...(character.features || []), 
+      ...allNewFeatures            
     ],
+    // Ressourcen-Maximalwerte aktualisieren
+    resources: {
+      ...character.resources,
+      rage_uses: { 
+        ...character.resources.rage_uses,
+        max: character.classLogic.getMaxRageUses ? character.classLogic.getMaxRageUses(newLevel) : 0
+      },
+      bardic_inspiration: {
+        ...character.resources.bardic_inspiration,
+        max: character.classLogic.getMaxInspirationUses ? character.classLogic.getMaxInspirationUses() : 0 
+      },
+      ki_points: {
+        ...character.resources.ki_points,
+        max: character.classLogic.getMaxKiPoints ? character.classLogic.getMaxKiPoints(newLevel) : 0
+      },
+      sorcery_points: {
+        ...character.resources.sorcery_points,
+        max: character.classLogic.getMaxSorceryPoints ? character.classLogic.getMaxSorceryPoints(newLevel) : 0
+      },
+    }
   };
 
-  // Wichtig: Erneut prüfen, falls genug EP für *noch* einen Stufenaufstieg vorhanden sind
   return checkForLevelUp(updatedCharacter);
 };
 
 /**
  * VERGIBT ERFAHRUNGSPUNKTE (für die ganze Gruppe)
- * (Wiederhergestellt)
  */
 export const grantExperienceToParty = (party, defeatedEnemies) => {
   const totalXp = defeatedEnemies.reduce(
@@ -635,16 +457,11 @@ export const grantExperienceToParty = (party, defeatedEnemies) => {
 
 /**
  * GIBT EINEM CHARAKTER EP
- * (Wiederhergestellt)
  */
-export const grantXpToCharacter = (character, xpAmount) => {
-  if (!xpAmount || xpAmount <= 0) {
-    return character;
-  }
-  console.log(`${character.name} erhält ${xpAmount} EP.`);
-  const updatedChar = {
+export const grantExperience = (character, amount) => {
+  const updatedCharacter = {
     ...character,
-    experience: (character.experience || 0) + xpAmount,
+    experience: (character.experience || 0) + amount,
   };
-  return checkForLevelUp(updatedChar);
+  return checkForLevelUp(updatedCharacter);
 };

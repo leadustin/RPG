@@ -1,171 +1,210 @@
 import { getModifier, getProficiencyBonus } from '../../../utils/helpers';
+import spells from '../../../data/spells.json';
+import allFeatures from '../../../data/features.json';
+// Erforderlich für die Tiergestalt-Logik
+import beasts from '../../../data/beasts.json'; 
 
-// Zauberplätze (identisch mit Kleriker/Magier)
-const FULL_CASTER_SLOTS = [
-  { level: 1, slots: { 1: 2 } }, { level: 2, slots: { 1: 3 } }, { level: 3, slots: { 1: 4, 2: 2 } },
-  { level: 4, slots: { 1: 4, 2: 3 } }, { level: 5, slots: { 1: 4, 2: 3, 3: 2 } }, { level: 6, slots: { 1: 4, 2: 3, 3: 3 } },
-  { level: 7, slots: { 1: 4, 2: 3, 3: 3, 4: 1 } }, { level: 8, slots: { 1: 4, 2: 3, 3: 3, 4: 2 } },
-  { level: 9, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 } }, { level: 10, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 } },
-  { level: 11, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1 } }, { level: 12, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1 } },
-  { level: 13, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1 } }, { level: 14, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1 } },
-  { level: 15, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1 } }, { level: 16, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1 } },
-  { level: 17, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1 } }, { level: 18, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 1, 7: 1, 8: 1, 9: 1 } },
-  { level: 19, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 1, 8: 1, 9: 1 } },
-  { level: 20, slots: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 2, 8: 1, 9: 1 } },
-];
-
-/**
- * Kapselt die 5E-Logik für die Druiden-Klasse.
- */
 export class DruidLogic {
-  constructor(classData, allSpells, allBeasts) {
-    this.classData = classData; // Das Druiden-Objekt aus classes.json
-    this.allSpells = allSpells; // Die *gesamte* spells.json
-    this.allBeasts = allBeasts; // Die *gesamte* beasts.json
-    
-    this.classSpells = this.allSpells.filter(spell => spell.classes && spell.classes.includes('druid'));
+  
+  /**
+   * Erstellt eine Instanz der Druiden-Logik, die an einen bestimmten Charakter gebunden ist.
+   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
+   */
+  constructor(character) {
+    this.character = character;
+    // Ressourcen wie 'Wild Shape'-Nutzungen werden auf dem Haupt-Charakterobjekt gespeichert
+    // (z.B. character.resources.wild_shape)
   }
 
-  getHitPointsPerLevel() {
-    return 8;
+  // --- Hilfsmethode ---
+
+  /**
+   * Prüft schnell, ob der Charakter ein bestimmtes Feature besitzt.
+   * @param {string} featureKey - Der Schlüssel des Features (z.B. 'moon_combat_wild_shape').
+   * @returns {boolean}
+   */
+  hasFeature(featureKey) {
+    return this.character.features.includes(featureKey);
   }
+
+  // --- Grundlegende Zauberinformationen ---
 
   getSpellcastingAbility() {
     return 'wisdom';
   }
-  
+
+  getSpellSaveDC() {
+    const wisMod = getModifier(this.character.abilities.wisdom);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return 8 + profBonus + wisMod;
+  }
+
+  getSpellAttackBonus() {
+    const wisMod = getModifier(this.character.abilities.wisdom);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return profBonus + wisMod;
+  }
+
   getSavingThrowProficiencies() {
-    return this.classData.saving_throws; // ['intelligence', 'wisdom']
+    // Druiden sind in Intelligenz und Weisheit geübt.
+    return ['intelligence', 'wisdom'];
   }
 
-  getAllClassSpells() {
-    return this.classSpells;
-  }
+  // --- Zaubervorbereitung ---
 
-  getCantrips() {
-    return this.classSpells.filter(spell => spell.level === 0);
-  }
-
-  getKnownCantripsCount(level) {
-    if (level < 4) return 2;
-    if (level < 10) return 3;
-    return 4;
+  /**
+   * Berechnet die Anzahl der Zauber, die ein Druide vorbereiten kann.
+   * @returns {number}
+   */
+  getPreparedSpellsCount() {
+    const wisMod = getModifier(this.character.abilities.wisdom);
+    // Mindestens 1 Zauber
+    return Math.max(1, wisMod + this.character.level);
   }
 
   /**
-   * Berechnet die maximal vorbereitbaren Zauber.
-   * (Regel: Druiden-Stufe + Weisheits-Modifikator)
+   * Ruft die Zirkel-Zauber für die Unterklasse des Druiden ab (nur 'Zirkel des Landes').
+   * ANNAHME: spells.json enthält Einträge wie:
+   * { "key": "barkskin", ..., "circle_spell": { "class": "druid", "circle": "circle_of_the_land_forest", "level": 3 } }
+   * @returns {string[]}
    */
-  getMaxPreparedSpells(character) {
-    const wisModifier = getModifier(character.abilities.wisdom);
-    return Math.max(1, character.level + wisModifier); // Minimal 1 Zauber
-  }
-  
-  /**
-   * Holt die Domänenzauber (Zirkelzauber) für den Zirkel des Landes.
-   * @param {string} subclassKey - z.B. "circle_of_the_land"
-   * @param {number} level - Die Stufe des Druiden
-   * @returns {string[]} Eine Liste von Zauber-Schlüsseln (keys)
-   */
-  getCircleSpells(subclassKey, level) {
-    // TODO: Implementiere die Zirkelzauber-Listen (z.B. Arktis, Küste etc.)
-    // ähnlich wie die Domänenzauber des Klerikers.
-    // (Diese Zauber sind immer vorbereitet und zählen nicht gegen das Limit)
-    
-    // Beispiel (angenommen, 'Wald'-Zirkel wurde gewählt):
-    const forestSpells = {
-      3: ['barkskin', 'spider_climb'],
-      5: ['call_lightning', 'plant_growth'],
-      // ... etc.
-    };
-    
-    const circleSpells = [];
-    if (subclassKey === 'circle_of_the_land') {
-       // Hier müsste die Logik für den gewählten Land-Typ implementiert werden.
-       // Wir nehmen hier 'Wald' als Beispiel an:
-       for (const spellLevel in forestSpells) {
-         if (level >= parseInt(spellLevel, 10)) {
-           circleSpells.push(...forestSpells[spellLevel]);
-         }
-       }
+  getCircleSpells() {
+    if (!this.character.subclass || !this.character.subclass.startsWith('circle_of_the_land')) {
+      return [];
     }
-    return circleSpells;
+    
+    const maxLevel = this.character.spellSlots.maxLevel;
+    
+    return spells
+      .filter(s => 
+        s.circle_spell &&
+        s.circle_spell.class === 'druid' &&
+        s.circle_spell.circle === this.character.subclass && // z.B. 'circle_of_the_land_forest'
+        s.circle_spell.level <= maxLevel
+      )
+      .map(s => s.key);
   }
 
-  getSpellSlots(level) {
-    const entry = FULL_CASTER_SLOTS.find(p => p.level === level);
-    return entry ? entry.slots : {};
+  /**
+   * Ruft alle Zauber ab, die dem Druiden zur Vorbereitung zur Verfügung stehen.
+   * @returns {string[]} Array von Zauberschlüsseln.
+   */
+  getPreparableSpells() {
+    const maxLevel = this.character.spellSlots.maxLevel;
+    
+    const classSpells = spells
+      .filter(s => s.classes.includes('druid') && s.level <= maxLevel)
+      .map(s => s.key);
+
+    // Zirkelzauber (Land) werden automatisch hinzugefügt und gelten als immer vorbereitet
+    const circleSpells = this.getCircleSpells();
+    
+    // Duplikate entfernen und zurückgeben
+    return [...new Set([...classSpells, ...circleSpells])];
   }
 
-  getSpellSaveDC(character) {
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const wisModifier = getModifier(character.abilities.wisdom);
-    return 8 + proficiencyBonus + wisModifier;
-  }
-
-  getSpellAttackBonus(character) {
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const wisModifier = getModifier(character.abilities.wisdom);
-    return proficiencyBonus + wisModifier;
-  }
 
   // --- TIERGESTALT (WILD SHAPE) LOGIK ---
 
   /**
-   * Gibt die Anzahl der Tiergestalt-Nutzungen zurück.
-   * Regel: 2 pro kurzer oder langer Rast.
+   * Ruft das maximale CR-Limit für die Tiergestalt des Druiden ab.
+   * @returns {number} Das maximale CR (z.B. 0.25, 1, 5).
    */
-  getWildShapeUses(level) {
-    if (level < 2) return 0;
-    return 2;
+  getWildShapeCRLimit() {
+    const level = this.character.level;
+
+    // Zirkel des Mondes (liest 'moon_circle_forms' aus features.json)
+    if (this.hasFeature('moon_circle_forms')) {
+      // Regel: max(1, floor(level / 3))
+      return Math.max(1, Math.floor(level / 3));
+    }
+
+    // Basis-Druide
+    if (level >= 8) return 1;
+    if (level >= 4) return 0.5;
+    return 0.25;
   }
 
   /**
-   * Gibt den maximalen Herausforderungsgrad (CR) für die Tiergestalt zurück.
-   * (Diese Logik ist für Basis-Druiden, NICHT Zirkel des Mondes)
+   * Prüft Bewegungs-Einschränkungen (Fliegen/Schwimmen) für die Tiergestalt.
+   * @returns {object} { no_fly: boolean, no_swim: boolean }
    */
-  getWildShapeMaxCR(level) {
-    if (level < 4) return 0.25; // 1/4
-    if (level < 8) return 0.5; // 1/2
-    return 1.0;
+  getWildShapeSpeedRestrictions() {
+    const level = this.character.level;
+
+    // Zirkel des Mondes (hat anfangs Einschränkungen, die aufgehoben werden)
+    if (this.hasFeature('moon_circle_forms')) {
+      // Die CR-Beschränkungen (HG 1) heben die Schwimm/Flug-Beschränkungen
+      // der Basis-Klasse effektiv auf, aber die PHB-Regel für Mond-Druiden
+      // (Stufe 2-5) besagt, dass sie HG 1 wählen können, *solange es keine Fluggeschwindigkeit hat*.
+      // Ab Stufe 6 entfällt diese Einschränkung.
+      if (level < 6) {
+         // Diese Einschränkung ist in features.json für moon_circle_forms definiert
+         return { no_fly: true, no_swim: false }; 
+      }
+      return {}; // Keine Einschränkungen für Mond-Druiden ab Stufe 6
+    }
+
+    // Basis-Druide
+    if (level < 8) return { no_fly: true, no_swim: false };
+    if (level < 4) return { no_fly: true, no_swim: true };
+    return {}; // Keine Einschränkungen (Stufe 8+)
   }
 
   /**
-   * Filtert die 'beasts.json'-Liste, um nur gültige Formen für die Stufe des Druiden anzuzeigen.
-   * @param {number} level - Die Stufe des Druiden
-   * @param {string} subclassKey - (Wichtig für Zirkel des Mondes, noch nicht implementiert)
+   * Prüft, ob der Druide Tiergestalt als Bonusaktion nutzen kann.
+   * @returns {boolean}
    */
-  getAvailableWildShapes(level, subclassKey) {
-    if (level < 2) return [];
-
-    const maxCR = this.getWildShapeMaxCR(level);
-    
-    return this.allBeasts.filter(beast => {
-      // 1. CR-Prüfung
-      if (beast.cr > maxCR) return false;
-
-      // 2. Bewegungs-Prüfung (Basis-Druide)
-      if (level < 4 && (beast.movement.swim > 0 || beast.movement.fly > 0)) {
-         // Stufe 2-3: Kein Schwimmen, kein Fliegen
-         return false;
-      }
-      if (level < 8 && beast.movement.fly > 0) {
-         // Stufe 4-7: Kein Fliegen
-         return false;
-      }
-      
-      return true;
-    });
+  canUseWildShapeAsBonusAction() {
+    // Liest 'moon_combat_wild_shape' aus features.json
+    return this.hasFeature('moon_combat_wild_shape');
   }
   
   /**
-   * Implementiert "Natürliche Erholung" (Zirkel des Landes, Stufe 2).
-   * @param {number} druidLevel - Die Stufe des Druiden.
-   * @returns {number} Die Gesamtmenge an Zaubergraden, die wiederhergestellt werden kann (1x pro langer Rast).
+   * Prüft, ob der Druide in Tiergestalt Zauberplätze zum Heilen nutzen kann.
+   * @returns {boolean}
    */
-  getNaturalRecoveryValue(druidLevel) {
-    if (druidLevel < 2) return 0;
-    // Regel: Hälfte des Druiden-Levels, aufgerundet
-    return Math.max(1, Math.ceil(druidLevel / 2));
+  canHealInWildShape() {
+    // Liest 'moon_combat_wild_shape' aus features.json
+    return this.hasFeature('moon_combat_wild_shape');
+  }
+
+  /**
+   * Prüft, ob die Angriffe des Druiden in Tiergestalt als magisch gelten.
+   * @returns {boolean}
+   */
+  wildShapeAttacksAreMagical() {
+    // Liest 'moon_primal_strike' aus features.json
+    return this.hasFeature('moon_primal_strike');
+  }
+
+  /**
+   * Ruft eine Liste aller verfügbaren Tierformen ab, in die sich der Druide verwandeln kann,
+   * basierend auf CR-Limit und Bewegungs-Einschränkungen.
+   * @returns {string[]} Ein Array von Kreaturen-Schlüsseln (z.B. ['wolf', 'giant_eagle', 'fire_elemental']).
+   */
+  getAvailableWildShapeForms() {
+    const crLimit = this.getWildShapeCRLimit();
+    const restrictions = this.getWildShapeSpeedRestrictions();
+    
+    // Filtere alle Kreaturen aus beasts.json
+    let availableBeasts = beasts.filter(b => b.cr <= crLimit);
+
+    if (restrictions.no_fly) {
+      availableBeasts = availableBeasts.filter(b => !b.speed || !b.speed.fly);
+    }
+    if (restrictions.no_swim) {
+      availableBeasts = availableBeasts.filter(b => !b.speed || !b.speed.swim);
+    }
+
+    const beastKeys = availableBeasts.map(b => b.key);
+
+    // Füge Elementare hinzu, falls 'moon_elemental_wild_shape' vorhanden ist
+    if (this.hasFeature('moon_elemental_wild_shape')) {
+      // (Wir nehmen an, die Elementare sind in beasts.json oder einer anderen importierten Datei)
+      beastKeys.push('air_elemental', 'earth_elemental', 'fire_elemental', 'water_elemental');
+    }
+    
+    return beastKeys;
   }
 }

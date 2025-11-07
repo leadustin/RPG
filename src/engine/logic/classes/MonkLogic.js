@@ -1,120 +1,146 @@
 import { getModifier, getProficiencyBonus } from '../../../utils/helpers';
+import allFeatures from '../../../data/features.json'; 
+import spells from '../../../data/spells.json'; // Für Weg der 4 Elemente / Schatten
 
-// Skalierung des Kampfkunst-Schadenswürfels (Martial Arts Die)
-const MARTIAL_ARTS_DIE = [
-  { level: 1, die: '1d4' },
-  { level: 5, die: '1d6' },
-  { level: 11, die: '1d8' },
-  { level: 17, die: '1d10' },
-];
-
-/**
- * Kapselt die 5E-Logik für die Mönch-Klasse.
- */
 export class MonkLogic {
-  constructor(classData, allFeatures) {
-    this.classData = classData; // Das Mönch-Objekt aus classes.json
-    this.allFeatures = allFeatures; // Die *gesamte* features.json
+  
+  /**
+   * Erstellt eine Instanz der Mönch-Logik, die an einen bestimmten Charakter gebunden ist.
+   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
+   */
+  constructor(character) {
+    this.character = character;
+    // Ki-Punkte werden direkt auf dem Charakterobjekt verwaltet
+    // (z.B. character.resources.ki_points)
   }
 
-  getHitPointsPerLevel() {
-    return 8;
+  /**
+   * Prüft schnell, ob der Charakter ein bestimmtes Feature besitzt.
+   * @param {string} featureKey - Der Schlüssel des Features.
+   * @returns {boolean}
+   */
+  hasFeature(featureKey) {
+    return this.character.features.includes(featureKey);
   }
+
+  // --- Grundlegende Klassen-Informationen ---
 
   getSavingThrowProficiencies() {
-    return this.classData.saving_throws; // ['strength', 'dexterity']
+    // Mönche sind in Stärke und Geschicklichkeit geübt.
+    return ['strength', 'dexterity'];
   }
 
   /**
-   * Holt die spezifischen Fähigkeiten für die Stufe und Unterklasse.
+   * Berechnet die ungepanzerte Verteidigung des Mönchs.
+   * Regel: 10 + GES-Mod + WEI-Mod
+   * @returns {number|null} - Die RK oder null, wenn nicht anwendbar.
    */
-  getFeaturesForLevel(level, subclassKey) {
-    const features = [];
-    const baseFeatures = this.classData.features.filter(f => f.level === level);
-    features.push(...baseFeatures);
-
-    if (subclassKey) {
-      const subclass = this.classData.subclasses.find(sc => sc.key === subclassKey);
-      if (subclass) {
-        const subclassFeatures = subclass.features.filter(f => f.level === level);
-        features.push(...subclassFeatures);
-      }
+  getUnarmoredDefense() {
+    if (this.hasFeature('ungepanzerte_verteidigung_monk')) { // Annahme: Eindeutiger Key in classes.json
+      const dexMod = getModifier(this.character.abilities.dexterity);
+      const wisMod = getModifier(this.character.abilities.wisdom);
+      // (Die Spiel-Engine muss prüfen, ob Rüstung/Schild getragen wird)
+      return 10 + dexMod + wisMod;
     }
-    return features;
+    return null;
   }
 
-  // --- FÄHIGKEITEN-LOGIK ---
+  // --- RESSOURCEN-LOGIK (Ki) ---
 
   /**
-   * Gibt die Anzahl der Ki-Punkte zurück.
-   * Regel: Gleich der Mönch-Stufe (ab Stufe 2).
+   * Ruft die maximale Anzahl an Ki-Punkten ab.
+   * Regel: Entspricht dem Mönch-Level (außer auf Stufe 1).
+   * @returns {number}
    */
-  getKiPoints(level) {
-    if (level < 2) return 0;
+  getMaxKiPoints() {
+    const level = this.character.level;
+    if (level === 1) return 0;
     return level;
   }
 
   /**
-   * Berechnet den Rettungswurf-SG für Ki-Fähigkeiten (z.B. Betäubender Schlag).
-   * Regel: 8 + Übungsbonus + Weisheits-Modifikator
+   * Ruft den Schadenswürfel für Kampfkunst (unbewaffneter Schlag) ab.
+   * @returns {string} - Die Schadenswürfel-Notation (z.B. "1d4", "1d6").
    */
-  getKiSaveDC(character) {
-    const proficiencyBonus = getProficiencyBonus(character.level);
-    const wisModifier = getModifier(character.abilities.wisdom);
-    return 8 + proficiencyBonus + wisModifier;
+  getMartialArtsDice() {
+    const level = this.character.level;
+    if (level >= 17) return '1d10';
+    if (level >= 11) return '1d8';
+    if (level >= 5) return '1d6';
+    return '1d4';
   }
 
   /**
-   * Berechnet die Rüstungsklasse (AC) für 'Ungepanzerte Verteidigung' (Mönch).
-   * Regel: 10 + Geschicklichkeit-Mod + Weisheit-Mod (wenn keine Rüstung/Schild getragen wird)
+   * Wird aufgerufen, wenn der Mönch eine kurze oder lange Rast beendet.
+   * Füllt alle Ki-Punkte auf.
    */
-  getUnarmoredDefense(character) {
-    const dexModifier = getModifier(character.abilities.dexterity);
-    const wisModifier = getModifier(character.abilities.wisdom);
-    return 10 + dexModifier + wisModifier;
-  }
-
-  /**
-   * Gibt den Schadenswürfel für Kampfkunst (unbewaffnet/Mönchswaffe) zurück.
-   */
-  getMartialArtsDie(level) {
-    let die = '1d4';
-    for (const entry of MARTIAL_ARTS_DIE) {
-      if (level >= entry.level) {
-        die = entry.die;
-      }
+  onShortRest() {
+    // Ki-Punkte auffüllen
+    // (Annahme: character.resources.ki_points)
+    if (this.character.resources) {
+      this.character.resources.ki_points = this.getMaxKiPoints();
     }
-    return die;
+  }
+
+  // --- FÄHIGKEITEN-LOGIK (Wird von der Kampf-Engine aufgerufen) ---
+
+  /**
+   * Ruft die Kosten für eine bestimmte Ki-Fähigkeit ab.
+   * @param {string} featureKey - Der Schlüssel der Fähigkeit (z.B. 'betäubender_schlag', 'schattenkuenste').
+   * @returns {number|null} - Die Ki-Kosten oder null, wenn nicht gefunden.
+   */
+  getKiAbilityCost(featureKey) {
+    if (!this.hasFeature(featureKey)) return null;
+
+    // Standard-Ki-Fähigkeiten
+    switch (featureKey) {
+      case 'hagel_der_schlaege': // Flurry of Blows
+      case 'geduldige_verteidigung': // Patient Defense
+      case 'schritt_des_windes': // Step of the Wind
+        return 1;
+      case 'betäubender_schlag': // Stunning Strike
+        return 1;
+      case 'geschosse_ablenken_zurueckwerfen': // Deflect Missiles (Return)
+        return 1;
+      // (Weitere Kern-Ki-Fähigkeiten hier...)
+    }
+
+    // Subklassen-Ki-Fähigkeiten (aus features.json lesen)
+    const featureData = allFeatures.find(f => f.key === featureKey);
+    if (featureData && featureData.resource_cost && featureData.resource_cost.type === 'ki') {
+      return featureData.resource_cost.value;
+    }
+
+    return null;
   }
 
   /**
-   * Berechnet den Bonus auf die Bewegungsrate durch 'Ungepanzerte Bewegung'.
+   * Ruft den Rettungswurf-SG für Mönch-Fähigkeiten (z.B. Betäubender Schlag) ab.
+   * Regel: 8 + Übungsbonus + WEI-Mod
+   * @returns {number}
    */
-  getUnarmoredMovementBonus(level) {
-    if (level < 2) return 0;
-    if (level < 6) return 3; // +3m
-    if (level < 10) return 4.5; // +4,5m
-    if (level < 14) return 6; // +6m
-    if (level < 18) return 7.5; // +7,5m
-    return 9; // +9m
+  getKiSaveDC() {
+    const wisMod = getModifier(this.character.abilities.wisdom);
+    const profBonus = getProficiencyBonus(this.character.level);
+    return 8 + profBonus + wisMod;
   }
-  
+
   /**
-   * Berechnet den reduzierten Schaden durch 'Geschosse ablenken' (Stufe 3).
-   * Regel: 1W10 + Geschicklichkeits-Mod + Mönch-Level
+   * Prüft, ob der Mönch Angriffe mit Geschicklichkeit statt Stärke ausführen kann
+   * (für unbewaffnete Schläge und Mönchswaffen).
+   * @returns {boolean}
    */
-  getDeflectMissilesReduction(character) {
-    const dexModifier = getModifier(character.abilities.dexterity);
-    const roll = Math.floor(Math.random() * 10) + 1;
-    return roll + dexModifier + character.level;
+  canUseDexForAttacks() {
+    // 'Kampfkunst' (Stufe 1)
+    return this.character.level >= 1; 
   }
-  
+
   /**
-   * Berechnet die Heilung für 'Ganzheit des Körpers' (Stufe 6 / Weg der Offenen Hand).
-   * Regel: 3 * Mönch-Level
+   * Prüft, ob die unbewaffneten Schläge des Mönchs als magisch gelten.
+   * @returns {boolean}
    */
-  getWholenessOfBodyHeal(level) {
-      if (level < 6) return 0;
-      return level * 3;
+  unarmedStrikesAreMagical() {
+    // 'Ki-gestärkte Schläge' (Stufe 6)
+    return this.character.level >= 6;
   }
 }
