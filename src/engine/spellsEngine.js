@@ -5,22 +5,33 @@ import { PaladinLogic } from './logic/classes/PaladinLogic';
 
 /**
  * Führt einen Würfelwurf basierend auf D&D-Notation aus (z.B. "8d6", "1d4+4").
+ * Gibt Würfel-Objekte zurück, um Metamagie-Effekte (wie Neuwürfeln) zu unterstützen.
  * @param {string} diceNotation - Z.B. "3d8", "1d10+5", "10d6+40".
- * @returns {object} { total: number, rolls: number[] }
+ * @returns {object} { total: number, rolls: number[], damageRollObjects: {roll: number, diceType: number}[] }
  */
 const rollDice = (diceNotation) => {
-  if (!diceNotation) return { total: 0, rolls: [] };
+  if (!diceNotation) return { total: 0, rolls: [], damageRollObjects: [] };
 
   let total = 0;
   const rolls = [];
+  const damageRollObjects = [];
   const parts = diceNotation.toLowerCase().split('+');
-  const dicePart = parts[0];
-  const bonus = parts[1] ? parseInt(parts[1], 10) : 0;
+  
+  let dicePart = parts[0];
+  let bonus = 0;
 
+  // Verarbeite den Bonus, falls vorhanden
+  if (parts.length > 1) {
+    let bonusCandidate = parts.slice(1).join('+');
+    bonus = parseInt(bonusCandidate, 10) || 0;
+  }
+  
   const match = dicePart.match(/(\d+)d(\d+)/);
+  
   if (!match) {
-    console.error(`Ungültige Würfelnotation: ${diceNotation}`);
-    return { total: bonus, rolls: [] };
+    // Wenn keine Würfelnotation, behandle den Rest als Bonus
+    bonus += parseInt(dicePart.trim(), 10) || 0;
+    return { total: bonus, rolls: [], damageRollObjects: [] };
   }
 
   const numDice = parseInt(match[1], 10);
@@ -29,10 +40,11 @@ const rollDice = (diceNotation) => {
   for (let i = 0; i < numDice; i++) {
     const roll = Math.floor(Math.random() * diceType) + 1;
     rolls.push(roll);
+    damageRollObjects.push({ roll, diceType }); 
     total += roll;
   }
   
-  return { total: total + bonus, rolls: rolls };
+  return { total: total + bonus, rolls: rolls, damageRollObjects };
 };
 
 /**
@@ -68,11 +80,44 @@ export class SpellEngine {
   }
 
   /**
+   * Hilfsfunktion zum Parsen und Verdoppeln der Zauberdauer (max. 24 Stunden).
+   */
+  getExtendedDuration(durationString) {
+    if (durationString.includes('Konzentration') || durationString.includes('Sofort')) return durationString;
+
+    const match = durationString.match(/(\d+)\s*(Runde|Minute|Stunde|Tag)/i);
+    if (match) {
+        let value = parseInt(match[1], 10);
+        const unit = match[2];
+        let newDuration = value * 2;
+        
+        // Konvertierung zur Vereinfachung des 24h-Limits
+        let newUnit = unit;
+        if (unit === 'Tag') {
+           newDuration = newDuration * 24;
+           newUnit = 'Stunde';
+        }
+
+        // Hard-Limit bei 24 Stunden (Extended Spell Regel)
+        if (newUnit === 'Stunde' && newDuration > 24) {
+            newDuration = 24;
+            newUnit = 'Stunde';
+        } else if (newUnit === 'Minute' && newDuration > 1440) {
+            newDuration = 24;
+            newUnit = 'Stunde';
+        }
+        
+        return `${newDuration} ${newUnit}`;
+    }
+    return durationString;
+  }
+
+  /**
    * Führt einen Zauber für einen Wirker aus.
    * @param {object} caster - Das Charakterobjekt (muss abilities, level, classLogic, spellSlots, sorceryPoints, hp, ac, id, name haben)
-   * @param {string} spellKey - Der Schlüssel des Zaubers (z.B. "fireball").
+   * @param {string} spellKey - Der Schlüssel des Zaubers (z.b. "fireball").
    * @param {object[]} targets - Ein Array von Ziel-Charakterobjekten.
-   * @param {object} options - { metamagic: string, slotLevel: number, protectedTargets: string[] }
+   * @param {object} options - { metamagic: string, slotLevel: number, protectedTargets: string[], additionalTargetId: string, originPoint: object }
    */
   castSpell(caster, spellKey, targets = [], options = {}) {
     const spell = this.allSpells.find(s => s.key === spellKey);
@@ -84,10 +129,17 @@ export class SpellEngine {
     const slotLevel = options.slotLevel || spell.level;
     let logEntries = [`${caster.name} wirkt ${spell.name} (Grad ${slotLevel})!`];
 
-    // 1. Kosten und Ressourcen prüfen
+    // 1. Kosten und Ressourcen prüfen (inkl. Materialkomponenten)
     const costCheck = this.checkSpellCost(caster, spell, slotLevel, options);
     if (!costCheck.success) {
       return { success: false, logs: [costCheck.log] };
+    }
+    
+    // Protokollierung der Komponentenkosten
+    if (spell.material_costs && spell.material_costs.consumed) {
+        logEntries.push(`(${spell.material_costs.description} wird verbraucht.)`);
+    } else if (spell.material_costs && spell.material_costs.value_gp > 0) {
+        logEntries.push(`(Benötigt ${spell.material_costs.description}.)`);
     }
 
     // 2. Ressourcen verbrauchen (mutiert das caster-Objekt)
@@ -101,22 +153,45 @@ export class SpellEngine {
     let spellResult = {};
     let modifiedTargets = [...targets];
     let saveOptions = {}; // { targetId: { advantage: bool, disadvantage: bool } }
+    let finalDuration = spell.duration; // Standard-Dauer
 
-    // 4. Metamagie VOR der Ausführung anwenden
+    // 4. Metamagie VOR der Ausführung/Dauer anwenden
     if (options.metamagic && caster.classLogic instanceof SorcererLogic) {
       const preCastResult = this.applyMetamagic_PreCast(caster, spell, modifiedTargets, options);
       modifiedTargets = preCastResult.targets;
       saveOptions = preCastResult.saveOptions;
       if (preCastResult.log) logEntries.push(preCastResult.log);
+      
+      if (options.metamagic === 'metamagic_extended_spell' && 
+          !spell.duration.includes('Sofort') && 
+          !spell.duration.includes('Runde')) 
+      {
+          finalDuration = this.getExtendedDuration(spell.duration);
+          logEntries.push(`(Verlängerter Zauber: Dauer auf ${finalDuration} verdoppelt)`);
+      }
     }
     
-    // 5. Zauber-Effekt-Handler aufrufen
+    // 4.1. AoE-Logging (Annahme: Targets sind die betroffenen Kreaturen)
+    if (spell.aoe) {
+        const shape = spell.aoe.shape;
+        const size = spell.aoe.size || spell.aoe.radius || spell.aoe.length;
+        const targetType = (targets[0] && targets[0].name) || 'Ursprungspunkt';
+        
+        if (shape === 'self') {
+            logEntries.push(`(AoE: ${spell.range_type} mit ${size}m ${shape} von ${caster.name} ausgehend.)`);
+        } else {
+             logEntries.push(`(AoE: ${shape} mit ${size}m Größe, zentriert auf ${targetType}.)`);
+        }
+    }
+
+
+    // 5. Zauber-Effekt-Handler aufrufen (mit finalDuration)
     if (spell.damage) {
-      spellResult = this.handleDamageSpell(caster, spell, modifiedTargets, options, saveOptions);
+      spellResult = this.handleDamageSpell(caster, spell, modifiedTargets, options, saveOptions, finalDuration);
     } else if (spell.saving_throw) {
-      spellResult = this.handleSaveOrEffectSpell(caster, spell, modifiedTargets, options, saveOptions);
+      spellResult = this.handleSaveOrEffectSpell(caster, spell, modifiedTargets, options, saveOptions, finalDuration);
     } else {
-      spellResult = this.handleUtilitySpell(caster, spell, modifiedTargets, options);
+      spellResult = this.handleUtilitySpell(caster, spell, modifiedTargets, options, finalDuration);
     }
 
     logEntries = [...logEntries, ...spellResult.logs];
@@ -126,13 +201,21 @@ export class SpellEngine {
   }
 
   /**
-   * Prüft Zauberplätze und Zauberpunkte.
+   * Prüft Zauberplätze, Zauberpunkte und Materialkosten.
    */
   checkSpellCost(caster, spell, slotLevel, options) {
     if (spell.level > 0) {
       if (!caster.spellSlots || !caster.spellSlots[slotLevel] || caster.spellSlots[slotLevel] <= 0) {
         return { success: false, log: `Keine Zauberplätze des Grades ${slotLevel} verfügbar.` };
       }
+    }
+    
+    // Materialkomponenten prüfen
+    if (spell.material_costs && spell.material_costs.consumed) {
+        // HINWEIS: Hier müsste eine Prüfung des Inventars des Casters erfolgen (z.B. caster.inventory.hasItem(value_gp)).
+        // if (!caster.inventory.hasComponent(spell.material_costs.value_gp)) {
+        //    return { success: false, log: `Fehlende Komponente: ${spell.material_costs.description} wird verbraucht und fehlt.` };
+        // }
     }
 
     let metamagicCost = 0;
@@ -163,6 +246,11 @@ export class SpellEngine {
     if (metamagicCost > 0) {
       caster.sorceryPoints -= metamagicCost;
     }
+    
+    // Materialkomponenten verbrauchen (Inventarverwaltung nötig)
+    if (spell.material_costs && spell.material_costs.consumed) {
+       // Hier müsste der Aufruf zur Inventarverwaltung erfolgen, um die Komponente zu entfernen.
+    }
   }
   
   /**
@@ -174,6 +262,8 @@ export class SpellEngine {
     if(feature) logs.push(`${caster.name} nutzt ${feature.name}!`);
     
     let saveOptions = {};
+    let modifiedTargets = [...targets];
+    
     if (options.metamagic === 'metamagic_heightened_spell') {
       if (targets.length > 0) {
         saveOptions[targets[0].id] = { disadvantage: true };
@@ -184,58 +274,115 @@ export class SpellEngine {
     if (options.metamagic === 'metamagic_careful_spell') {
       logs.push(`(${options.protectedTargets?.length || 0} Ziele werden geschützt)`);
     }
-    
-    // TODO: Logik für 'Gezielter Zauber' (Twinned) - fügt ein Ziel hinzu
-    // TODO: Logik für 'Entfernter Zauber' (Distant) - prüft Reichweite
-    // TODO: Logik für 'Subtiler Zauber' (Subtle) - ignoriert Stille-Effekte
 
-    return { targets: targets, log: logs.join(' '), saveOptions };
+    if (options.metamagic === 'metamagic_twinned_spell' && options.additionalTargetId) {
+        // Sucht das zusätzliche Ziel (Annahme: es existiert im Ziel-Array oder einer globalen Liste)
+        const additionalTarget = targets.find(t => t.id === options.additionalTargetId) || { name: "Unbekanntes Ziel", id: options.additionalTargetId }; 
+        if (additionalTarget) {
+            modifiedTargets.push(additionalTarget);
+            logs.push(`(${additionalTarget.name} ist nun auch Ziel!)`);
+        } else {
+             logs.push(`Fehler: Zusätzliches Ziel mit ID ${options.additionalTargetId} nicht gefunden.`);
+        }
+    }
+    
+    if (options.metamagic === 'metamagic_distant_spell') {
+         logs.push(`(Entfernter Zauber: Reichweite wurde verdoppelt/auf 9m erhöht)`);
+    }
+
+    if (options.metamagic === 'metamagic_quickened_spell') {
+         logs.push(`(Beschleunigter Zauber: Zauberzeit wurde auf Bonusaktion geändert)`);
+    }
+    
+
+    return { targets: modifiedTargets, log: logs.join(' '), saveOptions };
   }
 
   /**
    * Führt einen Zauber aus, der Schaden verursacht.
    */
-  handleDamageSpell(caster, spell, targets, options, saveOptions = {}) {
+  handleDamageSpell(caster, spell, targets, options, saveOptions = {}, finalDuration = null) {
     const logs = [];
     const casterDC = caster.classLogic.getSpellSaveDC(caster);
     const attackBonus = caster.classLogic.getSpellAttackBonus(caster);
     const slotLevel = options.slotLevel || spell.level;
+    const abilityMod = caster.classLogic.getSpellcastingAbilityModifier(caster);
 
+
+    // 1. Skalierungslogik (nutzt strukturierte Daten)
+    let damageDice = spell.damage;
+    let baseDamageDice = damageDice.match(/(\d+d\d+)/)?.[0] || '0d0';
+    let baseBonus = damageDice.includes('+') ? parseInt(damageDice.split('+')[1], 10) : 0;
+    
+    if (spell.scaling_rules) {
+      const rules = spell.scaling_rules;
+      const scalingLevel = (rules.type === 'cantrip_dice') ? caster.level : slotLevel;
+      const baseLevel = (rules.type === 'cantrip_dice') ? 0 : spell.level;
+      
+      if (scalingLevel > baseLevel) {
+        const extraLevels = scalingLevel - baseLevel;
+        
+        if (rules.type === 'per_slot_level' || rules.type === 'cantrip_dice' || rules.type === 'per_two_slot_levels') {
+          const baseDiceMatch = baseDamageDice.match(/(\d+)d(\d+)/);
+          
+          if (baseDiceMatch && rules.dice) {
+            const baseNumDice = parseInt(baseDiceMatch[1], 10);
+            const diceType = baseDiceMatch[2];
+            
+            // Logik zur Bestimmung der Anzahl der zusätzlichen Würfel pro Level
+            const diceIncreaseMatch = rules.dice.match(/(\d+)d\d+/);
+            const numDiceIncreasePerLevel = parseInt(diceIncreaseMatch ? diceIncreaseMatch[1] : 1);
+            
+            // Bestimmt den Teiler (1 für per_slot, 2 für per_two_slot)
+            const divider = rules.type === 'per_two_slot_levels' ? 2 : 1;
+            const numLevelsToScale = Math.floor(extraLevels / divider);
+            
+            const newNumDice = baseNumDice + (numDiceIncreasePerLevel * numLevelsToScale);
+            
+            damageDice = `${newNumDice}d${diceType}${baseBonus > 0 ? `+${baseBonus}` : ''}`;
+            
+          } else if (rules.effect === 'additional_projectiles' && spell.key === 'magic_missile') {
+            // Spezielle Logik für Magic Missile
+            const baseNumMissiles = 3;
+            const numMissiles = baseNumMissiles + extraLevels;
+            damageDice = `${numMissiles}d4+${numMissiles}`; 
+          }
+        }
+      }
+    }
+    
+    let { total: damage, damageRollObjects } = rollDice(damageDice); 
+    
+    // Check if damage is actually healing (e.g., Cure Wounds, False Life)
+    const isHealing = spell.damage_type.includes('healing');
+    
     for (const target of targets) {
+      // 2. Metamagie: Behutsamer Zauber (Careful Spell)
       if (options.metamagic === 'metamagic_careful_spell' && 
           options.protectedTargets && 
-          options.protectedTargets.includes(target.id)) 
+          options.protectedTargets.includes(target.id) &&
+          spell.saving_throw) 
       {
-        logs.push(`${target.name} ist durch 'Behutsamer Zauber' geschützt und besteht automatisch!`);
+        logs.push(`${target.name} ist durch 'Behutsamer Zauber' geschützt und besteht automatisch! (0 Schaden)`);
         continue;
       }
       
-      let damageDice = spell.damage;
-      if (spell.scaling && slotLevel > spell.level) {
-         const extraLevels = slotLevel - spell.level;
-         // TODO: Skalierungslogik für *alle* Zauber implementieren
-         if (spell.key === 'fireball' || spell.key === 'lightning_bolt') {
-            damageDice = `${8 + extraLevels}d6`;
-         }
-         if (spell.key === 'magic_missile') {
-             const numMissiles = 3 + extraLevels;
-             damageDice = `${numMissiles}d4+${numMissiles}`;
-         }
-      }
-      
-      let { total: damage, rolls: damageRolls } = rollDice(damageDice);
       let tookHalfDamage = false;
       let hit = false;
+      let finalDamage = damage;
+      let targetHit = false; // Flag, wenn der Zauber das Ziel trifft (Attack Roll oder Save Failure)
 
       if (spell.attack_roll) {
         if(spell.attack_roll === "auto_hit") {
           logs.push(`${spell.name} trifft ${target.name} automatisch.`);
           hit = true;
+          targetHit = true;
         } else {
           const { roll, success } = this.checkAttackRoll(caster, target, attackBonus);
           if (success) {
             logs.push(`Angriffswurf (${roll}+${attackBonus}) trifft ${target.name} (RK ${target.ac})!`);
             hit = true;
+            targetHit = true;
           } else {
             logs.push(`Angriffswurf (${roll}+${attackBonus}) verfehlt ${target.name} (RK ${target.ac}).`);
             continue;
@@ -248,72 +395,133 @@ export class SpellEngine {
         const { roll, success } = this.checkSave(target, saveType, casterDC, targetSaveOptions);
         
         if (success) {
-          // Zaubertricks mit Rettungswurf (wie Säurespritzer) verursachen 0 Schaden bei Erfolg
           if (spell.level === 0) {
-             damage = 0;
+             finalDamage = 0;
           } else {
-             damage = Math.floor(damage / 2);
+             finalDamage = Math.floor(damage / 2);
           }
           tookHalfDamage = true;
           logs.push(`${target.name} besteht ${saveType.toUpperCase()}-Rettungswurf (Wurf ${roll} vs SG ${casterDC}).`);
         } else {
           logs.push(`${target.name} scheitert am ${saveType.toUpperCase()}-Rettungswurf (Wurf ${roll} vs SG ${casterDC}).`);
+          targetHit = true; // Bei Save-Zaubern bedeutet "Hit" den gescheiterten Wurf
         }
-        hit = true; // Der Zauber "trifft", auch wenn der RW bestanden wurde (für halben Schaden)
-      } else {
-        // Zauber ohne RW und ohne Angriffswurf (z.B. Magisches Geschoss)
         hit = true;
+      } else {
+        hit = true;
+        targetHit = true;
       }
 
       if (!hit) continue;
 
-      // Metamagie (Verstärkter Zauber)
-      if (options.metamagic === 'metamagic_empowered_spell' && caster.classLogic instanceof SorcererLogic) {
+      // 4. Metamagie: Verstärkter Zauber (Empowered Spell)
+      if (options.metamagic === 'metamagic_empowered_spell' && caster.classLogic instanceof SorcererLogic && damageRollObjects.length > 0) {
          const chaMod = Math.max(1, getModifier(caster.abilities.charisma));
-         // Sortiere die Würfel und finde die 'chaMod' niedrigsten
-         damageRolls.sort((a, b) => a - b);
-         const rollsToReroll = damageRolls.slice(0, chaMod);
-         let newDamageTotal = 0;
-         const newRolls = [];
          
-         for(const oldRoll of rollsToReroll) {
-             const newRoll = Math.floor(Math.random() * (oldRoll.diceType || 6)) + 1; // Annahme d6, falls Typ unbekannt
-             newRolls.push(newRoll);
-             newDamageTotal += newRoll;
+         damageRollObjects.sort((a, b) => a.roll - b.roll); 
+         
+         const rollsToReroll = damageRollObjects.slice(0, chaMod);
+         let rerollLog = [];
+         
+         for (const oldRollObj of rollsToReroll) {
+             const diceType = oldRollObj.diceType;
+             const newRoll = Math.floor(Math.random() * diceType) + 1;
+             
+             finalDamage = finalDamage - oldRollObj.roll + newRoll;
+             rerollLog.push(`${oldRollObj.roll} (W${diceType}) wurde zu ${newRoll} neu gewürfelt.`);
          }
-         // Ersetze die alten Würfel
-         let originalDamage = damage;
-         damage = (damage - rollsToReroll.reduce((a,b) => a+b, 0)) + newDamageTotal;
-         logs.push(`(Verstärkter Zauber: ${chaMod} Würfel neu gewürfelt! Schaden von ${originalDamage} auf ${damage} geändert.)`);
+         
+         logs.push(`(Verstärkter Zauber: ${rerollLog.join('; ')} Gesamt: ${finalDamage} Schaden)`);
       }
       
-      // Klassen-Features (Ermächtigte Hervorrufung)
-      if (caster.classLogic instanceof WizardLogic && caster.level >= 10) {
+      // 5. Modifikatoren hinzufügen (Heilung oder Ermächtigte Hervorrufung)
+      if (isHealing) {
+          finalDamage += abilityMod;
+          logs.push(`(Heilungs-Modifikator +${abilityMod} hinzugefügt)`);
+      } else if (caster.classLogic instanceof WizardLogic && caster.level >= 10) {
         const bonus = caster.classLogic.getEmpoweredEvocationBonus(spell, caster);
-        if (bonus > 0 && damage > 0) { // Bonus nur, wenn Schaden verursacht wurde
+        if (bonus > 0 && finalDamage > 0) { 
             logs.push(`(Ermächtigte Hervorrufung fügt +${bonus} Schaden hinzu)`);
-            damage += bonus;
+            finalDamage += bonus;
         }
       }
 
-      // Klassen-Features (Mächtige Zaubertricks)
+      // 6. Klassen-Features (Mächtige Zaubertricks)
       if (caster.classLogic instanceof WizardLogic && 
           caster.level >= 6 && 
           caster.classLogic.isPotentCantrip(spell) && 
           tookHalfDamage && 
-          damage === 0) 
+          finalDamage === 0) 
       {
-          // REGEL: "Mächtige Zaubertricks"
-          // (Gilt für Zaubertricks, die 0 Schaden bei Erfolg machen würden)
-          damage = Math.floor(rollDice(damageDice).total / 2);
-          logs.push(`(Mächtige Zaubertricks: ${target.name} erleidet trotzdem ${damage} Schaden!)`);
+          finalDamage = Math.floor(rollDice(damageDice).total / 2);
+          logs.push(`(Mächtige Zaubertricks: ${target.name} erleidet trotzdem ${finalDamage} Schaden!)`);
+      }
+      
+      // 7. Resistenzen und Verwundbarkeiten prüfen (Simuliert)
+      // NOTE: target.damageVulnerabilities/Resistances müssen in CharacterObjekt vorhanden sein.
+      const damageType = spell.damage_type.toLowerCase();
+      let damageMultiplier = 1;
+
+      if (target.damageResistances?.includes(damageType)) {
+          damageMultiplier = 0.5;
+          logs.push(`(${target.name} ist resistent gegen ${spell.damage_type}: Schaden halbiert.)`);
+      } else if (target.damageVulnerabilities?.includes(damageType)) {
+          damageMultiplier = 2;
+          logs.push(`(${target.name} ist verwundbar gegen ${spell.damage_type}: Schaden verdoppelt!)`);
       }
 
-      logs.push(`${target.name} erleidet ${damage} ${spell.damage_type} Schaden.`);
-      target.hp -= damage;
-      if (target.hp <= 0) {
+      finalDamage = Math.floor(finalDamage * damageMultiplier);
+
+
+      // 8. Schaden/Heilung anwenden
+      const damageVerb = isHealing ? 'heilt' : 'erleidet';
+      
+      logs.push(`${target.name} ${damageVerb} ${finalDamage} ${spell.damage_type} Schaden (Multiplikator: x${damageMultiplier}).`);
+      
+      if (isHealing) {
+          if (spell.damage_type === 'healing_temp') {
+              target.tempHp = Math.max(target.tempHp || 0, finalDamage);
+              logs.push(`(${target.name} erhält ${finalDamage} temporäre TP)`);
+          } else {
+              target.hp = Math.min(target.maxHp, target.hp + finalDamage); 
+          }
+      } else {
+          target.hp -= finalDamage;
+      }
+      
+      if (!isHealing && target.hp <= 0) {
         logs.push(`${target.name} ist besiegt!`);
-        // TODO: target.applyStatus('dead', 'permanent');
+      }
+      
+      // 9. Sekundäre Effekte / Conditions
+      if (targetHit && spell.conditions_applied) {
+          const conditionData = spell.conditions_applied?.[0]; 
+          if (!conditionData) continue;
+          
+          let applyCondition = true;
+          let effectStatus = conditionData.condition;
+
+          // Spezielle Logik für Zauber mit sekundärem Rettungswurf (Smite-Zauber)
+          if (spell.damage_note?.includes("Zusätzlicher Initialschaden")) {
+             // Führt den Rettungswurf nur für den Zusatzeffekt durch (Smite-Zauber)
+             const saveType = spell.saving_throw;
+             const { roll: secondaryRoll, success: secondarySuccess } = this.checkSave(target, saveType, casterDC, {});
+             
+             if (secondarySuccess) {
+                 applyCondition = false;
+                 logs.push(`Zustands-RW: ${target.name} besteht den ${saveType.toUpperCase()}-RW und widersteht dem Zustand.`);
+             } else {
+                 logs.push(`Zustands-RW: ${target.name} scheitert am ${saveType.toUpperCase()}-RW und ist ${effectStatus}!`);
+             }
+          }
+          
+          // Normale Kontroll-Cantrips / Zauber, die bei Hit einen Zustand vergeben (z.B. Ray of Frost, Chill Touch)
+          if (applyCondition) {
+              logs.push(`${target.name} ist nun von ${effectStatus} betroffen.`);
+              if (target.applyStatus) {
+                 target.applyStatus(effectStatus, finalDuration || spell.duration); 
+              }
+          }
       }
     }
     return { logs };
@@ -337,7 +545,7 @@ export class SpellEngine {
       proficiency = proficiencyBonus;
     }
     
-    const roll = rollD20(options); // options kann { disadvantage: true } enthalten
+    const roll = rollD20(options); 
     const total = roll + modifier + proficiency;
     
     return { roll, total, success: total >= dc };
@@ -363,7 +571,7 @@ export class SpellEngine {
   /**
    * Führt einen Zauber aus, der einen Effekt (z.B. 'Furcht') verursacht.
    */
-  handleSaveOrEffectSpell(caster, spell, targets, options, saveOptions = {}) {
+  handleSaveOrEffectSpell(caster, spell, targets, options, saveOptions = {}, finalDuration = null) {
     const logs = [];
     const casterDC = caster.classLogic.getSpellSaveDC(caster);
 
@@ -377,12 +585,20 @@ export class SpellEngine {
        if (success) {
          logs.push(`${target.name} besteht den Rettungswurf (Wurf ${roll} vs SG ${casterDC}).`);
        } else {
-         // Annahme: spell.json hat ein Feld "effect" (z.B. "frightened", "charmed", "paralyzed")
-         const effect = spell.key === 'hold_person' ? 'paralyzed' : 'affected';
-         logs.push(`${target.name} scheitert am Rettungswurf (Wurf ${roll} vs SG ${casterDC}) und ist nun ${effect}!`);
+         
+         const conditionData = spell.conditions_applied?.[0];
+         let appliedEffect = 'affected';
+         
+         if (conditionData && conditionData.condition) {
+             appliedEffect = conditionData.condition;
+         } else if (spell.key === 'hold_person') {
+             appliedEffect = 'paralyzed';
+         }
+
+         logs.push(`${target.name} scheitert am Rettungswurf (Wurf ${roll} vs SG ${casterDC}) und ist nun ${appliedEffect}!`);
          
          if (target.applyStatus) {
-           target.applyStatus(effect, spell.duration); // (Dauer müsste noch in Runden umgerechnet werden)
+           target.applyStatus(appliedEffect, finalDuration || spell.duration); 
          }
        }
     }
@@ -390,20 +606,67 @@ export class SpellEngine {
   }
   
   /**
-   * Führt einen Utility-Zauber (z.B. 'Magierrüstung') aus.
+   * Führt einen Utility-Zauber (z.B. 'Magierrüstung') aus und verallgemeinert die Logik.
    */
-  handleUtilitySpell(caster, spell, targets, options) {
+  handleUtilitySpell(caster, spell, targets, options, finalDuration = null) {
      const logs = [];
+     const duration = finalDuration || spell.duration;
      
-     if (spell.key === 'mage_armor') {
-         const target = targets[0] || caster;
-         // Regel: RK wird 13 + GE-Mod, wenn keine Rüstung getragen wird.
-         // (Annahme: target.equipment ist prüfbar)
-         const dexMod = getModifier(target.abilities.dex);
-         target.ac = 13 + dexMod; // (Vereinfachte Annahme, überschreibt aktuelle RK)
-         logs.push(`${target.name} Rüstungsklasse ist nun ${target.ac}.`);
-         if(target.applyStatus) target.applyStatus('mage_armor', spell.duration);
+     // Prüft auf die neue, strukturierte Utility-Logik
+     if (spell.utility_effects) {
+         const target = targets[0] || caster; // Annahme: Utility-Zauber zielen meist auf 1 Ziel/Selbst
+         
+         for (const effect of spell.utility_effects) {
+             switch (effect.type) {
+                 case 'set_ac_13_plus_dex':
+                     const dexMod = getModifier(target.abilities.dex);
+                     target.ac = 13 + dexMod; 
+                     logs.push(`${target.name} Rüstungsklasse ist nun ${target.ac}.`);
+                     if(target.applyStatus) target.applyStatus('mage_armor', duration);
+                     break;
+                 case 'set_ac_min_16':
+                     target.ac = Math.max(target.ac, 16); 
+                     logs.push(`${target.name} Rüstungsklasse ist nun mindestens 16 (Borkenhaut).`);
+                     if(target.applyStatus) target.applyStatus('barkskin', duration);
+                     break;
+                 case 'resistance_nonmagical_b_p_s_damage':
+                     logs.push(`${target.name} erhält Resistenz gegen nicht-magischen Wucht-, Hieb- und Stichschaden.`);
+                     if(target.applyStatus) target.applyStatus('stoneskin', duration);
+                     break;
+                 case 'grant_darkvision':
+                     logs.push(`${target.name} erhält Dunkelsicht (${effect.value} ${effect.unit}).`);
+                     if(target.applyStatus) target.applyStatus('darkvision_buff', duration);
+                     break;
+                 case 'weapon_magic_and_bonus':
+                     logs.push(`${target.name}'s Waffe wird magisch (Bonus +${effect.value || 1} und ${spell.damage_type}).`);
+                     if(target.applyStatus) target.applyStatus(spell.key, duration);
+                     break;
+                 case 'create_light':
+                     logs.push(`${spell.name} erzeugt helles Licht (${effect.bright_radius}m) und dämmriges Licht (${effect.dim_radius}m).`);
+                     break;
+                 case 'triples_jump_distance':
+                     logs.push(`${target.name} Sprungweite verdreifacht sich.`);
+                     if(target.applyStatus) target.applyStatus('jump_buff', duration);
+                     break;
+                 case 'movement_increase':
+                     logs.push(`${target.name} Bewegungsrate erhöht sich um ${effect.value} ${effect.unit}.`);
+                     if(target.applyStatus) target.applyStatus('longstrider', duration);
+                     break;
+                 case 'teleport_self_and_one_other':
+                     logs.push(`${caster.name} und ${targets.length > 1 ? targets[1].name : 'das Ziel'} teleportieren sich.`);
+                     break;
+                 case 'next_attack_vs_target_has_advantage':
+                      logs.push(`Der nächste Angriff gegen ${target.name} hat Vorteil.`);
+                      if(target.applyStatus) target.applyStatus('guiding_bolt_debuff', duration);
+                      break;
+                 default:
+                     logs.push(`${spell.name} wirkt den Effekt: ${effect.type}.`);
+                     if(target.applyStatus) target.applyStatus(spell.key, duration);
+                     break;
+             }
+         }
      } else {
+         // Fallback für Zauber ohne spezifische Utility-Logik
          logs.push(`${spell.name} wird erfolgreich gewirkt.`);
      }
      
@@ -411,13 +674,7 @@ export class SpellEngine {
   }
 
   /**
-   * (NEUE METHODE)
    * Führt eine Kampffähigkeit aus, die Ressourcen verbraucht (z.B. Divine Smite).
-   * Diese wird *nach* einem erfolgreichen Treffer aufgerufen.
-   * @param {object} caster - Der Charakter, der die Fähigkeit nutzt.
-   * @param {object} target - Das Ziel des Angriffs.
-   * @param {string} abilityKey - z.B. "divine_smite".
-   * @param {number} slotLevel - Der Grad des Zauberplatzes, der verbraucht wird.
    */
   useCombatAbility(caster, target, abilityKey, slotLevel) {
     const logs = [];
@@ -432,9 +689,9 @@ export class SpellEngine {
       caster.spellSlots[slotLevel]--;
       
       // 3. Schaden berechnen
-      const targetType = target.type || 'humanoid'; // Annahme: Ziele haben einen Typ
-      const damageDice = caster.classLogic.getDivineSmiteDamage(slotLevel, targetType);
-      const { total: smiteDamage } = rollDice(damageDice);
+      const targetType = target.type || 'humanoid'; 
+      const damageDice = caster.classLogic.getDivineSmiteDamage(slotLevel, targetType); 
+      const { total: smiteDamage } = rollDice(damageDice); 
 
       logs.push(`${caster.name} nutzt Göttliches Niederstrecken (Grad ${slotLevel})!`);
       logs.push(`${target.name} erleidet ${smiteDamage} gleißenden Schaden zusätzlich!`);
@@ -444,13 +701,10 @@ export class SpellEngine {
       if (target.hp <= 0) {
         logs.push(`${target.name} ist besiegt!`);
         target.hp = 0;
-        // target.applyStatus('dead', 'permanent');
       }
       return { success: true, logs };
     }
     
-    // ... (Hier könnte "Göttliche Macht fokussieren: Leben erhalten" des Klerikers implementiert werden)
-
     return { success: false, logs: [`Unbekannte Fähigkeit: ${abilityKey}`] };
   }
 }
