@@ -60,12 +60,7 @@ export const EventLog = ({ entries = [] }) => {
     width: 400,
     height: 300,
   }));
-  const [toggleButtonPosition, setToggleButtonPosition] = useState(() => 
-    loadFromStorage('eventLog_toggleButtonPosition', { x: 180, y: window.innerHeight - 80 })
-  );
   const [lastSeenCount, setLastSeenCount] = useState(entries.length);
-  const [isDraggingToggle, setIsDraggingToggle] = useState(false);
-  const toggleDragStart = useRef({ x: 0, y: 0 });
   const listRef = useRef(null);
 
   // Filter-Handler mit localStorage
@@ -111,10 +106,6 @@ export const EventLog = ({ entries = [] }) => {
     saveToStorage('eventLog_size', size);
   }, [size]);
 
-  useEffect(() => {
-    saveToStorage('eventLog_toggleButtonPosition', toggleButtonPosition);
-  }, [toggleButtonPosition]);
-
   // Neue Einträge zählen
   const newEntriesCount = useMemo(() => {
     return isVisible ? 0 : Math.max(0, entries.length - lastSeenCount);
@@ -150,67 +141,14 @@ export const EventLog = ({ entries = [] }) => {
     }
   }, [entries]);
 
-  // Toggle Button Drag Handler
-  const handleToggleMouseDown = (e) => {
-    e.preventDefault();
-    setIsDraggingToggle(true);
-    toggleDragStart.current = {
-      x: e.clientX - toggleButtonPosition.x,
-      y: e.clientY - toggleButtonPosition.y,
-      startX: e.clientX,
-      startY: e.clientY
-    };
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (isDraggingToggle) {
-        setToggleButtonPosition({
-          x: e.clientX - toggleDragStart.current.x,
-          y: e.clientY - toggleDragStart.current.y
-        });
-      }
-    };
-
-    const handleMouseUp = (e) => {
-      if (isDraggingToggle) {
-        // Prüfen ob es ein Drag war oder nur ein Click
-        const deltaX = Math.abs(e.clientX - toggleDragStart.current.startX);
-        const deltaY = Math.abs(e.clientY - toggleDragStart.current.startY);
-        
-        // Wenn weniger als 5px bewegt wurde, als Click behandeln
-        if (deltaX < 5 && deltaY < 5) {
-          setIsVisible(true);
-        }
-        
-        setIsDraggingToggle(false);
-      }
-    };
-
-    if (isDraggingToggle) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDraggingToggle]);
-
   return (
     <>
       {/* Toggle Button wenn Log ausgeblendet */}
       {!isVisible && (
         <button
           className="event-log-toggle-btn"
-          style={{
-            left: `${toggleButtonPosition.x}px`,
-            top: `${toggleButtonPosition.y}px`,
-            cursor: isDraggingToggle ? 'grabbing' : 'grab'
-          }}
-          onMouseDown={handleToggleMouseDown}
-          title="Ereignis-Log einblenden (ziehbar)"
+          onClick={() => setIsVisible(true)}
+          title="Ereignis-Log einblenden"
         >
           📋 Log
           {newEntriesCount > 0 && (
