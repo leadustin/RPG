@@ -384,14 +384,7 @@ const CharacterSheet = ({
         )}
 
         {activeTab === "Spells" && (
-          <section className="spells-section">
-            <div className="spells-header">
-              <h2>Zauberbuch</h2>
-            </div>
-            <div className="spells-content">
-              <p>Hier werden bald die Zauber angezeigt.</p>
-            </div>
-          </section>
+          <SpellbookTab character={character} />
         )}
 
         {activeTab === "Inventory" && (
@@ -770,6 +763,10 @@ const CharacterSheet = ({
           </div> {/* Ende .stats-column-right */}
         </aside>
       )} {/* Ende activeTab === "Inventory" */}
+      {/* --- ZAUBERBUCH-TAB --- */}
+      {activeTab === "spellbook" && (
+        <SpellbookTab character={character} />
+      )}
       </main>
     </div>
   );

@@ -1,6 +1,8 @@
-import { getModifier, getProficiencyBonus, rollD20 } from '../../../utils/helpers';
+import { rollDiceFormula } from '../../../utils/helpers';
+import { getAbilityModifier, getProficiencyBonus } from '../../characterEngine';
 import spells from '../../../data/spells.json';
 import allFeatures from '../../../data/features.json'; 
+import allClassData from '../../../data/classes.json';
 
 export class WizardLogic {
   
@@ -31,7 +33,7 @@ export class WizardLogic {
    * Wird beim Erstellen der Logik-Instanz aufgerufen.
    */
   initializeFeatureResources() {
-    const intMod = getModifier(this.character.abilities.intelligence);
+    const intMod = getAbilityModifier(this.character.abilities.intelligence);
     
     // Arkanen Schutz initialisieren
     if (this.character.features.includes('abjuration_arcane_ward')) {
@@ -53,13 +55,13 @@ export class WizardLogic {
   }
 
   getSpellSaveDC() {
-    const intMod = getModifier(this.character.abilities.intelligence);
+    const intMod = getAbilityModifier(this.character.abilities.intelligence);
     const profBonus = getProficiencyBonus(this.character.level);
     return 8 + profBonus + intMod;
   }
 
   getSpellAttackBonus() {
-    const intMod = getModifier(this.character.abilities.intelligence);
+    const intMod = getAbilityModifier(this.character.abilities.intelligence);
     const profBonus = getProficiencyBonus(this.character.level);
     return profBonus + intMod;
   }
@@ -76,27 +78,50 @@ export class WizardLogic {
    * @returns {number}
    */
   getPreparedSpellsCount() {
-    const intMod = getModifier(this.character.abilities.intelligence);
+    const intMod = getAbilityModifier(this.character.abilities.intelligence);
     // Mindestens 1 Zauber
     return Math.max(1, intMod + this.character.level);
   }
 
   /**
-   * Ruft alle Zauber aus dem Zauberbuch des Magiers ab.
-   * HINWEIS: Dies ist eine Vereinfachung. Eine vollständige Implementierung
-   * würde ein `character.spellbook`-Array anstelle der gesamten Magier-Zauberliste verwenden.
-   * @returns {string[]} Array von Zauberschlüsseln.
-   */
-  getSpellbookSpells() {
-    // TODO: Später durch `character.spellbook` ersetzen.
-    // Fürs Erste nehmen wir an, das Zauberbuch enthält alle Magier-Zauber,
-    // die der Charakter wirken kann.
-    const maxLevel = this.character.spellSlots.maxLevel;
-    
+ * Ruft alle Zauber aus dem Zauberbuch des Magiers ab.
+ * HINWEIS: Dies ist eine Vereinfachung. Eine vollständige Implementierung
+ * würde ein `character.spellbook`-Array anstelle der gesamten Magier-Zauberliste verwenden.
+ * @returns {string[]} Array von Zauberschlüsseln.
+ */
+getSpellbookSpells() {
+    // --- NEUE LOGIK ZUR ERMITTLUNG DES MAX. ZAUBERLEVELS ---
+
+    // 1. Finde die Klassendaten des Magiers
+    const classData = allClassData.find(c => c.key === this.character.class.key);
+    if (!classData || !classData.spellcasting) {
+        console.warn("Keine Spelldaten für Klasse gefunden:", this.character.class.key);
+        return [];
+    }
+
+    // 2. Finde die Zauber-Slots für das aktuelle Level des Charakters
+    // (z.B. Level 2 -> Index 1)
+    const slotsAtCurrentLevel = classData.spellcasting.spell_slots_by_level[this.character.level - 1];
+
+    let maxLevel = 0; // Zaubertricks (Level 0) sind immer verfügbar
+
+    // 3. Finde den höchsten Zaubergrad, für den der Charakter Slots hat
+    // (Wir gehen die Slot-Liste von hinten durch)
+    for (let i = slotsAtCurrentLevel.length - 1; i >= 0; i--) {
+        if (slotsAtCurrentLevel[i] > 0) {
+            maxLevel = i + 1; // +1, da 'i' 0-basiert ist (Slot 1 ist bei Index 0)
+            break;
+        }
+    }
+    // Für einen Stufe 2 Magier: slots = [3, 0, 0...]. 
+    // Die Schleife findet i=0 (3 Slots). maxLevel wird 0+1 = 1.
+    // Das ist korrekt (kann Stufe 1 Zauber).
+
+    // 4. Filtere die Zauberliste
     return spells
-      .filter(s => s.classes.includes('wizard') && s.level <= maxLevel)
-      .map(s => s.key);
-  }
+        .filter(s => s.classes.includes('wizard') && s.level <= maxLevel)
+        .map(s => s.key);
+}
   
   // --- Feature-Logik (Wird von der SpellEngine aufgerufen) ---
 
@@ -111,7 +136,7 @@ export class WizardLogic {
     
     // Prüfen, ob das Feature vorhanden ist UND der Zauber von der Schule der Hervorrufung ist
     if (hasFeature && spell.school === 'evocation') {
-      return getModifier(this.character.abilities.intelligence);
+      return getAbilityModifier(this.character.abilities.intelligence);
     }
     return 0;
   }
@@ -163,7 +188,7 @@ export class WizardLogic {
     }
 
     for (let i = 0; i < diceCount; i++) {
-      this.portentDice.push(rollD20());
+      this.portentDice.push(rollDiceFormula("1d20"));
     }
   }
 
