@@ -5,16 +5,48 @@
     "level": 0,
     "school": "conjuration",
     "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
     "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Du schleuderst eine Säureblase. Wähle 1 oder 2 Kreaturen in Reichweite (max 1,5m voneinander entfernt). Ziel muss GE-Rettungswurf bestehen oder 1W6 Säureschaden erleiden.",
-    "scaling": "Der Schaden erhöht sich um 1W6 auf Stufe 5 (2W6), 11 (3W6) und 17 (4W6).",
-    "damage": "1d6",
-    "damage_type": "acid",
-    "saving_throw": "dexterity",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+
+    "//": "--- UI-Felder (Für Tooltips) ---",
+    "ui_casting_time": "1 Aktion",
+    "ui_range": "18 Meter",
+    "ui_duration": "Sofort",
+    "ui_description": "Du schleuderst eine Säureblase. Wähle 1 oder 2 Kreaturen in Reichweite (max 1,5m voneinander entfernt). Ziel muss GE-Rettungswurf bestehen oder 1W6 Säureschaden erleiden.",
+    "ui_scaling": "Der Schaden erhöht sich um 1W6 auf Stufe 5 (2W6), 11 (3W6) und 17 (4W6).",
+
+    "//": "--- Logik-Felder (Für Engine) ---",
+    "casting_time": "ACTION",
+    "range_m": 18,
+    "duration": "INSTANTANEOUS",
+    "target": {
+      "type": "CREATURE",
+      "shape": "POINT",
+      "count": 2,
+      "max_distance_between_targets_m": 1.5
+    },
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage": {
+          "dice": "1d6",
+          "type": "acid"
+        },
+        "saving_throw": {
+          "ability": "dexterity",
+          "effect_on_success": "NEGATES_DAMAGE"
+        },
+        "scaling": {
+          "type": "CANTRIP",
+          "dice_at_levels": {
+            "1": "1d6",
+            "5": "2d6",
+            "11": "3d6",
+            "17": "4d6"
+          }
+        }
+      }
+    ]
   },
   {
     "key": "chill_touch",
@@ -22,16 +54,57 @@
     "level": 0,
     "school": "necromancy",
     "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
     "components": ["V", "S"],
-    "duration": "1 Runde",
-    "description": "Eine geisterhafte Skeletthand greift nach einer Kreatur. Führe einen Fernkampf-Zauberangriff aus. Bei Treffer: 1W8 nekrotischer Schaden. Das Ziel kann bis zum Ende deines nächsten Zuges keine Trefferpunkte regenerieren. Untote Ziele haben zudem Nachteil auf Angriffswürfe gegen dich.",
-    "scaling": "Schaden erhöht sich auf 2W8 (Stufe 5), 3W8 (Stufe 11) und 4W8 (Stufe 17).",
-    "damage": "1d8",
-    "damage_type": "necrotic",
-    "attack_roll": "ranged_spell",
-    "classes": ["sorcerer", "warlock", "wizard"]
+    "classes": ["sorcerer", "warlock", "wizard"],
+
+    "//": "--- UI-Felder (Für Tooltips) ---",
+    "ui_casting_time": "1 Aktion",
+    "ui_range": "36 Meter",
+    "ui_duration": "1 Runde",
+    "ui_description": "Eine geisterhafte Skeletthand greift nach einer Kreatur. Führe einen Fernkampf-Zauberangriff aus. Bei Treffer: 1W8 nekrotischer Schaden. Das Ziel kann bis zum Ende deines nächsten Zuges keine Trefferpunkte regenerieren. Untote Ziele haben zudem Nachteil auf Angriffswürfe gegen dich.",
+    "ui_scaling": "Schaden erhöht sich auf 2W8 (Stufe 5), 3W8 (Stufe 11) und 4W8 (Stufe 17).",
+
+    "//": "--- Logik-Felder (Für Engine) ---",
+    "casting_time": "ACTION",
+    "range_m": 36,
+    "duration": "1_ROUND",
+    "target": {
+      "type": "CREATURE",
+      "shape": "POINT",
+      "count": 1
+    },
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "attack_roll": "RANGED_SPELL",
+        "damage": {
+          "dice": "1d8",
+          "type": "necrotic"
+        },
+        "scaling": {
+          "type": "CANTRIP",
+          "dice_at_levels": {
+            "1": "1d8",
+            "5": "2d8",
+            "11": "3d8",
+            "17": "4d8"
+          }
+        }
+      },
+      {
+        "type": "APPLY_CONDITION",
+        "condition": "CANNOT_REGENERATE_HP",
+        "duration_turns": 1,
+        "on_hit": true 
+      },
+      {
+        "type": "APPLY_CONDITION",
+        "condition": "DISADVANTAGE_ON_ATTACK",
+        "duration_turns": 1,
+        "on_hit": true,
+        "target_filter": "UNDEAD"
+      }
+    ]
   },
   {
     "key": "dancing_lights",

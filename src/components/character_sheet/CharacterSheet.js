@@ -17,6 +17,7 @@ import {
 import { LEVEL_XP_TABLE } from "../../utils/helpers";
 import InventoryItem from "./InventoryItem";
 import EquipmentSlot from "./EquipmentSlot";
+import SpellbookTab from './SpellbookTab';
 import { ItemTypes } from "../../dnd/itemTypes";
 import InventoryFilter from "./InventoryFilter";
 import allClassData from "../../data/classes.json";

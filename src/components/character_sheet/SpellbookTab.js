@@ -36,15 +36,25 @@ const SpellbookTab = ({ character }) => {
             return <div className="spell-details-placeholder">Wähle einen Zauber aus, um Details anzuzeigen.</div>;
         }
 
+        // NEU: Greift auf die 'ui_'-Felder zu, wenn vorhanden, sonst Fallback
+        const castingTime = selectedSpell.ui_casting_time || selectedSpell.casting_time;
+        const range = selectedSpell.ui_range || selectedSpell.range;
+        const duration = selectedSpell.ui_duration || selectedSpell.duration;
+        const description = selectedSpell.ui_description || selectedSpell.description;
+        const scaling = selectedSpell.ui_scaling || selectedSpell.scaling; // ui_scaling ist neu
+        const components = selectedSpell.components || [];
+
         return (
             <div className="spell-details">
                 <h3>{selectedSpell.name}</h3>
-                <p><em>{selectedSpell.school} {selectedSpell.level > 0 ? `(Grad ${selectedSpell.level})` : ' (Cantrip)'}</em></p>
-                <p><strong>Zauberdauer:</strong> {selectedSpell.casting_time}</p>
-                <p><strong>Reichweite:</strong> {selectedSpell.range}</p>
-                <p><strong>Komponenten:</strong> {selectedSpell.components.join(', ')}</p>
-                <p><strong>Dauer:</strong> {selectedSpell.duration}</p>
-                <p>{selectedSpell.description}</p>
+                <p><em>{selectedSpell.school} {selectedSpell.level > 0 ? `(Grad ${selectedSpell.level})` : ' (Zaubertrick)'}</em></p>
+                <p><strong>Zauberdauer:</strong> {castingTime}</p>
+                <p><strong>Reichweite:</strong> {range}</p>
+                <p><strong>Komponenten:</strong> {components.join(', ')}</p>
+                <p><strong>Dauer:</strong> {duration}</p>
+                <br/>
+                <p>{description}</p>
+                {scaling && <p><strong>Skalierung:</strong> {scaling}</p>}
             </div>
         );
     };

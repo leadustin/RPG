@@ -14,11 +14,10 @@ import {
   calculateAC,
   grantXpToCharacter,
   applyLevelUp,
-  rollDiceFormula,
 } from "../engine/characterEngine";
 import allRaceData from "../data/races.json";
 import locationsData from "../data/locations.json";
-
+import { rollDiceFormula } from "../utils/helpers";
 // Item-Daten importieren
 import armorData from "../data/items/armor.json";
 import weaponsData from "../data/items/weapons.json";

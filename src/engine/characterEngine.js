@@ -1,6 +1,6 @@
 import allArmor from "../data/items/armor.json";
 import allClassData from "../data/classes.json";
-import { LEVEL_XP_TABLE } from "../utils/helpers";
+import { LEVEL_XP_TABLE, rollDiceFormula } from "../utils/helpers";
 
 /**
  * Berechnet den Modifikator für einen Attributswert.
@@ -365,46 +365,6 @@ export const SKILL_DESCRIPTIONS_DE = {
     "Heimlichkeit (Geschicklichkeit): Die Fähigkeit, sich ungesehen und ungehört an anderen vorbeizuschleichen.",
   survival:
     "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden.",
-};
-
-// --- *** 4. NEUE/WIEDERHERGESTELLTE FUNKTIONEN AB HIER *** ---
-
-/**
- * HILFSFUNKTION: Würfelt eine Würfelformel (z.B. "1d8" oder "1d10+2").
- */
-export const rollDiceFormula = (formula) => {
-  let total = 0;
-  const parts = formula.split(/([+-])/); // Trennt nach + oder -
-
-  // Würfel-Teil (z.B. "1d8")
-  const dicePart = parts[0];
-  const [numDiceStr, numSidesStr] = dicePart.split("d");
-  const numDice = parseInt(numDiceStr, 10) || 1;
-  const numSides = parseInt(numSidesStr, 10);
-
-  if (!isNaN(numSides)) {
-    for (let i = 0; i < numDice; i++) {
-      total += Math.floor(Math.random() * numSides) + 1;
-    }
-  } else {
-    // Falls es kein Würfelwurf ist, sondern nur eine Zahl (sollte nicht passieren)
-    total += parseInt(dicePart, 10) || 0;
-  }
-
-  // Bonus-Teil (z.B. "+2" oder "-1")
-  if (parts[1] && parts[2]) {
-    const operator = parts[1];
-    const bonus = parseInt(parts[2], 10);
-    if (!isNaN(bonus)) {
-      if (operator === "+") {
-        total += bonus;
-      } else if (operator === "-") {
-        total -= bonus;
-      }
-    }
-  }
-
-  return total;
 };
 
 /**
