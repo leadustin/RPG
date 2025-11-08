@@ -1,17 +1,13 @@
 import { rollDiceFormula } from '../../../utils/helpers';
 import { getAbilityModifier, getProficiencyBonus } from '../../characterEngine';
 import spells from '../../../data/spells.json';
-import allFeatures from '../../../data/features.json'; 
-import allClassData from '../../../data/classes.json';
+import allClassData from '../../../data/classes.json'; 
 
 export class WizardLogic {
   
-  /**
-   * Erstellt eine Instanz der Magier-Logik, die an einen bestimmten Charakter gebunden ist.
-   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
-   */
   constructor(character) {
     this.character = character;
+    this.features = character.features || []; // Sicherstellen, dass features ein Array ist
 
     // --- Feature-spezifische Ressourcen initialisieren ---
     
@@ -28,15 +24,10 @@ export class WizardLogic {
     this.initializeFeatureResources();
   }
 
-  /**
-   * Initialisiert Ressourcen, die von Features gewährt werden (z.B. Arkaner Schutz).
-   * Wird beim Erstellen der Logik-Instanz aufgerufen.
-   */
   initializeFeatureResources() {
     const intMod = getAbilityModifier(this.character.abilities.intelligence);
     
-    // Arkanen Schutz initialisieren
-    if (this.character.features.includes('abjuration_arcane_ward')) {
+    if (this.features.includes('abjuration_arcane_ward')) {
       const maxHp = (this.character.level * 2) + intMod;
       this.arcaneWard = {
         currentHp: maxHp,
@@ -44,7 +35,6 @@ export class WizardLogic {
       };
     }
     
-    // Omen-Würfel initialisieren (wird bei langer Rast neu gewürfelt)
     this.rollPortentDice();
   }
 
@@ -67,91 +57,82 @@ export class WizardLogic {
   }
 
   getSavingThrowProficiencies() {
-    // Magier sind in Intelligenz und Weisheit geübt.
     return ['intelligence', 'wisdom'];
   }
 
-  // --- Zaubervorbereitung ---
-
   /**
    * Berechnet die Anzahl der Zauber, die ein Magier vorbereiten kann.
-   * @returns {number}
    */
   getPreparedSpellsCount() {
     const intMod = getAbilityModifier(this.character.abilities.intelligence);
-    // Mindestens 1 Zauber
     return Math.max(1, intMod + this.character.level);
   }
 
   /**
- * Ruft alle Zauber aus dem Zauberbuch des Magiers ab.
- * HINWEIS: Dies ist eine Vereinfachung. Eine vollständige Implementierung
- * würde ein `character.spellbook`-Array anstelle der gesamten Magier-Zauberliste verwenden.
- * @returns {string[]} Array von Zauberschlüsseln.
- */
-getSpellbookSpells() {
-    // --- NEUE LOGIK ZUR ERMITTLUNG DES MAX. ZAUBERLEVELS ---
-
-    // 1. Finde die Klassendaten des Magiers
-    const classData = allClassData.find(c => c.key === this.character.class.key);
+   * NEU: Helper function, die alle relevanten Zauberdaten liefert (Slots, Max Level, Cantrips).
+   */
+  getSpellcastingData() {
+    const cleanClassKey = this.character.class.key.split(' ')[0];
+    const classData = allClassData.find(c => c.key === cleanClassKey);
+    
     if (!classData || !classData.spellcasting) {
-        console.warn("Keine Spelldaten für Klasse gefunden:", this.character.class.key);
-        return [];
+        // Fallback-Objekt für den Fall, dass die Daten fehlen
+        return { slots: [], maxLevel: 0, cantripCount: 0 }; 
     }
 
-    // 2. Finde die Zauber-Slots für das aktuelle Level des Charakters
-    // (z.B. Level 2 -> Index 1)
-    const slotsAtCurrentLevel = classData.spellcasting.spell_slots_by_level[this.character.level - 1];
+    const levelIndex = this.character.level - 1;
+    const spellcasting = classData.spellcasting;
+    
+    // Slots (Länge 9: Index 0 = Level 1, Index 8 = Level 9)
+    // Fallback: Wenn Level zu hoch für Slot-Array ist, ist es leer
+    const slotsAtCurrentLevel = spellcasting.spell_slots_by_level[levelIndex] || [];
+    
+    let maxLevel = 0;
+    // Cantrips
+    const cantripCount = spellcasting.cantrip_progression[levelIndex] || 0;
 
-    let maxLevel = 0; // Zaubertricks (Level 0) sind immer verfügbar
-
-    // 3. Finde den höchsten Zaubergrad, für den der Charakter Slots hat
-    // (Wir gehen die Slot-Liste von hinten durch)
+    // Finde den höchsten Zaubergrad, für den der Charakter Slots hat
     for (let i = slotsAtCurrentLevel.length - 1; i >= 0; i--) {
         if (slotsAtCurrentLevel[i] > 0) {
             maxLevel = i + 1; // +1, da 'i' 0-basiert ist (Slot 1 ist bei Index 0)
             break;
         }
     }
-    // Für einen Stufe 2 Magier: slots = [3, 0, 0...]. 
-    // Die Schleife findet i=0 (3 Slots). maxLevel wird 0+1 = 1.
-    // Das ist korrekt (kann Stufe 1 Zauber).
 
-    // 4. Filtere die Zauberliste
+    return { 
+        slots: slotsAtCurrentLevel, 
+        maxLevel: maxLevel, 
+        cantripCount: cantripCount,
+        spellcastingAbility: spellcasting.casting_ability
+    };
+  }
+
+  /**
+   * Ruft alle Zauber aus dem Zauberbuch des Magiers ab (Nur Schlüssel).
+   */
+  getSpellbookSpells() {
+    // Nutze den neuen Helper
+    const { maxLevel } = this.getSpellcastingData(); 
+    
     return spells
         .filter(s => s.classes.includes('wizard') && s.level <= maxLevel)
         .map(s => s.key);
-}
+  }
   
-  // --- Feature-Logik (Wird von der SpellEngine aufgerufen) ---
+  // --- Feature-Logik (unten unverändert) ---
 
-  /**
-   * Prüft, ob der Magier 'Ermächtigte Hervorrufung' hat und gibt den Bonus zurück.
-   * (Wird von der SpellEngine aufgerufen)
-   * @param {object} spell - Das Zauberobjekt, das gewirkt wird.
-   * @returns {number} Der zusätzliche Schadensbonus (INT-Mod).
-   */
   getEmpoweredEvocationBonus(spell) {
-    const hasFeature = this.character.features.includes('empowered_evocation');
+    const hasFeature = this.features.includes('empowered_evocation');
     
-    // Prüfen, ob das Feature vorhanden ist UND der Zauber von der Schule der Hervorrufung ist
     if (hasFeature && spell.school === 'evocation') {
       return getAbilityModifier(this.character.abilities.intelligence);
     }
     return 0;
   }
 
-  /**
-   * Prüft, ob der Magier 'Mächtige Zaubertricks' hat.
-   * (Wird von der SpellEngine aufgerufen)
-   * @param {object} spell - Das Zauberobjekt, das gewirkt wird.
-   * @returns {boolean}
-   */
   isPotentCantrip(spell) {
-    const hasFeature = this.character.features.includes('potent_cantrip');
+    const hasFeature = this.features.includes('potent_cantrip');
     
-    // Prüfen, ob das Feature vorhanden ist, es ein Zaubertrick ist UND
-    // (gemäß unserer features.json) von der Schule der Hervorrufung ist.
     if (hasFeature && spell.level === 0 && spell.school === 'evocation') {
       return true;
     }
@@ -160,30 +141,21 @@ getSpellbookSpells() {
   
   // --- Ressourcen-Management für Features ---
 
-  /**
-   * Wird aufgerufen, wenn der Magier eine lange Rast beendet.
-   * Füllt Feature-Ressourcen wieder auf.
-   */
   onLongRest() {
-    // Omen-Würfel neu würfeln
     this.rollPortentDice();
     
-    // Arkanen Schutz wieder voll aufladen
-    if (this.character.features.includes('abjuration_arcane_ward')) {
+    if (this.features.includes('abjuration_arcane_ward')) {
       this.arcaneWard.currentHp = this.arcaneWard.maxHp;
     }
   }
 
-  /**
-   * Würfelt die Omen-Würfel (Portent) und speichert sie.
-   */
   rollPortentDice() {
     this.portentDice = [];
     let diceCount = 0;
     
-    if (this.character.features.includes('divination_portent_lvl_14')) {
+    if (this.features.includes('divination_portent_lvl_14')) {
       diceCount = 3;
-    } else if (this.character.features.includes('divination_portent_lvl_2')) {
+    } else if (this.features.includes('divination_portent_lvl_2')) {
       diceCount = 2;
     }
 
@@ -192,11 +164,6 @@ getSpellbookSpells() {
     }
   }
 
-  /**
-   * Verbraucht einen Omen-Würfel.
-   * @param {number} diceValue - Der Wert des Würfels, der verbraucht wird.
-   * @returns {boolean} - True bei Erfolg, False wenn der Würfel nicht gefunden wurde.
-   */
   usePortentDice(diceValue) {
     const index = this.portentDice.indexOf(diceValue);
     if (index > -1) {
@@ -206,14 +173,9 @@ getSpellbookSpells() {
     return false;
   }
 
-  /**
-   * Wird von der SpellEngine aufgerufen, wenn der Magier einen Bannzauber wirkt.
-   * Lädt den Arkanen Schutz wieder auf.
-   * @param {number} spellLevel - Der Grad des gewirkten Bannzaubers.
-   */
   rechargeArcaneWard(spellLevel) {
-    if (!this.character.features.includes('abjuration_arcane_ward') || spellLevel === 0) {
-      return 0; // Nichts zu tun
+    if (!this.features.includes('abjuration_arcane_ward') || spellLevel === 0) {
+      return 0;
     }
     
     const rechargeAmount = spellLevel * 2;
@@ -224,11 +186,6 @@ getSpellbookSpells() {
     return rechargeAmount;
   }
 
-  /**
-   * Wird aufgerufen, wenn der Arkane Schutz Schaden nimmt.
-   * @param {number} damageAmount - Die Höhe des Schadens.
-   * @returns {number} - Der verbleibende Schaden, der "durchbricht".
-   */
   damageArcaneWard(damageAmount) {
     if (this.arcaneWard.currentHp === 0) {
       return damageAmount;

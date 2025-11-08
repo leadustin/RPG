@@ -1,26 +1,32 @@
 import React, { useState, useMemo } from 'react';
 import './SpellbookTab.css';
-import spellsEngine from '../../engine/spellsEngine'; // Importiere die Instanz
-import { WizardLogic } from '../../engine/logic/classes/WizardLogic'; // Importiere die Logik
+import spellsEngine from '../../engine/spellsEngine';
+import { WizardLogic } from '../../engine/logic/classes/WizardLogic'; 
 
 const SpellbookTab = ({ character }) => {
     const [selectedSpell, setSelectedSpell] = useState(null);
-
-    // Erstelle eine Logik-Instanz, um auf die Zauberliste zuzugreifen
     const logic = useMemo(() => new WizardLogic(character), [character]);
 
-    // Memoisiere die gruppierten Zauber, um sie nicht bei jedem Rendern neu zu berechnen
+    // NEU: Hole die gesamten Zauberdaten inklusive Slots
+    const spellcastingData = useMemo(() => {
+        // Hole die berechneten Daten von der Logic-Klasse
+        if (logic.getSpellcastingData) {
+             return logic.getSpellcastingData();
+        }
+        return { slots: [], maxLevel: 0, cantripCount: 0 };
+    }, [logic]);
+
+
+    // Memoisiere die gruppierten Zauber (wie zuvor)
     const spellsByLevel = useMemo(() => {
         if (!character || !logic) {
             return {};
         }
-
-        // Wir holen die Zauber direkt von der Logik-Klasse
-        // (Diese Funktion wurde repariert, um das Level des Charakters zu nutzen)
+        
+        // Hole die Zauberkeys über die Logik
         const knownSpellKeys = logic.getSpellbookSpells(); 
-
+        
         return knownSpellKeys.reduce((acc, spellKey) => {
-            // KORREKTUR: getSpell(spellKey) statt getSpellById(spellId)
             const spell = spellsEngine.getSpell(spellKey); 
             
             if (spell) {
@@ -32,7 +38,7 @@ const SpellbookTab = ({ character }) => {
             }
             return acc;
         }, {});
-    }, [character, logic]); // Abhängig von character und logic
+    }, [character, logic]);
 
     const handleSpellClick = (spell) => {
         setSelectedSpell(spell);
@@ -66,17 +72,58 @@ const SpellbookTab = ({ character }) => {
         );
     };
 
+    // NEU: Funktion zur Anzeige der Zauberslots
+    const renderSpellSlots = () => {
+        const slots = spellcastingData.slots;
+        const maxSpellLevel = spellcastingData.maxLevel;
+        const cantripCount = spellcastingData.cantripCount;
+        
+        const slotDisplays = [];
+
+        // Cantrips (Zaubertricks)
+        if (cantripCount > 0) {
+            slotDisplays.push(
+                <div key="cantrips" className="spell-slot-info cantrip-slot">
+                    Bekannte Zaubertricks: <span className="slot-count">{cantripCount}</span>
+                </div>
+            );
+        }
+
+        // Zauberslots (Level 1 bis maxLevel)
+        // Wir iterieren bis maxLevel (z.B. Level 1 für einen Stufe 2 Magier)
+        for (let i = 0; i < maxSpellLevel; i++) {
+            const level = i + 1;
+            const maxSlots = slots[i];
+            
+            // Annahme: Aktuell verfügbare Slots sind gleich Max Slots (kein Zustand für verbrauchte Slots)
+            const currentSlots = maxSlots; 
+
+            slotDisplays.push(
+                <div key={level} className="spell-slot-info">
+                    Grad {level} Slots: <span className="slot-count">{currentSlots}/{maxSlots}</span>
+                </div>
+            );
+        }
+
+        if (slotDisplays.length === 0) {
+            return <p className="spell-slot-container">Keine Zauberplätze oder Zaubertricks bekannt.</p>;
+        }
+
+        return <div className="spell-slot-container">{slotDisplays}</div>;
+    };
+
+
     return (
         <div className="spellbook-tab">
             <div className="spell-list-container">
                 <h2>Zauberbuch</h2>
-                {/* Sortiere die Level numerisch */}
-                {Object.keys(spellsByLevel).sort((a, b) => a - b).map(level => (
+                {renderSpellSlots()} {/* NEU: Slots anzeigen */}
+                
+                {Object.keys(spellsByLevel).sort((a, b) => a - b).map(level => ( 
                     <div key={level} className="spell-level-section">
                         <h3>{level > 0 ? `Grad ${level}` : 'Zaubertricks (Grad 0)'}</h3>
                         <ul className="spell-list">
                             {spellsByLevel[level].map(spell => (
-                                // KORREKTUR: spell.key statt spell.id
                                 <li key={spell.key} onClick={() => handleSpellClick(spell)}>
                                     {spell.name}
                                  </li>
