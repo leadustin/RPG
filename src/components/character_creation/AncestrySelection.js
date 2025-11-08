@@ -1,35 +1,48 @@
-// src/components/AncestrySelection.js
+// src/components/character_creation/AncestrySelection.js
 import React from 'react';
-import './SubraceSelection.css'; // Wir können die gleichen Stile wiederverwenden
 import './PanelDetails.css';
+import './RaceSelection.css'; // Wiederverwendung der Stile für 'race-grid'
 
-export const AncestrySelection = ({ character, updateCharacter }) => {
-  const { race, ancestry } = character;
+// Diese Komponente erwartet jetzt die spezifischen Props statt des ganzen "character"-Objekts
+
+export const AncestrySelection = ({ ancestries, selectedAncestry, onAncestrySelect }) => {
+
+  if (!ancestries || ancestries.length === 0) {
+    return <div className="panel-details">Für dieses Volk sind keine Abstammungen verfügbar.</div>;
+  }
 
   return (
-    <div className="subrace-container">
-      <h2>Wähle eine Abstammung für {race.name}</h2>
-      <p>Deine Wahl bestimmt den Schadenstyp deiner Odemwaffe und deiner Schadensresistenz.</p>
-      <div className="details-divider"></div>
-      <div className="ancestry-grid">
-        {race.ancestries.map(anc => (
+    <div className="ancestry-selection-container panel-details">
+      <h3>Abstammung wählen</h3>
+      <p className="panel-details-description">
+        Wähle die Abstammung deines Drachenblütigen. Dies bestimmt deinen Odem-Angriff und deine Schadensresistenz.
+      </p>
+      <div className="race-grid">
+        {ancestries.map((ancestry) => (
           <button
-            key={anc.key}
-            className={`subrace-button ${ancestry?.key === anc.key ? 'selected' : ''}`}
-            onClick={() => updateCharacter({ ancestry: anc })}
+            key={ancestry.key}
+            className={`race-button ${
+              selectedAncestry?.key === ancestry.key ? "selected" : ""
+            }`}
+            onClick={() => onAncestrySelect(ancestry)}
           >
-            {anc.name}
+            <span>{ancestry.name}</span>
           </button>
         ))}
       </div>
-      
-      {ancestry && (
-        <div className="subrace-details">
+
+      {/* Zeigt die Details der ausgewählten Abstammung an */}
+      {selectedAncestry && (
+        <div className="ancestry-details">
           <div className="details-divider"></div>
-          <h3>{ancestry.name} Drache</h3>
-          <ul className="features-list">
-            <li><strong>Schadensresistenz:</strong> {ancestry.damage_type}</li>
-            <li><strong>Odemwaffe:</strong> {ancestry.breath_weapon}</li>
+          <h4>{selectedAncestry.name}</h4>
+          <ul className="traits-list">
+            <li>
+              <strong>Schadensresistenz:</strong> {selectedAncestry.damage_resistance_type}
+            </li>
+            <li>
+              <strong>Odemwaffe:</strong> {selectedAncestry.breath_weapon_description}
+            </li>
           </ul>
         </div>
       )}

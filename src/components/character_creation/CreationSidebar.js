@@ -1,4 +1,4 @@
-// src/components/CreationSidebar.js
+// src/components/character_creation/CreationSidebar.js
 import React from 'react';
 import './CreationSidebar.css';
 
@@ -9,17 +9,17 @@ const stepTranslations = {
   Class: 'Klasse',
   Background: 'Hintergrund',
   Abilities: 'Fähigkeiten',
+  Zusammenfassung: 'Zusammenfassung', 
 };
 
 export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFinalize }) => {
-  // Wir behalten die englischen Schlüssel für die Logik bei
-  const steps = ['Race', 'Subrace', 'Class', 'Background', 'Abilities'];
+
+  const steps = ['Race', 'Subrace', 'Class', 'Background', 'Abilities', 'Zusammenfassung'];
 
   const hasSubraces = character.race?.subraces && character.race.subraces.length > 0;
   const hasAncestries = character.race?.ancestries && character.race.ancestries.length > 0;
 
   const handleStepClick = (step) => {
-    // Die Logik hier bleibt unverändert, da wir die englischen Schlüssel verwenden
     if (step === 'Subrace' && !hasSubraces && !hasAncestries) {
       return;
     }
@@ -27,15 +27,15 @@ export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFina
   };
 
   return (
-    <div className="sidebar-panel">
+    // Wir fügen .ui-panel hier hinzu, um das Panel-Design anzuwenden
+    <div className="sidebar-panel ui-panel">
+      {/* Wir verwenden wieder deine originale <ul> Struktur */}
       <ul>
         {steps.map(step => {
           const isSubraceStep = step === 'Subrace';
           
-          // Standard-Label aus unserem Übersetzungsobjekt holen
           let label = stepTranslations[step];
 
-          // Sonderfall für Drachenblütige beibehalten
           if (isSubraceStep && hasAncestries) {
             label = 'Abstammung';
           }
@@ -45,7 +45,6 @@ export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFina
           return (
             <li 
               key={step}
-              // Die Logik für 'active' und 'disabled' funktioniert weiterhin
               className={`${currentStep === step ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}
               onClick={() => handleStepClick(step)}
             >
@@ -55,9 +54,11 @@ export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFina
         })}
       </ul>
       <div className="sidebar-finalize-container">
-        {/* Der Button wird nur angezeigt, wenn der aktuelle Schritt 'Abilities' ist */}
-        {currentStep === 'Abilities' && (
-          <button className="finalize-button" onClick={onFinalize}>
+        
+        {/* Die Bedingung ist hier. Sie wird nur true, 
+            wenn currentStep exakt "Zusammenfassung" ist. */}
+        {currentStep === 'Zusammenfassung' && (
+          <button className="finalize-button ui-button" onClick={onFinalize}>
             Abenteuer beginnen
           </button>
         )}

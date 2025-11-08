@@ -1,44 +1,46 @@
-// src/components/SubraceSelection.js
+// src/components/character_creation/SubraceSelection.js
 import React from 'react';
 import './SubraceSelection.css';
 import './PanelDetails.css';
 
-export const SubraceSelection = ({ character, updateCharacter }) => {
-  const { race, subrace } = character;
+// Diese Komponente erwartet jetzt die spezifischen Props statt des ganzen "character"-Objekts
 
-  // Prüfen, ob Untervölker vorhanden sind
-  if (!race?.subraces || race.subraces.length === 0) {
-    return (
-      <div className="subrace-container">
-        <h2>Keine Untervölker</h2>
-        <p>Das Volk '{race.name}' hat keine verfügbaren Untervölker.</p>
-      </div>
-    );
+export const SubraceSelection = ({ subraces, selectedSubrace, onSubraceSelect }) => {
+  
+  if (!subraces || subraces.length === 0) {
+    return <div className="panel-details">Für dieses Volk sind keine Unterarten verfügbar.</div>;
   }
 
   return (
-    <div className="subrace-container">
-      <h2>Wähle ein Untervolk für {race.name}</h2>
-      <div className="subrace-options">
-        {race.subraces.map(sub => (
+    <div className="subrace-selection-container panel-details">
+      <h3>Unterart wählen</h3>
+      {/* Wir verwenden die Stile von RaceSelection wieder */}
+      <div className="race-grid">
+        {subraces.map((subrace) => (
           <button
-            key={sub.key}
-            className={`subrace-button ${subrace?.key === sub.key ? 'selected' : ''}`}
-            onClick={() => updateCharacter({ subrace: sub })}
+            key={subrace.key}
+            className={`race-button ${
+              selectedSubrace?.key === subrace.key ? "selected" : ""
+            }`}
+            onClick={() => onSubraceSelect(subrace)}
           >
-            {sub.name}
+            {/* Hier könnte man später Sub-Porträts hinzufügen, falls vorhanden */}
+            <span>{subrace.name}</span>
           </button>
         ))}
       </div>
-      
-      {subrace && (
+
+      {/* Zeigt die Details der ausgewählten Unterart an */}
+      {selectedSubrace && (
         <div className="subrace-details">
           <div className="details-divider"></div>
-          <h3>{subrace.name}</h3>
-          <p className="race-description">{subrace.description}</p>
-          <ul className="features-list">
-            {subrace.traits.map(trait => (
-               <li key={trait.name}><strong>{trait.name}:</strong> {trait.description}</li>
+          <h4>{selectedSubrace.name}</h4>
+          <p className="panel-details-description">{selectedSubrace.description}</p>
+          <ul className="traits-list">
+            {selectedSubrace.traits.map((trait) => (
+              <li key={trait.name}>
+                <strong>{trait.name}:</strong> {trait.description}
+              </li>
             ))}
           </ul>
         </div>
