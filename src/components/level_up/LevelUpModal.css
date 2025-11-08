@@ -190,6 +190,31 @@
 }
 
 /* Subklassen Sektion */
+.subclass-selection {
+  max-height: 45vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.subclass-selection::-webkit-scrollbar {
+  width: 10px;
+}
+
+.subclass-selection::-webkit-scrollbar-track {
+  background: #2a2a2a; /* Hintergrund der Leiste */
+  border-radius: 5px;
+}
+
+.subclass-selection::-webkit-scrollbar-thumb {
+  background: #555; /* Der "Anfasser" (der bewegliche Teil) */
+  border-radius: 5px;
+}
+
+.subclass-selection::-webkit-scrollbar-thumb:hover {
+  background: #777; /* "Anfasser" beim Darüberfahren */
+}
 .subclass-option {
   padding: 12px;
   border: 2px solid #555;
