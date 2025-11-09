@@ -1,6 +1,6 @@
 // src/components/character_sheet/EquipmentSlot.js
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react'; // useState entfernt
 import { useDrop, useDrag } from 'react-dnd';
 import Tooltip from '../tooltip/Tooltip';
 import { ItemTypes } from '../../dnd/itemTypes';
@@ -16,27 +16,25 @@ const getIcon = (iconName) => {
 };
 
 const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay = false }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
+  // const [showTooltip, setShowTooltip] = useState(false); // ENTFERNT
   const slotRef = useRef(null);
 
-  // --- Drag-Logik für ausgerüstete Items ---
+  // --- Drag-Logik (unverändert) ---
   const [{ isDragging }, drag] = useDrag(() => ({
     type: currentItem ? (ItemTypes[currentItem.type.toUpperCase()] || ItemTypes.ITEM) : ItemTypes.ITEM,
-    canDrag: !!currentItem && !isTwoHandedDisplay, // Two-Handed Display Items können nicht gezogen werden
+    canDrag: !!currentItem && !isTwoHandedDisplay,
     item: { ...currentItem, equippedIn: slotType },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }), [currentItem, slotType, isTwoHandedDisplay]);
 
-  // --- Erweiterte Drop-Logik für Schilde ---
+  // --- Drop-Logik (größtenteils unverändert) ---
   const getAcceptedItemTypes = () => {
     if (slotType.includes("hand")) {
-      // Off-hand kann sowohl Waffen als auch Schilde (Armor) akzeptieren
       if (slotType === "off-hand") {
         return [ItemTypes.WEAPON, ItemTypes.ARMOR];
       }
-      // Main-hand nur Waffen
       return [ItemTypes.WEAPON];
     }
     if (slotType === "ranged") return [ItemTypes.WEAPON];
@@ -46,26 +44,20 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay 
   };
 
   const canItemDrop = (item) => {
-    // Spezielle Logik für Off-Hand Slot
     if (slotType === "off-hand") {
-      // Schilde können in Off-Hand
       if (item.type === "armor" && item.subtype === "shield") {
         return true;
       }
-      // Leichte Waffen können in Off-Hand für Two-Weapon Fighting
       if (item.type === "weapon" && item.properties && 
           (item.properties.includes("Leicht") || item.properties.includes("Light"))) {
         return true;
       }
-      // Vielseitige Waffen können in Off-Hand, aber nur einhändig
       if (item.type === "weapon" && item.properties && 
           item.properties.some(p => p.startsWith('Vielseitig'))) {
         return true;
       }
       return false;
     }
-
-    // Standard-Slot-Logik
     if (item.slot === "ring" && (slotType === "ring1" || slotType === "ring2")) return true;
     return item.slot === slotType;
   };
@@ -73,7 +65,6 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay 
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
       accept: getAcceptedItemTypes(),
       canDrop: (item) => {
-        // Wenn es ein Two-Handed Display ist, können keine Items gedroppt werden
         if (isTwoHandedDisplay) return false;
         return canItemDrop(item);
       },
@@ -86,6 +77,7 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay 
   );
 
   // --- Refs kombinieren ---
+  // KORREKTUR: Wir müssen slotRef hier setzen, damit der Wrapper funktioniert
   const combinedRef = (el) => {
     drag(el);
     drop(el);
@@ -93,13 +85,12 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay 
   };
 
   const getBackgroundColor = () => {
-    if (isTwoHandedDisplay) return "rgba(100, 100, 100, 0.3)"; // Grauer Hintergrund für Two-Handed Display
+    if (isTwoHandedDisplay) return "rgba(100, 100, 100, 0.3)";
     if (isOver && canDrop) return "rgba(0, 255, 0, 0.2)";
     if (isOver && !canDrop) return "rgba(255, 0, 0, 0.2)";
     return "";
   };
 
-  // Slot-Label anzeigen
   const getSlotLabel = () => {
     switch(slotType) {
       case "main-hand": return "Main";
@@ -109,7 +100,10 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay 
     }
   };
 
-  return (
+  // --- KORREKTUR: Logik aufteilen für Wrapper ---
+
+  // 1. Definiere das DIV, das WIRKLICH angezeigt wird
+  const slotDiv = (
     <div
       ref={combinedRef}
       className={`equipment-slot ${slotType} ${isTwoHandedDisplay ? 'two-handed-display' : ''}`}
@@ -118,8 +112,7 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay 
         opacity: isDragging ? 0.5 : (isTwoHandedDisplay ? 0.8 : 1),
         cursor: (currentItem && !isTwoHandedDisplay) ? 'grab' : 'default'
       }}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+      // onMouseEnter/Leave ENTFERNT
     >
       {currentItem ? (
         <div style={{ position: 'relative' }}>
@@ -138,14 +131,25 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay 
       ) : (
         <div className="slot-placeholder">{getSlotLabel()}</div>
       )}
-      {showTooltip && currentItem && !isDragging && !isOver && (
-        <Tooltip 
-          item={currentItem} 
-          parentRef={slotRef}
-          extraText={isTwoHandedDisplay ? "Zweihändig geführt" : ""}
-        />
-      )}
+      {/* Tooltip-Aufruf HIER ENTFERNT */}
     </div>
+  );
+
+  // 2. Entscheide, ob der Wrapper (Tooltip) benötigt wird
+  
+  // Zeige Tooltip nur, wenn ein Item da ist, nicht gezogen wird und nicht (erfolglos) darüber geschwebt wird
+  const showTooltipWrapper = currentItem && !isDragging;
+
+  return showTooltipWrapper ? (
+    <Tooltip 
+      item={currentItem} 
+      // parentRef ist nicht mehr nötig, da Tooltip.js es über children bekommt
+      extraText={isTwoHandedDisplay ? "Zweihändig geführt" : ""}
+    >
+      {slotDiv}
+    </Tooltip>
+  ) : (
+    slotDiv // Andernfalls gib nur das nackte DIV zurück
   );
 };
 

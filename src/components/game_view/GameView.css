@@ -40,7 +40,7 @@
 .world-map-area {
     display: flex;
     width: 1240px; /* Feste Breite für die Karte */
-    height: 620px; /* Feste Höhe für die Karte */
+    height: 640px; /* Feste Höhe für die Karte */
     justify-content: center;
     align-items: center;
     background-color: #000;

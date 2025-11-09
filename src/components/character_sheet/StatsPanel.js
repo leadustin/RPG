@@ -61,7 +61,6 @@ const StatsPanel = ({ character }) => {
         return null;
     }
   };
-
   return (
     <div className="stats-panel-container">
       <div className="tabs">

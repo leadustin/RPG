@@ -1,4 +1,6 @@
-import React, { useState, useRef } from 'react';
+// ActionBar.js (Finale Korrektur)
+
+import React, { useState } from 'react'; // <-- KORREKT
 import './ActionBar.css';
 import OptionsMenu from './OptionsMenu';
 import Tooltip from '../tooltip/Tooltip'; 
@@ -17,12 +19,8 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
     const mainHandWeapon = equipment['main-hand'] || null;
     const rangedWeapon = equipment['ranged'] || null;
 
-    const [hoveredItem, setHoveredItem] = useState(null);
-    const mainHandRef = useRef(null);
-    const rangedRef = useRef(null);
-
-    // --- NEU: Dynamischer Klassen-Tab-Name ---
-    // Fallback auf "Klasse", falls Charakter (noch) nicht geladen ist
+    // Hover-Logik ist nicht mehr nötig
+    
     const classTabName = (character && character.class && character.class.name) 
                             ? character.class.name 
                             : "Klasse";
@@ -62,8 +60,8 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
 
     const EmptySlot = () => <div className="hotbar-slot"></div>;
     
-    // Helfer-Komponente (bleibt gleich)
-    const EquippedItemSlot = ({ item, itemRef, onMouseEnter }) => {
+    // Helfer-Komponente: Leitet ...rest (z.B. onMouseEnter) an das div weiter
+    const EquippedItemSlot = ({ item, ...rest }) => {
         if (!item) {
             return <EmptySlot />; 
         }
@@ -84,9 +82,7 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
         return (
             <div 
                 className="hotbar-slot equipped" 
-                ref={itemRef}
-                onMouseEnter={() => onMouseEnter(item)}
-                onMouseLeave={() => onMouseEnter(null)}
+                {...rest} // <-- Wichtig: Leitet Tooltip-Events weiter
             >
                 {iconSrc && <img src={iconSrc} alt={item.name} />}
             </div>
@@ -103,7 +99,6 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
                     <div className="hotbar ui-panel">
                         
                         <div className="global-controls">
-                            {/* ... (Icons bleiben gleich) ... */}
                             <div className="global-control-icon"></div>
                             <div className="global-control-icon"></div>
                             <div className="global-control-icon"></div>
@@ -113,23 +108,33 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
 
                         <div className="hotbar-main-area">
 
-                            {/* Linke Slots (bleibt gleich) */}
+                            {/* Linke Slots (Wrapper korrigiert) */}
                             <div className="left-side-slots-integrated">
                                 <div className="side-slot-column">
-                                    <EquippedItemSlot 
-                                        item={mainHandWeapon}
-                                        itemRef={mainHandRef}
-                                        onMouseEnter={setHoveredItem}
-                                    />
+                                    
+                                    {/* KORREKTUR: 'item' statt 'text' für vollen Tooltip */}
+                                    {mainHandWeapon ? (
+                                        <Tooltip item={mainHandWeapon}>
+                                            <EquippedItemSlot item={mainHandWeapon} />
+                                        </Tooltip>
+                                    ) : (
+                                        <EquippedItemSlot item={null} />
+                                    )}
+
                                     <div className="hotbar-slot hotbar-slot-half"></div>
                                     <div className="hotbar-slot hotbar-slot-half"></div>
                                 </div>
                                 <div className="side-slot-column">
-                                    <EquippedItemSlot 
-                                        item={rangedWeapon}
-                                        itemRef={rangedRef}
-                                        onMouseEnter={setHoveredItem}
-                                    />
+                                    
+                                    {/* KORREKTUR: 'item' statt 'text' für vollen Tooltip */}
+                                    {rangedWeapon ? (
+                                        <Tooltip item={rangedWeapon}>
+                                            <EquippedItemSlot item={rangedWeapon} />
+                                        </Tooltip>
+                                    ) : (
+                                        <EquippedItemSlot item={null} />
+                                    )}
+
                                     <div className="hotbar-slot hotbar-slot-half"></div>
                                     <div className="hotbar-slot hotbar-slot-half"></div>
                                 </div>
@@ -155,22 +160,17 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
                             </div>
                         </div>
                         
-                        {/* Footer mit Tabs */}
+                        {/* Footer mit Tabs (bleibt gleich) */}
                         <div className="hotbar-footer">
                             <div className="hotbar-tab-container">
-                                
                                 <div className={getTabClassName('Inventar')} onClick={handleInventoryClick}>Inventar</div>
-                                
-                                <div className={getTabClassName('Allgem.')} onClick={() => handleTabClick('Allgem.')}>Allgem.</div>
-                                
-                                {/* --- GEÄNDERT: Dynamischer Klassen-Tab --- */}
+                                <div className={getTabClassName('Allgem.')} onClick={() => handleTabClick('AllGEm.')}>Allgem.</div>
                                 <div 
                                     className={getTabClassName(classTabName)} 
                                     onClick={() => handleTabClick(classTabName)}
                                 >
                                     {classTabName}
                                 </div>
-
                                 <div className={getTabClassName('Gegenst.')} onClick={() => handleTabClick('Gegenst.')}>Gegenst.</div>
                                 <div className={getTabClassName('Passiv')} onClick={() => handleTabClick('Passiv')}>Passiv</div>
                                 <div 
@@ -204,14 +204,8 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
                 </div>
             </div>
 
-            {/* Tooltip-Rendering (bleibt gleich) */}
-            {hoveredItem && (
-                <Tooltip 
-                    text={hoveredItem.name} 
-                    parentRef={hoveredItem === mainHandWeapon ? mainHandRef : rangedRef}
-                />
-            )}
-
+            {/* Tooltip-Rendering (ENTFERNT) */}
+            
             {/* Modal-Rendering (bleibt gleich) */}
             {isOptionsModalOpen && (
                 <OptionsMenu 

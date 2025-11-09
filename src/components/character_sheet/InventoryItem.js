@@ -1,9 +1,9 @@
 // src/components/character_sheet/InventoryItem.js
 
-import React, { useState, useRef } from "react";
+import React from "react"; // useState und useRef sind hier nicht mehr nötig
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../../dnd/itemTypes";
-import Tooltip from "../tooltip/Tooltip";
+import Tooltip from "../tooltip/Tooltip"; // Dein Tooltip-Wrapper
 
 const getIcon = (iconName) => {
   try {
@@ -15,8 +15,8 @@ const getIcon = (iconName) => {
 };
 
 const InventoryItem = ({ item }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-  const itemRef = useRef(null);
+  // const [showTooltip, setShowTooltip] = useState(false); // ENTFERNT - Tooltip.js verwaltet das
+  // const itemRef = useRef(null); // ENTFERNT - drag-Ref reicht aus
   const itemType = item ? item.type.toUpperCase() : "ITEM";
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -27,32 +27,43 @@ const InventoryItem = ({ item }) => {
     }),
   }));
 
+  /*
+  // combinedRef ist nicht mehr nötig, wir übergeben 'drag' direkt
   const combinedRef = (el) => {
     drag(el);
     itemRef.current = el;
   };
+  */
 
   if (!item) {
     return <div className="inventory-slot"></div>;
   }
 
-  return (
+  // Das ist das Element, das wir anzeigen, ziehen UND mit einem Tooltip versehen wollen
+  const inventorySlotDiv = (
     <div
-      ref={combinedRef}
+      ref={drag} // Wir übergeben die drag-Ref direkt hier
       className="inventory-slot"
       style={{
         opacity: isDragging ? 0.5 : 1,
         cursor: "grab",
       }}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+      // onMouseEnter/onMouseLeave ENTFERNT. Das macht jetzt der Tooltip-Wrapper.
     >
       <img src={getIcon(item.icon)} alt={item.name} className="item-icon" />
-      {/* Tooltip nur anzeigen, wenn showTooltip true ist UND das Item nicht gezogen wird */}
-      {showTooltip && !isDragging && itemRef.current && (
-        <Tooltip item={item} parentRef={itemRef} />
-      )}
     </div>
+  );
+
+  // KORREKTUR:
+  // Wir rendern den Tooltip-Wrapper NUR, wenn wir NICHT ziehen.
+  // Wenn wir ziehen, rendern wir nur den nackten Div.
+  // Wenn wir nicht ziehen, wickeln wir den Div in den Tooltip.
+  return isDragging ? (
+    inventorySlotDiv
+  ) : (
+    <Tooltip item={item}>
+      {inventorySlotDiv}
+    </Tooltip>
   );
 };
 

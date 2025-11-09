@@ -4,7 +4,7 @@
     overflow: hidden;
     cursor: grab;
     width: 1240px;
-    height: 650px;
+    height: 640px;
 }
 
 .world-map-viewport:active {
@@ -15,9 +15,9 @@
     /* Das Canvas soll sich an den Container anpassen, ohne sich zu verzerren */
     display: block;
     max-width: 1240px;
-    max-height: 650px;
+    max-height: 640px;
     width: 1240px;
-    height: 650px;
+    height: 640px;
     object-fit: contain; /* WICHTIG: Behält das Seitenverhältnis bei */
     margin: auto; /* Zentriert das Canvas, falls es Ränder gibt */
 }

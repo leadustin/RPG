@@ -13,27 +13,38 @@
 }
 
 .race-button {
-  width: 100%;
-  padding: 15px;
-  background-color: transparent;
-  border: 1px solid var(--color-border-light);
-  color: var(--color-text-light);
-  font-family: var(--font-main);
-  font-size: 1.1em;
-  text-align: left;
+  width: 100%; /* Behalten wir von .race-button */
+  
+  /* Gekopierte Stile von .sidebar-panel li */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+  /* Wichtig: Sicherstellen, dass die Box-Größe stimmt */
+  box-sizing: border-box; 
+  
+  /* Entfernt, um wie die Sidebar-Buttons auszusehen */
+  /* text-align: left; */ 
+  font-size: 1.1em;
 }
 
 .race-button:hover {
-  background-color: var(--color-background-light);
-  border-color: var(--color-selection);
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
 }
 
-.race-button.selected {
-  border-left: 3px solid var(--color-selection);
-  background-color: rgba(168, 126, 76, 0.2);
-  font-weight: bold;
+.race-button.selected { /* .selected wird in RaceSelection.js verwendet */
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+  font-weight: bold; /* Behalten wir bei */
 }
 
 .race-details {

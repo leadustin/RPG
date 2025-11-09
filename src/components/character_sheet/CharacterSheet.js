@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react"; // KORREKTUR: Unnötige Hooks werden entfernt
 import { useDrop } from "react-dnd";
 import "./CharacterSheet.css";
-import Tooltip from "../tooltip/Tooltip";
+import Tooltip from "../tooltip/Tooltip"; // Der Wrapper
 import {
   getAbilityModifier,
   calculateInitialHP,
   calculateAC,
   calculateMeleeDamage,
-  ABILITY_DESCRIPTIONS_DE,
+  ABILITY_DESCRIPTIONS_DE, // Wird jetzt direkt vom Tooltip-Wrapper verwendet
   getRacialAbilityBonus,
   calculateSkillBonus,
   SKILL_MAP,
   SKILL_NAMES_DE,
-  SKILL_DESCRIPTIONS_DE,
+  SKILL_DESCRIPTIONS_DE, // Wird jetzt direkt vom Tooltip-Wrapper verwendet
 } from "../../engine/characterEngine";
 import { LEVEL_XP_TABLE } from "../../utils/helpers";
 import InventoryItem from "./InventoryItem";
@@ -22,25 +22,13 @@ import { ItemTypes } from "../../dnd/itemTypes";
 import InventoryFilter from "./InventoryFilter";
 import allClassData from "../../data/classes.json";
 
-// --- 2. HILFS-KONSTANTEN HIER DEFINIEREN (außerhalb der Komponente) ---
-// Definiert die Anzeigereihenfolge
+// --- HILFS-KONSTANTEN (Unverändert) ---
 const ATTRIBUTE_ORDER = ["str", "dex", "con", "int", "wis", "cha"];
-
-// Definiert die deutschen Namen für die Header
 const ATTRIBUTE_NAMES_DE = {
-  str: "Stärke",
-  dex: "Geschicklichkeit",
-  con: "Konstitution",
-  int: "Intelligenz",
-  wis: "Weisheit",
-  cha: "Charisma",
+  str: "Stärke", dex: "Geschicklichkeit", con: "Konstitution",
+  int: "Intelligenz", wis: "Weisheit", cha: "Charisma",
 };
-
-// Erstellt die Gruppierung aus der SKILL_MAP
-const SKILLS_BY_ATTRIBUTE = {
-  str: [], dex: [], con: [], int: [], wis: [], cha: [],
-};
-// Füllt das Objekt automatisch
+const SKILLS_BY_ATTRIBUTE = { str: [], dex: [], con: [], int: [], wis: [], cha: [] };
 for (const [skillKey, attrKey] of Object.entries(SKILL_MAP)) {
   if (SKILLS_BY_ATTRIBUTE[attrKey]) {
     SKILLS_BY_ATTRIBUTE[attrKey].push(skillKey);
@@ -56,12 +44,29 @@ const CharacterSheet = ({
   handleToggleTwoHanded,
 }) => {
   const [activeTab, setActiveTab] = useState("Inventory");
-  const [activeStatTab, setActiveStatTab] = useState("Stats"); // "Stats", "Kampf", "Details"
+  const [activeStatTab, setActiveStatTab] = useState("Stats");
   const [activePortrait, setActivePortrait] = useState("");
   const [collapsedInventories, setCollapsedInventories] = useState({});
   const [activeFilter, setActiveFilter] = useState("all");
 
+  // --- KORREKTUR: Alle useState und useRef für Tooltips entfernt ---
+  // const [hoveredStat, setHoveredStat] = useState(null); // ENTFERNT
+  // const strRef = useRef(null); // ENTFERNT
+  // const dexRef = useRef(null); // ...usw. ENTFERNT
+  // const statRefs = { ... }; // ENTFERNT
+
+  // const [hoveredInfo, setHoveredInfo] = useState(null); // ENTFERNT
+  // const [hoveredSkill, setHoveredSkill] = useState(null); // ENTFERNT
+  // const raceRef = useRef(null); // ENTFERNT
+  // const classIconRef = useRef(null); // ENTFERNT
+  // ... (alle anderen Tooltip-Refs) ... ENTFERNT
+  // const skillRefs = useRef({}); // ENTFERNT
+  // --- ENDE KORREKTUR ---
+
+
+  // --- useMemo Hooks (Unverändert) ---
   const currentWeight = useMemo(() => {
+    // ... (Logik unverändert)
     if (!character) return 0;
     let totalWeight = 0;
     if (character.inventory) {
@@ -83,6 +88,7 @@ const CharacterSheet = ({
   }, [character]);
 
   const filteredInventory = useMemo(() => {
+    // ... (Logik unverändert)
     if (!character || !character.inventory) {
       return [];
     }
@@ -93,8 +99,24 @@ const CharacterSheet = ({
       (item) => item && item.type === activeFilter
     );
   }, [character, activeFilter]);
+  
+  const finalModifiers = useMemo(() => {
+    // ... (Logik unverändert)
+    if (!character) return {};
+    const modifiers = {};
+    ATTRIBUTE_ORDER.forEach((key) => {
+      const finalScore =
+        character.abilities[key] + getRacialAbilityBonus(character, key);
+      modifiers[key] = getAbilityModifier(finalScore);
+    });
+    return modifiers;
+  }, [character]);
+  // --- ENDE useMemo Hooks ---
 
+
+  // --- Event Handlers & Logik (Unverändert) ---
   const getTwoHandedDisplayItem = () => {
+    // ... (Logik unverändert)
     const mainHand = character.equipment["main-hand"];
     if (!mainHand || mainHand.type !== "weapon") return null;
 
@@ -113,6 +135,7 @@ const CharacterSheet = ({
   };
 
   const enhancedHandleEquipItem = (item, slotType) => {
+    // ... (Logik unverändert)
     const mainHandWeapon = character.equipment["main-hand"];
     const offHandItem = character.equipment["off-hand"];
 
@@ -152,6 +175,7 @@ const CharacterSheet = ({
   };
 
   const canTwoWeaponFight = () => {
+    // ... (Logik unverändert)
     const mainHand = character.equipment["main-hand"];
     const offHand = character.equipment["off-hand"];
 
@@ -173,12 +197,14 @@ const CharacterSheet = ({
   };
 
   useEffect(() => {
+    // ... (Logik unverändert)
     if (character) {
       setActivePortrait(character.name);
     }
   }, [character]);
 
   useEffect(() => {
+    // ... (Logik unverändert)
     const handleEsc = (event) => {
       if (event.keyCode === 27) onClose();
     };
@@ -186,44 +212,8 @@ const CharacterSheet = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  const [hoveredStat, setHoveredStat] = useState(null);
-  const strRef = useRef(null);
-  const dexRef = useRef(null);
-  const conRef = useRef(null);
-  const intRef = useRef(null);
-  const wisRef = useRef(null);
-  const chaRef = useRef(null);
-
-  const statRefs = {
-    str: strRef,
-    dex: dexRef,
-    con: conRef,
-    int: intRef,
-    wis: wisRef,
-    cha: chaRef,
-  };
-
-  const [hoveredInfo, setHoveredInfo] = useState(null); // 'race', 'classIcon', 'subclass', 'class'
-  const [hoveredSkill, setHoveredSkill] = useState(null);
-  const raceRef = useRef(null);
-  const classIconRef = useRef(null);
-  const subclassRef = useRef(null);
-  const classRef = useRef(null);
-  const skillRefs = useRef({});
-
-  // Wird für die Header (z.B. "Intelligenz +2") benötigt
-  const finalModifiers = useMemo(() => {
-    if (!character) return {};
-    const modifiers = {};
-    ATTRIBUTE_ORDER.forEach((key) => {
-      const finalScore =
-        character.abilities[key] + getRacialAbilityBonus(character, key);
-      modifiers[key] = getAbilityModifier(finalScore);
-    });
-    return modifiers;
-  }, [character]);
-
   const [{ canDrop, isOver }, drop] = useDrop(
+    // ... (Logik unverändert)
     () => ({
       accept: [
         ItemTypes.WEAPON,
@@ -241,6 +231,7 @@ const CharacterSheet = ({
   );
 
   const getClassIcon = () => {
+    // ... (Logik unverändert)
     if (!character || !character.class || !character.class.icon) {
       return "";
     }
@@ -256,27 +247,21 @@ const CharacterSheet = ({
     return null;
   }
 
-  // KORREKTUR: Berechne finale Stärke für Gewicht
+  // --- Berechnungen (Unverändert) ---
   const finalStrForWeight = character.abilities.str + getRacialAbilityBonus(character, 'str');
   const maxWeight = finalStrForWeight * 15;
-
   const toggleInventory = (characterName) => {
     setCollapsedInventories((prevState) => ({
       ...prevState,
       [characterName]: !prevState[characterName],
     }));
   };
-
   const maxHp = character.stats.maxHp || calculateInitialHP(character);
   const currentHp = character.stats.hp || maxHp;
   const armorClass = calculateAC(character);
-
-  // KORREKTUR: Berechne finale Geschicklichkeit für Initiative
   const finalDexForInit = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
   const initiative = getAbilityModifier(finalDexForInit);
-  
   const meleeDamage = calculateMeleeDamage(character);
-
   const currentExp = character.experience || 0;
   const nextLevel = (character.level || 1) + 1;
   const expForNextLevel = nextLevel <= 20 ? LEVEL_XP_TABLE[nextLevel] : "MAX";
@@ -289,9 +274,11 @@ const CharacterSheet = ({
       : null;
   const subclassName = subclassData?.name;
   const raceInfo = character.subrace || character.race;
+  // --- ENDE Berechnungen ---
 
   return (
     <div className="game-ui">
+      {/* --- HEADER (Unverändert) --- */}
       <header>
         <nav className="main-nav">
           <button
@@ -322,7 +309,9 @@ const CharacterSheet = ({
         </button>
       </header>
 
+      {/* --- MAIN CONTENT (Unverändert) --- */}
       <main className="main-content">
+        {/* --- LEFT SIDEBAR (Unverändert) --- */}
         <aside className="left-sidebar">
           <div
             className={`character-portrait ${
@@ -331,7 +320,6 @@ const CharacterSheet = ({
             onClick={() => setActivePortrait(character.name)}
           >
             <img src={character.portrait} alt={`${character.name} Portrait`} />
-
             <div className="hp-bar-wrapper">
               <div
                 className="hp-current"
@@ -342,6 +330,7 @@ const CharacterSheet = ({
           </div>
         </aside>
 
+        {/* --- INVENTORY TAB (Unverändert) --- */}
         {activeTab === "Inventory" && (
           <section ref={drop} className="inventory-section">
             <div className="inventory-header">
@@ -382,342 +371,177 @@ const CharacterSheet = ({
             </div>
           </section>
         )}
-
+        
+        {/* --- SPELLS TAB (Unverändert) --- */}
         {activeTab === "Spells" && (
           <SpellbookTab character={character} />
         )}
 
+        {/* --- RIGHT PANEL (Ausrüstung & Stats) --- */}
         {activeTab === "Inventory" && (
           <aside className="right-panel-character-sheet">
+            {/* --- EQUIPMENT (Unverändert) --- */}
             <div className="equipment-column-left">
               <p className="slot-label">Ausrüstung</p>
               <div className="two-column-grid">
-                <EquipmentSlot
-                  slotType="head"
-                  currentItem={character.equipment.head}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="amulet"
-                  currentItem={character.equipment.amulet}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="armor"
-                  currentItem={character.equipment.armor}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="cloth"
-                  currentItem={character.equipment.cloth}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="cloak"
-                  currentItem={character.equipment.cloak}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="gloves"
-                  currentItem={character.equipment.gloves}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="belt"
-                  currentItem={character.equipment.belt}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="boots"
-                  currentItem={character.equipment.boots}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="ring1"
-                  currentItem={character.equipment.ring1}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="ring2"
-                  currentItem={character.equipment.ring2}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
+                <EquipmentSlot slotType="head" currentItem={character.equipment.head} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="amulet" currentItem={character.equipment.amulet} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="armor" currentItem={character.equipment.armor} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="cloth" currentItem={character.equipment.cloth} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="cloak" currentItem={character.equipment.cloak} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="gloves" currentItem={character.equipment.gloves} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="belt" currentItem={character.equipment.belt} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="boots" currentItem={character.equipment.boots} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="ring1" currentItem={character.equipment.ring1} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="ring2" currentItem={character.equipment.ring2} onEquipItem={enhancedHandleEquipItem} />
               </div>
-
               <p className="slot-label">Melee</p>
               <div className="two-column-grid">
-                <EquipmentSlot
-                  slotType="main-hand"
-                  currentItem={character.equipment["main-hand"]}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
-                <EquipmentSlot
-                  slotType="off-hand"
-                  currentItem={
-                    getTwoHandedDisplayItem() || character.equipment["off-hand"]
-                  }
-                  onEquipItem={enhancedHandleEquipItem}
-                  isTwoHandedDisplay={!!getTwoHandedDisplayItem()}
-                />
+                <EquipmentSlot slotType="main-hand" currentItem={character.equipment["main-hand"]} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="off-hand" currentItem={getTwoHandedDisplayItem() || character.equipment["off-hand"]} onEquipItem={enhancedHandleEquipItem} isTwoHandedDisplay={!!getTwoHandedDisplayItem()} />
               </div>
-
-              {character.equipment["main-hand"] &&
-                character.equipment["main-hand"].properties?.some((p) =>
-                  p.startsWith("Vielseitig")
-                ) && (
-                  <button
-                    onClick={() => handleToggleTwoHanded("main-hand")}
-                    className="toggle-btn"
-                    disabled={character.equipment["off-hand"] !== null}
-                  >
-                    {character.equipment["main-hand"].isTwoHanded
-                      ? "Einhändig"
-                      : "Zweihändig"}
-                    {character.equipment["off-hand"] && " (Off-Hand räumen)"}
-                  </button>
-                )}
-
+              {character.equipment["main-hand"] && character.equipment["main-hand"].properties?.some((p) => p.startsWith("Vielseitig")) && (
+                <button onClick={() => handleToggleTwoHanded("main-hand")} className="toggle-btn" disabled={character.equipment["off-hand"] !== null}>
+                  {character.equipment["main-hand"].isTwoHanded ? "Einhändig" : "Zweihändig"}
+                  {character.equipment["off-hand"] && " (Off-Hand räumen)"}
+                </button>
+              )}
               {canTwoWeaponFight() && (
                 <div className="combat-style-indicator">
                   <span className="style-active">⚔️ Two-Weapon Fighting</span>
                 </div>
               )}
-
               <p className="slot-label">Ranged</p>
               <div className="two-column-grid">
-                <EquipmentSlot
-                  slotType="ranged"
-                  currentItem={character.equipment.ranged}
-                  onEquipItem={enhancedHandleEquipItem}
-                />
+                <EquipmentSlot slotType="ranged" currentItem={character.equipment.ranged} onEquipItem={enhancedHandleEquipItem} />
               </div>
             </div>
 
+            {/* --- CHARACTER MODEL (Unverändert) --- */}
             <div className="character-model-column">
               <div className="character-viewer">
-                <img
-                  src={
-                    character.model || "https://placeholder.pics/svg/160x300"
-                  }
-                  alt="Character Model"
-                />
+                <img src={character.model || "https://placeholder.pics/svg/160x300"} alt="Character Model" />
               </div>
             </div>
 
+            {/* --- STATS COLUMN (JETZT KORRIGIERT) --- */}
             <div className="stats-column-right">
               {/* TAB-NAVIGATION (Unverändert) */}
               <div className="stat-tab-nav">
-                <button
-                  className={`stat-tab-btn ${
-                    activeStatTab === "Stats" ? "active" : ""
-                  }`}
-                  onClick={() => setActiveStatTab("Stats")}
-                >
-                  Stats
-                </button>
-                <button
-                  className={`stat-tab-btn ${
-                    activeStatTab === "Kampf" ? "active" : ""
-                  }`}
-                  onClick={() => setActiveStatTab("Kampf")}
-                >
-                  Kampf
-                </button>
-                <button
-                  className={`stat-tab-btn ${
-                    activeStatTab === "Details" ? "active" : ""
-                  }`}
-                  onClick={() => setActiveStatTab("Details")}
-                >
-                  Details
-                </button>
+                <button className={`stat-tab-btn ${activeStatTab === "Stats" ? "active" : ""}`} onClick={() => setActiveStatTab("Stats")}>Stats</button>
+                <button className={`stat-tab-btn ${activeStatTab === "Kampf" ? "active" : ""}`} onClick={() => setActiveStatTab("Kampf")}>Kampf</button>
+                <button className={`stat-tab-btn ${activeStatTab === "Details" ? "active" : ""}`} onClick={() => setActiveStatTab("Details")}>Details</button>
               </div>
 
               {/* TAB-INHALT (Angepasst) */}
               <div className="stat-tab-content">
                 
-                {/* INHALT FÜR TAB 1: STATS (Angepasst) */}
+                {/* INHALT FÜR TAB 1: STATS (JETZT KORRIGIERT) */}
                 {activeStatTab === "Stats" && (
                   <React.Fragment>
-                    
-                    {/* *** 2. ZENTRIERTE STRUKTUR MIT TOOLTIPS *** */}
                     <div className="character-info-centered">
                       
-                      {/* 1. Rasse */}
-                      <p 
-                        className="char-race-centered tooltip-hover" // Klasse für CSS hinzugefügt
-                        ref={raceRef}
-                        onMouseEnter={() => setHoveredInfo('race')}
-                        onMouseLeave={() => setHoveredInfo(null)}
-                      >
-                        {character.subrace
-                          ? character.subrace.name
-                          : character.race.name}
-                      </p>
-                      {hoveredInfo === 'race' && (
-                        <Tooltip
-                          text={raceInfo.description || raceInfo.name}
-                          parentRef={raceRef}
-                        />
-                      )}
-
-                      {/* 2. Klassen-Icon */}
-                      <div 
-                        className="class-icon-wrapper-centered tooltip-hover" // Klasse für CSS hinzugefügt
-                        ref={classIconRef}
-                        onMouseEnter={() => setHoveredInfo('classIcon')}
-                        onMouseLeave={() => setHoveredInfo(null)}
-                      >
-                        <div className="class-icon">
-                          <img
-                            src={getClassIcon()}
-                            alt={`${character.class.name} icon`}
-                          />
-                        </div>
-                      </div>
-                      {hoveredInfo === 'classIcon' && (
-                        <Tooltip
-                          text={character.class.name}
-                          parentRef={classIconRef}
-                        />
-                      )}
-
-                      {/* 3. Subklasse (nur wenn vorhanden) */}
-                      {subclassName && (
-                        <p 
-                          className="char-subclass-centered tooltip-hover" // Klasse für CSS hinzugefügt
-                          ref={subclassRef}
-                          onMouseEnter={() => setHoveredInfo('subclass')}
-                          onMouseLeave={() => setHoveredInfo(null)}
-                        >
-                          {subclassName}
+                      {/* 1. Rasse (KORRIGIERT) */}
+                      <Tooltip text={raceInfo.description || raceInfo.name}>
+                        <p className="char-race-centered tooltip-hover">
+                          {character.subrace
+                            ? character.subrace.name
+                            : character.race.name}
                         </p>
-                      )}
-                      {hoveredInfo === 'subclass' && subclassData && (
-                        <Tooltip
-                          text={subclassData.description || subclassName}
-                          parentRef={subclassRef}
-                        />
+                      </Tooltip>
+                      
+                      {/* 2. Klassen-Icon (KORRIGIERT) */}
+                      <Tooltip text={character.class.name}>
+                        <div className="class-icon-wrapper-centered tooltip-hover">
+                          <div className="class-icon">
+                            <img
+                              src={getClassIcon()}
+                              alt={`${character.class.name} icon`}
+                            />
+                          </div>
+                        </div>
+                      </Tooltip>
+
+                      {/* 3. Subklasse (KORRIGIERT) */}
+                      {subclassName && (
+                        <Tooltip text={subclassData.description || subclassName}>
+                          <p className="char-subclass-centered tooltip-hover">
+                            {subclassName}
+                          </p>
+                        </Tooltip>
                       )}
                       
-                      {/* 4. Klasse + Level */}
-                      <p 
-                        className="char-class-centered tooltip-hover" // Klasse für CSS hinzugefügt
-                        ref={classRef}
-                        onMouseEnter={() => setHoveredInfo('class')}
-                        onMouseLeave={() => setHoveredInfo(null)}
-                      >
-                        Lv {character.level || 1} {character.class.name}
-                      </p>
-                      {hoveredInfo === 'class' && (
-                        <Tooltip
-                          text={character.class.description || character.class.name}
-                          parentRef={classRef}
-                        />
-                      )}
+                      {/* 4. Klasse + Level (KORRIGIERT) */}
+                      <Tooltip text={character.class.description || character.class.name}>
+                        <p className="char-class-centered tooltip-hover">
+                          Lv {character.level || 1} {character.class.name}
+                        </p>
+                      </Tooltip>
                       
-                      {/* 5. Hintergrund (ohne Tooltip laut Anforderung) */}
+                      {/* 5. Hintergrund (Unverändert) */}
                       <p className="char-background-centered">
                           {character.background.name}
                       </p>
                     </div>
 
-                    {/* KORREKTUR: Attributs-Stats */}
+                    {/* Attributs-Stats (KORRIGIERT) */}
                     <div className="primary-stats">
-                      {/* KORRIGIERT: Iteriere über character.abilities (Basiswerte) statt character.stats.abilities */}
                       {Object.keys(character.abilities).map((key) => {
-                        // KORRIGIERT: Berechne den finalen Wert (Basis + Rassenbonus)
                         const finalScore = character.abilities[key] + getRacialAbilityBonus(character, key);
                         
                         return (
-                          <div
-                            key={key}
-                            className="stat-block"
-                            ref={statRefs[key]}
-                            onMouseEnter={() => setHoveredStat(key)}
-                            onMouseLeave={() => setHoveredStat(null)}
+                          // KORREKTUR: Wrapper <Tooltip> um das div.stat-block
+                          <Tooltip 
+                            key={key} 
+                            text={ABILITY_DESCRIPTIONS_DE[key]}
                           >
-                            <span className="stat-value">
-                              {/* KORRIGIERT: Zeige den berechneten finalen Wert an */}
-                              {finalScore}
-                            </span>
-                            <span className="stat-label">{key.toUpperCase()}</span>
-                            {hoveredStat === key && (
-                              <Tooltip
-                                text={ABILITY_DESCRIPTIONS_DE[key]}
-                                parentRef={statRefs[key]}
-                              />
-                            )}
-                          </div>
+                            <div
+                              className="stat-block"
+                              // ref, onMouseEnter, onMouseLeave entfernt
+                            >
+                              <span className="stat-value">
+                                {finalScore}
+                              </span>
+                              <span className="stat-label">{key.toUpperCase()}</span>
+                              {/* Bedingter Tooltip-Aufruf entfernt */}
+                            </div>
+                          </Tooltip>
                         );
                       })}
                     </div>
                   </React.Fragment>
                 )}
 
-                {/* ... (Restliche Tabs 'Kampf' und 'Details' bleiben unverändert) ... */}
                 {/* INHALT FÜR TAB 2: KAMPF (Unverändert) */}
                 {activeStatTab === "Kampf" && (
                   <div className="combat-stats">
-                    <div className="combat-stat">
-                      <span>Nahkampfschaden</span>
-                      <span>{meleeDamage}</span>
-                    </div>
-                    <div className="combat-stat">
-                      <span>Attack Bonus</span>
-                      <span>+0</span>
-                    </div>
-                    <div className="combat-stat">
-                      <span>Hit Points</span>
-                      <span>
-                        {currentHp}/{maxHp}
-                      </span>
-                    </div>
-                    <div className="combat-stat">
-                      <span>Armour Class</span>
-                      <span>{armorClass}</span>
-                    </div>
-                    <div className="combat-stat">
-                      <span>Bewegungsgeschw.</span>
-                      <span>{character.race.speed}m</span>
-                    </div>
-                    <div className="combat-stat">
-                      <span>Initiative</span>
-                      <span>{initiative >= 0 ? `+${initiative}` : initiative}</span>
-                    </div>
-                    <div className="combat-stat">
-                      <span>Erfahrung</span>
-                      <span>
-                        {currentExp}
-                        {expForNextLevel !== "MAX" ? `/${expForNextLevel}` : " (MAX)"}
-                      </span>
-                    </div>
+                    <div className="combat-stat"><span>Nahkampfschaden</span><span>{meleeDamage}</span></div>
+                    <div className="combat-stat"><span>Attack Bonus</span><span>+0</span></div>
+                    <div className="combat-stat"><span>Hit Points</span><span>{currentHp}/{maxHp}</span></div>
+                    <div className="combat-stat"><span>Armour Class</span><span>{armorClass}</span></div>
+                    <div className="combat-stat"><span>Bewegungsgeschw.</span><span>{character.race.speed}m</span></div>
+                    <div className="combat-stat"><span>Initiative</span><span>{initiative >= 0 ? `+${initiative}` : initiative}</span></div>
+                    <div className="combat-stat"><span>Erfahrung</span><span>{currentExp}{expForNextLevel !== "MAX" ? `/${expForNextLevel}` : " (MAX)"}</span></div>
                   </div>
                 )}
 
-                {/* INHALT FÜR TAB 3: DETAILS  */}
+                {/* INHALT FÜR TAB 3: DETAILS (JETZT KORRIGIERT) */}
                 {activeStatTab === "Details" && (
                 <div className="details-tab-content skill-list">
-                  {/* Äußere Schleife: Iteriert über die Attribute in definierter Reihenfolge */}
                   {ATTRIBUTE_ORDER.map((attrKey) => {
                     const skills = SKILLS_BY_ATTRIBUTE[attrKey];
-                    // Überspringe Attribute ohne Skills (z.B. Konstitution)
-                    if (!skills || skills.length === 0) {
-                      return null; 
-                    }
+                    if (!skills || skills.length === 0) return null; 
 
                     const modifier = finalModifiers[attrKey];
 
                     return (
                       <div className="skill-group" key={attrKey}>
-                        {/* Der neue Header (z.B. "Intelligenz +2") */}
                         <div className="skill-group-header">
                           {ATTRIBUTE_NAMES_DE[attrKey]} (
                           {modifier >= 0 ? "+" : ""}
                           {modifier})
                         </div>
 
-                        {/* Innere Schleife: Iteriert über die Skills des Attributs */}
                         {skills.map((skillKey) => {
                           const bonus = calculateSkillBonus(character, skillKey);
                           const name = SKILL_NAMES_DE[skillKey] || skillKey;
@@ -726,12 +550,11 @@ const CharacterSheet = ({
                             "Keine Beschreibung verfügbar.";
                           
                           return (
-                            <React.Fragment key={skillKey}>
+                            // KORREKTUR: Wrapper <Tooltip> um das div.skill-row
+                            <Tooltip key={skillKey} text={description}>
                               <div
                                 className="skill-row"
-                                ref={(el) => (skillRefs.current[skillKey] = el)}
-                                onMouseEnter={() => setHoveredSkill(skillKey)}
-                                onMouseLeave={() => setHoveredSkill(null)}
+                                // ref, onMouseEnter, onMouseLeave entfernt
                               >
                                 <span className="skill-name">{name}</span>
                                 <span className="skill-bonus">
@@ -739,19 +562,8 @@ const CharacterSheet = ({
                                   {bonus}
                                 </span>
                               </div>
-
-                              {/* Tooltip (als Portal) */}
-                              {hoveredSkill === skillKey && (
-                                <Tooltip
-                                  text={description}
-                                  parentRef={
-                                    skillRefs.current[skillKey]
-                                      ? { current: skillRefs.current[skillKey] }
-                                      : null
-                                  }
-                                />
-                              )}
-                            </React.Fragment>
+                            </Tooltip>
+                            // Bedingter Tooltip-Aufruf entfernt
                           );
                         })}
                       </div>
@@ -763,7 +575,8 @@ const CharacterSheet = ({
           </div> {/* Ende .stats-column-right */}
         </aside>
       )} {/* Ende activeTab === "Inventory" */}
-      {/* --- ZAUBERBUCH-TAB --- */}
+      
+      {/* ZAUBERBUCH-TAB (Unverändert) */}
       {activeTab === "spellbook" && (
         <SpellbookTab character={character} />
       )}

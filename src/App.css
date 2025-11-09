@@ -2,7 +2,7 @@
 .App {
   text-align: center;
   width: 1440px; /* Feste Breite des Spiels */
-  height: 900px; /* Nimmt die volle Höhe des Bildschirms ein */
+  height: 920px; /* Nimmt die volle Höhe des Bildschirms ein */
   display: flex;
   justify-content: center; /* Zentriert den Inhalt horizontal */
   align-items: center;     /* Zentriert den Inhalt vertikal */
@@ -14,7 +14,7 @@
 */
 .game-container {
   width: 1440px; /* Feste Breite des Spiels */
-  height: 900px; /* Feste Höhe des Spiels */
+  height: 920px; /* Feste Höhe des Spiels */
   margin: 0 auto; /* Zentriert den Container horizontal */
   border: 2px solid #333;
   border-radius: 5px;
