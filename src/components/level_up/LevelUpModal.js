@@ -1,9 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'; // 'useMemo' importiert
 import DiceBox from "@3d-dice/dice-box";
-import { 
-  rollDiceFormula, 
-  getRacialAbilityBonus // 'getRacialAbilityBonus' importiert
-} from '../../engine/characterEngine';
+import { getRacialAbilityBonus } from '../../engine/characterEngine';
+import { rollDiceFormula } from "../../utils/helpers";
 import allClassData from '../../data/classes.json'; 
 import './LevelUpModal.css';
 
@@ -98,14 +96,7 @@ const LevelUpModal = ({ character, onConfirm }) => {
     };
   }, [character]); // Abhängigkeit von 'character'
 
-  // *** (Early return ist jetzt sicher) ***
-  if (!character || !character.pendingLevelUp) {
-    return null;
-  }
-
-  // Datenextraktion (jetzt nach dem Guard und nach den Hooks)
-  const { newLevel, hpRollFormula, isAbilityIncrease, isSubclassChoice } = character.pendingLevelUp;
-
+  // KORREKTUR: useEffect (Hook) muss ebenfalls vor dem early return stehen
   // initialize DiceBox when modal mounts / container available
   useEffect(() => {
     let mounted = true;
@@ -113,8 +104,11 @@ const LevelUpModal = ({ character, onConfirm }) => {
       if (!diceContainerRef.current) return;
       if (!diceBoxRef.current) {
         try {
-          diceBoxRef.current = new DiceBox(diceContainerRef.current, {
+          diceBoxRef.current = new DiceBox("#dice-box", {
             assetPath: '/assets/dice-box/',
+            scale: 20,
+            width: 500,  // z.B. 500 Pixel breit
+            height: 400
           });
           await diceBoxRef.current.init();
         } catch (err) {
@@ -128,6 +122,15 @@ const LevelUpModal = ({ character, onConfirm }) => {
     initDice();
     return () => { mounted = false; };
   }, []);
+
+  // *** (Early return ist jetzt sicher) ***
+  if (!character || !character.pendingLevelUp) {
+    return null;
+  }
+
+  // Datenextraktion (jetzt nach dem Guard und nach den Hooks)
+  const { newLevel, hpRollFormula, isAbilityIncrease, isSubclassChoice } = character.pendingLevelUp;
+
 
   // *** (Restliche Funktionen bleiben unverändert, außer handleRoll) ***
   const getNextStep = (currentStep) => {
@@ -155,6 +158,8 @@ const LevelUpModal = ({ character, onConfirm }) => {
     return 8;
   };
 
+  // src/components/level_up/LevelUpModal.js
+
   const handleRoll = async () => {
     if (isRolling) return;
     setIsRolling(true);
@@ -167,44 +172,73 @@ const LevelUpModal = ({ character, onConfirm }) => {
         console.warn('DiceBox not initialized');
         // fallback to existing simulated roll
         const finalRoll = rollDiceFormula(hpRollFormula);
+
         setRollResult(finalRoll);
         setIsRolling(false);
         return;
       }
 
-      // Box.roll may return a promise with the result or trigger onRollComplete
+      // Box.roll kann ein Promise zurückgeben oder onRollComplete auslösen
       const ret = diceBoxRef.current.roll(notation);
       let results;
+
       if (ret && typeof ret.then === 'function') {
+        // VERSUCH 1: Direkten Return-Wert abwarten
         results = await ret;
       } else {
-        // wait for callback once
+        // VERSUCH 2: Auf den onRollComplete Callback warten
         results = await new Promise((resolve) => {
           const prev = diceBoxRef.current.onRollComplete;
+          
+
           diceBoxRef.current.onRollComplete = (res) => {
+            
             diceBoxRef.current.onRollComplete = prev;
-            resolve(res);
+            resolve(res); // Das rohe Ergebnis weitergeben
           };
           // safety timeout
           setTimeout(() => {
+            console.warn("DICEBOX-DEBUG: Roll-Timeout!");
             diceBoxRef.current.onRollComplete = prev;
-            resolve({ error: 'timeout', rolls: [], total: 0 });
+            resolve({ error: 'timeout' });
           }, 15000);
         });
       }
+      
+      let total = 0;
 
-      const individual = results && (results.rolls || results.individual || results.results || results.rolled) || [];
-      const total = typeof results.total === 'number' ? results.total : individual.reduce((s, v) => s + v, 0);
+      if (results && typeof results.total === 'number' && results.total > 0) {
+        // Fall 1: Das Objekt hat eine 'total'-Eigenschaft (wie der Code es erwartet)
+        total = results.total;
+      
+      } else if (Array.isArray(results) && results.length > 0 && typeof results[0].value === 'number') {
+        // Fall 2: 'results' ist ein ARRAY von Objekten (z.B. [{ value: 6 }])
+        total = results.reduce((sum, roll) => sum + (roll.value || 0), 0);
+      
+      } else if (results && Array.isArray(results.rolls) && results.rolls.length > 0 && typeof results.rolls[0].value === 'number') {
+        // Fall 3: 'results' ist ein OBJEKT mit einem 'rolls'-Array (z.B. { rolls: [{ value: 6 }] })
+        total = results.rolls.reduce((sum, roll) => sum + (roll.value || 0), 0);
+      
+      } else {
+        // Fall 4: Wir verstehen das Objekt nicht.
+        console.warn("DICEBOX-DEBUG: Konnte 'results' Objekt nicht parsen. 'total' bleibt 0.");
+        total = 0; // Führt zum Fallback
+      }
+      // --- ENDE NEUE PARSING-LOGIK ---
 
-      // If dice-box returns nothing useful, fallback to engine
+
+      // Wenn dice-box 0 oder Müll liefert, nutze das Fallback
       const finalTotal = total || rollDiceFormula(hpRollFormula);
 
       setRollResult(finalTotal);
       setIsRolling(false);
+
     } catch (err) {
       console.error('Error rolling dice-box', err);
       // fallback
       const finalRoll = rollDiceFormula(hpRollFormula);
+      
+      
       setRollResult(finalRoll);
       setIsRolling(false);
     }
@@ -245,7 +279,7 @@ const LevelUpModal = ({ character, onConfirm }) => {
       
       <div className="dice-roll-area">
         {/* container for dice-box canvas */}
-        <div ref={diceContainerRef} id="dice-box" style={{ width: '100%', height: 200 }} />
+        <div ref={diceContainerRef} id="dice-box" />
 
         {rollResult !== null && (
           <span className={`dice-result ${isRolling ? 'rolling' : ''}`}> 
