@@ -9,12 +9,14 @@ const stepTranslations = {
   Class: 'Klasse',
   Background: 'Hintergrund',
   Abilities: 'Fähigkeiten',
+  Identity: 'Identität', // <-- NEU
   Zusammenfassung: 'Zusammenfassung', 
 };
 
 export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFinalize }) => {
 
-  const steps = ['Race', 'Subrace', 'Class', 'Background', 'Abilities', 'Zusammenfassung'];
+  // "Identity" hier einfügen
+  const steps = ['Race', 'Subrace', 'Class', 'Background', 'Abilities', 'Identity', 'Zusammenfassung']; // <-- NEU
 
   const hasSubraces = character.race?.subraces && character.race.subraces.length > 0;
   const hasAncestries = character.race?.ancestries && character.race.ancestries.length > 0;
@@ -59,7 +61,7 @@ export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFina
             wenn currentStep exakt "Zusammenfassung" ist. */}
         {currentStep === 'Zusammenfassung' && (
           <button className="finalize-button ui-button" onClick={onFinalize}>
-            Abenteuer beginnen
+            Charakter erstellen
           </button>
         )}
       </div>

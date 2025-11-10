@@ -16,28 +16,39 @@
 }
 
 .class-button {
-  background-color: transparent;
-  border: 1px solid var(--color-border-light);
-  color: var(--color-text-light);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  gap: 0px;
-  aspect-ratio: 0 / 1;
+  width: 100%;
+  
+  /* Gekopierte Stile von .sidebar-panel li */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.75rem 1.5rem; /* Angepasst von sidebar */
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+  /* Wichtig: Behalten wir von .class-button bei */
+  box-sizing: border-box; 
+  font-size: 1.1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* text-align: left; wurde entfernt, um Zentrierung zu erlauben (wie in sidebar) */
 }
 
 .class-button:hover {
-  background-color: var(--color-background-light);
-  border-color: var(--color-selection);
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
 }
 
-.class-button.selected {
-  border-color: var(--color-selection);
-  background-color: rgba(168, 126, 76, 0.2);
+.class-button.selected { /* .selected wird in ClassSelection.js verwendet */
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+  font-weight: bold; /* Behalten wir bei */
 }
 
 .class-icon-placeholder {
@@ -62,7 +73,7 @@
 .class-details h2 {
   margin-top: 0;
   color: var(--color-selection);
-  font-size: 2em;
+  font-size: 1.5em;
 }
 
 .class-description {

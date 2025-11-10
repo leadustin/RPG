@@ -8,6 +8,7 @@ import { BackgroundSelection } from "./BackgroundSelection";
 import { SummaryPanel } from "./SummaryPanel"; 
 import { SubraceSelection } from "./SubraceSelection";
 import { AncestrySelection } from "./AncestrySelection";
+import { IdentitySelection } from './IdentitySelection'; // <-- NEU IMPORTIEREN
 
 export const SelectionPanel = ({
   currentStep,
@@ -69,6 +70,12 @@ export const SelectionPanel = ({
             updateCharacter={updateCharacter}
           />
         );
+      
+      // --- NEUEN CASE HINZUFÜGEN ---
+      case "Identity":
+        return <IdentitySelection character={character} updateCharacter={updateCharacter} />;
+      // --- ENDE NEU ---
+        
       case "Zusammenfassung":
         return (
           <SummaryPanel 

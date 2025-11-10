@@ -1,6 +1,7 @@
 // src/components/character_creation/FightingStyleSelection.js
 import React from 'react';
 import './PanelDetails.css';
+import './SkillSelection.css';
 
 // Optionen extrahiert aus classes.json -> fighter -> features -> "Kampfstil"
 const FIGHTING_STYLE_OPTIONS = [
@@ -21,11 +22,11 @@ export const FightingStyleSelection = ({ character, updateCharacter }) => {
     <div className="fighting-style-selection">
       <div className="details-divider"></div>
       <h3>Kampfstil wählen</h3>
-      <div className="choice-list">
+      <div className="skill-grid"> {/* <-- KLASSE GEÄNDERT */}
         {FIGHTING_STYLE_OPTIONS.map(style => (
           <button
             key={style}
-            className={`choice-button ${character.fighting_style === style ? 'selected' : ''}`}
+            className={`skill-choice ${character.fighting_style === style ? 'selected' : ''}`}
             onClick={() => handleSelect(style)}
           >
             {style}

@@ -1,18 +1,19 @@
 // src/components/character_creation/ExpertiseSelection.js
 import React, { useMemo } from 'react';
-import { SKILL_NAMES_DE, isProficientInSkill } from '../../engine/characterEngine';
+import { SKILL_NAMES_DE } from '../../engine/characterEngine'; // isProficientInSkill entfernt
 import './PanelDetails.css';
 import './SkillSelection.css'; // Stil wiederverwenden
 
 export const ExpertiseSelection = ({ character, updateCharacter }) => {
   const maxChoices = 2; // Schurken wählen 2 Expertisen auf Lvl 1
 
-  // Finde alle Fertigkeiten, in denen der Charakter bereits geübt ist
+  // === KORREKTUR 1: LOGIK ===
+  // Die Liste darf NUR Fertigkeiten anzeigen, die in der SkillSelection (Wähle 4)
+  // ausgewählt wurden. (Diese werden in 'character.skill_proficiencies_choice' gespeichert)
   const proficientSkills = useMemo(() => {
-    return Object.keys(SKILL_NAMES_DE).filter(skillKey => 
-      isProficientInSkill(character, skillKey)
-    );
-  }, [character]);
+    return character.skill_proficiencies_choice || [];
+  }, [character.skill_proficiencies_choice]); // Abhängigkeit korrigiert
+  // === ENDE KORREKTUR 1 ===
 
   // Füge Diebeswerkzeug hinzu (Schurken sind immer darin geübt)
   const allOptions = [
@@ -44,17 +45,23 @@ export const ExpertiseSelection = ({ character, updateCharacter }) => {
       <p className="panel-details-description">
         Wähle {maxChoices} deiner geübten Fertigkeiten (oder Diebeswerkzeug). Dein Übungsbonus wird für diese verdoppelt.
       </p>
-      <div className="skill-selection-grid">
-        {allOptions.map(key => (
-          <button
-            key={key}
-            className={`skill-button ${selections.includes(key) ? 'selected' : ''}`}
-            onClick={() => handleToggle(key)}
+
+      {/* KORREKTUR 2: LAYOUT (aus vorheriger Anfrage beibehalten) */}
+      <div className="skill-grid"> 
+        {allOptions.map(key => {
+          const isSelected = selections.includes(key);
+          return (
+            <button
+              key={key}
+              className={`skill-choice ${isSelected ? 'selected' : ''}`}
+              onClick={() => handleToggle(key)}
             >
-            {optionNames[key]}
-          </button>
-        ))}
+              {optionNames[key]}
+            </button>
+          );
+        })}
       </div>
+      {/* === ENDE KORREKTUR 2 === */}
     </div>
   );
 };

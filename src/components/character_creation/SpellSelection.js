@@ -1,5 +1,5 @@
 // src/components/character_creation/SpellSelection.js
-import React, { useState, useEffect } from 'react';
+import React from 'react'; // useState/useEffect entfernt
 import allSpells from '../../data/spells.json';
 import { getAbilityModifier } from '../../engine/characterEngine';
 import './PanelDetails.css';
@@ -39,13 +39,13 @@ const getSpellCounts = (character) => {
     case 'cleric':
       return { 
         cantrips: 3, 
-        level1Spells: Math.max(1, wisMod + character.level), // Vorbereitete Zauber
+        level1Spells: Math.max(1, wisMod) + 1, // (1 + WEIS)
         spellType: 'prepare' 
       };
     case 'druid':
       return { 
         cantrips: 2, 
-        level1Spells: Math.max(1, wisMod + character.level), // Vorbereitete Zauber
+        level1Spells: Math.max(1, wisMod) + 1, // (1 + WEIS)
         spellType: 'prepare' 
       };
     default:
@@ -53,80 +53,56 @@ const getSpellCounts = (character) => {
   }
 };
 
-export const SpellSelection = ({ character, updateCharacter }) => {
-  const { cantrips, level1Spells, spellType } = getSpellCounts(character);
+// Logik zur Abfrage der Spells (vereinfacht)
+const getAvailableSpells = (classKey, spellLevel) => {
+  return allSpells.filter(s => 
+    s.level === spellLevel && 
+    (s.classes.includes(classKey) || s.classes.includes("any"))
+  );
+};
 
-  const [availableCantrips, setAvailableCantrips] = useState([]);
-  const [availableLevel1Spells, setAvailableLevel1Spells] = useState([]);
 
-  useEffect(() => {
-    const classKey = character.class.key;
-    // Finde alle Zauber für diese Klasse
-    const classSpells = allSpells.filter(spell => spell.classes.includes(classKey));
-    
-    // Kleriker erhalten Domänenzauber (falls Subklasse gewählt)
-    if (classKey === 'cleric' && character.subclassKey) {
-        const subclass = character.class.subclasses.find(sc => sc.key === character.subclassKey);
-        const domainSpellKeys = subclass.features.find(f => f.name === "Domänenzauber")?.description.match(/\'(.*?)\'/g).map(s => s.replace(/'/g, ''));
-        // HIER: Logik, um 'domainSpellKeys' zu 'availableLevel1Spells' hinzuzufügen
-    }
-
-    setAvailableCantrips(classSpells.filter(s => s.level === 0));
-    setAvailableLevel1Spells(classSpells.filter(s => s.level === 1));
-
-  }, [character.class.key, character.subclassKey]);
-
-  // Handler für Zaubertricks (Cantrips)
-  const handleCantripToggle = (spellKey) => {
-    const currentSelection = character.cantrips_known || [];
-    let newSelection = [...currentSelection];
-    
-    if (newSelection.includes(spellKey)) {
-      newSelection = newSelection.filter(s => s !== spellKey);
-    } else if (newSelection.length < cantrips) {
-      newSelection.push(spellKey);
-    }
-    updateCharacter({ cantrips_known: newSelection });
-  };
-
-  // Handler für Lvl 1 Zauber
-  const handleLevel1SpellToggle = (spellKey) => {
-    // Magier fügt dem Zauberbuch hinzu
-    if (spellType === 'spellbook') {
-      const currentSelection = character.spellbook || [];
-      let newSelection = [...currentSelection];
-      if (newSelection.includes(spellKey)) {
-        newSelection = newSelection.filter(s => s !== spellKey);
-      } else if (newSelection.length < level1Spells) {
-        newSelection.push(spellKey);
-      }
-      updateCharacter({ spellbook: newSelection });
-    }
-    // Andere Klassen (Barde, Zauberer etc.) lernen sie
-    else if (spellType === 'known') {
-      const currentSelection = character.spells_known || [];
-      let newSelection = [...currentSelection];
-      if (newSelection.includes(spellKey)) {
-        newSelection = newSelection.filter(s => s !== spellKey);
-      } else if (newSelection.length < level1Spells) {
-        newSelection.push(spellKey);
-      }
-      updateCharacter({ spells_known: newSelection });
-    }
-    // Kleriker/Druide bereiten sie vor
-    else if (spellType === 'prepare') {
-         const currentSelection = character.spells_prepared || [];
-         let newSelection = [...currentSelection];
-         if (newSelection.includes(spellKey)) {
-           newSelection = newSelection.filter(s => s !== spellKey);
-         } else if (newSelection.length < level1Spells) {
-           newSelection.push(spellKey);
-         }
-         updateCharacter({ spells_prepared: newSelection });
-    }
-  };
+export const SpellSelection = ({ 
+  character, 
+  updateCharacter,
+  isOpenCantrips,
+  isOpenSpells,
+  onToggleCantrips,
+  onToggleSpells,
+  isCollapsible // <-- NEUE Prop
+}) => {
   
-  const getLvl1List = () => {
+  const { cantrips, level1Spells, spellType } = getSpellCounts(character);
+  
+  const availableCantrips = getAvailableSpells(character.class.key, 0);
+  const availableLevel1Spells = getAvailableSpells(character.class.key, 1);
+  
+  const currentSelections = getCurrentSelections(character, spellType);
+
+  const handleCantripToggle = (spellKey) => {
+    let newCantrips = [...(character.cantrips_known || [])];
+    if (newCantrips.includes(spellKey)) {
+      newCantrips = newCantrips.filter(k => k !== spellKey);
+    } else if (newCantrips.length < cantrips) {
+      newCantrips.push(spellKey);
+    }
+    updateCharacter({ cantrips_known: newCantrips });
+  };
+
+  const handleLvl1SpellToggle = (spellKey) => {
+    let newSpells = [...currentSelections];
+    if (newSpells.includes(spellKey)) {
+      newSpells = newSpells.filter(k => k !== spellKey);
+    } else if (newSpells.length < level1Spells) {
+      newSpells.push(spellKey);
+    }
+
+    if (spellType === 'spellbook') updateCharacter({ spellbook: newSpells });
+    if (spellType === 'known') updateCharacter({ spells_known: newSpells });
+    if (spellType === 'prepare') updateCharacter({ spells_prepared: newSpells });
+  };
+
+  function getCurrentSelections(character, spellType) {
      if (spellType === 'spellbook') return character.spellbook || [];
      if (spellType === 'known') return character.spells_known || [];
      if (spellType === 'prepare') return character.spells_prepared || [];
@@ -140,16 +116,67 @@ export const SpellSelection = ({ character, updateCharacter }) => {
     return "Zauber Stufe 1";
   }
 
+  // --- NEUE RENDER-LOGIK ---
+  if (isCollapsible) {
+    // VARIANTE A: FÜR MAGIER (einklappbar)
+    const cantripHeaderClassName = `collapsible-header ${isOpenCantrips ? 'open' : ''}`;
+    const spellHeaderClassName = `collapsible-header ${isOpenSpells ? 'open' : ''}`;
+
+    return (
+      <div className="spell-selection">
+        {/* --- Sektion Zaubertricks --- */}
+        <div className="details-divider"></div>
+        <h3 className={cantripHeaderClassName} onClick={onToggleCantrips}>
+          Zaubertricks (Wähle {cantrips})
+        </h3>
+        {isOpenCantrips && (
+          <div className="skill-grid">
+            {availableCantrips.map(spell => (
+              <button
+                key={spell.key}
+                className={`skill-choice ${character.cantrips_known?.includes(spell.key) ? 'selected' : ''}`}
+                onClick={() => handleCantripToggle(spell.key)}
+              >
+                {spell.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* --- Sektion Stufe 1 Zauber --- */}
+        <div className="details-divider"></div>
+        <h3 className={spellHeaderClassName} onClick={onToggleSpells}>
+          {getLvl1Title()}
+        </h3>
+        {isOpenSpells && (
+          <div className="skill-grid">
+            {availableLevel1Spells.map(spell => (
+              <button
+                key={spell.key}
+                className={`skill-choice ${currentSelections.includes(spell.key) ? 'selected' : ''}`}
+                onClick={() => handleLvl1SpellToggle(spell.key)}
+              >
+                {spell.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // VARIANTE B: FÜR ALLE ANDEREN (statisch)
+  // (Dein Original-Code, nur mit korrigierten CSS-Klassen)
   return (
     <div className="spell-selection">
       {/* --- Sektion Zaubertricks --- */}
       <div className="details-divider"></div>
       <h3>Zaubertricks (Wähle {cantrips})</h3>
-      <div className="skill-selection-grid">
+      <div className="skill-grid">
         {availableCantrips.map(spell => (
           <button
             key={spell.key}
-            className={`skill-button ${character.cantrips_known?.includes(spell.key) ? 'selected' : ''}`}
+            className={`skill-choice ${character.cantrips_known?.includes(spell.key) ? 'selected' : ''}`}
             onClick={() => handleCantripToggle(spell.key)}
           >
             {spell.name}
@@ -160,12 +187,12 @@ export const SpellSelection = ({ character, updateCharacter }) => {
       {/* --- Sektion Stufe 1 Zauber --- */}
       <div className="details-divider"></div>
       <h3>{getLvl1Title()}</h3>
-      <div className="skill-selection-grid">
+      <div className="skill-grid">
         {availableLevel1Spells.map(spell => (
           <button
             key={spell.key}
-            className={`skill-button ${getLvl1List().includes(spell.key) ? 'selected' : ''}`}
-            onClick={() => handleLevel1SpellToggle(spell.key)}
+            className={`skill-choice ${currentSelections.includes(spell.key) ? 'selected' : ''}`}
+            onClick={() => handleLvl1SpellToggle(spell.key)}
           >
             {spell.name}
           </button>
@@ -173,4 +200,5 @@ export const SpellSelection = ({ character, updateCharacter }) => {
       </div>
     </div>
   );
+  // --- ENDE NEUE RENDER-LOGIK ---
 };

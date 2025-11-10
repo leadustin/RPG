@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import './RaceSelection.css';
 import './PanelDetails.css';
 import allRaceData from '../../data/races.json';
+// Importiere die Stile für die goldenen Buttons (ersetze dies, falls der Stil woanders liegt)
+import './CreationSidebar.css'; 
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
@@ -11,17 +13,8 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   const selectedRace = character.race;
   const floatingBonuses = selectedRace.ability_bonuses.floating || [];
 
-  // KORREKTUR: Diese Funktion lädt das Bild als Modul, das React verwenden kann.
-  const getPortraitModule = (raceKey, gender, portraitIndex) => {
-    const genderString = gender === 'Männlich' ? 'male' : 'female';
-    try {
-      // require() gibt das Modul zurück, nicht nur den Pfad.
-      return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
-    } catch (e) {
-      console.error("Portrait not found:", raceKey, genderString, portraitIndex);
-      return ''; // Fallback
-    }
-  };
+  // --- HINWEIS: Die 'getPortraitModule'-Funktion WURDE VON HIER ENTFERNT ---
+  // (Sie zieht in IdentitySelection.js um)
 
   useEffect(() => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
@@ -29,135 +22,96 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     
     if (selectedRace.ability_bonuses.fixed) {
       Object.entries(selectedRace.ability_bonuses.fixed).forEach(([ability, value]) => {
-        initialAssignments[ability] = value;
+        initialAssignments[ability] = (initialAssignments[ability] || 0) + value;
       });
+    }
+
+    if (floatingBonuses.length > 0) {
+      // Wenn es floating Boni gibt, initialisiere 'available'
+      initialAssignments.available = floatingBonuses.map((val, idx) => ({ index: idx, value: val, assignedTo: null }));
     }
     
     setAssignments(initialAssignments);
+  }, [selectedRace, floatingBonuses]);
 
-    // KORREKTUR: Setzt das initial geladene Portrait-Modul
-    const initialPortraitModule = getPortraitModule(selectedRace.key, character.gender, 1);
 
+  const onSelect = (race) => {
+    // Beim Wechsel des Volks müssen wir die Zuweisungen zurücksetzen
     updateCharacter({ 
-      race: selectedRace, 
-      ability_bonus_assignments: initialAssignments, 
-      floating_bonus_assignments: {},
-      subrace: null, 
-      ancestry: null,
-      portrait: initialPortraitModule, // Speichert das Modul, nicht einen Index oder Pfad-String
-    });
-  }, [selectedRace]);
-
-  const updateCentralState = (newAssignments, floatingAssignments = {}) => {
-    updateCharacter({ 
-      ability_bonus_assignments: newAssignments,
-      floating_bonus_assignments: floatingAssignments 
+      race: race, 
+      subrace: null, // Subrace zurücksetzen
+      ancestry: null, // Abstammung zurücksetzen
+      ability_bonus_assignments: race.ability_bonuses.fixed || {}, // Feste Boni setzen
+      floating_bonus_assignments: {} // Floating Boni zurücksetzen
     });
   };
-  
-  const handleAssignBonus = (ability, bonusIndex) => {
-    const newFloatingAssignments = { ...character.floating_bonus_assignments } || {};
-    
-    if (floatingBonuses.length > 0) {
-      if (newFloatingAssignments[ability] === bonusIndex) {
-        delete newFloatingAssignments[ability];
+
+  const handleAssignBonus = (abiKey, index) => {
+    setAssignments(prev => {
+      const newFloating = { ...prev.floating_bonus_assignments };
+      const currentAssignment = newFloating[abiKey];
+      
+      if (currentAssignment === index) {
+        // Zuweisung aufheben
+        delete newFloating[abiKey];
       } else {
-        const existingAbility = Object.keys(newFloatingAssignments).find(
-          key => newFloatingAssignments[key] === bonusIndex
-        );
-        if (existingAbility) {
-          delete newFloatingAssignments[existingAbility];
+        // Zuweisung ändern oder neu setzen
+        // Entferne zuerst, falls dieser Bonus (index) woanders zugewiesen war
+        for (const key in newFloating) {
+          if (newFloating[key] === index) {
+            delete newFloating[key];
+          }
         }
-        newFloatingAssignments[ability] = bonusIndex;
+        // Setze die neue Zuweisung
+        newFloating[abiKey] = index;
       }
       
-      const combinedAssignments = { ...selectedRace.ability_bonuses.fixed };
-      
-      setAssignments({ ...combinedAssignments, ...newFloatingAssignments });
-      updateCentralState(combinedAssignments, newFloatingAssignments);
-    }
-  };
-  
-  const isBonusAssigned = (ability, bonusIndex) => {
-    return character.floating_bonus_assignments?.[ability] === bonusIndex;
-  };
-  
-  const isBonusUsed = (bonusIndex) => {
-    return Object.values(character.floating_bonus_assignments || {}).includes(bonusIndex);
-  };
-  
-  // KORREKTUR: Eigene Funktion, um beim Geschlechtswechsel das Portrait zu aktualisieren
-  const handleGenderChange = (newGender) => {
-    // Setzt das Portrait auf das erste Bild des neuen Geschlechts zurück,
-    // um sicherzustellen, dass immer ein gültiges Portrait geladen ist.
-    const newPortraitModule = getPortraitModule(character.race.key, newGender, 1);
-    updateCharacter({ gender: newGender, portrait: newPortraitModule });
+      // Update des Character-Objekts im Haupt-State
+      updateCharacter({ floating_bonus_assignments: newFloating });
+
+      return {
+        ...prev,
+        floating_bonus_assignments: newFloating
+      };
+    });
   };
 
+  const isBonusAssigned = (abiKey, index) => {
+    return assignments.floating_bonus_assignments?.[abiKey] === index;
+  };
+
+  const isBonusUsed = (index) => {
+    return Object.values(assignments.floating_bonus_assignments || {}).includes(index);
+  };
+
+  if (!selectedRace) {
+    return <div>Lade Völker...</div>;
+  }
+  
   return (
     <div className="race-selection-container">
       <div className="race-list">
         {allRaceData.map(race => (
           <button
             key={race.key}
-            className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`}
-            onClick={() => updateCharacter({ race: race })}
+            // HINWEIS: Ich verwende 'creation-nav-button', da 'race-button' in deiner .css entfernt wird
+            // (basierend auf CreationSidebar.css)
+            className={`creation-nav-button ${selectedRace.key === race.key ? 'active' : ''}`} 
+            onClick={() => onSelect(race)}
           >
             {race.name}
           </button>
         ))}
       </div>
 
-      <div className="race-details">
-        {/* Name und Geschlecht Felder */}
-        <div className="character-identity">
-            <div className="input-group">
-                <label htmlFor="charName">Name</label>
-                <input 
-                    type="text" 
-                    id="charName" 
-                    value={character.name}
-                    onChange={(e) => updateCharacter({ name: e.target.value })}
-                />
-            </div>
-            <div className="input-group">
-                <label>Geschlecht</label>
-                <div className="gender-buttons">
-                    <button 
-                        className={character.gender === 'Männlich' ? 'selected' : ''}
-                        onClick={() => handleGenderChange('Männlich')}
-                    >
-                        Männlich
-                    </button>
-                    <button 
-                        className={character.gender === 'Weiblich' ? 'selected' : ''}
-                        onClick={() => handleGenderChange('Weiblich')}
-                    >
-                        Weiblich
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div className="details-divider"></div>
+      <div className="panel-details-container">
+        <h2 className="panel-details-header">{selectedRace.name}</h2>
+        <p className="panel-details-description">{selectedRace.description}</p>
+        
+        {/* --- 
+          DER GESAMTE BLOCK FÜR NAME, GESCHLECHT UND PORTRAIT WURDE HIER ENTFERNT 
+        --- */}
 
-        <h2>{selectedRace.name}</h2>
-        <div className="details-divider"></div>
-
-        <h3>Portrait</h3>
-        <div className="portrait-selection">
-          {[1, 2, 3, 4].map(index => {
-            const portraitModule = getPortraitModule(selectedRace.key, character.gender, index);
-            return (
-              <img
-                key={index}
-                src={portraitModule} // src erhält das geladene Modul
-                alt={`Portrait ${index}`}
-                className={`portrait-image ${character.portrait === portraitModule ? 'selected' : ''}`}
-                onClick={() => updateCharacter({ portrait: portraitModule })} // Speichert das Modul
-              />
-            );
-          })}
-        </div>
         <div className="details-divider"></div>
 
         <h3>Attributs-Boost</h3>

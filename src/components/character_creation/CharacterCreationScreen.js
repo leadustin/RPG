@@ -2,17 +2,20 @@
 import React, { useState } from "react";
 import "./CharacterCreationScreen.css";
 import { CreationSidebar } from "./CreationSidebar";
-import { SelectionPanel } from "./SelectionPanel";
-// GELÖSCHT: import { SummaryPanel } from "./SummaryPanel";
+import { SelectionPanel } from "./SelectionPanel"; // Bleibt erhalten
 
 import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";
 import allBackgroundData from "../../data/backgrounds.json";
 
+// WICHTIG: Wir müssen IdentitySelection hier importieren,
+// damit SelectionPanel sie finden kann, auch wenn wir sie hier nicht direkt aufrufen.
+import { IdentitySelection } from './IdentitySelection';
+
 export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
   const [currentStep, setCurrentStep] = useState("Race");
 
-  // HINWEIS: Der State bleibt voll erhalten, wie wir ihn vorher definiert haben
+  // HINWEIS: Dies ist DEIN useState-Block, wie gewünscht.
   const [character, setCharacter] = useState({
     name: "Held",
     gender: "Männlich",
@@ -72,14 +75,12 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
         character={character}
         onFinalize={handleFinalize}
       />
-
+      {/* SelectionPanel bleibt für die Logik der Inhaltsanzeige verantwortlich */}
       <SelectionPanel
         currentStep={currentStep}
         character={character}
         updateCharacter={updateCharacter}
       />
-
-      {/* GELÖSCHT: Die <SummaryPanel /> Komponente wurde hier entfernt */}
     </div>
   );
 };

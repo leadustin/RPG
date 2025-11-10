@@ -3,9 +3,11 @@ import React from 'react';
 import './PanelDetails.css';
 import './SkillSelection.css'; // Stil wiederverwenden
 
+// --- KORREKTUR: Konstanten hierher verschoben ---
 // Vereinfachte Liste. Diese sollte idealerweise aus einer eigenen JSON-Datei kommen.
 const INSTRUMENT_OPTIONS = ["Dudelsack", "Trommel", "Horn", "Flöte", "Laute", "Lyra", "Glockenspiel"];
 const TOOL_OPTIONS = ["Alchemistenwerkzeug", "Brauerwerkzeug", "Kalligraphenwerkzeug", "Schmiedewerkzeug", "Zimmermannswerkzeug"];
+// --- ENDE KORREKTUR ---
 
 export const ToolInstrumentSelection = ({ character, updateCharacter }) => {
   const classKey = character.class.key;
@@ -15,22 +17,29 @@ export const ToolInstrumentSelection = ({ character, updateCharacter }) => {
   let title = "";
   let selectionKey = "class_tool_choice"; // Schlüssel im character-Objekt
   let currentSelections = [];
+  
+  // --- KORREKTUR (aus vorheriger Anfrage): Dynamische Grid-Klasse ---
+  let gridClassName = "skill-grid"; // Standard ist 3er-Grid
 
   if (classKey === 'bard') {
-    options = INSTRUMENT_OPTIONS;
+    options = INSTRUMENT_OPTIONS; // Jetzt hier sichtbar
     maxChoices = 3;
     title = "Musikinstrumente (Wähle 3)";
     selectionKey = "tool_proficiencies_choice"; // Barde wählt 3 (Array)
     currentSelections = character.tool_proficiencies_choice || [];
+    gridClassName = "skill-grid"; // Barde bleibt beim 3er-Grid
   } else if (classKey === 'monk') {
-    options = [...INSTRUMENT_OPTIONS, ...TOOL_OPTIONS];
+    options = [...INSTRUMENT_OPTIONS, ...TOOL_OPTIONS]; // Jetzt hier sichtbar
     maxChoices = 1;
     title = "Handwerkerwerkzeug oder Instrument (Wähle 1)";
     selectionKey = "class_tool_choice"; // Mönch wählt 1 (String)
     currentSelections = character.class_tool_choice ? [character.class_tool_choice] : [];
+    gridClassName = "skill-grid-2col"; // Mönch nutzt das 2er-Grid
   } else {
     return null;
   }
+  // --- ENDE KORREKTUR ---
+
 
   const handleToggle = (key) => {
     if (maxChoices === 1) {
@@ -51,11 +60,13 @@ export const ToolInstrumentSelection = ({ character, updateCharacter }) => {
     <div className="tool-instrument-selection">
       <div className="details-divider"></div>
       <h3>{title}</h3>
-      <div className="skill-selection-grid">
+      
+      {/* Wendet die dynamische Klasse an */}
+      <div className={gridClassName}> 
         {options.map(opt => (
           <button
             key={opt}
-            className={`skill-button ${currentSelections.includes(opt) ? 'selected' : ''}`}
+            className={`skill-choice ${currentSelections.includes(opt) ? 'selected' : ''}`}
             onClick={() => handleToggle(opt)}
           >
             {opt}

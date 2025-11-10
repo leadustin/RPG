@@ -1,0 +1,134 @@
+/* src/components/character_creation/IdentitySelection.css */
+
+/* Layout für Name & Geschlecht, passt sich an das SummaryPanel an */
+.identity-grid-two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Zwei gleich breite Spalten */
+  gap: 20px; /* Abstand zwischen den Spalten */
+  padding-bottom: 15px; /* Etwas Abstand nach unten vor dem nächsten Bereich */
+  border-bottom: 1px solid var(--color-border-dark); /* Trennlinie */
+  margin-bottom: 15px;
+}
+
+/* --- Stil für Eingabegruppen (Label & Input/Select) --- */
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  color: var(--color-text-secondary); /* Leichter, matter Goldton für Labels */
+}
+
+.input-group input[type="text"],
+.identity-select { /* Stile für Input und Select */
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 1em;
+  background-color: var(--color-input-bg); /* Dunklerer Hintergrund */
+  border: 1px solid var(--color-border-dark); /* Dunklerer Rand */
+  color: var(--color-text-light); /* Helle Textfarbe */
+  box-sizing: border-box; 
+  border-radius: 4px; /* Leichte Abrundung */
+  font-family: var(--font-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input[type="text"]:focus,
+.identity-select:focus {
+  border-color: var(--color-selection); /* Goldener Fokus-Rand */
+  box-shadow: 0 0 0 2px rgba(168, 126, 76, 0.4); /* Leichter goldener Schein */
+  outline: none;
+}
+
+/* --- Stil für Geschlechts-Buttons --- */
+.gender-buttons {
+  display: flex;
+  gap: 5px; /* Kleinerer Abstand zwischen den Buttons */
+}
+
+.gender-buttons button {
+  flex: 1;
+  padding: 8px 12px;
+  background-color: var(--color-button-secondary); /* Dunklerer Button-Hintergrund */
+  border: 1px solid var(--color-border-dark);
+  color: var(--color-text-secondary); /* Textfarbe wie Label */
+  cursor: pointer;
+  font-family: var(--font-main);
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  border-radius: 4px; /* Abrundung für alle Buttons */
+}
+
+.gender-buttons button:hover:not(.selected) {
+  background-color: var(--color-button-hover); /* Leichter Hover-Effekt */
+  color: var(--color-text-light);
+}
+
+.gender-buttons button.selected {
+  background-color: var(--color-selection); /* Goldener Hintergrund bei Auswahl */
+  color: var(--color-text-dark); /* Dunkler Text auf Gold */
+  border-color: var(--color-selection);
+  font-weight: bold;
+}
+
+/* Entferne die spezifischen border-radius für erste/letzte Buttons, 
+   da wir eine allgemeine border-radius verwenden
+*/
+.gender-buttons button:first-child {
+  border-left: 1px solid var(--color-border-dark); /* Einheitlicher Rand */
+}
+.gender-buttons button:last-child {
+  border-right: 1px solid var(--color-border-dark); /* Einheitlicher Rand */
+}
+
+
+/* --- Stil für Gesinnung-Dropdown (.identity-select) --- */
+/* Der Pfeil für das Dropdown */
+.identity-select {
+  /* Pfeilfarbe an goldenen Ton anpassen */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c9a55a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20128c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4l128-128c3.6-3.6%205.4-7.8%205.4-12.8%200-5-1.8-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 12px center; /* Position des Pfeils anpassen */
+  background-size: 0.8em;
+  -webkit-appearance: none; /* Entfernt den Standard-Pfeil */
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.identity-select option {
+  background-color: var(--color-input-bg); /* Optionen ebenfalls dunkel */
+  color: var(--color-text-light);
+}
+
+/* --- Stil für Portrait-Grid --- */
+.portrait-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 10px; /* Etwas mehr Padding */
+  border: 1px solid var(--color-border-dark); /* Dunkler Rand */
+  background-color: var(--color-section-bg); /* Hintergrund wie die Sektionen */
+  border-radius: 5px; /* Abgerundete Ecken */
+}
+
+.portrait-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.portrait-image:hover {
+  transform: scale(1.05);
+  border-color: var(--color-text-secondary); /* Leichter goldener Rand beim Hover */
+}
+
+.portrait-image.selected {
+  border-color: var(--color-selection);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(168, 126, 76, 0.6); /* Intensiverer goldener Schein */
+}

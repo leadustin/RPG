@@ -1,5 +1,5 @@
 // src/components/character_creation/ClassSelection.js
-import React from 'react';
+import React, { useState } from 'react'; // <-- useState importiert
 import './ClassSelection.css';
 import './PanelDetails.css';
 import allClassData from '../../data/classes.json';
@@ -34,6 +34,29 @@ export const ClassSelection = ({ character, updateCharacter }) => {
     updateCharacter({ skill_proficiencies_choice: newSelections });
   };
   
+  // --- NEU: Status für einklappbare Panels ---
+  // Standardmäßig sind 'skills' (Fertigkeiten) und 'cantrips' (Zaubertricks) offen
+  const [openPanels, setOpenPanels] = useState(['skills', 'cantrips']);
+
+  const handlePanelToggle = (panelKey) => {
+    setOpenPanels(currentPanels => {
+      // 1. Wenn wir auf ein bereits offenes Panel klicken, schließen wir es
+      if (currentPanels.includes(panelKey)) {
+        return currentPanels.filter(p => p !== panelKey);
+      }
+
+      // 2. DEINE REGEL: Wenn wir 'spells' (Zauberbuch) öffnen, schließe alle anderen
+      if (panelKey === 'spells') {
+        return ['spells']; 
+      }
+
+      // 3. Wenn wir 'skills' oder 'cantrips' öffnen, schließe 'spells'
+      //    und füge das neue Panel zur Liste der offenen hinzu
+      return [...currentPanels.filter(p => p !== 'spells'), panelKey];
+    });
+  };
+  // --- ENDE NEU ---
+  
   if (!selectedClass) {
     return <div>Lade Klassen...</div>;
   }
@@ -55,8 +78,11 @@ export const ClassSelection = ({ character, updateCharacter }) => {
   }
   // --- Ende Skill-Optionen-Logik ---
 
-  // +++ NEUE HELFER-VARIABLEN (ERWEITERT) +++
+  // +++ HELFER-VARIABLEN (ERWEITERT) +++
   const classKey = selectedClass.key;
+  
+  // --- NEU: Prüfen, ob Magier aktiv ist ---
+  const isWizard = classKey === 'wizard';
   
   // Zeige Subklassen-Auswahl auf Lvl 1?
   const showSubclassChoice = (
@@ -77,7 +103,7 @@ export const ClassSelection = ({ character, updateCharacter }) => {
   const showExpertiseChoice = (classKey === 'rogue'); // NEU
   const showRangerFeatures = (classKey === 'ranger'); // NEU
   const showToolInstrumentChoice = (classKey === 'bard' || classKey === 'monk'); // NEU
-  // +++ NEUE HELFER-VARIABLEN ENDE +++
+  // +++ HELFER-VARIABLEN ENDE +++
 
 
   return (
@@ -159,13 +185,24 @@ export const ClassSelection = ({ character, updateCharacter }) => {
             updateCharacter={updateCharacter}
           />
         )}
-
-        {/* 4. Expertise (Schurke) */}
-        {showExpertiseChoice && (
-            <ExpertiseSelection 
-                character={character}
-                updateCharacter={updateCharacter}
+        
+        {/* 4. Fertigkeiten (Skills) (Alle Klassen mit Auswahl) */}
+        {/* HINWEIS: Dieser Block ist (korrekterweise) vor Expertise */}
+        {skillChoiceData && (
+          <>
+            {/* <div className="details-divider"></div> <-- Entfernt für kompaktes Layout */}
+            <SkillSelection 
+              options={skillOptions}
+              maxChoices={skillChoiceData.choose}
+              selections={character.skill_proficiencies_choice}
+              setSelections={handleSkillChange}
+              
+              // --- KONDITIONALE PROPS (NUR WENN MAGIER) ---
+              isCollapsible={isWizard}
+              isOpen={openPanels.includes('skills')}
+              onToggle={() => handlePanelToggle('skills')}
             />
+          </>
         )}
 
         {/* 5. Werkzeuge/Instrumente (Barde, Mönch) */}
@@ -176,25 +213,27 @@ export const ClassSelection = ({ character, updateCharacter }) => {
             />
         )}
 
-
-        {/* 6. Fertigkeiten (Skills) (Alle Klassen mit Auswahl) */}
-        {skillChoiceData && (
-          <>
-            <div className="details-divider"></div>
-            <SkillSelection 
-              options={skillOptions}
-              maxChoices={skillChoiceData.choose}
-              selections={character.skill_proficiencies_choice}
-              setSelections={handleSkillChange}
+        {/* 6. Expertise (Schurke) */}
+        {showExpertiseChoice && (
+            <ExpertiseSelection 
+                character={character}
+                updateCharacter={updateCharacter}
             />
-          </>
         )}
+
 
         {/* 7. Zauber (Alle Zauberklassen) */}
         {showSpellChoice && (
           <SpellSelection 
             character={character}
             updateCharacter={updateCharacter}
+            
+            // --- KONDITIONALE PROPS (NUR WENN MAGIER) ---
+            isCollapsible={isWizard}
+            isOpenCantrips={openPanels.includes('cantrips')}
+            isOpenSpells={openPanels.includes('spells')}
+            onToggleCantrips={() => handlePanelToggle('cantrips')}
+            onToggleSpells={() => handlePanelToggle('spells')}
           />
         )}
         

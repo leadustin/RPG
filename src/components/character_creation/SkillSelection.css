@@ -1,30 +1,117 @@
-/* src/components/SkillSelection.css */
+/* src/components/character_creation/SkillSelection.css */
+
 .skill-selection-container {
-  margin-top: 20px;
+  margin-top: 0px;
+  margin-bottom: 20px;
 }
 
 .skill-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  max-height: 280px;
+  overflow-y: auto;   
+  padding-right: 5px;
+  margin-top: 10px; /* Abstand zwischen Header und Grid */
+}
+
+.skill-grid-2col {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 
 .skill-choice {
-  padding: 5px;
-  border: 1px solid var(--color-border-light);
-  background-color: var(--color-background-medium);
+  /* Gekopierte Stile von .sidebar-panel li */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.4rem 1.5rem; /* Angepasst von sidebar */
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+  /* Wichtig: Layout von .skill-choice beibehalten */
   text-align: center;
-  font-family: sans-serif;
+  box-sizing: border-box; 
+  /* font-size: 0.9em; */
+  width: 100%; /* Stellt sicher, dass Buttons die volle Breite nutzen */
 }
 
 .skill-choice:hover {
-  border-color: var(--color-selection);
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
 }
 
 .skill-choice.selected {
-  background-color: var(--color-selection);
-  color: var(--color-background-dark);
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
   font-weight: bold;
+  color: var(--theme-text-color);
+}
+
+/* --- Stile für einklappbare Header --- */
+            
+.collapsible-header {
+  /* Nimm den Button-Look, aber lass es wie Text aussehen */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  
+  /* Wichtig für den Pfeil */
+  position: relative;
+  padding-left: 2.5rem; /* Platz für den Pfeil */
+  
+  /* H-Tag Reset */
+  margin: 0;
+  font-size: 1.2em;
+  text-align: left;
+}
+
+.collapsible-header:hover {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+/* Der Pfeil (Caret) */
+.collapsible-header::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(-45deg); /* Geschlossen (Pfeil rechts) */
+  
+  width: 0.5em;
+  height: 0.5em;
+  border-right: 2px solid var(--theme-text-color);
+  border-bottom: 2px solid var(--theme-text-color);
+  
+  transition: transform 0.2s ease-out;
+}
+
+/* Pfeil-Drehung, wenn offen */
+.collapsible-header.open::before {
+  transform: translateY(-50%) rotate(45deg); /* Offen (Pfeil runter) */
+}
+
+/* Korrektur für die 'SkillSelection.js' h4 */
+.skill-selection-container h4.collapsible-header {
+    font-size: 1.1em; /* Macht die h4 etwas kleiner als die h3 */
+    margin-top: 10px; 
+}
+
+/* Korrektur für 'SpellSelection.js' h3 */
+.spell-selection h3.collapsible-header {
+    margin-top: 0; /* Die .details-divider kümmern sich um den Abstand */
 }

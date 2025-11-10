@@ -1106,7 +1106,7 @@
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
     "skills": {
       "choose": 3,
-      "from": ["Tierkunde", "Athletik", "Einblick", "Nachforschungen", "Naturkunde", "Wahrnehmung", "Heimlichkeit", "Überlebenskunst"]
+      "from": ["Tierkunde", "Athletik", "Wahrnehmung", "Nachforschungen", "Naturkunde", "Einblick", "Heimlichkeit", "Überlebenskunst"]
     }
   },
   "features": [

@@ -8,97 +8,20 @@
 .race-list {
   display: flex;
   flex-direction: column;
-  flex-basis: 10%;
+  flex-basis: 25%; /* Angepasst von 10% für besseres Layout */
   gap: 5px;
 }
 
-.race-button {
-  width: 100%; /* Behalten wir von .race-button */
-  
-  /* Gekopierte Stile von .sidebar-panel li */
-  background-color: var(--theme-button-bg);
-  color: var(--theme-text-color);
-  border: 1px solid var(--theme-panel-border-color);
-  border-radius: 5px;
-  padding: 0.75rem 1.5rem;
-  font-family: var(--theme-font);
-  text-shadow: var(--theme-text-shadow);
-  cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+/* HINWEIS: Die .race-button Stile wurden entfernt, 
+  da wir .selection-button (aus CreationSidebar.css)
+  oder .skill-choice (aus SkillSelection.css) wiederverwenden.
+  Stelle sicher, dass RaceSelection.js eine dieser CSS-Dateien importiert!
+*/
 
-  /* Wichtig: Sicherstellen, dass die Box-Größe stimmt */
-  box-sizing: border-box; 
-  
-  /* Entfernt, um wie die Sidebar-Buttons auszusehen */
-  /* text-align: left; */ 
-  font-size: 1.1em;
-}
 
-.race-button:hover {
-  background-color: var(--theme-button-bg-hover);
-  box-shadow: var(--theme-button-glow-hover);
-  border-color: var(--theme-button-glow-hover);
-}
-
-.race-button.selected { /* .selected wird in RaceSelection.js verwendet */
-  background-color: var(--theme-button-bg-active);
-  border-color: var(--theme-button-border-active);
-  box-shadow: var(--theme-button-glow-active);
-  font-weight: bold; /* Behalten wir bei */
-}
-
-.race-details {
-  flex-basis: 70%;
-  padding-left: 20px;
-  border-left: 1px solid var(--color-border-light);
-  overflow-y: auto;
-}
-
-.race-details h2 {
-  margin-top: 0;
-  color: var(--color-selection);
-  font-size: 2em;
-}
-
-.race-description {
-  font-family: sans-serif;
-  line-height: 1.6;
-  font-size: 1em;
-  color: var(--color-text-light);
-}
-
-.subrace-selection h3 {
-  margin-bottom: 10px;
-}
-
-.subrace-options {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.subrace-button {
-  font-family: var(--font-main);
-  color: var(--color-text-light);
-  background-color: var(--color-button-primary);
-  border: 1px solid var(--color-border-light);
-  padding: 8px 15px;
-  cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
-}
-
-.subrace-button:hover {
-  background-color: var(--color-button-hover);
-}
-
-.subrace-button.selected {
-  background-color: var(--color-selection);
-  border-color: var(--color-text-light);
-  color: var(--color-background-dark);
-}
-
+/* Diese Stile für die Attributs-Boni bleiben */
 .ability-bonus-list {
-  list-style: none;
+  list-style-type: none;
   padding: 0;
   margin-top: 15px;
 }
@@ -117,10 +40,10 @@
 }
 
 .bonus-buttons button {
-  background-color: var(--color-button-primary);
+  padding: 5px 10px;
+  background-color: var(--color-button-secondary);
   border: 1px solid var(--color-border-light);
   color: var(--color-text-light);
-  padding: 4px 8px;
   cursor: pointer;
 }
 
@@ -135,68 +58,7 @@
   opacity: 0.5;
 }
 
-.character-identity {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.input-group {
-  flex: 1;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 0.9em;
-}
-
-.input-group input[type="text"] {
-  width: 100%;
-  padding: 8px;
-  font-size: 1em;
-  background-color: var(--color-background-light);
-  border: 1px solid var(--color-border-light);
-  color: var(--color-text-light);
-  box-sizing: border-box;
-}
-
-.gender-buttons {
-  display: flex;
-}
-
-.gender-buttons button {
-  flex: 1;
-  padding: 8px;
-  background-color: var(--color-button-primary);
-  border: 1px solid var(--color-border-light);
-  color: var(--color-text-light);
-  cursor: pointer;
-}
-
-.gender-buttons button.selected {
-  background-color: var(--color-selection);
-  color: var(--color-background-dark);
-}
-
-.portrait-selection {
-  display: flex;
-  gap: 18px;
-  margin-bottom: 20px;
-}
-
-.portrait-image {
-  width: 100px;
-  height: 100px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: border-color 0.2s;
-}
-
-.portrait-image:hover {
-  border-color: var(--color-selection);
-}
-
-.portrait-image.selected {
-  border-color: var(--color-selection);
-}
+/* .character-identity, .input-group, .gender-buttons,
+  .portrait-grid, .portrait-image
+  WURDEN VON HIER ENTFERNT.
+*/
