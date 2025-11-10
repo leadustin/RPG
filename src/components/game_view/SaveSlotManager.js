@@ -5,7 +5,6 @@ import "./SaveSlotManager.css";
 // KORRIGIERTER PFAD IN DIESER ZEILE:
 import {
   getSaveSlots,
-  saveToSlot,
   loadFromSlot,
   deleteSlot,
 } from "../../utils/persistence";
