@@ -23,8 +23,32 @@ const toolOptions = {
     "Kalligraphenwerkzeug",
     "Schmiedewerkzeug",
     "Zimmermannswerkzeug",
+    "Kartographenwerkzeug",
+    "Schusterwerkzeug",
+    "Kochgeschirr",
+    "Glasblasewerkzeug",
+    "Juwelierswerkzeug",
+    "Lederwerkzeug",
+    "Maurerwerkzeug",
+    "Malerwerkzeug",
+    "Töpferwerkzeug",
+    "Steinmetzwerkzeug",
+    "Flickwerkzeug",
+    "Weberwerkzeug",
+    "Holzschnitzerwerkzeug"
   ],
-  // Fügen Sie hier bei Bedarf weitere Werkzeugtypen hinzu
+  Musikinstrument: [
+    "Dudelsack",
+    "Trommel",
+    "Dulcimer",
+    "Flöte",
+    "Laute",
+    "Leier",
+    "Horn",
+    "Panflöte",
+    "Schalmei",
+    "Harfe"
+  ]
 };
 
 export const BackgroundSelection = ({ character, updateCharacter }) => {
@@ -63,7 +87,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
               const currentLanguageChoices =
                 character.background_choices.languages || [];
 
-              // **NEU: Logik zur Filterung der Optionen**
+              // Logik zur Filterung der Optionen
               // Schließe Sprachen aus, die in *anderen* Dropdowns für Sprachen gewählt wurden.
               const availableOptions = languageOptions.filter(
                 (option) =>
@@ -76,6 +100,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
               return (
                 <select
                   key={i}
+                  className="panel-select"
                   value={currentLanguageChoices[i] || ""}
                   onChange={(e) =>
                     handleChoiceChange("languages", i, e.target.value)
@@ -107,6 +132,9 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
       } else if (toolText.toLowerCase().includes("handwerkerwerkzeug")) {
         options = toolOptions["Handwerkerwerkzeug"];
         title = "Wähle 1 Handwerkerwerkzeug:";
+      } else if (toolText.toLowerCase().includes("musikinstrument")) {
+        options = toolOptions["Musikinstrument"];
+        title = "Wähle 1 Musikinstrument:";
       }
 
       if (options.length > 0) {
@@ -116,6 +144,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
           <div key={choiceKey} className="choice-block">
             <h4>{title}</h4>
             <select
+              className="panel-select"
               value={character.background_choices.tools?.[index] || ""}
               onChange={(e) =>
                 handleChoiceChange("tools", index, e.target.value)
@@ -151,58 +180,74 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
   ].filter(Boolean);
 
   return (
-    <div className="background-selection-container">
-      {/* Linke Spalte */}
-      <div className="background-list">
-        {allBackgroundData.map((bg) => (
-          <button
-            key={bg.key}
-            className={`background-button ${
-              selectedBackground.key === bg.key ? "selected" : ""
-            }`}
-            onClick={() => updateCharacter({ background: bg })}
-          >
-            {bg.name}
-          </button>
-        ))}
+    <div className="background-panel-layout">
+      {/* --- LINKE SPALTE (Hintergrund-Liste) --- */}
+      <div className="background-column-left">
+        <div className="background-box">
+          <h3>Hintergründe</h3>
+          
+          <div className="background-list-wrapper">
+            {allBackgroundData.map((bg) => (
+              <button
+                key={bg.key}
+                className={`background-button ${
+                  selectedBackground.key === bg.key ? "selected" : ""
+                }`}
+                onClick={() => updateCharacter({ background: bg })}
+              >
+                {bg.name}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Rechte Spalte */}
-      <div className="background-details">
-        <h2>{selectedBackground.name}</h2>
-        <p className="background-description">
-          {selectedBackground.description}
-        </p>
+      {/* --- RECHTE SPALTE (Details) --- */}
+      <div className="background-column-right">
+        <div className="background-box">
+          <h2 className="panel-details-header">{selectedBackground.name}</h2>
+          
+          <div className="background-details-content-wrapper">
+            <p className="panel-details-description">
+              {selectedBackground.description}
+            </p>
 
-        {renderChoices()}
+            {renderChoices().length > 0 && (
+              <>
+                <div className="details-divider"></div>
+                {renderChoices()}
+              </>
+            )}
 
-        <div className="details-divider"></div>
+            <div className="details-divider"></div>
 
-        <h3>Fertigkeiten & Werkzeuge</h3>
-        <ul className="features-list">
-          <li>
-            <strong>Geübte Fertigkeiten:</strong>{" "}
-            {selectedBackground.skill_proficiencies.join(", ")}
-          </li>
-          {allToolProficiencies.length > 0 && (
-            <li>
-              <strong>Geübte Werkzeuge:</strong>{" "}
-              {allToolProficiencies.join(", ")}
-            </li>
-          )}
-          {allLanguages.length > 0 && (
-            <li>
-              <strong>Sprachen:</strong> {allLanguages.join(", ")}
-            </li>
-          )}
-        </ul>
+            <h3>Fertigkeiten & Werkzeuge</h3>
+            <ul className="features-list">
+              <li>
+                <strong>Geübte Fertigkeiten:</strong>{" "}
+                {selectedBackground.skill_proficiencies.join(", ")}
+              </li>
+              {allToolProficiencies.length > 0 && (
+                <li>
+                  <strong>Geübte Werkzeuge:</strong>{" "}
+                  {allToolProficiencies.join(", ")}
+                </li>
+              )}
+              {allLanguages.length > 0 && (
+                <li>
+                  <strong>Sprachen:</strong> {allLanguages.join(", ")}
+                </li>
+              )}
+            </ul>
 
-        <div className="details-divider"></div>
+            <div className="details-divider"></div>
 
-        <h3>Merkmal: {selectedBackground.feature.name}</h3>
-        <p className="background-description">
-          {selectedBackground.feature.description}
-        </p>
+            <h3>Merkmal: {selectedBackground.feature.name}</h3>
+            <p className="panel-details-description">
+              {selectedBackground.feature.description}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

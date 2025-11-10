@@ -13,9 +13,6 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   const selectedRace = character.race;
   const floatingBonuses = selectedRace.ability_bonuses.floating || [];
 
-  // --- HINWEIS: Die 'getPortraitModule'-Funktion WURDE VON HIER ENTFERNT ---
-  // (Sie zieht in IdentitySelection.js um)
-
   useEffect(() => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
     let initialAssignments = {};
@@ -32,7 +29,12 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     }
     
     setAssignments(initialAssignments);
-  }, [selectedRace, floatingBonuses]);
+  
+  // --- KORREKTUR HIER ---
+  // Die Abhängigkeit darf NUR selectedRace sein.
+  // floatingBonuses wird bei jedem Render neu erstellt und würde eine Endlosschleife auslösen.
+  // Da floatingBonuses von selectedRace abhängt, ist dieser Hook so korrekt.
+  }, [selectedRace]); 
 
 
   const onSelect = (race) => {
@@ -88,56 +90,66 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     return <div>Lade Völker...</div>;
   }
   
+  // (Der JSX/Return-Block ist von deiner vorherigen Version, 
+  //  um das .race-panel-layout zu verwenden)
   return (
-    <div className="race-selection-container">
-      <div className="race-list">
-        {allRaceData.map(race => (
-          <button
-            key={race.key}
-            // HINWEIS: Ich verwende 'creation-nav-button', da 'race-button' in deiner .css entfernt wird
-            // (basierend auf CreationSidebar.css)
-            className={`creation-nav-button ${selectedRace.key === race.key ? 'active' : ''}`} 
-            onClick={() => onSelect(race)}
-          >
-            {race.name}
-          </button>
-        ))}
+    <div className="race-panel-layout">
+      
+      {/* --- LINKE SPALTE (Völkerliste) --- */}
+      <div className="race-column-left">
+        <div className="race-box">
+          <h3>Völker</h3>
+          
+          <div className="race-list">
+            {allRaceData.map(race => (
+              <button
+                key={race.key}
+                className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`} 
+                onClick={() => onSelect(race)}
+              >
+                {race.name}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="panel-details-container">
-        <h2 className="panel-details-header">{selectedRace.name}</h2>
-        <p className="panel-details-description">{selectedRace.description}</p>
-        
-        {/* --- 
-          DER GESAMTE BLOCK FÜR NAME, GESCHLECHT UND PORTRAIT WURDE HIER ENTFERNT 
-        --- */}
+      {/* --- RECHTE SPALTE (Details) --- */}
+      <div className="race-column-right">
+        <div className="race-box">
+          <h2 className="panel-details-header">{selectedRace.name}</h2>
 
-        <div className="details-divider"></div>
+          <div className="race-details-content-wrapper">
+            <p className="panel-details-description">{selectedRace.description}</p>
+            
+            <div className="details-divider"></div>
 
-        <h3>Attributs-Boost</h3>
-        <p>{selectedRace.ability_bonuses.text}</p>
-        
-        {floatingBonuses.length > 0 && (
-          <ul className="ability-bonus-list">
-            {ABILITIES.map(abiKey => (
-              <li key={abiKey}>
-                <span>{abiKey.toUpperCase()}</span>
-                <div className="bonus-buttons">
-                  {floatingBonuses.map((bonusValue, index) => (
-                    <button
-                      key={`${abiKey}-${index}`}
-                      onClick={() => handleAssignBonus(abiKey, index)}
-                      className={isBonusAssigned(abiKey, index) ? 'selected' : ''}
-                      disabled={isBonusUsed(index) && !isBonusAssigned(abiKey, index)}
-                    >
-                      +{bonusValue}
-                    </button>
-                  ))}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+            <h3>Attributs-Boost</h3>
+            <p>{selectedRace.ability_bonuses.text}</p>
+            
+            {floatingBonuses.length > 0 && (
+              <ul className="ability-bonus-list">
+                {ABILITIES.map(abiKey => (
+                  <li key={abiKey}>
+                    <span>{abiKey.toUpperCase()}</span>
+                    <div className="bonus-buttons">
+                      {floatingBonuses.map((bonusValue, index) => (
+                        <button
+                          key={`${abiKey}-${index}`}
+                          onClick={() => handleAssignBonus(abiKey, index)}
+                          className={isBonusAssigned(abiKey, index) ? 'selected' : ''}
+                          disabled={isBonusUsed(index) && !isBonusAssigned(abiKey, index)}
+                        >
+                          +{bonusValue}
+                        </button>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div> 
+        </div>
       </div>
     </div>
   );
