@@ -16,7 +16,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     const spentPoints = ABILITIES.reduce((total, abi) => total + POINT_COST[scores[abi]], 0);
     setPoints(27 - spentPoints);
     updateCharacter({ abilities: scores });
-  }, [scores]); // updateCharacter wurde hier bereits korrekt entfernt
+  }, [scores, updateCharacter]); // updateCharacter wurde hier bereits korrekt entfernt
 
   const handleScoreChange = (ability, delta) => {
     const currentScore = scores[ability];
