@@ -107,37 +107,43 @@
   outline: none;
 }
 
-/* --- Stil für Geschlechts-Buttons (AKTUALISIERT) --- */
+/* --- Stil für Geschlechts-Buttons (AKTUALISIERT AUF SKILL-ITEM-STIL) --- */
 .gender-buttons {
   display: flex;
-  gap: 5px; 
+  gap: 8px; /* Etwas mehr Abstand */
 }
 
 .gender-buttons button {
-  flex: 1;
-  padding: 8px 12px;
-  /* NEU: Hintergrund und Rand an Input-Felder angepasst */
-  background-color: var(--color-input-bg); 
-  border: 1px solid var(--color-border-light);
-  color: var(--color-text-secondary); 
+   /* Gekopierte Stile von .sidebar-panel li */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.4rem 1.5rem; /* Angepasst von sidebar */
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
   cursor: pointer;
-  font-family: var(--font-main);
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-  border-radius: 4px; 
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+  /* Wichtig: Layout von .skill-choice beibehalten */
+  text-align: center;
+  box-sizing: border-box; 
+  /* font-size: 0.9em; */
+  width: 100%; /* Stellt sicher, dass Buttons die volle Breite nutzen */
 }
 
 .gender-buttons button:hover:not(.selected) {
-  background-color: var(--color-button-hover); 
-  color: var(--color-text-light);
-  /* NEU: Randfarbe beim Hover */
-  border-color: var(--color-selection);
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
 }
 
 .gender-buttons button.selected {
-  background-color: var(--color-selection); 
-  color: var(--color-text-dark); 
-  border-color: var(--color-selection);
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
   font-weight: bold;
+  color: var(--theme-text-color);
 }
 
 /* NEU: Ränder an hellen Stil angepasst */

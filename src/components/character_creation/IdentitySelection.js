@@ -1,7 +1,6 @@
 // src/components/character_creation/IdentitySelection.js
 import React from 'react';
 import './PanelDetails.css'; // Für allgemeine Details-Header
-// import './SummaryPanel.css'; // ENTFERNT: Stile sind jetzt in IdentitySelection.css
 import './IdentitySelection.css'; // Eigene Stile (jetzt mit Layout-Stilen)
 
 // Die 9 D&D-Gesinnungen
