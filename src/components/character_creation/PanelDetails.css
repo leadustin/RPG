@@ -3,7 +3,7 @@
 
 .details-divider {
   height: 1px;
-  background-color: var(--color-selection);
+  background-color: #333;
   margin: 20px 0;
 }
 

@@ -26,31 +26,19 @@ export const getProficiencyBonus = (level) => {
  */
 export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
-
-  let totalBonus = 0;
-
-  // Fixe Boni (z.B. bei Menschen)
-  if (
-    character.ability_bonus_assignments &&
-    character.ability_bonus_assignments[abilityKey]
-  ) {
-    totalBonus += character.ability_bonus_assignments[abilityKey];
-  }
-
-  // Floating Boni (z.B. bei Halbelfen)
-  if (
-    character.race?.ability_bonuses?.floating &&
-    character.floating_bonus_assignments
-  ) {
-    const floatingBonuses = character.race.ability_bonuses.floating;
-    const bonusIndex = character.floating_bonus_assignments[abilityKey];
-
-    if (bonusIndex !== undefined && floatingBonuses[bonusIndex] !== undefined) {
-      totalBonus += floatingBonuses[bonusIndex];
+ 
+    // VEREINFACHTE LOGIK FÜR 2024-Regeln
+    // Annahme: Alle gewählten Boni (+2/+1 oder +1/+1/+1) werden
+    // in 'ability_bonus_assignments' gespeichert.
+    // z.B.: { str: 2, dex: 1 } ODER { str: 1, con: 1, wis: 1 }
+    if (
+      character.ability_bonus_assignments &&
+      character.ability_bonus_assignments[abilityKey]
+    ) {
+      return character.ability_bonus_assignments[abilityKey];
     }
-  }
-
-  return totalBonus;
+ 
+    return 0;
 };
 
 /**

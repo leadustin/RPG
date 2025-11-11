@@ -109,7 +109,7 @@ export const ClassSelection = ({ character, updateCharacter }) => {
   return (
     <div className="class-selection-container">
       {/* --- Klassenauswahl-Grid (ERWEITERTES RESET) --- */}
-      <div className="class-grid">
+      <div className="class-grid class-summary-box">
         {allClassData.map(cls => (
           <button 
             key={cls.key} 
@@ -144,7 +144,7 @@ export const ClassSelection = ({ character, updateCharacter }) => {
       </div>
 
       {/* --- Klassendetails (STARK ERWEITERT) --- */}
-      <div className="class-details">
+      <div className="class-details class-summary-box">
         <h2>{selectedClass.name}</h2>
         <p className="class-description">{selectedClass.description}</p>
         <div className="details-divider"></div>

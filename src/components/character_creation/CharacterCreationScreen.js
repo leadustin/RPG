@@ -32,9 +32,8 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     tool_proficiencies_choice: [], // Für Barde
     background: allBackgroundData[0],
     abilities: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
-    ability_bonus_assignments: allRaceData.find((r) => r.key === "human")
-      .ability_bonuses.fixed,
-    floating_bonus_assignments: {},
+    ability_bonus_assignments: {}, // NEU: Leeres Objekt. Wird von AbilitySelection gefüllt.
+    floating_bonus_assignments: {}, // (Wird nicht mehr verwendet, kann später entfernt werden)
     skill_proficiencies_choice: [],
     background_choices: {
       languages: [],

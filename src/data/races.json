@@ -4,15 +4,8 @@
     "name": "Mensch",
     "description": "Menschen sind die anpassungsfähigsten und ehrgeizigsten unter den Völkern, die stets bestrebt sind, ihre Spuren in der Welt zu hinterlassen.",
     "ability_bonuses": {
-      "text": "+1 auf alle Attributswerte",
-      "fixed": {
-        "str": 1,
-        "dex": 1,
-        "con": 1,
-        "int": 1,
-        "wis": 1,
-        "cha": 1
-      }
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
     "size": "Mittel",
@@ -25,8 +18,8 @@
     "name": "Elf",
     "description": "Elfen sind anmutige, langlebige Wesen mit einer tiefen Verbindung zu Natur und Magie. Sie streben nach Harmonie, schätzen Freiheit und leben oft zurückgezogen in uralten Wäldern oder mystischen Reichen.",
     "ability_bonuses": {
-      "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
-      "floating": [2, 1]
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Elfen können bis zu 750 Jahre alt werden.",
     "size": "Mittel",
@@ -111,8 +104,8 @@
     "key": "dwarf",
     "name": "Zwerg",
     "ability_bonuses": {
-      "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
-      "floating": [2, 1]
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Zwerge werden im Durchschnitt 350 Jahre alt.",
     "size": "Mittel",
@@ -168,8 +161,8 @@
     "key": "halfling",
     "name": "Halbling",
     "ability_bonuses": {
-      "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
-      "floating": [2, 1]
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Halblinge leben bis zur Mitte ihres zweiten Jahrhunderts.",
     "size": "Klein",
@@ -207,8 +200,8 @@
     "key": "dragonborn",
     "name": "Drachenblütiger",
     "ability_bonuses": {
-      "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
-      "floating": [2, 1]
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Drachenblütige leben etwa 80 Jahre.",
     "size": "Mittel",
@@ -288,8 +281,8 @@
     "key": "gnome",
     "name": "Gnom",
     "ability_bonuses": {
-      "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
-      "floating": [2, 1]
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Gnome können 350 bis 500 Jahre alt werden.",
     "size": "Klein",
@@ -323,8 +316,8 @@
     "key": "half-elf",
     "name": "Halbelf",
     "ability_bonuses": {
-      "text": "Ein +2 und zwei +1 Boni, die auf drei verschiedene Attribute verteilt werden können.",
-      "floating": [2, 1, 1]
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Halbelfen leben oft über 180 Jahre.",
     "size": "Mittel",
@@ -353,8 +346,8 @@
     "key": "half-orc",
     "name": "Halbork",
     "ability_bonuses": {
-      "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
-      "floating": [2, 1]
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Halborks leben selten länger als 75 Jahre.",
     "size": "Mittel",
@@ -383,8 +376,8 @@
     "key": "tiefling",
     "name": "Tiefling",
     "ability_bonuses": {
-      "text": "Ein +2 und ein +1 Bonus, die auf zwei verschiedene Attribute verteilt werden können.",
-      "floating": [2, 1]
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
     },
     "age": "Tieflinge werden im gleichen Tempo wie Menschen erwachsen, leben aber einige Jahre länger.",
     "size": "Mittel",
