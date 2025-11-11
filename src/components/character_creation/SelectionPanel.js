@@ -8,7 +8,7 @@ import { BackgroundSelection } from "./BackgroundSelection";
 import { SummaryPanel } from "./SummaryPanel"; 
 import { SubraceSelection } from "./SubraceSelection";
 import { AncestrySelection } from "./AncestrySelection";
-import { IdentitySelection } from './IdentitySelection'; // <-- NEU IMPORTIEREN
+import { IdentitySelection } from './IdentitySelection';
 
 export const SelectionPanel = ({
   currentStep,

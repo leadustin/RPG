@@ -11,8 +11,7 @@ const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 export const RaceSelection = ({ character, updateCharacter }) => {
   const [assignments, setAssignments] = useState({});
   const selectedRace = character.race;
-  const floatingBonuses = selectedRace.ability_bonuses.floating || [];
-
+  
   useEffect(() => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
     let initialAssignments = {};
@@ -23,6 +22,9 @@ export const RaceSelection = ({ character, updateCharacter }) => {
       });
     }
 
+    // floatingBonuses hier direkt aus selectedRace holen
+    const floatingBonuses = selectedRace.ability_bonuses.floating || [];
+    
     if (floatingBonuses.length > 0) {
       // Wenn es floating Boni gibt, initialisiere 'available'
       initialAssignments.available = floatingBonuses.map((val, idx) => ({ index: idx, value: val, assignedTo: null }));
@@ -30,11 +32,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     
     setAssignments(initialAssignments);
   
-  // --- KORREKTUR HIER ---
-  // Die Abhängigkeit darf NUR selectedRace sein.
-  // floatingBonuses wird bei jedem Render neu erstellt und würde eine Endlosschleife auslösen.
-  // Da floatingBonuses von selectedRace abhängt, ist dieser Hook so korrekt.
-  }, [selectedRace]); 
+  }, [selectedRace]); // Nur selectedRace als Dependency
 
 
   const onSelect = (race) => {
@@ -90,8 +88,9 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     return <div>Lade Völker...</div>;
   }
   
-  // (Der JSX/Return-Block ist von deiner vorherigen Version, 
-  //  um das .race-panel-layout zu verwenden)
+  // floatingBonuses hier für die Render-Logik definieren
+  const floatingBonuses = selectedRace.ability_bonuses.floating || [];
+  
   return (
     <div className="race-panel-layout">
       
