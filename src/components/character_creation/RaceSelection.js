@@ -4,6 +4,8 @@ import './RaceSelection.css';
 import './PanelDetails.css';
 import allRaceData from '../../data/races.json';
 import './CreationSidebar.css'; 
+// *** NEU: SubraceSelection importieren ***
+import { SubraceSelection } from './SubraceSelection'; 
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
@@ -44,6 +46,12 @@ export const RaceSelection = ({ character, updateCharacter }) => {
       floating_bonus_assignments: {} // Floating Boni zurücksetzen
     });
   };
+
+  // *** NEU: Handler für die Auswahl der Unterart ***
+  const handleSubraceSelect = (subrace) => {
+    updateCharacter({ subrace: subrace });
+  };
+
 
   const handleAssignBonus = (abiKey, index) => {
     setAssignments(prev => {
@@ -114,6 +122,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
 
       {/* --- RECHTE SPALTE (Details) --- */}
       <div className="race-column-right">
+        {/* Box 1: Volks-Details (wie bisher) */}
         <div className="race-box">
           <h2 className="panel-details-header">{selectedRace.name}</h2>
 
@@ -148,6 +157,19 @@ export const RaceSelection = ({ character, updateCharacter }) => {
             )}
           </div> 
         </div>
+
+        {/* *** NEU: Box 2: Untervölker-Auswahl *** */}
+        {/* Diese Box erscheint nur, wenn das gewählte Volk Untervölker hat */}
+        {selectedRace.subraces && selectedRace.subraces.length > 0 && (
+          <div className="race-box">
+            <SubraceSelection
+              subraces={selectedRace.subraces}
+              selectedSubrace={character.subrace}
+              onSubraceSelect={handleSubraceSelect}
+            />
+          </div>
+        )}
+
       </div>
     </div>
   );
