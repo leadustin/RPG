@@ -144,6 +144,12 @@
   line-height: 1;
 }
 
+.bonus-buttons button:hover:not(:disabled) {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
 .bonus-buttons button.selected {
   background-color: var(--color-selection);
   border-color: var(--color-text-light);
