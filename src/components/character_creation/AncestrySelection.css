@@ -1,3 +1,5 @@
+/* src/components/character_creation/AncestrySelection.css */
+
 /* * Eigenes 2-Spalten-Layout für AncestrySelection.
  * (Stil-Logik basiert auf IdentitySelection.css, aber mit eigenen Klassennamen)
  */
@@ -62,4 +64,53 @@
 .ancestry-column-details {
   scrollbar-width: thin;
   scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+
+/* --- NEU: Button-Stile (kopiert von .race-grid/.race-button) --- */
+
+.ancestry-button-grid {
+  display: grid;
+  /* Passt die Spaltenanzahl automatisch an die Breite an */
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.ancestry-button {
+  background-color: var(--theme-button-bg);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  color: var(--theme-text-color);
+  text-shadow: var(--theme-text-shadow);
+  font-family: var(--theme-font);
+  font-size: 1em;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+}
+
+.ancestry-button:hover {
+  background-color: var(--theme-button-hover-bg);
+  border-color: var(--color-selection);
+  transform: translateY(-2px);
+}
+
+.ancestry-button.selected {
+  background-color: var(--color-selection);
+  border-color: var(--color-text-light);
+  color: #000; /* Besserer Kontrast auf Gold */
+  text-shadow: none;
+  box-shadow: 0 0 10px rgba(168, 126, 76, 0.6);
+}
+
+.ancestry-button span {
+  font-weight: bold;
 }

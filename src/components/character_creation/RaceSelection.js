@@ -10,7 +10,9 @@ const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 export const RaceSelection = ({ character, updateCharacter }) => {
   const [assignments, setAssignments] = useState({});
   const selectedRace = character.race;
-  
+  const selectedSubrace = character.subrace;
+  const selectedAncestry = character.ancestry; // NEU
+
   useEffect(() => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
     let initialAssignments = {};
@@ -34,7 +36,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   }, [selectedRace]); // Nur selectedRace als Dependency
 
 
-  const onSelect = (race) => {
+  const onSelectRace = (race) => {
     // Beim Wechsel des Volks müssen wir die Zuweisungen zurücksetzen
     updateCharacter({ 
       race: race, 
@@ -44,6 +46,17 @@ export const RaceSelection = ({ character, updateCharacter }) => {
       floating_bonus_assignments: {} // Floating Boni zurücksetzen
     });
   };
+
+  // Handler für die Auswahl der Unterart
+  const onSelectSubrace = (subrace) => {
+    updateCharacter({ subrace: subrace });
+  };
+
+  // *** NEU: Handler für die Auswahl der Abstammung ***
+  const onSelectAncestry = (ancestry) => {
+    updateCharacter({ ancestry: ancestry });
+  };
+
 
   const handleAssignBonus = (abiKey, index) => {
     setAssignments(prev => {
@@ -90,6 +103,22 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   // floatingBonuses hier für die Render-Logik definieren
   const floatingBonuses = selectedRace.ability_bonuses.floating || [];
   
+  // *** NEU: Logik für den Detail-Titel ***
+  const getDetailTitle = () => {
+    if (selectedSubrace) return selectedSubrace.name;
+    if (selectedAncestry) return `${selectedRace.name} (${selectedAncestry.name})`;
+    return selectedRace.name;
+  };
+
+  // *** NEU: Logik für die Detail-Beschreibung ***
+  const getDetailDescription = () => {
+    // Untervölker (wie Hochelf) haben eigene Beschreibungen
+    if (selectedSubrace) return selectedSubrace.description;
+    // Abstammungen (wie Roter Drache) haben keine, also die des Hauptvolks verwenden
+    return selectedRace.description;
+  };
+
+
   return (
     <div className="race-panel-layout">
       
@@ -100,13 +129,51 @@ export const RaceSelection = ({ character, updateCharacter }) => {
           
           <div className="race-list">
             {allRaceData.map(race => (
-              <button
-                key={race.key}
-                className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`} 
-                onClick={() => onSelect(race)}
-              >
-                {race.name}
-              </button>
+              <React.Fragment key={race.key}>
+                <button
+                  className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`}
+                  onClick={() => onSelectRace(race)}
+                >
+                  {race.name}
+                </button>
+
+                {/* --- Collapsible Container (Logik angepasst) --- */}
+                {selectedRace.key === race.key && (
+                  <>
+                    {/* Fall 1: Untervölker (z.B. Elf) */}
+                    {race.subraces && race.subraces.length > 0 && (
+                      <div className="subrace-collapsible-container">
+                        {race.subraces.map(subrace => (
+                          <button
+                            key={subrace.key}
+                            className={`subrace-button-nested ${selectedSubrace?.key === subrace.key ? 'selected' : ''}`}
+                            onClick={() => onSelectSubrace(subrace)}
+                          >
+                            {subrace.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Fall 2: Abstammungen (z.B. Drachenblütiger) */}
+                    {race.ancestries && race.ancestries.length > 0 && (
+                      <div className="subrace-collapsible-container">
+                        {race.ancestries.map(ancestry => (
+                          <button
+                            key={ancestry.key}
+                            className={`subrace-button-nested ${selectedAncestry?.key === ancestry.key ? 'selected' : ''}`}
+                            onClick={() => onSelectAncestry(ancestry)}
+                          >
+                            {ancestry.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+                {/* --- Ende Collapsible Container --- */}
+
+              </React.Fragment>
             ))}
           </div>
         </div>
@@ -115,13 +182,16 @@ export const RaceSelection = ({ character, updateCharacter }) => {
       {/* --- RECHTE SPALTE (Details) --- */}
       <div className="race-column-right">
         <div className="race-box">
-          <h2 className="panel-details-header">{selectedRace.name}</h2>
+          <h2 className="panel-details-header">{getDetailTitle()}</h2>
 
           <div className="race-details-content-wrapper">
-            <p className="panel-details-description">{selectedRace.description}</p>
+            <p className="panel-details-description">
+              {getDetailDescription()}
+            </p>
             
             <div className="details-divider"></div>
 
+            {/* Zeige immer die Boni des Hauptvolks */}
             <h3>Attributs-Boost</h3>
             <p>{selectedRace.ability_bonuses.text}</p>
             
@@ -146,6 +216,40 @@ export const RaceSelection = ({ character, updateCharacter }) => {
                 ))}
               </ul>
             )}
+
+            {/* *** Zeige die Traits (Merkmale) an (Logik angepasst) *** */}
+            <div className="details-divider"></div>
+            <h3>Merkmale</h3>
+            <ul className="traits-list-panel">
+              {/* Zeige die Merkmale des Hauptvolks (außer Odemwaffe, die wird ersetzt) */}
+              {selectedRace.traits
+                .filter(trait => !(selectedRace.key === 'dragonborn' && trait.name === 'Odemwaffe'))
+                .map(trait => (
+                 <li key={trait.name}>
+                    <strong>{trait.name}:</strong> {trait.description}
+                  </li>
+              ))}
+              
+              {/* Zeige die Merkmale des Untervolks, falls ausgewählt */}
+              {selectedSubrace && selectedSubrace.traits.map(trait => (
+                 <li key={trait.name}>
+                    <strong>{trait.name} ({selectedSubrace.name}):</strong> {trait.description}
+                  </li>
+              ))}
+
+              {/* Zeige die Merkmale der Abstammung, falls ausgewählt */}
+              {selectedRace.key === 'dragonborn' && selectedAncestry && (
+                <>
+                  <li>
+                    <strong>Schadensresistenz ({selectedAncestry.name}):</strong> Du hast Resistenz gegen {selectedAncestry.damage_type}.
+                  </li>
+                  <li>
+                    <strong>Odemwaffe ({selectedAncestry.name}):</strong> {selectedAncestry.breath_weapon} ({selectedAncestry.damage_type}).
+                  </li>
+                </>
+              )}
+            </ul>
+
           </div> 
         </div>
       </div>
