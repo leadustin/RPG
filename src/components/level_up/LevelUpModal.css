@@ -260,19 +260,7 @@
   width: 100%;
   margin-bottom: 1rem; /* Fügt etwas Abstand zum Button hinzu */
 }
-#dice-box .dice-box-canvas {
-  /* Zwingt das Canvas, die Breite seines Eltern-Containers (#dice-box) 
-    anzunehmen.
-  */
-  width: 100% !important; 
-  
-  /* Zwingt das Canvas auf eine feste Höhe. 
-    Passe die 400px nach Bedarf an.
-  */
-  height: 400px !important; 
-
-  /* Stellt sicher, dass das gestreckte Objekt gut aussieht, 
-    falls es das Seitenverhältnis ändert.
-  */
-  object-fit: contain; 
+.dice-box-canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
