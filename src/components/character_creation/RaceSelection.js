@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import './RaceSelection.css';
 import './PanelDetails.css';
 import allRaceData from '../../data/races.json';
-// Importiere die Stile für die goldenen Buttons (ersetze dies, falls der Stil woanders liegt)
 import './CreationSidebar.css'; 
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
