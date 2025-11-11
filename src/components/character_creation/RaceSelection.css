@@ -151,7 +151,7 @@
 }
 
 .bonus-buttons button.selected {
-  background-color: var(--color-selection);
+  background-color: var(--theme-button-bg);
   border-color: var(--color-text-light);
 }
 
