@@ -6,7 +6,6 @@ import {
   saveAutoSave,
   deleteAutoSave,
   saveToSlot,
-  loadFromSlot,
 } from "../utils/persistence";
 // *** 1. IMPORT ERWEITERT (aus vorherigem Schritt, bleibt gleich) ***
 import {
