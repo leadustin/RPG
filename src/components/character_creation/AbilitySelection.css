@@ -171,7 +171,7 @@
 /* --- NEU: DiceBox Container-Stil --- */
 #ability-dice-box {
   width: 100%;
-  height: 250px; /* WICHTIG: Muss eine Höhe haben */
+  height: 400px; /* WICHTIG: Muss eine Höhe haben */
   margin-bottom: 0px; /* War vorher 15px, aber gap regelt das */
   border-radius: 6px;
   overflow: hidden; /* Versteckt den Canvas, falls er überläuft */

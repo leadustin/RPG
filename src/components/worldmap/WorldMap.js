@@ -66,7 +66,7 @@ export const WorldMap = ({
   character,
   onEnterLocation,
   onUpdatePosition,
-  onDiscoverLocation, // <--- KORREKTUR 1: Neue Prop empfangen
+  onDiscoverLocation,
 }) => {
   const canvasRef = useRef(null);
   const playerRef = useRef(null);
@@ -258,10 +258,9 @@ export const WorldMap = ({
     imagesLoaded,
     viewTransform,
     modal.show,
-    onEnterLocation,
     onUpdatePosition,
-    onDiscoverLocation, // <--- KORREKTUR 3: Abhängigkeit hinzugefügt
-    character, // <--- KORREKTUR 4: Abhängigkeit hinzugefügt (für discoveredLocations)
+    onDiscoverLocation,
+    character,
   ]);
 
   useEffect(() => {

@@ -1,6 +1,5 @@
-import allArmor from "../data/items/armor.json";
 import allClassData from "../data/classes.json";
-import { LEVEL_XP_TABLE, rollDiceFormula } from "../utils/helpers";
+import { LEVEL_XP_TABLE } from "../utils/helpers";
 
 /**
  * Berechnet den Modifikator für einen Attributswert.
@@ -217,7 +216,6 @@ export const SKILL_NAMES_DE = {
 export const isProficientInSkill = (character, skillKey) => {
   const {
     race,
-    class: charClass,
     background,
     skill_proficiencies_choice,
   } = character;
@@ -535,9 +533,6 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   const finalHpGain = hpRollResult;
 
   const newMaxHP = oldMaxHP + finalHpGain;
-
-  // Aktuelle HP um den *Gewinn* erhöhen (nicht auf max setzen)
-  const newCurrentHP = (character.stats.hp || oldMaxHP) + finalHpGain;
 
   // Entferne das pendingLevelUp-Flag und wende die Stats an
   const { pendingLevelUp, ...restOfCharacter } = character;

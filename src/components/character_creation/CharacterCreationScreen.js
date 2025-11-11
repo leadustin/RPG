@@ -8,10 +8,6 @@ import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";
 import allBackgroundData from "../../data/backgrounds.json";
 
-// WICHTIG: Wir müssen IdentitySelection hier importieren,
-// damit SelectionPanel sie finden kann, auch wenn wir sie hier nicht direkt aufrufen.
-import { IdentitySelection } from './IdentitySelection';
-
 export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
   const [currentStep, setCurrentStep] = useState("Race");
 
