@@ -141,7 +141,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
 }
 
 .bonus-buttons button:hover:not(:disabled) {

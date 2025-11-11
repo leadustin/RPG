@@ -1,0 +1,53 @@
+/*
+ * NEU: Stile für das 2-Spalten-Grid-Layout 
+ * der AncestrySelection Komponente.
+ */
+
+.ancestry-grid-layout {
+  display: grid;
+  /* 2 Spalten: 1fr 1fr (wie in SummaryPanel.css) */
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 20px;
+  height: 100%; /* Füllt die Höhe des Containers */
+  overflow: hidden;
+}
+
+/* Linke Spalte: Liste der Abstammungen */
+.ancestry-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Abstand zwischen Titel und Grid */
+  overflow-y: auto; /* Scrollbar für die Spalte */
+  padding-right: 10px; 
+}
+
+/* Rechte Spalte: Details der Auswahl */
+.ancestry-column-details {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Scrollbar für die Spalte */
+  padding-right: 10px; 
+}
+
+/* * Optional: Scrollbar-Styling 
+ * (Kopiert von SummaryPanel.css, wie gewünscht)
+ */
+.ancestry-column-list::-webkit-scrollbar,
+.ancestry-column-details::-webkit-scrollbar {
+  width: 8px;
+}
+.ancestry-column-list::-webkit-scrollbar-track,
+.ancestry-column-details::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.ancestry-column-list::-webkit-scrollbar-thumb,
+.ancestry-column-details::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+.ancestry-column-list,
+.ancestry-column-details {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
