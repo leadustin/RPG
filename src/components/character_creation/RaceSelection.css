@@ -8,30 +8,30 @@
   grid-template-columns: 0.6fr 2.0fr; /* 1:1.2 Spalten-Verhältnis */
   gap: 20px;
   flex-grow: 1; 
-  overflow: hidden; 
-  height: 100%; 
+  overflow: hidden;
+  height: 100%;
 }
 
 .race-column-left {
   display: flex;
   flex-direction: column;
-  gap: 20px; 
+  gap: 20px;
   /* GEÄNDERT: Spalte soll scrollen, nicht der Inhalt */
   overflow-y: auto;
   height: 100%;
   /* Optional: Padding für den neuen Scrollbar */
-  padding-right: 5px; 
+  padding-right: 5px;
 }
 
 .race-column-right {
   display: flex;
   flex-direction: column;
-  gap: 20px; 
+  gap: 20px;
   /* GEÄNDERT: Spalte soll scrollen, nicht der Inhalt */
   overflow-y: auto;
   height: 100%;
   /* Optional: Padding für den neuen Scrollbar */
-  padding-right: 5px; 
+  padding-right: 5px;
 }
 
 /* Stil für jede einzelne Box */
@@ -43,7 +43,7 @@
   
   display: flex;
   flex-direction: column;
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
 /* Header in den Boxen */
@@ -52,7 +52,7 @@
   padding-bottom: 10px;
   border-bottom: 1px solid var(--color-border-light);
   color: var(--color-text-light);
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
 .race-box h2.panel-details-header {
@@ -87,8 +87,8 @@
   cursor: pointer;
   transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
   text-align: center;
-  box-sizing: border-box; 
-  width: 100%; 
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .race-button:hover {
@@ -105,6 +105,56 @@
   color: var(--theme-text-color);
 }
 
+/* ---
+  *** NEUE STILE FÜR UNTERVÖLKER (Gemäß Screenshot) ***
+--- */
+
+.subrace-collapsible-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Abstand zwischen Untervölker-Buttons */
+  padding: 10px;
+  margin-left: 15px; /* Einrückung */
+  margin-top: -5px; /* Verbindet es visuell mit dem Haupt-Button */
+  margin-bottom: 5px; /* Abstand zum nächsten Volk */
+  background: rgba(0, 0, 0, 0.15); /* Leicht anderer Hintergrund */
+  border: 1px solid var(--theme-panel-border-color);
+  border-top: none; /* Entfernt die obere Kante */
+  border-radius: 0 0 5px 5px;
+}
+
+.subrace-button-nested {
+  /* Erbt von .race-button, aber überschreibt einiges */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.4rem 1.0rem; /* Etwas kleiner */
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  font-size: 15px; /* Etwas kleiner */
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-align: center;
+  width: 100%; 
+}
+
+.subrace-button-nested:hover {
+  background-color: var(--theme-button-bg-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.subrace-button-nested.selected {
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--color-selection); /* Hebt sich vom Haupt-Button ab */
+  font-weight: bold;
+  color: var(--theme-text-color);
+}
+
+
+/* ---
+  RECHTE SPALTE (Details)
+--- */
 
 /* Stile für die Attributs-Boni */
 .ability-bonus-list {
@@ -158,6 +208,29 @@
   background-color: var(--color-background-light);
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+/* NEU: Trait-Liste in der rechten Spalte */
+.traits-list-panel {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 15px;
+  font-size: 0.95rem;
+  color: var(--color-text-normal);
+}
+
+.traits-list-panel li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border-dark);
+}
+
+.traits-list-panel li:last-child {
+  border-bottom: none;
+}
+
+.traits-list-panel strong {
+  color: var(--color-text-light);
+  margin-right: 5px;
 }
 
 

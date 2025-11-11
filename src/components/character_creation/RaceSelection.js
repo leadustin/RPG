@@ -4,29 +4,30 @@ import './RaceSelection.css';
 import './PanelDetails.css';
 import allRaceData from '../../data/races.json';
 import './CreationSidebar.css'; 
-// *** NEU: SubraceSelection importieren ***
-import { SubraceSelection } from './SubraceSelection'; 
+
+// HINWEIS: SubraceSelection wird nicht mehr importiert, da die Logik hier integriert ist.
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 export const RaceSelection = ({ character, updateCharacter }) => {
   const [assignments, setAssignments] = useState({});
   const selectedRace = character.race;
-  
+  const selectedSubrace = character.subrace; // Für die Button-Auswahl
+
   useEffect(() => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
     let initialAssignments = {};
     
-    if (selectedRace.ability_bonuses.fixed) {
-      Object.entries(selectedRace.ability_bonuses.fixed).forEach(([ability, value]) => {
+    if (selectedRace.ability_bonuses.fixed) { //
+      Object.entries(selectedRace.ability_bonuses.fixed).forEach(([ability, value]) => { //
         initialAssignments[ability] = (initialAssignments[ability] || 0) + value;
       });
     }
 
     // floatingBonuses hier direkt aus selectedRace holen
-    const floatingBonuses = selectedRace.ability_bonuses.floating || [];
+    const floatingBonuses = selectedRace.ability_bonuses.floating || []; //
     
-    if (floatingBonuses.length > 0) {
+    if (floatingBonuses.length > 0) { //
       // Wenn es floating Boni gibt, initialisiere 'available'
       initialAssignments.available = floatingBonuses.map((val, idx) => ({ index: idx, value: val, assignedTo: null }));
     }
@@ -36,7 +37,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   }, [selectedRace]); // Nur selectedRace als Dependency
 
 
-  const onSelect = (race) => {
+  const onSelectRace = (race) => {
     // Beim Wechsel des Volks müssen wir die Zuweisungen zurücksetzen
     updateCharacter({ 
       race: race, 
@@ -47,15 +48,14 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     });
   };
 
-  // *** NEU: Handler für die Auswahl der Unterart ***
-  const handleSubraceSelect = (subrace) => {
+  // NEU: Handler für die Auswahl der Unterart
+  const onSelectSubrace = (subrace) => {
     updateCharacter({ subrace: subrace });
   };
 
-
   const handleAssignBonus = (abiKey, index) => {
     setAssignments(prev => {
-      const newFloating = { ...prev.floating_bonus_assignments };
+      const newFloating = { ...prev.floating_bonus_assignments }; //
       const currentAssignment = newFloating[abiKey];
       
       if (currentAssignment === index) {
@@ -70,11 +70,11 @@ export const RaceSelection = ({ character, updateCharacter }) => {
           }
         }
         // Setze die neue Zuweisung
-        newFloating[abiKey] = index;
+        newFloating[abiKey] = index; //
       }
       
       // Update des Character-Objekts im Haupt-State
-      updateCharacter({ floating_bonus_assignments: newFloating });
+      updateCharacter({ floating_bonus_assignments: newFloating }); //
 
       return {
         ...prev,
@@ -84,11 +84,11 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   };
 
   const isBonusAssigned = (abiKey, index) => {
-    return assignments.floating_bonus_assignments?.[abiKey] === index;
+    return assignments.floating_bonus_assignments?.[abiKey] === index; //
   };
 
   const isBonusUsed = (index) => {
-    return Object.values(assignments.floating_bonus_assignments || {}).includes(index);
+    return Object.values(assignments.floating_bonus_assignments || {}).includes(index); //
   };
 
   if (!selectedRace) {
@@ -96,7 +96,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   }
   
   // floatingBonuses hier für die Render-Logik definieren
-  const floatingBonuses = selectedRace.ability_bonuses.floating || [];
+  const floatingBonuses = selectedRace.ability_bonuses.floating || []; //
   
   return (
     <div className="race-panel-layout">
@@ -106,46 +106,72 @@ export const RaceSelection = ({ character, updateCharacter }) => {
         <div className="race-box">
           <h3>Völker</h3>
           
+          {/* *** LOGIK GEÄNDERT *** */}
           <div className="race-list">
-            {allRaceData.map(race => (
-              <button
-                key={race.key}
-                className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`} 
-                onClick={() => onSelect(race)}
-              >
-                {race.name}
-              </button>
+            {allRaceData.map(race => ( //
+              <React.Fragment key={race.key}>
+                <button
+                  className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`} 
+                  onClick={() => onSelectRace(race)} //
+                >
+                  {race.name}
+                </button>
+
+                {/* --- NEU: Collapsible Container --- */}
+                {selectedRace.key === race.key && race.subraces && race.subraces.length > 0 && ( //
+                  <div className="subrace-collapsible-container">
+                    {race.subraces.map(subrace => ( //
+                      <button
+                        key={subrace.key}
+                        className={`subrace-button-nested ${selectedSubrace?.key === subrace.key ? 'selected' : ''}`}
+                        onClick={() => onSelectSubrace(subrace)}
+                      >
+                        {subrace.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {/* --- Ende Collapsible Container --- */}
+
+              </React.Fragment>
             ))}
           </div>
+          {/* *** ENDE LOGIK-ÄNDERUNG *** */}
+
         </div>
       </div>
 
       {/* --- RECHTE SPALTE (Details) --- */}
       <div className="race-column-right">
-        {/* Box 1: Volks-Details (wie bisher) */}
         <div className="race-box">
-          <h2 className="panel-details-header">{selectedRace.name}</h2>
+          {/* *** LOGIK GEÄNDERT: Zeigt Details des Untervolks ODER Volks an *** */}
+          <h2 className="panel-details-header">
+            {selectedSubrace ? selectedSubrace.name : selectedRace.name}
+          </h2>
 
           <div className="race-details-content-wrapper">
-            <p className="panel-details-description">{selectedRace.description}</p>
+            <p className="panel-details-description">
+              {selectedSubrace ? selectedSubrace.description : selectedRace.description}
+            </p>
             
             <div className="details-divider"></div>
 
+            {/* Zeige immer die Boni des Hauptvolks */}
             <h3>Attributs-Boost</h3>
             <p>{selectedRace.ability_bonuses.text}</p>
             
-            {floatingBonuses.length > 0 && (
+            {floatingBonuses.length > 0 && ( //
               <ul className="ability-bonus-list">
                 {ABILITIES.map(abiKey => (
                   <li key={abiKey}>
                     <span>{abiKey.toUpperCase()}</span>
                     <div className="bonus-buttons">
-                      {floatingBonuses.map((bonusValue, index) => (
+                      {floatingBonuses.map((bonusValue, index) => ( //
                         <button
                           key={`${abiKey}-${index}`}
-                          onClick={() => handleAssignBonus(abiKey, index)}
-                          className={isBonusAssigned(abiKey, index) ? 'selected' : ''}
-                          disabled={isBonusUsed(index) && !isBonusAssigned(abiKey, index)}
+                          onClick={() => handleAssignBonus(abiKey, index)} //
+                          className={isBonusAssigned(abiKey, index) ? 'selected' : ''} //
+                          disabled={isBonusUsed(index) && !isBonusAssigned(abiKey, index)} //
                         >
                           +{bonusValue}
                         </button>
@@ -155,21 +181,27 @@ export const RaceSelection = ({ character, updateCharacter }) => {
                 ))}
               </ul>
             )}
+
+            {/* *** NEU: Zeige die Traits (Merkmale) an *** */}
+            <div className="details-divider"></div>
+            <h3>Merkmale</h3>
+            <ul className="traits-list-panel">
+              {/* Zeige zuerst die Merkmale des Hauptvolks */}
+              {selectedRace.traits.map(trait => (
+                 <li key={trait.name}>
+                    <strong>{trait.name}:</strong> {trait.description}
+                  </li>
+              ))}
+              {/* Zeige dann die Merkmale des Untervolks, falls ausgewählt */}
+              {selectedSubrace && selectedSubrace.traits.map(trait => ( //
+                 <li key={trait.name}>
+                    <strong>{trait.name} ({selectedSubrace.name}):</strong> {trait.description}
+                  </li>
+              ))}
+            </ul>
+
           </div> 
         </div>
-
-        {/* *** NEU: Box 2: Untervölker-Auswahl *** */}
-        {/* Diese Box erscheint nur, wenn das gewählte Volk Untervölker hat */}
-        {selectedRace.subraces && selectedRace.subraces.length > 0 && (
-          <div className="race-box">
-            <SubraceSelection
-              subraces={selectedRace.subraces}
-              selectedSubrace={character.subrace}
-              onSubraceSelect={handleSubraceSelect}
-            />
-          </div>
-        )}
-
       </div>
     </div>
   );
