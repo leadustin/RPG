@@ -5,26 +5,21 @@ import './CreationSidebar.css';
 // Übersetzungsobjekt für die deutschen Begriffe
 const stepTranslations = {
   Race: 'Volk',
-  Subrace: 'Unterart',
+  // Subrace: 'Unterart', // Entfernt
   Class: 'Klasse',
   Background: 'Hintergrund',
   Abilities: 'Fähigkeiten',
-  Identity: 'Identität', // <-- NEU
+  Identity: 'Identität',
   Zusammenfassung: 'Zusammenfassung', 
 };
 
 export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFinalize }) => {
 
-  // "Identity" hier einfügen
-  const steps = ['Race', 'Subrace', 'Class', 'Background', 'Abilities', 'Identity', 'Zusammenfassung']; // <-- NEU
+  // *** NEUE REIHENFOLGE: Schritte angepasst und Subrace/Ancestry entfernt ***
+  const steps = ['Class', 'Background', 'Race', 'Abilities', 'Identity', 'Zusammenfassung'];
 
-  const hasSubraces = character.race?.subraces && character.race.subraces.length > 0;
-  const hasAncestries = character.race?.ancestries && character.race.ancestries.length > 0;
-
+  // *** VEREINFACHT: Logik für Subrace/Ancestry entfernt ***
   const handleStepClick = (step) => {
-    if (step === 'Subrace' && !hasSubraces && !hasAncestries) {
-      return;
-    }
     setCurrentStep(step);
   };
 
@@ -34,20 +29,13 @@ export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFina
       {/* Wir verwenden wieder deine originale <ul> Struktur */}
       <ul>
         {steps.map(step => {
-          const isSubraceStep = step === 'Subrace';
-          
+          // *** VEREINFACHT: Logik für Subrace/Ancestry entfernt ***
           let label = stepTranslations[step];
-
-          if (isSubraceStep && hasAncestries) {
-            label = 'Abstammung';
-          }
-          
-          const isDisabled = isSubraceStep && !hasSubraces && !hasAncestries;
           
           return (
             <li 
               key={step}
-              className={`${currentStep === step ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}
+              className={`${currentStep === step ? 'active' : ''}`}
               onClick={() => handleStepClick(step)}
             >
               {label}
