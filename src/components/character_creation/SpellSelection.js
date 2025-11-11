@@ -1,5 +1,5 @@
 // src/components/character_creation/SpellSelection.js
-import React from 'react'; // useState/useEffect entfernt
+import React from 'react';
 import allSpells from '../../data/spells.json';
 import { getAbilityModifier } from '../../engine/characterEngine';
 import './PanelDetails.css';
@@ -8,7 +8,8 @@ import './SkillSelection.css'; // Wiederverwendung der Stile
 // Logik für die Anzahl der Zauber auf Stufe 1
 const getSpellCounts = (character) => {
   const classKey = character.class.key;
-  const intMod = getAbilityModifier(character.abilities.int);
+  // intMod wird derzeit nicht verwendet, aber könnte für zukünftige Klassen benötigt werden
+  // const intMod = getAbilityModifier(character.abilities.int);
   const wisMod = getAbilityModifier(character.abilities.wis);
 
   switch (classKey) {
@@ -69,7 +70,7 @@ export const SpellSelection = ({
   isOpenSpells,
   onToggleCantrips,
   onToggleSpells,
-  isCollapsible // <-- NEUE Prop
+  isCollapsible
 }) => {
   
   const { cantrips, level1Spells, spellType } = getSpellCounts(character);
@@ -116,7 +117,7 @@ export const SpellSelection = ({
     return "Zauber Stufe 1";
   }
 
-  // --- NEUE RENDER-LOGIK ---
+  // --- RENDER-LOGIK ---
   if (isCollapsible) {
     // VARIANTE A: FÜR MAGIER (einklappbar)
     const cantripHeaderClassName = `collapsible-header ${isOpenCantrips ? 'open' : ''}`;
@@ -166,7 +167,6 @@ export const SpellSelection = ({
   }
 
   // VARIANTE B: FÜR ALLE ANDEREN (statisch)
-  // (Dein Original-Code, nur mit korrigierten CSS-Klassen)
   return (
     <div className="spell-selection">
       {/* --- Sektion Zaubertricks --- */}
@@ -200,5 +200,4 @@ export const SpellSelection = ({
       </div>
     </div>
   );
-  // --- ENDE NEUE RENDER-LOGIK ---
 };
