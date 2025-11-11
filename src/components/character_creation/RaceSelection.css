@@ -127,15 +127,30 @@
 }
 
 .bonus-buttons button {
-  padding: 5px 10px;
-  background-color: var(--color-button-secondary);
-  border: 1px solid var(--color-border-light);
-  color: var(--color-text-light);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 1.1em;
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  font-family: var(--theme-font);
   cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bonus-buttons button:hover:not(:disabled) {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
 }
 
 .bonus-buttons button.selected {
-  background-color: var(--color-selection);
+  background-color: var(--theme-button-bg);
   border-color: var(--color-text-light);
 }
 

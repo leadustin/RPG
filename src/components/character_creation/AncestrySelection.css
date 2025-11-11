@@ -1,0 +1,71 @@
+/* * Stile für AncestrySelection,
+ * Layout-Struktur übernommen von IdentitySelection.css
+ */
+
+/* --- LAYOUT-STILE (von IdentitySelection.css) --- */
+.summary-panel-layout {
+  display: grid;
+  /* 1fr 1.2fr gibt der rechten Spalte etwas mehr Platz */
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  height: 100%; /* Ersetzt flex-grow für einen festen Höhenkontext */
+  overflow: hidden;
+}
+
+/* Linke Spalte */
+.summary-column-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Rechte Spalte */
+.summary-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Stil für jede einzelne Box */
+.summary-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 15px;
+  
+  /* Hilfreich, damit die Boxen in den Spalten flexibel sind */
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+/* --- ENDE LAYOUT-STILE --- */
+
+
+/* --- Scrollbar-Styling (von IdentitySelection.css) --- */
+.summary-column-left::-webkit-scrollbar,
+.summary-column-right::-webkit-scrollbar,
+.summary-column-right .summary-box ul::-webkit-scrollbar {
+  width: 8px;
+}
+.summary-column-left::-webkit-scrollbar-track,
+.summary-column-right::-webkit-scrollbar-track,
+.summary-column-right .summary-box ul::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.summary-column-left::-webkit-scrollbar-thumb,
+.summary-column-right::-webkit-scrollbar-thumb,
+.summary-column-right .summary-box ul::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+.summary-column-left,
+.summary-column-right,
+.summary-column-right .summary-box ul {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
