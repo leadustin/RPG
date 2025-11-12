@@ -1,7 +1,8 @@
 // src/components/character_creation/IdentitySelection.js
+
 import React from 'react';
 import './PanelDetails.css';
-import './IdentitySelection.css'; // Importiert die obige CSS-Datei
+import './IdentitySelection.css';
 
 // Die 9 D&D-Gesinnungen
 const ALIGNMENT_OPTIONS = [
@@ -23,22 +24,19 @@ const getPortraitModule = (raceKey, gender, portraitIndex) => {
     return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
   } catch (e) {
     console.error("Portrait not found:", raceKey, genderString, portraitIndex);
-    // Fallback auf ein bekanntes Bild
-    return require(`../../assets/images/portraits/human/male/1.webp`);
+    return '';
   }
 };
 
-
 export const IdentitySelection = ({ character, updateCharacter }) => {
-  
   const selectedRace = character.race;
   const physicalProps = selectedRace?.physical_props || {};
-  
+
   // Default-Werte aus physical_props oder Fallbacks
   const ageConfig = physicalProps.age || { min: 18, max: 80, default: 25, step: 1 };
   const heightConfig = physicalProps.height || { min: 1.60, max: 1.95, default: 1.75, step: 0.01 };
   const weightConfig = physicalProps.weight || { min: 60, max: 110, default: 75, step: 1 };
-  
+
   // Sicherstellen, dass portrait initial gesetzt ist
   React.useEffect(() => {
     if (!character.portrait && selectedRace) {
@@ -49,18 +47,18 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
     }
   }, [character.portrait, character.gender, selectedRace, updateCharacter]);
 
-  const portraitCount = selectedRace?.portraits || 4;  
-  
+  const portraitCount = selectedRace?.portraits || 4; 
+
   // Helper-Funktion für Höhe-Formatierung (z.B. 1.75 -> "1,75m")
   const formatHeight = (value) => {
-    return value ? `${Number(value).toFixed(2).replace('.', ',')}m` : '';
+    return value ? `${value.toFixed(2).replace('.', ',')}m` : '';
   };
-  
+
   // Helper-Funktion für Gewicht-Formatierung (z.B. 75 -> "75kg")
   const formatWeight = (value) => {
     return value ? `${Math.round(value)}kg` : '';
   };
-  
+
   return (
     <div className="identity-selection-wrapper"> 
       <h2 className="panel-details-header">Identität</h2>
@@ -68,14 +66,13 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
         Lege das Aussehen und die persönlichen Details deines Charakters fest.
       </p>
 
-      {/* --- START: Layout-Klassen umbenannt --- */}
-      <div className="identity-selection-layout"> 
-        
+      <div className="summary-panel-layout"> 
+
         {/* --- LINKE SPALTE (Eingabefelder) --- */}
-        <div className="identity-selection-column-left">
-          
+        <div className="summary-column-left">
+
           {/* Box 1: Name & Geschlecht */}
-          <div className="identity-selection-box">
+          <div className="summary-box">
             <h3>Allgemein</h3>
             <div className="identity-grid-two-columns">
               <div className="input-group">
@@ -87,6 +84,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
                   onChange={(e) => updateCharacter({ name: e.target.value })}
                 />
               </div>
+
               <div className="input-group">
                 <label>Geschlecht</label>
                 <div className="gender-buttons">
@@ -108,10 +106,10 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
           </div>
 
           {/* Box 2: Details mit Slidern */}
-          <div className="identity-selection-box">
+          <div className="summary-box">
             <h3>Details</h3>
             <div className="details-sliders">
-              
+
               {/* Alter */}
               <div className="slider-group">
                 <label htmlFor="char-age">
@@ -174,9 +172,9 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
                   <span>{formatWeight(weightConfig.max)}</span>
                 </div>
               </div>
-              
+
               {/* Gesinnung als Dropdown */}
-              <div className="input-group" style={{marginTop: '15px'}}>
+              <div className="input-group" style={{ marginTop: '15px' }}>
                 <label htmlFor="char-alignment">Gesinnung</label>
                 <select
                   id="char-alignment"
@@ -190,15 +188,16 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
                   ))}
                 </select>
               </div>
+
             </div>
           </div>
         </div>
 
         {/* --- RECHTE SPALTE (Scrollbare Portraits) --- */}
-        <div className="identity-selection-column-right">
-          
+        <div className="summary-column-right">
+
           {/* Box 3: Portrait (scrollbar) */}
-          <div className="identity-selection-box">
+          <div className="summary-box">
             <h3>Portrait</h3>
             <ul className="portrait-grid">
               {Array.from({ length: portraitCount }, (_, i) => i + 1).map(index => {
@@ -216,8 +215,9 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
               })}
             </ul>
           </div>
+
         </div>
-      {/* --- ENDE: Layout-Klassen umbenannt --- */}
+
       </div>
     </div>
   );
