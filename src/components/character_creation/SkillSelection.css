@@ -7,7 +7,7 @@
 
 .skill-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 5px;
   max-height: 280px;
   overflow-y: auto;   
@@ -32,11 +32,9 @@
   text-shadow: var(--theme-text-shadow);
   cursor: pointer;
   transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
-
-  /* Wichtig: Layout von .skill-choice beibehalten */
   text-align: center;
   box-sizing: border-box; 
-  /* font-size: 0.9em; */
+  font-size: 0.9em;
   width: 100%; /* Stellt sicher, dass Buttons die volle Breite nutzen */
 }
 
@@ -74,7 +72,7 @@
   
   /* H-Tag Reset */
   margin: 0;
-  font-size: 1.2em;
+  font-size: 0.9em;
   text-align: left;
 }
 
@@ -107,7 +105,7 @@
 
 /* Korrektur für die 'SkillSelection.js' h4 */
 .skill-selection-container h4.collapsible-header {
-    font-size: 1.1em; /* Macht die h4 etwas kleiner als die h3 */
+    font-size: 0.9em; /* Macht die h4 etwas kleiner als die h3 */
     margin-top: 10px; 
 }
 

@@ -148,7 +148,6 @@ export const ClassSelection = ({ character, updateCharacter }) => {
 
       {/* --- Klassendetails (STARK ERWEITERT) --- */}
       <div className="class-details class-summary-box">
-        <h2>{selectedClass.name}</h2>
         <p className="class-description">{selectedClass.description}</p>
         <div className="details-divider"></div>
         <h3>Klassenmerkmale (Stufe 1)</h3>

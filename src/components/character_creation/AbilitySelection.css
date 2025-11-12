@@ -135,7 +135,7 @@
   color: var(--theme-text-color);
 }
 
-.roll-button {
+.ability-roll-button {
   background-color: var(--theme-button-bg-active);
   border-color: var(--theme-button-border-active);
   box-shadow: var(--theme-button-glow-active);
@@ -150,14 +150,12 @@
   border-width: 1px;
   border-style: solid;
 }
-.roll-button:hover {
+.ability-roll-button:hover {
   background-color: var(--theme-button-bg-hover);
   box-shadow: var(--theme-button-glow-hover);
   border-color: var(--theme-button-glow-hover);
 }
-
-/* --- NEU: Deaktivierter Roll-Button --- */
-.roll-button:disabled {
+.ability-roll-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   background-color: var(--theme-button-bg); /* Standard-Button-Farbe */
@@ -171,7 +169,7 @@
   height: 400px; /* WICHTIG: Muss eine Höhe haben */
   margin-bottom: 0px; /* War vorher 15px, aber gap regelt das */
   border-radius: 6px;
-  overflow: hidden; /* Versteckt den Canvas, falls er überläuft */
+  overflow: hidden;
   background: #1a1a1a; /* Dunkler Hintergrund für den Ladezustand */
   border: 1px solid var(--theme-panel-border-color);
   box-sizing: border-box;
