@@ -1,7 +1,7 @@
 // src/components/character_creation/IdentitySelection.js
 import React from 'react';
 import './PanelDetails.css';
-import './IdentitySelection.css'; // Importiert die obige CSS-Datei
+import './IdentitySelection.css';
 
 // Die 9 D&D-Gesinnungen
 const ALIGNMENT_OPTIONS = [
@@ -23,48 +23,9 @@ const getPortraitModule = (raceKey, gender, portraitIndex) => {
     return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
   } catch (e) {
     console.error("Portrait not found:", raceKey, genderString, portraitIndex);
-    // Fallback auf ein bekanntes Bild
-    return require(`../../assets/images/portraits/human/male/1.webp`);
+    return '';
   }
 };
-
-/**
- * NEU: Helfer-Komponente für die Slider
- */
-const IdentitySlider = ({ label, unit, value, props, onChange }) => {
-  if (!props) {
-    // Fallback, falls die Daten in races.json noch fehlen
-    return (
-      <div className="form-group">
-        <label>{label}</label>
-        <input type="text" value="Daten fehlen in races.json" disabled />
-      </div>
-    );
-  }
-
-  return (
-    <div className="form-group">
-      <label htmlFor={label}>
-        {label}: <strong>{value} {unit}</strong>
-      </label>
-      <input
-        type="range"
-        id={label}
-        min={props.min}
-        max={props.max}
-        step={props.step}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="identity-slider"
-      />
-      <div className="slider-labels">
-        <span>{props.min} {unit}</span>
-        <span>{props.max} {unit}</span>
-      </div>
-    </div>
-  );
-};
-
 
 export const IdentitySelection = ({ character, updateCharacter }) => {
   
@@ -86,11 +47,11 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
     }
   }, [character.portrait, character.gender, selectedRace, updateCharacter]);
 
-  const portraitCount = selectedRace?.portraits || 4;  
+  const portraitCount = selectedRace?.portraits || 4; 
   
   // Helper-Funktion für Höhe-Formatierung (z.B. 1.75 -> "1,75m")
   const formatHeight = (value) => {
-    return value ? `${Number(value).toFixed(2).replace('.', ',')}m` : '';
+    return value ? `${value.toFixed(2).replace('.', ',')}m` : '';
   };
   
   // Helper-Funktion für Gewicht-Formatierung (z.B. 75 -> "75kg")
@@ -105,14 +66,13 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
         Lege das Aussehen und die persönlichen Details deines Charakters fest.
       </p>
 
-      {/* --- START: Layout-Klassen umbenannt --- */}
-      <div className="identity-selection-layout"> 
+      <div className="summary-panel-layout"> 
         
         {/* --- LINKE SPALTE (Eingabefelder) --- */}
-        <div className="identity-selection-column-left">
+        <div className="summary-column-left">
           
           {/* Box 1: Name & Geschlecht */}
-          <div className="identity-selection-box">
+          <div className="summary-box">
             <h3>Allgemein</h3>
             <div className="identity-grid-two-columns">
               <div className="input-group">
@@ -145,7 +105,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
           </div>
 
           {/* Box 2: Details mit Slidern */}
-          <div className="identity-selection-box">
+          <div className="summary-box">
             <h3>Details</h3>
             <div className="details-sliders">
               
@@ -232,10 +192,10 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
         </div>
 
         {/* --- RECHTE SPALTE (Scrollbare Portraits) --- */}
-        <div className="identity-selection-column-right">
+        <div className="summary-column-right">
           
           {/* Box 3: Portrait (scrollbar) */}
-          <div className="identity-selection-box">
+          <div className="summary-box">
             <h3>Portrait</h3>
             <ul className="portrait-grid">
               {Array.from({ length: portraitCount }, (_, i) => i + 1).map(index => {
@@ -254,7 +214,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
             </ul>
           </div>
         </div>
-      {/* --- ENDE: Layout-Klassen umbenannt --- */}
+
       </div>
     </div>
   );
