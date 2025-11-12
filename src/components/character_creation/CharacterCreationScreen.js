@@ -35,6 +35,7 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     ability_bonus_assignments: {}, // NEU: Leeres Objekt. Wird von AbilitySelection gefüllt.
     floating_bonus_assignments: {}, // (Wird nicht mehr verwendet, kann später entfernt werden)
     skill_proficiencies_choice: [],
+    weapon_mastery_choices: [],
     background_choices: {
       languages: [],
       tools: [],
