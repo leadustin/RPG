@@ -17,7 +17,12 @@
     "weight": { "min": 50, "max": 110, "default": 75, "step": 1 }
   },
   "languages": ["Gemeinsprache", "Eine zusätzliche Sprache deiner Wahl"],
-  "traits": []
+  "traits": [
+  {
+    "name": "Vielseitige Natur",
+    "description": "Du erhältst eine zusätzliche Fertigkeit deiner Wahl und ein Talent (Feat) deiner Wahl. Dieses Merkmal repräsentiert die außergewöhnliche Anpassungsfähigkeit der Menschen."
+  }
+]
   
 },
   {

@@ -1,5 +1,5 @@
 // src/components/character_creation/SummaryPanel.js
-import React from 'react'; // *** useState und useRef sind ENTFERNT ***
+import React, { useState } from 'react'; // *** GEÄNDERT: useState importiert ***
 import './SummaryPanel.css';
 import './PanelDetails.css'; 
 import Tooltip from '../tooltip/Tooltip'; // Der "Wrapper"-Tooltip
@@ -33,13 +33,13 @@ const racePortraits = importAll(
   require.context("../../assets/images/portraits/human/male", false, /\.(webp)$/)
 );
 
-// --- Helfer-Komponenten (verwenden jetzt den Tooltip-Wrapper) ---
+// --- Helfer-Komponenten (unverändert) ---
 
 const StatDisplay = ({ statKey, label, value, modifier }) => {
   const description = ABILITY_DESCRIPTIONS_DE[statKey];
   return (
     <Tooltip text={description}>
-      <li> {/* Das <li> ist jetzt das Kind des Tooltips */}
+      <li> 
         <div className="stat-display">
           <span className="stat-label">{label}</span>
           <span className="stat-value">{value}</span>
@@ -91,7 +91,8 @@ const CombatStatDisplay = ({ statKey, label, value }) => {
 
 export const SummaryPanel = ({ character }) => {
   
-  // --- Hooks und Refs für Tooltips sind ENTFERNT (jetzt in Tooltip.js) ---
+  // NEU: State für die einklappbare Fertigkeiten-Box
+  const [isSkillsOpen, setIsSkillsOpen] = useState(true); // Standardmäßig geöffnet
   
   if (!character) {
     return <div className="summary-panel-layout">Charakter wird geladen...</div>;
@@ -121,7 +122,7 @@ export const SummaryPanel = ({ character }) => {
   const ac = calculateAC(character);
   const profBonus = getProficiencyBonus(level);
   
-  // --- Porträt-Logik ---
+  // --- Porträt-Logik (unverändert) ---
   const portraitKey = character.race?.portrait_img || "1.webp";
   const portraitSrc = racePortraits[portraitKey];
 
@@ -153,13 +154,12 @@ export const SummaryPanel = ({ character }) => {
   // --- Ende Daten rechte Spalte ---
 
   return (
-    // +++ HIER IST DAS KORREKTE 2-SPALTEN-LAYOUT +++
     <div className="summary-panel-layout">
       
       {/* --- LINKE SPALTE (STATS & INFO) --- */}
       <div className="summary-column-left">
         
-        {/* Box 1: Grundlagen (MIT PORTRAIT) */}
+        {/* Box 1: Grundlagen (unverändert) */}
         <div className="summary-box">
           <div className="summary-basics">
             <img 
@@ -184,7 +184,7 @@ export const SummaryPanel = ({ character }) => {
           </div>
         </div>
 
-        {/* Box 2: Kampfwerte (JETZT MIT WRAPPER) */}
+        {/* Box 2: Kampfwerte (unverändert) */}
         <div className="summary-box">
           <h3>Kampfwerte</h3>
           <ul className="summary-stats-grid">
@@ -197,7 +197,7 @@ export const SummaryPanel = ({ character }) => {
           </ul>
         </div>
         
-        {/* Box 3: Attribute (JETZT MIT WRAPPER) */}
+        {/* Box 3: Attribute (unverändert) */}
         <div className="summary-box">
           <h3>Attribute</h3>
           <ul className="ability-summary-list">
@@ -262,29 +262,40 @@ export const SummaryPanel = ({ character }) => {
           </ul>
         </div>
 
-        {/* Box 5: Fertigkeiten (JETZT MIT WRAPPER) */}
+        {/* Box 5: Fertigkeiten (JETZT COLLAPSIBLE) */}
         <div className="summary-box">
-          <h3>Fertigkeiten</h3>
-          <ul className="skill-summary-list features-list">
-            {Object.keys(SKILL_MAP).map(skillKey => (
-              <SkillDisplay 
-                key={skillKey}
-                skillKey={skillKey}
-                character={character}
-              />
-            ))}
-            {showExpertiseThievesTools && (
-              <Tooltip text={"Expertise in Diebeswerkzeug (DEX). Dein Übungsbonus wird verdoppelt."}>
-                <li className="skill-item">
-                  <div className="skill-info">
-                    <span className="proficiency-dot proficient"></span>
-                    <span>Diebeswerkzeug (E) <span className="skill-ability">(DEX)</span></span>
-                  </div>
-                  {/* <span className="skill-bonus">+X</span> */}
-                </li>
-              </Tooltip>
-            )}
-          </ul>
+          {/* GEÄNDERT: h3 ist jetzt klickbar und hat Klassen */}
+          <h3 
+            className={`collapsible-header ${isSkillsOpen ? 'open' : ''}`}
+            onClick={() => setIsSkillsOpen(!isSkillsOpen)}
+          >
+            Fertigkeiten
+            <span className="collapse-icon">{isSkillsOpen ? '▼' : '►'}</span>
+          </h3>
+          
+          {/* NEU: Bedingte Anzeige der Liste */}
+          {isSkillsOpen && (
+            <ul className="skill-summary-list features-list">
+              {Object.keys(SKILL_MAP).map(skillKey => (
+                <SkillDisplay 
+                  key={skillKey}
+                  skillKey={skillKey}
+                  character={character}
+                />
+              ))}
+              {showExpertiseThievesTools && (
+                <Tooltip text={"Expertise in Diebeswerkzeug (DEX). Dein Übungsbonus wird verdoppelt."}>
+                  <li className="skill-item">
+                    <div className="skill-info">
+                      <span className="proficiency-dot proficient"></span>
+                      <span>Diebeswerkzeug (E) <span className="skill-ability">(DEX)</span></span>
+                    </div>
+                    {/* <span className="skill-bonus">+X</span> */}
+                  </li>
+                </Tooltip>
+              )}
+            </ul>
+          )}
         </div>
       </div>
     </div>
