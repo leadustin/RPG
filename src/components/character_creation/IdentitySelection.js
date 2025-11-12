@@ -45,7 +45,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
         updateCharacter({ portrait: defaultPortrait });
       }
     }
-  }, [character.portrait, character.gender, selectedRace, updateCharacter]);
+  }, [character.portrait, character.gender, selectedRace?.key]);
 
   const portraitCount = selectedRace?.portraits || 4; 
 
