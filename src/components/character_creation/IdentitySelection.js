@@ -1,7 +1,7 @@
 // src/components/character_creation/IdentitySelection.js
 import React from 'react';
 import './PanelDetails.css';
-import './IdentitySelection.css';
+import './IdentitySelection.css'; // Importiert die obige CSS-Datei
 
 // Die 9 D&D-Gesinnungen
 const ALIGNMENT_OPTIONS = [
