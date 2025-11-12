@@ -275,7 +275,7 @@ export const SummaryPanel = ({ character }) => {
           
           {/* NEU: Bedingte Anzeige der Liste */}
           {isSkillsOpen && (
-            <ul className="skill-summary-list features-list">
+            <ul className="skill-summary-list features-list scrollable-list-box">
               {Object.keys(SKILL_MAP).map(skillKey => (
                 <SkillDisplay 
                   key={skillKey}
