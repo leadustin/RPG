@@ -10,28 +10,33 @@
   "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
   "size": "Mittel",
   "speed": 9,
-  "languages": ["Gemeinsprache", "Eine zusätzliche Sprache deiner Wahl"],
-  "traits": [],
-  
   "portraits": 4, 
-  
   "physical_props": {
-    "age": { "min": 18, "max": 80, "default": 25, "step": 1 },
+    "age": { "min": 18, "max": 100, "default": 25, "step": 1 },
     "height": { "min": 1.60, "max": 1.95, "default": 1.75, "step": 0.01 },
-    "weight": { "min": 60, "max": 110, "default": 75, "step": 1 }
-  }
+    "weight": { "min": 50, "max": 110, "default": 75, "step": 1 }
+  },
+  "languages": ["Gemeinsprache", "Eine zusätzliche Sprache deiner Wahl"],
+  "traits": []
+  
 },
   {
     "key": "elf",
     "name": "Elf",
-    "description": "Elfen sind anmutige, langlebige Wesen mit einer tiefen Verbindung zu Natur und Magie. Sie streben nach Harmonie, schätzen Freiheit und leben oft zurückgezogen in uralten Wäldern oder mystischen Reichen.",
+    "description": "Elfen sind ein magisches Volk von überirdischer Anmut, das eine tiefe Verbindung zur Natur und zur Magie besitzt.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Elfen können bis zu 750 Jahre alt werden.",
+    "age": "Obwohl Elfen mit etwa 100 Jahren als erwachsen gelten, können sie über 750 Jahre alt werden.",
     "size": "Mittel",
     "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 100, "max": 750, "default": 125, "step": 1 },
+      "height": { "min": 1.50, "max": 1.90, "default": 1.75, "step": 0.01 },
+      "weight": { "min": 45, "max": 85, "default": 65, "step": 1 }
+    },
     "languages": ["Gemeinsprache", "Elfisch"],
     "traits": [
       {
@@ -111,13 +116,20 @@
   {
     "key": "dwarf",
     "name": "Zwerg",
+    "description": "Zwerge sind ein standhaftes Volk, bekannt für ihre Zähigkeit, ihre Handwerkskunst und ihre tiefe Verbundenheit zu den Bergen.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Zwerge werden im Durchschnitt 350 Jahre alt.",
+    "age": "Zwerge gelten mit etwa 50 Jahren als jung und können bis zu 350 Jahre alt werden.",
     "size": "Mittel",
     "speed": 7.5,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 50, "max": 350, "default": 100, "step": 1 },
+      "height": { "min": 1.20, "max": 1.45, "default": 1.35, "step": 0.01 },
+      "weight": { "min": 60, "max": 100, "default": 80, "step": 1 }
+    },
     "languages": ["Gemeinsprache", "Zwergisch"],
     "traits": [
       {
@@ -162,19 +174,25 @@
           }
         ]
       }
-    ],
-    "description": "Zwerge sind standhafte und zähe Völker, bekannt für ihre unerschütterliche Loyalität, ihr handwerkliches Können und ihre Liebe zu Stein und Metall. Sie leben in mächtigen Hallen tief unter den Bergen."
+    ]
   },
   {
     "key": "halfling",
     "name": "Halbling",
+    "description": "Halblinge sind ein fröhliches und gutmütiges Volk, das die Annehmlichkeiten von Heim und Herd schätzt.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Halblinge leben bis zur Mitte ihres zweiten Jahrhunderts.",
+    "age": "Ein Halbling erreicht mit 20 Jahren das Erwachsenenalter und lebt meist bis zur Mitte seines zweiten Jahrhunderts (ca. 150 Jahre).",
     "size": "Klein",
     "speed": 7.5,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 20, "max": 150, "default": 30, "step": 1 },
+      "height": { "min": 0.80, "max": 1.00, "default": 0.90, "step": 0.01 },
+      "weight": { "min": 15, "max": 22, "default": 18, "step": 1 }
+    },
     "languages": ["Gemeinsprache", "Halblingisch"],
     "traits": [
       {
@@ -201,19 +219,25 @@
           }
         ]
       }
-    ],
-    "description": "Halblinge sind lebensfrohe, friedliebende Menschen mit einem starken Sinn für Gemeinschaft. Sie bevorzugen Komfort, gutes Essen und ruhige Dörfer, sind jedoch in der Not erstaunlich mutig und geschickt."
+    ]
   },
   {
     "key": "dragonborn",
     "name": "Drachenblütiger",
+    "description": "Drachenblütige sind stolze, ehrbare Krieger, die von den Drachen abstammen und deren Stärke und Arroganz teilen.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Drachenblütige leben etwa 80 Jahre.",
+    "age": "Junge Drachenblütige wachsen schnell heran und gelten mit 15 Jahren als erwachsen. Sie werden etwa 80 Jahre alt.",
     "size": "Mittel",
     "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 15, "max": 80, "default": 22, "step": 1 },
+      "height": { "min": 1.70, "max": 2.10, "default": 1.90, "step": 0.01 },
+      "weight": { "min": 80, "max": 160, "default": 110, "step": 1 }
+    },
     "languages": ["Gemeinsprache", "Drakonisch"],
     "traits": [
       {
@@ -282,19 +306,25 @@
         "damage_type": "Kälte",
         "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
       }
-    ],
-    "description": "Drachenblütige sind stolze, mächtige Wesen mit dem Blut der Drachen in ihren Adern. Ihr drakonisches Erbe verleiht ihnen Ehrgefühl, Stärke und oft ein feuriges Temperament."
+    ]
   },
   {
     "key": "gnome",
     "name": "Gnom",
+    "description": "Gnome sind ein kleines, enthusiastisches Volk von Erfindern, Alchemisten und Illusionisten, die vor Energie sprühen.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Gnome können 350 bis 500 Jahre alt werden.",
+    "age": "Gnome werden mit etwa 40 Jahren erwachsen und können 350 bis 500 Jahre alt werden.",
     "size": "Klein",
     "speed": 7.5,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 40, "max": 450, "default": 100, "step": 1 },
+      "height": { "min": 0.90, "max": 1.15, "default": 1.05, "step": 0.01 },
+      "weight": { "min": 17, "max": 24, "default": 20, "step": 1 }
+    },
     "languages": ["Gemeinsprache", "Gnomisch"],
     "traits": [
       {
@@ -317,19 +347,25 @@
           }
         ]
       }
-    ],
-    "description": "Gnome sind neugierige, erfinderische Wesen mit einem unstillbaren Durst nach Wissen und Kreativität. Sie lieben Magie, Maschinen und das Lösen von Problemen auf unkonventionelle Weise."
+    ]
   },
   {
     "key": "half-elf",
     "name": "Halbelf",
+    "description": "Halbelfen vereinen die Neugier und den Ehrgeiz der Menschen mit der Anmut und den geschärften Sinnen der Elfen.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Halbelfen leben oft über 180 Jahre.",
+    "age": "Halbelfen werden mit etwa 20 Jahren erwachsen und leben oft länger als 180 Jahre.",
     "size": "Mittel",
     "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 20, "max": 180, "default": 28, "step": 1 },
+      "height": { "min": 1.50, "max": 1.90, "default": 1.70, "step": 0.01 },
+      "weight": { "min": 50, "max": 110, "default": 70, "step": 1 }
+    },
     "languages": [
       "Gemeinsprache",
       "Elfisch",
@@ -353,13 +389,20 @@
   {
     "key": "half-orc",
     "name": "Halbork",
+    "description": "Halborks sind ein Volk von beeindruckender Stärke und emotionaler Intensität, das die besten (und manchmal auch die wildesten) Eigenschaften seiner beiden Erblinien in sich vereint.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Halborks leben selten länger als 75 Jahre.",
+    "age": "Halborks werden mit etwa 14 Jahren erwachsen und leben selten länger als 75 Jahre.",
     "size": "Mittel",
     "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 14, "max": 75, "default": 20, "step": 1 },
+      "height": { "min": 1.60, "max": 2.05, "default": 1.85, "step": 0.01 },
+      "weight": { "min": 70, "max": 140, "default": 95, "step": 1 }
+    },
     "languages": ["Gemeinsprache", "Orkisch"],
     "traits": [
       {
@@ -383,13 +426,20 @@
   {
     "key": "tiefling",
     "name": "Tiefling",
+    "description": "Gezeichnet durch einen infernalischen Pakt in ihrer Ahnenreihe, wandeln Tieflinge als Außenseiter mit übernatürlicher Ausstrahlung durch die Welt.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Tieflinge werden im gleichen Tempo wie Menschen erwachsen, leben aber einige Jahre länger.",
+    "age": "Tieflinge werden im gleichen Tempo erwachsen wie Menschen, leben aber einige Jahre länger (bis ca. 110 Jahre).",
     "size": "Mittel",
     "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 18, "max": 120, "default": 25, "step": 1 },
+      "height": { "min": 1.50, "max": 1.90, "default": 1.70, "step": 0.01 },
+      "weight": { "min": 50, "max": 110, "default": 70, "step": 1 }
+    },
     "languages": ["Gemeinsprache", "Infernalisch"],
     "traits": [
       {
@@ -400,7 +450,6 @@
         "name": "Höllische Resistenz",
         "description": "Du hast Resistenz gegen Feuerschaden."
       }
-    ],
-    "description": "Tieflinge tragen das Erbe infernaler Mächte in sich. Trotz ihres teuflischen Aussehens kämpfen viele darum, ihren eigenen Weg zu finden – zwischen Misstrauen, Stolz und innerer Macht."
+    ]
   }
 ]

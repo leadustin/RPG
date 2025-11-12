@@ -74,6 +74,11 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
       newValues.subrace = null; 
       newValues.ancestry = null;
       newValues.portrait = null; // Wichtig, damit das useEffect in IdentitySelection greift
+      
+      // WICHTIG: Auch Gender zurücksetzen, damit useEffect das richtige Portrait lädt
+      if (!newValues.gender) {
+        newValues.gender = character.gender;
+      }
     }
     // +++ ENDE: NEUE LOGIK FÜR RASSENWECHSEL +++
 
