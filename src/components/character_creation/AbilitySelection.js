@@ -61,6 +61,17 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
   const [generationMethod, setGenerationMethod] = useState('pointBuy');
   const [scoresToAssign, setScoresToAssign] = useState([]);
 
+  // --- NEUER STATE FÜR 2024-REGELN ---
+  const [bonusMode, setBonusMode] = useState('plus2plus1'); // 'plus2plus1' ODER 'plus1plus1plus1'
+  // State für +2/+1
+  const [plus2Ability, setPlus2Ability] = useState('');
+  const [plus1Ability, setPlus1Ability] = useState('');
+  // State für +1/+1/+1
+  const [triPlus1A, setTriPlus1A] = useState('');
+  const [triPlus1B, setTriPlus1B] = useState('');
+  const [triPlus1C, setTriPlus1C] = useState('');
+  // --- ENDE NEUER STATE ---
+
   // useRef für die DiceBox-Instanz und useState für den Ladezustand
   const diceBoxRef = useRef(null);
   const [isRolling, setIsRolling] = useState(false);
@@ -130,6 +141,39 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scores, generationMethod]); 
+
+  // --- NEUER EFFEKT FÜR 2024-BONI ---
+  // Aktualisiert das ability_bonus_assignments-Objekt, wenn sich die Boni-Auswahl ändert
+  useEffect(() => {
+    const newBonusAssignments = {};
+
+    if (bonusMode === 'plus2plus1') {
+      if (plus2Ability) newBonusAssignments[plus2Ability] = 2;
+      if (plus1Ability) newBonusAssignments[plus1Ability] = (newBonusAssignments[plus1Ability] || 0) + 1;
+    } 
+    else if (bonusMode === 'plus1plus1plus1') {
+      if (triPlus1A) newBonusAssignments[triPlus1A] = (newBonusAssignments[triPlus1A] || 0) + 1;
+      if (triPlus1B) newBonusAssignments[triPlus1B] = (newBonusAssignments[triPlus1B] || 0) + 1;
+      if (triPlus1C) newBonusAssignments[triPlus1C] = (newBonusAssignments[triPlus1C] || 0) + 1;
+    }
+
+    // Rufe updateCharacter nur auf, wenn sich die Zuweisungen tatsächlich ändern
+    // (um unnötige Re-Render zu vermeiden)
+    if (JSON.stringify(character.ability_bonus_assignments) !== JSON.stringify(newBonusAssignments)) {
+      updateCharacter({ ability_bonus_assignments: newBonusAssignments });
+    }
+  }, [bonusMode, plus2Ability, plus1Ability, triPlus1A, triPlus1B, triPlus1C, updateCharacter, character.ability_bonus_assignments]);
+
+  // Setzt die Boni zurück, wenn der Modus wechselt
+  const handleBonusModeChange = (mode) => {
+    setBonusMode(mode);
+    setPlus2Ability('');
+    setPlus1Ability('');
+    setTriPlus1A('');
+    setTriPlus1B('');
+    setTriPlus1C('');
+  };
+  // --- ENDE NEUER EFFEKT ---
 
   // Handler für Point Buy
   const handleScoreChange = (ability, delta) => {
@@ -389,6 +433,87 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* === NEUER BLOCK FÜR 2024-BONI === */}
+          <div className="ability-box">
+            <h3>Attributsboni (Herkunft)</h3>
+            <p className="bonus-description">
+              Wähle deine Attributsboni (PHB 2024).
+            </p>
+            <div className="method-selection">
+              <button
+                onClick={() => handleBonusModeChange('plus2plus1')}
+                className={bonusMode === 'plus2plus1' ? 'active' : ''}
+              >
+                Stärken (+2 / +1)
+              </button>
+              <button
+                onClick={() => handleBonusModeChange('plus1plus1plus1')}
+                className={bonusMode === 'plus1plus1plus1' ? 'active' : ''}
+              >
+                Ausgeglichen (+1 / +1 / +1)
+              </button>
+            </div>
+
+            {/* --- Bonus-Auswahl-Dropdowns --- */}
+            <div className="bonus-selection-dropdowns">
+              {bonusMode === 'plus2plus1' && (
+                <>
+                  <div className="bonus-select-wrap">
+                    <label>+2 Bonus</label>
+                    <select value={plus2Ability} onChange={(e) => setPlus2Ability(e.target.value)}>
+                      <option value="">Wähle...</option>
+                      {ABILITIES.map(abi => (
+                        <option key={abi} value={abi} disabled={abi === plus1Ability}>{abi.toUpperCase()}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="bonus-select-wrap">
+                    <label>+1 Bonus</label>
+                    <select value={plus1Ability} onChange={(e) => setPlus1Ability(e.target.value)}>
+                      <option value="">Wähle...</option>
+                      {ABILITIES.map(abi => (
+                        <option key={abi} value={abi} disabled={abi === plus2Ability}>{abi.toUpperCase()}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {bonusMode === 'plus1plus1plus1' && (
+                <>
+                  <div className="bonus-select-wrap">
+                    <label>+1 Bonus (A)</label>
+                    <select value={triPlus1A} onChange={(e) => setTriPlus1A(e.target.value)}>
+                      <option value="">Wähle...</option>
+                      {ABILITIES.map(abi => (
+                        <option key={abi} value={abi} disabled={abi === triPlus1B || abi === triPlus1C}>{abi.toUpperCase()}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="bonus-select-wrap">
+                    <label>+1 Bonus (B)</label>
+                    <select value={triPlus1B} onChange={(e) => setTriPlus1B(e.target.value)}>
+                      <option value="">Wähle...</option>
+                      {ABILITIES.map(abi => (
+                        <option key={abi} value={abi} disabled={abi === triPlus1A || abi === triPlus1C}>{abi.toUpperCase()}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="bonus-select-wrap">
+                    <label>+1 Bonus (C)</label>
+                    <select value={triPlus1C} onChange={(e) => setTriPlus1C(e.target.value)}>
+                      <option value="">Wähle...</option>
+                      {ABILITIES.map(abi => (
+                        <option key={abi} value={abi} disabled={abi === triPlus1A || abi === triPlus1B}>{abi.toUpperCase()}</option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
+            </div>
+            {/* --- ENDE Bonus-Auswahl --- */}
           </div>
         </div>
         

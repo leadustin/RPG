@@ -1,5 +1,5 @@
 // src/components/character_creation/ClassSelection.js
-import React, { useState } from 'react'; // <-- useState importiert
+import React, { useState } from 'react';
 import './ClassSelection.css';
 import './PanelDetails.css';
 import allClassData from '../../data/classes.json';
@@ -10,9 +10,10 @@ import { SKILL_NAMES_DE } from '../../engine/characterEngine';
 import { SubclassSelection } from './SubclassSelection';
 import { FightingStyleSelection } from './FightingStyleSelection';
 import { SpellSelection } from './SpellSelection';
-import { ExpertiseSelection } from './ExpertiseSelection'; // NEU
-import { RangerFeatureSelection } from './RangerFeatureSelection'; // NEU
-import { ToolInstrumentSelection } from './ToolInstrumentSelection'; // NEU
+import { ExpertiseSelection } from './ExpertiseSelection';
+import { RangerFeatureSelection } from './RangerFeatureSelection';
+import { ToolInstrumentSelection } from './ToolInstrumentSelection';
+import { WeaponMasterySelection } from './WeaponMasterySelection'; // NEU
 // +++ IMPORTS ENDE +++
 
 
@@ -100,16 +101,17 @@ export const ClassSelection = ({ character, updateCharacter }) => {
     (classKey === 'wizard' || classKey === 'sorcerer' || classKey === 'bard' || classKey === 'warlock' || classKey === 'cleric' || classKey === 'druid')
   );
 
-  const showExpertiseChoice = (classKey === 'rogue'); // NEU
-  const showRangerFeatures = (classKey === 'ranger'); // NEU
-  const showToolInstrumentChoice = (classKey === 'bard' || classKey === 'monk'); // NEU
+  const showExpertiseChoice = (classKey === 'rogue');
+  const showRangerFeatures = (classKey === 'ranger');
+  const showToolInstrumentChoice = (classKey === 'bard' || classKey === 'monk');
+  const showWeaponMastery = (selectedClass.weapon_mastery !== undefined); // NEU
   // +++ HELFER-VARIABLEN ENDE +++
 
 
   return (
     <div className="class-selection-container">
       {/* --- Klassenauswahl-Grid (ERWEITERTES RESET) --- */}
-      <div className="class-grid">
+      <div className="class-grid class-summary-box">
         {allClassData.map(cls => (
           <button 
             key={cls.key} 
@@ -127,7 +129,8 @@ export const ClassSelection = ({ character, updateCharacter }) => {
                 natural_explorer: null,
                 expertise_choices: [],
                 class_tool_choice: null,
-                tool_proficiencies_choice: [], // Für Barde
+                tool_proficiencies_choice: [],
+                weapon_mastery_choices: [], // NEU
             })}
             className={`class-button ${selectedClass.key === cls.key ? 'selected' : ''}`}
           >
@@ -144,7 +147,7 @@ export const ClassSelection = ({ character, updateCharacter }) => {
       </div>
 
       {/* --- Klassendetails (STARK ERWEITERT) --- */}
-      <div className="class-details">
+      <div className="class-details class-summary-box">
         <h2>{selectedClass.name}</h2>
         <p className="class-description">{selectedClass.description}</p>
         <div className="details-divider"></div>
@@ -181,6 +184,14 @@ export const ClassSelection = ({ character, updateCharacter }) => {
         {/* 3. Waldläufer-Merkmale (Waldläufer) */}
         {showRangerFeatures && (
           <RangerFeatureSelection 
+            character={character}
+            updateCharacter={updateCharacter}
+          />
+        )}
+        
+        {/* 3b. Waffenbeherrschung (Barbar, Kämpfer, Paladin, Waldläufer) */}
+        {showWeaponMastery && (
+          <WeaponMasterySelection 
             character={character}
             updateCharacter={updateCharacter}
           />
