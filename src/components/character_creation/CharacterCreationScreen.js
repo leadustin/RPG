@@ -36,7 +36,7 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     natural_explorer: null,
     expertise_choices: [],
     class_tool_choice: null,
-    tool_proficiencies_choice: [], // Für Barde
+    tool_proficiencies_choice: [], // Für Barden
     background: allBackgroundData[0],
     abilities: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
     ability_bonus_assignments: {}, // NEU: Leeres Objekt. Wird von AbilitySelection gefüllt.
@@ -52,12 +52,30 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
   });
 
   const updateCharacter = (newValues) => {
+    // Dein alter Code zum Zurücksetzen des Hintergrunds
     if (
       newValues.background &&
       newValues.background.key !== character.background.key
     ) {
       newValues.background_choices = { languages: [], tools: [] };
     }
+
+    // +++ START: NEUE LOGIK FÜR RASSENWECHSEL +++
+    // Wenn sich die Rasse ändert...
+    if (newValues.race && newValues.race.key !== character.race.key) {
+      const newRaceProps = newValues.race.physical_props;
+      if (newRaceProps) {
+        // ... setze Alter, Größe und Gewicht auf die Standardwerte der NEUEN Rasse
+        newValues.age = newRaceProps.age?.default || 25;
+        newValues.height = newRaceProps.height?.default || 1.75;
+        newValues.weight = newRaceProps.weight?.default || 75;
+      }
+      // Setze auch Subrasse, Portrait etc. zurück
+      newValues.subrace = null; 
+      newValues.ancestry = null;
+      newValues.portrait = null; // Wichtig, damit das useEffect in IdentitySelection greift
+    }
+    // +++ ENDE: NEUE LOGIK FÜR RASSENWECHSEL +++
 
     setCharacter((prevCharacter) => ({
       ...prevCharacter,
