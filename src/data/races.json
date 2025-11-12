@@ -1,18 +1,26 @@
 [
   {
-    "key": "human",
-    "name": "Mensch",
-    "description": "Menschen sind die anpassungsfähigsten und ehrgeizigsten unter den Völkern, die stets bestrebt sind, ihre Spuren in der Welt zu hinterlassen.",
-    "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
-      "bonuses": {}
-    },
-    "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
-    "size": "Mittel",
-    "speed": 9,
-    "languages": ["Gemeinsprache", "Eine zusätzliche Sprache deiner Wahl"],
-    "traits": []
+  "key": "human",
+  "name": "Mensch",
+  "description": "Menschen sind die anpassungsfähigsten und ehrgeizigsten unter den Völkern, die stets bestrebt sind, ihre Spuren in der Welt zu hinterlassen.",
+  "ability_bonuses": {
+    "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+    "bonuses": {}
   },
+  "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
+  "size": "Mittel",
+  "speed": 9,
+  "languages": ["Gemeinsprache", "Eine zusätzliche Sprache deiner Wahl"],
+  "traits": [],
+  
+  "portraits": 4, 
+  
+  "physical_props": {
+    "age": { "min": 18, "max": 80, "default": 25, "step": 1 },
+    "height": { "min": 1.60, "max": 1.95, "default": 1.75, "step": 0.01 },
+    "weight": { "min": 60, "max": 110, "default": 75, "step": 1 }
+  }
+},
   {
     "key": "elf",
     "name": "Elf",

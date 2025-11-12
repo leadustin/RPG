@@ -171,6 +171,7 @@
   color: var(--color-text-light);
 }
 
+
 /* --- Stil für Portrait-Grid (AKTUALISIERT) --- */
 ul.portrait-grid {
   list-style-type: none; 
@@ -243,4 +244,102 @@ ul.portrait-grid li {
 .summary-column-right .summary-box ul {
   scrollbar-width: thin;
   scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+/* Am Ende von IdentitySelection.css hinzufügen: */
+
+/* --- Slider-Gruppen Layout --- */
+.details-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slider-group label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+}
+
+.slider-value {
+  font-weight: bold;
+  color: var(--color-selection);
+  font-size: 1.05em;
+}
+
+/* --- Slider-Styling --- */
+.identity-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.3);
+  outline: none;
+  transition: background 0.2s;
+}
+
+.identity-slider:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Slider Thumb (Chrome, Safari, Edge) */
+.identity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-selection);
+  cursor: pointer;
+  border: 2px solid var(--color-border-light);
+  box-shadow: 0 0 8px rgba(168, 126, 76, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.identity-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(168, 126, 76, 0.8);
+}
+
+/* Slider Thumb (Firefox) */
+.identity-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-selection);
+  cursor: pointer;
+  border: 2px solid var(--color-border-light);
+  box-shadow: 0 0 8px rgba(168, 126, 76, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.identity-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(168, 126, 76, 0.8);
+}
+
+/* Slider Track (Firefox) */
+.identity-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Min/Max Anzeige unter dem Slider */
+.slider-minmax {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75em;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+  margin-top: -3px;
 }
