@@ -79,6 +79,7 @@ export const SpellSelection = ({
   const availableLevel1Spells = getAvailableSpells(character.class.key, 1);
   
   const currentSelections = getCurrentSelections(character, spellType);
+  const currentCantripCount = character.cantrips_known?.length || 0;
 
   const handleCantripToggle = (spellKey) => {
     let newCantrips = [...(character.cantrips_known || [])];
@@ -110,12 +111,14 @@ export const SpellSelection = ({
      return [];
   }
 
-  const getLvl1Title = () => {
-    if (spellType === 'spellbook') return `Zauberbuch (Wähle ${level1Spells})`;
-    if (spellType === 'known') return `Bekannte Zauber (Wähle ${level1Spells})`;
-    if (spellType === 'prepare') return `Vorbereitete Zauber (Wähle ${level1Spells})`;
+  // === GEÄNDERT: Nimmt die aktuelle Anzahl entgegen ===
+  const getLvl1Title = (count) => {
+    if (spellType === 'spellbook') return `Zauberbuch ${count}/${level1Spells}`;
+    if (spellType === 'known') return `Bekannte Zauber ${count}/${level1Spells}`;
+    if (spellType === 'prepare') return `Vorbereitete Zauber ${count}/${level1Spells}`;
     return "Zauber Stufe 1";
   }
+  // === ENDE ÄNDERUNG ===
 
   // --- RENDER-LOGIK ---
   if (isCollapsible) {
@@ -127,9 +130,11 @@ export const SpellSelection = ({
       <div className="spell-selection">
         {/* --- Sektion Zaubertricks --- */}
         <div className="details-divider"></div>
+        {/* === GEÄNDERT === */}
         <h3 className={cantripHeaderClassName} onClick={onToggleCantrips}>
-          Zaubertricks (Wähle {cantrips})
+          Zaubertricks {currentCantripCount}/{cantrips}
         </h3>
+        {/* === ENDE ÄNDERUNG === */}
         {isOpenCantrips && (
           <div className="skill-grid">
             {availableCantrips.map(spell => (
@@ -146,9 +151,11 @@ export const SpellSelection = ({
 
         {/* --- Sektion Stufe 1 Zauber --- */}
         <div className="details-divider"></div>
+        {/* === GEÄNDERT === */}
         <h3 className={spellHeaderClassName} onClick={onToggleSpells}>
-          {getLvl1Title()}
+          {getLvl1Title(currentSelections.length)}
         </h3>
+        {/* === ENDE ÄNDERUNG === */}
         {isOpenSpells && (
           <div className="skill-grid">
             {availableLevel1Spells.map(spell => (
@@ -171,7 +178,9 @@ export const SpellSelection = ({
     <div className="spell-selection">
       {/* --- Sektion Zaubertricks --- */}
       <div className="details-divider"></div>
-      <h3>Zaubertricks (Wähle {cantrips})</h3>
+      {/* === GEÄNDERT === */}
+      <h3>Zaubertricks {currentCantripCount}/{cantrips}</h3>
+      {/* === ENDE ÄNDERUNG === */}
       <div className="skill-grid">
         {availableCantrips.map(spell => (
           <button
@@ -186,7 +195,9 @@ export const SpellSelection = ({
 
       {/* --- Sektion Stufe 1 Zauber --- */}
       <div className="details-divider"></div>
-      <h3>{getLvl1Title()}</h3>
+      {/* === GEÄNDERT === */}
+      <h3>{getLvl1Title(currentSelections.length)}</h3>
+      {/* === ENDE ÄNDERUNG === */}
       <div className="skill-grid">
         {availableLevel1Spells.map(spell => (
           <button

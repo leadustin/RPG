@@ -33,9 +33,11 @@ export const SkillSelection = ({
     const headerClassName = `collapsible-header ${isOpen ? 'open' : ''}`;
     return (
       <div className="skill-selection-container">
+        {/* === GEÄNDERT === */}
         <h4 className={headerClassName} onClick={onToggle}>
-          Wähle {maxChoices} Fertigkeiten
+          Fertigkeiten {selections.length}/{maxChoices}
         </h4>
+        {/* === ENDE ÄNDERUNG === */}
         {isOpen && (
           <div className="skill-grid">
             {options.map(skillKey => {
@@ -60,7 +62,9 @@ export const SkillSelection = ({
   // (Dies ist dein Original-Code)
   return (
     <div className="skill-selection-container">
-      <h4>Wähle {maxChoices} Fertigkeiten</h4>
+      {/* === GEÄNDERT === */}
+      <h4>Fertigkeiten {selections.length}/{maxChoices}</h4>
+      {/* === ENDE ÄNDERUNG === */}
       <div className="skill-grid">
         {options.map(skillKey => {
           const isSelected = selections.includes(skillKey);

@@ -14,7 +14,7 @@ export const ToolInstrumentSelection = ({ character, updateCharacter }) => {
   
   let options = [];
   let maxChoices = 0;
-  let title = "";
+  let titleText = ""; // Neuer Name für den Text-Teil
   let selectionKey = "class_tool_choice"; // Schlüssel im character-Objekt
   let currentSelections = [];
   
@@ -24,14 +24,14 @@ export const ToolInstrumentSelection = ({ character, updateCharacter }) => {
   if (classKey === 'bard') {
     options = INSTRUMENT_OPTIONS; // Jetzt hier sichtbar
     maxChoices = 3;
-    title = "Musikinstrumente (Wähle 3)";
+    titleText = "Musikinstrumente"; // Nur der Titel
     selectionKey = "tool_proficiencies_choice"; // Barde wählt 3 (Array)
     currentSelections = character.tool_proficiencies_choice || [];
     gridClassName = "skill-grid"; // Barde bleibt beim 3er-Grid
   } else if (classKey === 'monk') {
     options = [...INSTRUMENT_OPTIONS, ...TOOL_OPTIONS]; // Jetzt hier sichtbar
     maxChoices = 1;
-    title = "Handwerkerwerkzeug oder Instrument (Wähle 1)";
+    titleText = "Handwerkerwerkzeug oder Instrument"; // Nur der Titel
     selectionKey = "class_tool_choice"; // Mönch wählt 1 (String)
     currentSelections = character.class_tool_choice ? [character.class_tool_choice] : [];
     gridClassName = "skill-grid-2col"; // Mönch nutzt das 2er-Grid
@@ -56,10 +56,16 @@ export const ToolInstrumentSelection = ({ character, updateCharacter }) => {
     }
   };
 
+  // Zähle die Auswahlen (für Mönch ist es 1, wenn
+  // class_tool_choice gesetzt ist, sonst 0)
+  const selectionCount = (maxChoices === 1 && character.class_tool_choice) ? 1 : currentSelections.length;
+
   return (
     <div className="tool-instrument-selection">
       <div className="details-divider"></div>
-      <h3>{title}</h3>
+      {/* === GEÄNDERT === */}
+      <h3>{titleText} {selectionCount}/{maxChoices}</h3>
+      {/* === ENDE ÄNDERUNG === */}
       
       {/* Wendet die dynamische Klasse an */}
       <div className={gridClassName}> 
