@@ -11,10 +11,17 @@ import allBackgroundData from "../../data/backgrounds.json";
 export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
   const [currentStep, setCurrentStep] = useState("Race");
 
-  // HINWEIS: Dies ist DEIN useState-Block, wie gewünscht.
+  // Standard-Rasse (Mensch) und deren Standard-Werte holen
+  const defaultRace = allRaceData.find((r) => r.key === "human");
+  const defaultProps = defaultRace?.physical_props;
+
   const [character, setCharacter] = useState({
     name: "Held",
     gender: "Männlich",
+    age: defaultProps?.age?.default || 20,
+    height: defaultProps?.height?.default || 1.75,
+    weight: defaultProps?.weight?.default || 75,
+    alignment: "Neutral",
     race: allRaceData.find((r) => r.key === "human"),
     subrace: null,
     ancestry: null,
