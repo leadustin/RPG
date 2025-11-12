@@ -1,124 +1,81 @@
 /* src/components/character_creation/CreationSidebar.css */
 
-/* .sidebar-panel erhält das Grund-Styling von .ui-panel (global) */
+/* Stellt sicher, dass die Sidebar-Elemente den Platz korrekt aufteilen */
 .sidebar-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 10px; 
-  overflow: hidden; 
+  padding: 20px 10px; /* Etwas weniger horizontales Padding */
 }
 
-/* Die <ul> (die Navigationsliste) */
+/* Die Liste soll den meisten Platz einnehmen */
 .sidebar-panel ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex-grow: 1; 
-  overflow-y: auto;
-  padding-right: 5px;
+  flex-grow: 1; /* WICHTIG: Drückt die Navigation nach unten */
+  font-size: 1.25rem; /* Größere Schrift */
 }
 
-/* * Button-Styling für die <li>-Elemente (bleibt gleich)
- */
 .sidebar-panel li {
-  background-color: var(--theme-button-bg);
-  color: var(--theme-text-color);
-  border: 1px solid var(--theme-panel-border-color);
-  border-radius: 5px;
-  padding: 0.75rem 1.5rem;
-  font-family: var(--theme-font);
-  text-shadow: var(--theme-text-shadow);
+  padding: 18px 20px; /* Mehr Padding */
+  margin-bottom: 8px; /* Größerer Abstand */
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
-  text-align: center;
-  font-weight: bold;
-  font-size: 1.1em;
-  flex-shrink: 0; 
+  transition: background-color 0.2s, color 0.2s;
+  color: var(--theme-text-color);
+  font-family: var(--theme-font);
+  border-left: 4px solid transparent; /* Platzhalter für den aktiven Rand */
 }
 
-.sidebar-panel li:hover {
-  background-color: var(--theme-button-bg-hover);
-  box-shadow: var(--theme-button-glow-hover);
-  border-color: var(--theme-button-glow-hover);
+/* --- NEU: Deaktivierter Zustand --- */
+.sidebar-panel li.disabled {
+  color: #666; /* Ausgegraut */
+  cursor: not-allowed;
+  background-color: transparent;
+  border-left-color: transparent;
+}
+.sidebar-panel li.disabled:hover {
+  background-color: transparent;
+}
+/* --- ENDE NEU --- */
+
+
+.sidebar-panel li:not(.disabled):hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-panel li.active {
-  background-color: var(--theme-button-bg-active);
-  box-shadow: var(--theme-button-glow-hover), var(--theme-button-shadow-active);
-  border-color: #fff;
+  background-color: rgba(140, 120, 83, 0.2);
+  border-left: 4px solid var(--theme-panel-border-color);
+  font-weight: bold;
   color: #fff;
 }
 
-.sidebar-panel li.disabled {
+
+/* --- GEÄNDERT: Container für die Navigations-Buttons --- */
+.sidebar-navigation {
+  flex-shrink: 0; /* Verhindert, dass der Container schrumpft */
+  padding: 15px 10px 0 10px; /* Abstand nach oben, Padding links/rechts */
+  margin-top: 15px; /* Abstand zur Liste */
+  border-top: 1px solid var(--theme-panel-border-color);
+  display: flex;
+  justify-content: space-between; /* Buttons an die Enden drücken */
+  gap: 10px;
+}
+
+/* Stellt sicher, dass die Buttons die .ui-button-Stile verwenden (sollten sie durch die Klasse in der JS-Datei) */
+.sidebar-navigation .ui-button {
+  width: 48%; /* Jeder Button nimmt fast die Hälfte ein */
+  padding: 0.75rem 0.5rem; /* Weniger horizontales Padding, damit Text passt */
+  font-size: 1rem;
+}
+
+/* Stil für deaktivierte Buttons (wird von public/style.css .disabled geerbt, aber wir überschreiben hier zur Sicherheit) */
+.sidebar-navigation .ui-button:disabled {
   background-color: #2a2a2a;
   color: #555;
   border-color: #444;
   cursor: not-allowed;
   box-shadow: none;
   text-shadow: none;
-}
-
-/* Container für den finalen Button (bleibt gleich) */
-.sidebar-finalize-container {
-  flex-shrink: 0; 
-  padding-top: 20px;
-}
-
-/* * +++ KORREKTUR FÜR DEN "ABENTEUER BEGINNEN"-BUTTON +++
- * Wir überschreiben hier explizit die globalen <button>-Stile aus style.css,
- * damit die .ui-button-Stile (definiert in style.css) greifen können.
- */
-.finalize-button.ui-button {
-  /* Erzwinge die .ui-button-Stile */
-  background-color: var(--theme-button-bg);
-  color: var(--theme-text-color);
-  border: 1px solid var(--theme-panel-border-color);
-  border-radius: 5px;
-  padding: 0.75rem 1.5rem;
-  font-family: var(--theme-font);
-  text-shadow: var(--theme-text-shadow);
-  
-  /* Behalte die Breiten-Anpassung bei */
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 1.1em; /* Konsistente Schriftgröße */
-  font-weight: bold; /* Konsistente Schriftstärke */
-}
-
-/* Hover-Effekt (explizit für den Button) */
-.finalize-button.ui-button:hover {
-  background-color: var(--theme-button-bg-hover);
-  box-shadow: var(--theme-button-glow-hover);
-  border-color: var(--theme-button-glow-hover);
-}
-
-/* Active-Effekt (explizit für den Button) */
-.finalize-button.ui-button:active {
-  background-color: var(--theme-button-bg-active);
-  box-shadow: var(--theme-button-shadow-active);
-}
-/* +++ ENDE DER KORREKTUR +++ */
-
-
-/* Scrollbar-Styling (bleibt gleich) */
-.sidebar-panel ul::-webkit-scrollbar {
-  width: 8px;
-}
-.sidebar-panel ul::-webkit-scrollbar-track {
-  background: #222;
-  border-radius: 4px;
-}
-.sidebar-panel ul::-webkit-scrollbar-thumb {
-  background-color: var(--theme-panel-border-color);
-  border-radius: 4px;
-}
-
-.sidebar-panel ul {
-  scrollbar-width: thin;
-  scrollbar-color: var(--theme-panel-border-color) #222;
 }

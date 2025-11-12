@@ -2,57 +2,73 @@
 import React from 'react';
 import './CreationSidebar.css';
 
-// Übersetzungsobjekt für die deutschen Begriffe
-const stepTranslations = {
-  Race: 'Volk',
-  // Subrace: 'Unterart', // Entfernt
-  Class: 'Klasse',
-  Background: 'Hintergrund',
-  Abilities: 'Fähigkeiten',
-  Identity: 'Identität',
-  Zusammenfassung: 'Zusammenfassung', 
-};
+// Übersetzungsobjekt und Steps-Array wurden nach CharacterCreationScreen.js verschoben
 
-export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFinalize }) => {
+export const CreationSidebar = ({ 
+  currentStep, 
+  steps,                  // NEU
+  stepTranslations,       // NEU
+  maxStepIndex,           // NEU
+  onStepSelect,           // GEÄNDERT (war setCurrentStep)
+  onPrev,                 // NEU
+  onNext,                 // NEU
+  character 
+}) => {
 
-  // *** NEUE REIHENFOLGE: Schritte angepasst und Subrace/Ancestry entfernt ***
-  const steps = ['Class', 'Background', 'Race', 'Abilities', 'Identity', 'Zusammenfassung'];
+  const currentStepIndex = steps.indexOf(currentStep);
+  const isLastStep = currentStepIndex === steps.length - 1;
 
-  // *** VEREINFACHT: Logik für Subrace/Ancestry entfernt ***
-  const handleStepClick = (step) => {
-    setCurrentStep(step);
-  };
+  // handleStepClick wurde durch onStepSelect (aus Props) ersetzt
 
   return (
     // Wir fügen .ui-panel hier hinzu, um das Panel-Design anzuwenden
     <div className="sidebar-panel ui-panel">
       {/* Wir verwenden wieder deine originale <ul> Struktur */}
       <ul>
-        {steps.map(step => {
-          // *** VEREINFACHT: Logik für Subrace/Ancestry entfernt ***
+        {steps.map((step, index) => {
+          
           let label = stepTranslations[step];
+          const isDisabled = index > maxStepIndex; // Prüfe, ob der Schritt gesperrt ist
+
+          // --- KLASSENLOGIK ANGEPASST ---
+          let liClass = '';
+          if (currentStep === step) liClass = 'active';
+          if (isDisabled) liClass += ' disabled'; // Füge 'disabled' Klasse hinzu
           
           return (
             <li 
               key={step}
-              className={`${currentStep === step ? 'active' : ''}`}
-              onClick={() => handleStepClick(step)}
+              className={liClass}
+              // --- ONCLICK ANGEPASST ---
+              // Erlaube Klick nur, wenn nicht disabled
+              onClick={() => !isDisabled && onStepSelect(step)} 
             >
               {label}
             </li>
           );
         })}
       </ul>
-      <div className="sidebar-finalize-container">
-        
-        {/* Die Bedingung ist hier. Sie wird nur true, 
-            wenn currentStep exakt "Zusammenfassung" ist. */}
-        {currentStep === 'Zusammenfassung' && (
-          <button className="finalize-button ui-button" onClick={onFinalize}>
-            Charakter erstellen
-          </button>
-        )}
+
+      {/* --- GEÄNDERT: Navigations-Buttons statt "Finalize" --- */}
+      <div className="sidebar-navigation">
+        <button 
+          className="ui-button" 
+          onClick={onPrev}
+          // Deaktiviere "Zurück" auf dem ersten Schritt
+          disabled={currentStepIndex === 0} 
+        >
+          Zurück
+        </button>
+        <button 
+          className="ui-button" 
+          onClick={onNext}
+        >
+          {/* Ändere den Button-Text auf dem letzten Schritt */}
+          {isLastStep ? 'Charakter erstellen' : 'Weiter'}
+        </button>
       </div>
+      {/* --- ENDE ÄNDERUNG --- */}
+
     </div>
   );
 };
