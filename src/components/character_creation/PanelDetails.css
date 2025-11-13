@@ -40,7 +40,7 @@
   /* Layout & Abstand */
   width: 100%;
   box-sizing: border-box;
-  font-size: 1.1em;
+  font-size: 0.9em;
   margin-bottom: 15px; /* Abstand zwischen den beiden Menüs */
 
   /* Entfernt den Standard-Pfeil des Betriebssystems */
@@ -60,4 +60,20 @@
 .panel-select option {
   background-color: var(--theme-button-bg, #333);
   color: var(--theme-text-color, white);
+}
+
+.skill-choice.has-icon {
+  /* Stellt sicher, dass Icon und Text zentriert sind */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Abstand zwischen Icon und Text */
+}
+
+.subclass-icon {
+  width: 32px;  /* Passen Sie die Größe nach Bedarf an */
+  height: 32px;
+  object-fit: contain;
+  /* Verhindert, dass das Bild auf Maus-Events reagiert */
+  pointer-events: none; 
 }

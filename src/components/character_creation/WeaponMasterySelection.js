@@ -37,7 +37,9 @@ export const WeaponMasterySelection = ({ character, updateCharacter }) => {
   return (
     <div className="weapon-mastery-selection">
       <div className="details-divider"></div>
-      <h3>Waffenbeherrschung (Wähle {maxChoices})</h3>
+      {/* === GEÄNDERT === */}
+      <h3>Waffenbeherrschung {currentSelections.length}/{maxChoices}</h3>
+      {/* === ENDE ÄNDERUNG === */}
       <p className="panel-details-description">
         Du beherrschst spezielle Techniken mit bestimmten Waffen. Wähle {maxChoices} Waffen, 
         mit denen du ihre Mastery-Eigenschaft nutzen kannst.

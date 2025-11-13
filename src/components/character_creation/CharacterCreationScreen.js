@@ -1,5 +1,5 @@
 // src/components/character_creation/CharacterCreationScreen.js
-import React, { useState } from "react";
+import React, { useState } from "react"; // Sicherstellen, dass useState importiert ist
 import "./CharacterCreationScreen.css";
 import { CreationSidebar } from "./CreationSidebar";
 import { SelectionPanel } from "./SelectionPanel"; // Bleibt erhalten
@@ -8,8 +8,25 @@ import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";
 import allBackgroundData from "../../data/backgrounds.json";
 
+// --- NEU: Schritte und Übersetzungen hier definieren ---
+const STEPS = ['Class', 'Background', 'Race', 'Abilities', 'Identity', 'Zusammenfassung'];
+
+const stepTranslations = {
+  Race: 'Volk',
+  Class: 'Klasse',
+  Background: 'Hintergrund',
+  Abilities: 'Fähigkeiten',
+  Identity: 'Identität',
+  Zusammenfassung: 'Zusammenfassung', 
+};
+// --- ENDE NEU ---
+
 export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
-  const [currentStep, setCurrentStep] = useState("Race");
+  // --- GEÄNDERT: Start bei STEPS[0] ---
+  const [currentStep, setCurrentStep] = useState(STEPS[0]);
+  // --- NEU: State für den maximal erreichten Schritt ---
+  const [maxStepIndex, setMaxStepIndex] = useState(0); 
+  // --- ENDE NEU ---
 
   // Standard-Rasse (Mensch) und deren Standard-Werte holen
   const defaultRace = allRaceData.find((r) => r.key === "human");
@@ -39,8 +56,8 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     tool_proficiencies_choice: [], // Für Barden
     background: allBackgroundData[0],
     abilities: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
-    ability_bonus_assignments: {}, // NEU: Leeres Objekt. Wird von AbilitySelection gefüllt.
-    floating_bonus_assignments: {}, // (Wird nicht mehr verwendet, kann später entfernt werden)
+    ability_bonus_assignments: {}, 
+    floating_bonus_assignments: {}, 
     skill_proficiencies_choice: [],
     weapon_mastery_choices: [],
     background_choices: {
@@ -88,18 +105,58 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     }));
   };
 
-  const handleFinalize = () => {
-    onCharacterFinalized(character);
+  // --- NEUE NAVIGATIONS-HANDLER ---
+  const currentStepIndex = STEPS.indexOf(currentStep);
+
+  const handleStepSelect = (step) => {
+    const selectedIndex = STEPS.indexOf(step);
+    // Erlaube Klick nur, wenn der Schritt bereits freigeschaltet ist
+    if (selectedIndex <= maxStepIndex) {
+      setCurrentStep(step);
+    }
   };
+
+  const handlePrevStep = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStep(STEPS[currentStepIndex - 1]);
+    }
+  };
+
+  const handleNextStep = () => {
+    // Wenn der "Weiter"-Button auf dem letzten Schritt geklickt wird
+    if (currentStepIndex === STEPS.length - 1) {
+      onCharacterFinalized(character);
+    } 
+    // Normaler "Weiter"-Klick
+    else if (currentStepIndex < STEPS.length - 1) {
+      const nextIndex = currentStepIndex + 1;
+      setCurrentStep(STEPS[nextIndex]);
+      // Schalte den nächsten Schritt frei
+      setMaxStepIndex(Math.max(maxStepIndex, nextIndex));
+    }
+  };
+  // --- ENDE NEUE HANDLER ---
+
+
+  // handleFinalize wird nicht mehr direkt von der Sidebar aufgerufen,
+  // sondern von handleNextStep, wenn der letzte Schritt erreicht ist.
+  // const handleFinalize = () => {
+  //   onCharacterFinalized(character);
+  // };
 
   return (
     // Das Container-Div ist jetzt einfacher
     <div className="creation-screen-container">
       <CreationSidebar
+        steps={STEPS} // NEU
+        stepTranslations={stepTranslations} // NEU
         currentStep={currentStep}
-        setCurrentStep={setCurrentStep}
+        maxStepIndex={maxStepIndex} // NEU
+        onStepSelect={handleStepSelect} // GEÄNDERT
+        onPrev={handlePrevStep} // NEU
+        onNext={handleNextStep} // NEU
         character={character}
-        onFinalize={handleFinalize}
+        // onFinalize wird jetzt von handleNextStep verwaltet
       />
       {/* SelectionPanel bleibt für die Logik der Inhaltsanzeige verantwortlich */}
       <SelectionPanel

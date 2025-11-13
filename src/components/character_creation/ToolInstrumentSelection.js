@@ -3,49 +3,68 @@ import React from 'react';
 import './PanelDetails.css';
 import './SkillSelection.css'; // Stil wiederverwenden
 
-// --- KORREKTUR: Konstanten hierher verschoben ---
-// Vereinfachte Liste. Diese sollte idealerweise aus einer eigenen JSON-Datei kommen.
+// +++ NEU: importAll-Funktion +++
+function importAll(r) {
+  let images = {};
+  r.keys().forEach((item) => {
+    // Extrahiert den Dateinamen ohne Endung als Key
+    // z.B. './Laute.png' -> 'Laute'
+    const key = item.replace('./', '').replace(/\.(webp|png|jpe?g|svg)$/, '');
+    images[key] = r(item);
+  });
+  return images;
+}
+
+// +++ NEU: Icons laden +++
+// Annahme: Du erstellst einen Ordner (z.B. 'src/assets/images/proficiencies')
+// und benennst die Icons exakt wie die Options-Strings (z.B. 'Laute.png', 'Schmiedewerkzeug.png')
+const proficiencyIcons = importAll(require.context(
+  '../../assets/images/proficiencies', // <-- Passe diesen Ordner-Pfad ggf. an
+  false,
+  /\.(webp|png|jpe?g|svg)$/
+));
+// +++ ENDE NEU +++
+
+
+// --- Konstanten (bleiben gleich) ---
 const INSTRUMENT_OPTIONS = ["Dudelsack", "Trommel", "Horn", "Flöte", "Laute", "Lyra", "Glockenspiel"];
 const TOOL_OPTIONS = ["Alchemistenwerkzeug", "Brauerwerkzeug", "Kalligraphenwerkzeug", "Schmiedewerkzeug", "Zimmermannswerkzeug"];
-// --- ENDE KORREKTUR ---
+// --- ENDE ---
 
 export const ToolInstrumentSelection = ({ character, updateCharacter }) => {
   const classKey = character.class.key;
   
   let options = [];
   let maxChoices = 0;
-  let title = "";
-  let selectionKey = "class_tool_choice"; // Schlüssel im character-Objekt
+  let titleText = "";
+  let selectionKey = "class_tool_choice";
   let currentSelections = [];
   
-  // --- KORREKTUR (aus vorheriger Anfrage): Dynamische Grid-Klasse ---
-  let gridClassName = "skill-grid"; // Standard ist 3er-Grid
+  let gridClassName = "skill-grid";
 
   if (classKey === 'bard') {
-    options = INSTRUMENT_OPTIONS; // Jetzt hier sichtbar
+    options = INSTRUMENT_OPTIONS;
     maxChoices = 3;
-    title = "Musikinstrumente (Wähle 3)";
-    selectionKey = "tool_proficiencies_choice"; // Barde wählt 3 (Array)
+    titleText = "Musikinstrumente";
+    selectionKey = "tool_proficiencies_choice";
     currentSelections = character.tool_proficiencies_choice || [];
-    gridClassName = "skill-grid"; // Barde bleibt beim 3er-Grid
+    gridClassName = "skill-grid";
   } else if (classKey === 'monk') {
-    options = [...INSTRUMENT_OPTIONS, ...TOOL_OPTIONS]; // Jetzt hier sichtbar
+    options = [...INSTRUMENT_OPTIONS, ...TOOL_OPTIONS];
     maxChoices = 1;
-    title = "Handwerkerwerkzeug oder Instrument (Wähle 1)";
-    selectionKey = "class_tool_choice"; // Mönch wählt 1 (String)
+    titleText = "Handwerkerwerkzeug oder Instrument";
+    selectionKey = "class_tool_choice";
     currentSelections = character.class_tool_choice ? [character.class_tool_choice] : [];
-    gridClassName = "skill-grid-2col"; // Mönch nutzt das 2er-Grid
+    gridClassName = "skill-grid-2col";
   } else {
     return null;
   }
-  // --- ENDE KORREKTUR ---
 
 
   const handleToggle = (key) => {
     if (maxChoices === 1) {
       updateCharacter({ [selectionKey]: key });
     } else {
-      // Logik für Mehrfachauswahl (Barde)
       let newSelection = [...currentSelections];
       if (newSelection.includes(key)) {
         newSelection = newSelection.filter(s => s !== key);
@@ -56,22 +75,42 @@ export const ToolInstrumentSelection = ({ character, updateCharacter }) => {
     }
   };
 
+  const selectionCount = (maxChoices === 1 && character.class_tool_choice) ? 1 : currentSelections.length;
+
   return (
     <div className="tool-instrument-selection">
       <div className="details-divider"></div>
-      <h3>{title}</h3>
+      <h3>{titleText} {selectionCount}/{maxChoices}</h3>
       
-      {/* Wendet die dynamische Klasse an */}
       <div className={gridClassName}> 
-        {options.map(opt => (
-          <button
-            key={opt}
-            className={`skill-choice ${currentSelections.includes(opt) ? 'selected' : ''}`}
-            onClick={() => handleToggle(opt)}
-          >
-            {opt}
-          </button>
-        ))}
+        {options.map(opt => {
+          // +++ NEU: Icon-Logik +++
+          const isSelected = currentSelections.includes(opt);
+          const iconSrc = proficiencyIcons[opt]; // Holt Icon basierend auf dem String
+          // +++ ENDE NEU +++
+
+          return (
+            <button
+              key={opt}
+              className={`skill-choice ${isSelected ? 'selected' : ''}`} // CSS-Klasse wiederverwenden
+              onClick={() => handleToggle(opt)}
+              title={opt} // Zeigt den vollen Namen beim Hovern
+            >
+              {/* === GEÄNDERT: Icon statt Text === */}
+              {iconSrc ? (
+                <img 
+                  src={iconSrc} 
+                  alt={opt}
+                  className="skill-icon" // CSS-Klasse aus SkillSelection.css
+                />
+              ) : (
+                // Fallback, falls Icon fehlt (z.B. "LAU")
+                opt.substring(0, 3).toUpperCase()
+              )}
+              {/* === ENDE ÄNDERUNG === */}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

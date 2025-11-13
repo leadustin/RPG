@@ -237,3 +237,53 @@
   scrollbar-width: thin;
   scrollbar-color: var(--theme-panel-border-color) #222;
 }
+
+/* --- NEU: Stile für Collapsible Boxen --- */
+.collapsible-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none; /* Verhindert Textmarkierung beim Klicken */
+  margin-bottom: 10px; /* Fügt etwas Abstand hinzu, wenn geöffnet */
+}
+
+/* Entfernt den Standard-Margin der h3, wenn sie klickbar ist */
+.collapsible-header {
+  margin: 0; 
+}
+/* Fügt Abstand hinzu, *nur* wenn die Liste geöffnet ist */
+.collapsible-header.open {
+   margin-bottom: 10px;
+}
+
+
+.collapsible-header:hover {
+  color: var(--color-selection); /* Leichter Hover-Effekt */
+}
+
+.collapse-icon {
+  font-size: 0.8em;
+  margin-left: 10px;
+  transform: translateY(1px); /* Kleine optische Anpassung */
+}
+
+.scrollable-list-box {
+  max-height: 400px;
+  overflow-y: auto;
+  flex-grow: 0; 
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+.scrollable-list-box::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollable-list-box::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.scrollable-list-box::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}

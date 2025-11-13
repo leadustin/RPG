@@ -41,7 +41,9 @@ export const ExpertiseSelection = ({ character, updateCharacter }) => {
   return (
     <div className="expertise-selection">
       <div className="details-divider"></div>
-      <h3>Expertise (Wähle {maxChoices})</h3>
+      {/* === GEÄNDERT === */}
+      <h3>Expertise {selections.length}/{maxChoices}</h3>
+      {/* === ENDE ÄNDERUNG === */}
       <p className="panel-details-description">
         Wähle {maxChoices} deiner geübten Fertigkeiten (oder Diebeswerkzeug). Dein Übungsbonus wird für diese verdoppelt.
       </p>

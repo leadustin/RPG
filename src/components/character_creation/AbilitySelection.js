@@ -343,8 +343,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     
     console.log(`\n✅ Alle Würfe abgeschlossen (in Wurfreihenfolge): [${newRolls.join(', ')}]`);
     
-    // KEINE Sortierung mehr - behalte die Wurfreihenfolge
-    // newRolls.sort((a, b) => b - a); // <- ENTFERNT
     
     setScoresToAssign(newRolls);
     setIsRolling(false); 
@@ -410,7 +408,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
                   
                   <button 
                     onClick={handleRoll} 
-                    className="roll-button" 
+                    className="ability-roll-button" 
                     disabled={isRolling || !diceBoxReady}
                   >
                     {isRolling ? 'Würfeln...' : (!diceBoxReady ? 'Lade Würfel...' : 'Werte erneut würfeln')}

@@ -7,37 +7,53 @@
 
 .skill-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
+  grid-template-columns: repeat(auto-fit, 60px);
+  gap: 10px; /* Abstand zwischen Icons */
+  justify-content: center; /* Zentriert, wenn weniger Icons vorhanden sind */
+  align-items: center;     /* Vertikal zentriert innerhalb der Zeilen */
   max-height: 280px;
-  overflow-y: auto;   
+  overflow: visible;
   padding-right: 5px;
-  margin-top: 10px; /* Abstand zwischen Header und Grid */
+  margin-top: 10px;
 }
 
 .skill-grid-2col {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, 64px);
+  gap: 10px; /* Abstand zwischen Icons */
+  justify-content: center; /* Zentriert, wenn weniger Icons vorhanden sind */
+  align-items: center;     /* Vertikal zentriert innerhalb der Zeilen */
+  max-height: 280px;
+  overflow: visible;
+  padding-right: 5px;
+  margin-top: 10px;
 }
 
 .skill-choice {
-  /* Gekopierte Stile von .sidebar-panel li */
-  background-color: var(--theme-button-bg);
-  color: var(--theme-text-color);
-  border: 1px solid var(--theme-panel-border-color);
-  border-radius: 5px;
-  padding: 0.4rem 1.5rem; /* Angepasst von sidebar */
-  font-family: var(--theme-font);
-  text-shadow: var(--theme-text-shadow);
+  /* === GEÄNDERT: Stile für Icon-Boxen === */
+  border: 2px solid var(--border-color-light);
+  background-color: var(--background-color-dark);
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  transition: all 0.2s ease;
+  
+  /* Wichtig für die Zentrierung des Icons */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  /* Wichtig: Layout von .skill-choice beibehalten */
+  /* Feste Größe für einheitliches Raster */
+  width: 60px;
+  height: 60px;
+  padding: 0px;
+  box-sizing: border-box; /* Stellt sicher, dass padding die Größe nicht sprengt */
+  
+  /* Fallback-Text (Initialen) zentrieren */
   text-align: center;
-  box-sizing: border-box; 
-  /* font-size: 0.9em; */
-  width: 100%; /* Stellt sicher, dass Buttons die volle Breite nutzen */
+  font-weight: bold;
+  font-size: 1rem;
+  color: var(--text-color-medium);
+  overflow: hidden; /* Verhindert, dass etwas überläuft */
 }
 
 .skill-choice:hover {
@@ -52,6 +68,13 @@
   box-shadow: var(--theme-button-glow-active);
   font-weight: bold;
   color: var(--theme-text-color);
+}
+
+.skill-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Stellt sicher, dass das Icon skaliert, ohne sich zu verzerren */
+  pointer-events: none; /* Verhindert, dass das Bild Klicks "stiehlt" */
 }
 
 /* --- Stile für einklappbare Header --- */
@@ -74,7 +97,7 @@
   
   /* H-Tag Reset */
   margin: 0;
-  font-size: 1.2em;
+  font-size: 0.9em;
   text-align: left;
 }
 
@@ -107,7 +130,7 @@
 
 /* Korrektur für die 'SkillSelection.js' h4 */
 .skill-selection-container h4.collapsible-header {
-    font-size: 1.1em; /* Macht die h4 etwas kleiner als die h3 */
+    font-size: 0.9em; /* Macht die h4 etwas kleiner als die h3 */
     margin-top: 10px; 
 }
 

@@ -3,6 +3,28 @@ import React from 'react';
 import './SkillSelection.css';
 import { SKILL_NAMES_DE } from '../../engine/characterEngine';
 
+// +++ NEU: importAll-Funktion (kopiert aus ClassSelection.js) +++
+function importAll(r) {
+  let images = {};
+  r.keys().forEach((item) => {
+    // Extrahiert den Dateinamen ohne Endung als Key
+    // z.B. './acrobatics.png' -> 'acrobatics'
+    const key = item.replace('./', '').replace(/\.(webp|png|jpe?g|svg)$/, '');
+    images[key] = r(item);
+  });
+  return images;
+}
+
+// +++ NEU: Icons laden +++
+// Annahme: Du hast einen Ordner 'src/assets/images/skills' erstellt
+// und die Icons exakt wie die skillKeys benannt (z.B. 'acrobatics.png').
+const skillIcons = importAll(require.context(
+  '../../assets/images/skills', // <-- Der neue Ordner
+  false,
+  /\.(webp|png|jpe?g|svg)$/
+));
+// +++ ENDE NEU +++
+
 export const SkillSelection = ({ 
   options, 
   maxChoices, 
@@ -18,64 +40,69 @@ export const SkillSelection = ({
     const index = newSelections.indexOf(skillKey);
 
     if (index > -1) {
-      // Auswahl aufheben
       newSelections.splice(index, 1);
     } else if (newSelections.length < maxChoices) {
-      // Neue Auswahl hinzufügen
       newSelections.push(skillKey);
     }
     setSelections(newSelections);
   };
 
-  // --- NEUE RENDER-LOGIK ---
+  // --- NEU: Helper-Funktion für die Anzeige (vermeidet Code-Dopplung) ---
+  const renderSkillGrid = () => (
+    <div className="skill-grid">
+      {options.map(skillKey => {
+        const isSelected = selections.includes(skillKey);
+        const iconSrc = skillIcons[skillKey]; // Icon-Quelle holen
+        const skillName = SKILL_NAMES_DE[skillKey]; // Name für Tooltip
+
+        return (
+          <div 
+            key={skillKey}
+            className={`skill-choice ${isSelected ? 'selected' : ''}`}
+            onClick={() => handleSelection(skillKey)}
+            // WICHTIG: Zeigt den Namen beim Hovern an
+            title={skillName} 
+          >
+            {/* === GEÄNDERT: Icon statt Text === */}
+            {iconSrc ? (
+              <img 
+                src={iconSrc} 
+                alt={skillName} // Gut für Barrierefreiheit
+                className="skill-icon" 
+              />
+            ) : (
+              // Fallback, falls Icon fehlt (zeigt Initialen, z.B. "AKR")
+              skillName.substring(0, 3).toUpperCase()
+            )}
+            {/* === ENDE ÄNDERUNG === */}
+          </div>
+        );
+      })}
+    </div>
+  );
+  // --- ENDE Helper-Funktion ---
+
+
+  // --- RENDER-LOGIK (nutzt jetzt den Helper) ---
   if (isCollapsible) {
     // VARIANTE A: FÜR MAGIER (einklappbar)
     const headerClassName = `collapsible-header ${isOpen ? 'open' : ''}`;
     return (
       <div className="skill-selection-container">
         <h4 className={headerClassName} onClick={onToggle}>
-          Wähle {maxChoices} Fertigkeiten
+          Fertigkeiten {selections.length}/{maxChoices}
         </h4>
-        {isOpen && (
-          <div className="skill-grid">
-            {options.map(skillKey => {
-              const isSelected = selections.includes(skillKey);
-              return (
-                <div 
-                  key={skillKey}
-                  className={`skill-choice ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleSelection(skillKey)}
-                >
-                  {SKILL_NAMES_DE[skillKey]}
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {isOpen && renderSkillGrid()} {/* <-- Helper aufrufen */}
       </div>
     );
   }
 
   // VARIANTE B: FÜR ALLE ANDEREN (statisch)
-  // (Dies ist dein Original-Code)
   return (
     <div className="skill-selection-container">
-      <h4>Wähle {maxChoices} Fertigkeiten</h4>
-      <div className="skill-grid">
-        {options.map(skillKey => {
-          const isSelected = selections.includes(skillKey);
-          return (
-            <div 
-              key={skillKey}
-              className={`skill-choice ${isSelected ? 'selected' : ''}`}
-              onClick={() => handleSelection(skillKey)}
-            >
-              {SKILL_NAMES_DE[skillKey]}
-            </div>
-          );
-        })}
-      </div>
+      <h4>Fertigkeiten {selections.length}/{maxChoices}</h4>
+      {renderSkillGrid()} {/* <-- Helper aufrufen */}
     </div>
   );
-  // --- ENDE NEUE RENDER-LOGIK ---
+  // --- ENDE RENDER-LOGIK ---
 };
