@@ -3,6 +3,29 @@ import React from 'react';
 import './PanelDetails.css';
 import './SkillSelection.css';
 
+// +++ NEU: importAll-Funktion (kopiert von ToolInstrumentSelection) +++
+function importAll(r) {
+  let images = {};
+  r.keys().forEach((item) => {
+    // Extrahiert den Dateinamen ohne Endung als Key
+    // z.B. './Streitaxt.png' -> 'Streitaxt'
+    const key = item.replace('./', '').replace(/\.(webp|png|jpe?g|svg)$/, '');
+    images[key] = r(item);
+  });
+  return images;
+}
+
+// +++ NEU: Icons laden +++
+// Annahme: Die Icons liegen im 'proficiencies'-Ordner.
+// Falls nicht, passen Sie diesen Pfad an (z.B. auf '../images/weapons').
+const proficiencyIcons = importAll(require.context(
+  '../../assets/images/weaponmasteries', // <-- PASST DIESEN PFAD GGF. AN
+  false,
+  /\.(webp|png|jpe?g|svg)$/
+));
+// +++ ENDE NEU +++
+
+
 export const WeaponMasterySelection = ({ character, updateCharacter }) => {
   const selectedClass = character.class;
   
@@ -37,9 +60,7 @@ export const WeaponMasterySelection = ({ character, updateCharacter }) => {
   return (
     <div className="weapon-mastery-selection">
       <div className="details-divider"></div>
-      {/* === GEÄNDERT === */}
       <h3>Waffenbeherrschung {currentSelections.length}/{maxChoices}</h3>
-      {/* === ENDE ÄNDERUNG === */}
       <p className="panel-details-description">
         Du beherrschst spezielle Techniken mit bestimmten Waffen. Wähle {maxChoices} Waffen, 
         mit denen du ihre Mastery-Eigenschaft nutzen kannst.
@@ -48,14 +69,35 @@ export const WeaponMasterySelection = ({ character, updateCharacter }) => {
       <div className="skill-grid">
         {available_weapons.map(weapon => {
           const isSelected = currentSelections.includes(weapon);
+          
+          // +++ NEU: Icon-Logik +++
+          const iconSrc = proficiencyIcons[weapon]; // z.B. proficiencyIcons["Streitaxt"]
+          // +++ ENDE NEU +++
+
           return (
             <button
               key={weapon}
-              className={`skill-choice ${isSelected ? 'selected' : ''}`}
+              // MODIFIZIERT: 'has-icon' hinzugefügt
+              className={`skill-choice ${isSelected ? 'selected' : ''} ${iconSrc ? 'has-icon' : ''}`}
               onClick={() => handleToggle(weapon)}
               disabled={!isSelected && currentSelections.length >= maxChoices}
+              // NEU: 'title' hinzugefügt
+              title={weapon}
             >
-              {weapon}
+              
+              {/* --- ANGEPASSTE RENDER-LOGIK --- */}
+              {/* WENN Icon existiert, DANN zeige Icon, SONST zeige Text */}
+              {iconSrc ? (
+                <img 
+                  src={iconSrc} 
+                  alt={weapon}
+                  className="skill-icon" // Die CSS-Klasse, die schon funktioniert
+                />
+              ) : (
+                <span>{weapon}</span>
+              )}
+              {/* --- ENDE ANPASSUNG --- */}
+
             </button>
           );
         })}
