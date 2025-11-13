@@ -19,8 +19,14 @@
 
 .skill-grid-2col {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, 64px);
+  gap: 10px; /* Abstand zwischen Icons */
+  justify-content: center; /* Zentriert, wenn weniger Icons vorhanden sind */
+  align-items: center;     /* Vertikal zentriert innerhalb der Zeilen */
+  max-height: 280px;
+  overflow: visible;
+  padding-right: 5px;
+  margin-top: 10px;
 }
 
 .skill-choice {
