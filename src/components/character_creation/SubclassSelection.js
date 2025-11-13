@@ -81,7 +81,7 @@ export const SubclassSelection = ({ character, updateCharacter }) => {
                 <img 
                   src={iconSrc} 
                   alt="" // Alt-Text ist optional, da der Name daneben steht
-                  className="subclass-icon" // Eigene Klasse, um die Größe zu steuern
+                  className="skill-icon" // Eigene Klasse, um die Größe zu steuern
                 />
               )}
               {/* Der Name wird immer angezeigt */}
