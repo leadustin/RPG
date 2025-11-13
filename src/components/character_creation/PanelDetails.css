@@ -61,3 +61,19 @@
   background-color: var(--theme-button-bg, #333);
   color: var(--theme-text-color, white);
 }
+
+.skill-choice.has-icon {
+  /* Stellt sicher, dass Icon und Text zentriert sind */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Abstand zwischen Icon und Text */
+}
+
+.subclass-icon {
+  width: 32px;  /* Passen Sie die Größe nach Bedarf an */
+  height: 32px;
+  object-fit: contain;
+  /* Verhindert, dass das Bild auf Maus-Events reagiert */
+  pointer-events: none; 
+}
