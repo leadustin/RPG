@@ -3,106 +3,115 @@ import React from 'react';
 import './SkillSelection.css';
 import { SKILL_NAMES_DE } from '../../engine/characterEngine';
 
-// +++ NEU: importAll-Funktion (kopiert aus ClassSelection.js) +++
+// +++ NEU: Tooltip-Komponenten importieren +++
+import Tooltip from '../tooltip/Tooltip'; // Der generische Wrapper
+import { SkillTooltip } from '../tooltip/SkillTooltip'; // Unser neuer Inhalt
+
+// +++ NEU: Die Skill-Detail-Daten importieren +++
+import skillDetails from '../../data/skillDetails.json';
+
+
+// +++ importAll-Funktion für Icons (war schon da) +++
 function importAll(r) {
   let images = {};
   r.keys().forEach((item) => {
-    // Extrahiert den Dateinamen ohne Endung als Key
-    // z.B. './acrobatics.png' -> 'acrobatics'
     const key = item.replace('./', '').replace(/\.(webp|png|jpe?g|svg)$/, '');
     images[key] = r(item);
   });
   return images;
 }
 
-// +++ NEU: Icons laden +++
-// Annahme: Du hast einen Ordner 'src/assets/images/skills' erstellt
-// und die Icons exakt wie die skillKeys benannt (z.B. 'acrobatics.png').
 const skillIcons = importAll(require.context(
-  '../../assets/images/skills', // <-- Der neue Ordner
+  '../../assets/images/skills', 
   false,
   /\.(webp|png|jpe?g|svg)$/
 ));
-// +++ ENDE NEU +++
+// +++ ENDE Icons +++
 
 export const SkillSelection = ({ 
   options, 
   maxChoices, 
   selections, 
   setSelections,
-  isOpen,       // <-- Prop wird empfangen
-  onToggle,     // <-- Prop wird empfangen
-  isCollapsible // <-- NEUE Prop
+  isOpen,       
+  onToggle,     
+  isCollapsible 
 }) => {
-  
-  const handleSelection = (skillKey) => {
-    const newSelections = [...selections];
-    const index = newSelections.indexOf(skillKey);
 
-    if (index > -1) {
-      newSelections.splice(index, 1);
-    } else if (newSelections.length < maxChoices) {
-      newSelections.push(skillKey);
-    }
-    setSelections(newSelections);
+  const handleSelection = (skillKey) => {
+    setSelections(prev => {
+      if (prev.includes(skillKey)) {
+        return prev.filter(s => s !== skillKey);
+      }
+      if (prev.length < maxChoices) {
+        return [...prev, skillKey];
+      }
+      return prev;
+    });
   };
 
-  // --- NEU: Helper-Funktion für die Anzeige (vermeidet Code-Dopplung) ---
+  // --- Helper-Funktion zum Rendern des Grids (MODIFIZIERT) ---
   const renderSkillGrid = () => (
     <div className="skill-grid">
-      {options.map(skillKey => {
+      {options.map((skillKey) => {
+        const skillName = SKILL_NAMES_DE[skillKey] || skillKey;
+        const iconSrc = skillIcons[skillKey];
         const isSelected = selections.includes(skillKey);
-        const iconSrc = skillIcons[skillKey]; // Icon-Quelle holen
-        const skillName = SKILL_NAMES_DE[skillKey]; // Name für Tooltip
+        
+        // +++ NEU: Tooltip-Daten holen +++
+        const tooltipData = skillDetails[skillKey];
 
         return (
-          <div 
+          // +++ NEU: Mit Tooltip umwickelt +++
+          <Tooltip
             key={skillKey}
-            className={`skill-choice ${isSelected ? 'selected' : ''}`}
-            onClick={() => handleSelection(skillKey)}
-            // WICHTIG: Zeigt den Namen beim Hovern an
-            title={skillName} 
+            content={
+              <SkillTooltip data={tooltipData} />
+            }
           >
-            {/* === GEÄNDERT: Icon statt Text === */}
-            {iconSrc ? (
-              <img 
-                src={iconSrc} 
-                alt={skillName} // Gut für Barrierefreiheit
-                className="skill-icon" 
-              />
-            ) : (
-              // Fallback, falls Icon fehlt (zeigt Initialen, z.B. "AKR")
-              skillName.substring(0, 3).toUpperCase()
-            )}
-            {/* === ENDE ÄNDERUNG === */}
-          </div>
+            <div
+              className={`skill-choice ${isSelected ? 'selected' : ''}`}
+              onClick={() => handleSelection(skillKey)}
+              // title={skillName} // <-- ENTFERNT, um Konflikt zu vermeiden
+            >
+              {iconSrc ? (
+                <img 
+                  src={iconSrc} 
+                  alt={skillName}
+                  className="skill-icon" 
+                />
+              ) : (
+                skillName.substring(0, 3).toUpperCase()
+              )}
+            </div>
+          </Tooltip>
         );
       })}
     </div>
   );
-  // --- ENDE Helper-Funktion ---
+  // --- ENDE Helper-Funktion ---\
 
 
-  // --- RENDER-LOGIK (nutzt jetzt den Helper) ---
+  // --- RENDER-LOGIK (unverändert) ---\
   if (isCollapsible) {
-    // VARIANTE A: FÜR MAGIER (einklappbar)
     const headerClassName = `collapsible-header ${isOpen ? 'open' : ''}`;
     return (
       <div className="skill-selection-container">
         <h4 className={headerClassName} onClick={onToggle}>
           Fertigkeiten {selections.length}/{maxChoices}
         </h4>
-        {isOpen && renderSkillGrid()} {/* <-- Helper aufrufen */}
+        {isOpen && renderSkillGrid()}
       </div>
     );
   }
 
-  // VARIANTE B: FÜR ALLE ANDEREN (statisch)
   return (
     <div className="skill-selection-container">
       <h4>Fertigkeiten {selections.length}/{maxChoices}</h4>
-      {renderSkillGrid()} {/* <-- Helper aufrufen */}
+      <p className="panel-details-description">
+        Wähle {maxChoices} Fertigkeiten, in denen du geübt bist.
+      </p>
+      {renderSkillGrid()}
     </div>
   );
-  // --- ENDE RENDER-LOGIK ---
 };
