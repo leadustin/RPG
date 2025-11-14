@@ -17,7 +17,7 @@
   "weapon_mastery": {
     "level_1_count": 2,
     "level_9_count": 3,
-    "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
+    "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
   },
   "features": [
     { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Konstitutionsmodifikator." },

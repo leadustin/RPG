@@ -2,6 +2,8 @@
 import React from 'react';
 import './PanelDetails.css'; // Wiederverwendung der Stile
 import './SkillSelection.css'; // Wiederverwendung für das Grid-Layout
+// +++ KORREKTUR: Import von 'default' export (ohne Klammern) +++
+import Tooltip from '../tooltip/Tooltip'; 
 
 // +++ importAll-Funktion (exakt wie in ToolInstrumentSelection) +++
 function importAll(r) {
@@ -22,10 +24,24 @@ const domainIcons = importAll(require.context(
   /\.(webp|png|jpe?g|svg)$/
 ));
 
+// +++ Schutzpatron-Icons laden +++
+let patronIcons = {};
+try {
+  patronIcons = importAll(require.context(
+    '../../assets/images/patrons', // ANNNAHME: Pfad zu den Schutzpatron-Icons
+    false,
+    /\.(webp|png|jpe?g|svg)$/
+  ));
+} catch (e) {
+  console.warn("Konnte Hexenmeister-Schutzpatron-Icons nicht laden. (Verzeichnis 'src/assets/images/patrons' fehlt?)");
+  // patronIcons bleibt ein leeres Objekt, die Anzeige fällt auf Text zurück.
+}
+
 
 export const SubclassSelection = ({ character, updateCharacter }) => {
   const selectedClass = character.class;
   const isCleric = selectedClass.key === 'cleric';
+  const isWarlock = selectedClass.key === 'warlock';
 
   const level1Subclasses = selectedClass.subclasses.filter(sc =>
     sc.features.some(f => f.level === 1)
@@ -58,32 +74,33 @@ export const SubclassSelection = ({ character, updateCharacter }) => {
       <div className="skill-grid"> 
         {level1Subclasses.map(sc => {
           
-          const iconSrc = isCleric ? domainIcons[sc.key] : null;
+          let iconSrc = null;
+          if (isCleric) {
+            iconSrc = domainIcons[sc.key];
+          } else if (isWarlock) {
+            iconSrc = patronIcons[sc.key]; 
+          }
 
           return (
-            <button
-              key={sc.key}
-              className={`skill-choice ${character.subclassKey === sc.key ? 'selected' : ''} ${iconSrc ? 'has-icon' : ''}`}
-              onClick={() => handleSelect(sc.key)}
-              
-              // +++ NEU: 'title' hinzufügen (wie in ToolInstrumentSelection) +++
-              title={sc.name} 
-            >
-              
-              {/* --- ANGEPASSTE RENDER-LOGIK --- */}
-              {/* WENN Kleriker UND Icon existiert, DANN zeige Icon, SONST zeige Text */}
-              {isCleric && iconSrc ? (
-                <img 
-                  src={iconSrc} 
-                  alt={sc.name} // Alt-Text für Barrierefreiheit
-                  className="skill-icon" // Die CSS-Klasse, die schon funktioniert
-                />
-              ) : (
-                <span>{sc.name}</span>
-              )}
-              {/* --- ENDE ANPASSUNG --- */}
+            // Button ist jetzt mit Tooltip umschlossen
+            <Tooltip key={sc.key} text={sc.description}>
+              <button
+                className={`skill-choice ${character.subclassKey === sc.key ? 'selected' : ''} ${iconSrc ? 'has-icon' : ''}`}
+                onClick={() => handleSelect(sc.key)}
+              >
+                
+                {(isCleric || isWarlock) && iconSrc ? (
+                  <img 
+                    src={iconSrc} 
+                    alt={sc.name} 
+                    className="skill-icon"
+                  />
+                ) : (
+                  <span>{sc.name}</span>
+                )}
 
-            </button>
+              </button>
+            </Tooltip>
           );
         })}
       </div>
