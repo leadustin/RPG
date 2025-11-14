@@ -17,7 +17,7 @@
   "weapon_mastery": {
     "level_1_count": 2,
     "level_9_count": 3,
-    "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
+    "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
   },
   "features": [
     { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Konstitutionsmodifikator." },
@@ -1561,7 +1561,7 @@
     {
       "key": "the_fiend",
       "name": "Der Unhold",
-      "description": "Du hast einen Pakt mit einem Unhold aus den niederen Ebenen geschlossen.",
+      "description": "Ein mächtiges Wesen aus den unteren Ebenen, das Verderben, Feuer und Untergang verkörpert. Dämonen, Teufel und Höllenfürsten schließen Pakte, um Einfluss in der sterblichen Welt zu gewinnen. Hexenmeister erhalten zerstörerische Magie, Flammenkraft und finstere Resilienz – im Gegenzug erwarten Unholde Loyalität, Seelen oder das Säen von Chaos und Leid.",
       "features": [
         { "level": 1, "name": "Erweiterte Zauberliste", "description": "Erhält Zauber wie 'Brennende Hände' und 'Feuerball'." },
         { "level": 1, "name": "Segen des Dunklen", "description": "Wenn du eine feindliche Kreatur auf 0 Trefferpunkte reduzierst, erhältst du temporäre Trefferpunkte (CHA-Mod + Hexenmeister-Level)." },
@@ -1573,7 +1573,7 @@
     {
       "key": "the_archfey",
       "name": "Die Erzfee",
-      "description": "Dein Schutzpatron ist ein Lord oder eine Lady der Feen, ein Wesen legendärer Launenhaftigkeit.",
+      "description": "Mächtiges, uraltes Feenwesen aus dem Feywild. Launisch, wunderschön und unberechenbar. Erzfeen verkörpern Naturkräfte, Emotionen oder Jahreszeiten. Sie schließen Pakte aus Neugier, Unterhaltung oder geheimen Zielen. Ihre Macht verleiht Hexenmeistern Illusions-, Charme- und Naturmagie, doch Gefälligkeiten und Feenlogik sind unvermeidlicher Teil der Bindung.",
       "features": [
         { "level": 1, "name": "Erweiterte Zauberliste", "description": "Erhält Zauber wie 'Feenfeuer', 'Schlaf' und 'Person beherrschen'." },
         { "level": 1, "name": "Feenhafte Präsenz", "description": "Als Aktion kannst du Kreaturen in einem 3m-Würfel um dich bezaubern oder verängstigen." },
@@ -1585,7 +1585,7 @@
     {
       "key": "the_great_old_one",
       "name": "Der Große Alte",
-      "description": "Dein Schutzpatron ist eine jenseitige Entität aus dem Fernen Reich, wie H.P. Lovecrafts Cthulhu.",
+      "description": "Ein uraltes, fremdartiges Wesen jenseits von Raum, Zeit und Verstand. Seine Gedanken sind unbegreiflich und berühren sterbliche Geister wie ein Flüstern aus der Leere. Pakte entstehen durch Visionen, Träume oder zufälligen Kontakt. Hexenmeister erhalten psionische Kräfte, Gedankenzauber und Wahrnehmung jenseits des Normalen – doch Wahnsinn, Geheimnisse und kosmische Rätsel sind der Preis.",
       "features": [
         { "level": 1, "name": "Erweiterte Zauberliste", "description": "Erhält Zauber wie 'Tashas Ätzender Lacher' und 'Gedanken wahrnehmen'." },
         { "level": 1, "name": "Erwachter Geist", "description": "Du kannst telepathisch mit jeder Kreatur in 9m Reichweite kommunizieren." },
