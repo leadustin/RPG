@@ -138,3 +138,7 @@
 .spell-selection h3.collapsible-header {
     margin-top: 0; /* Die .details-divider kümmern sich um den Abstand */
 }
+
+.skill-choice .skill-icon {
+  pointer-events: none;
+}
