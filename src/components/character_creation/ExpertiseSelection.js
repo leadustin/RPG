@@ -1,69 +1,103 @@
 // src/components/character_creation/ExpertiseSelection.js
-import React, { useMemo } from 'react';
-import { SKILL_NAMES_DE } from '../../engine/characterEngine'; // isProficientInSkill entfernt
-import './PanelDetails.css';
-import './SkillSelection.css'; // Stil wiederverwenden
+import React from 'react';
+// WICHTIG: Wir verwenden dasselbe CSS wie SkillSelection für .skill-grid und .skill-choice
+import './SkillSelection.css'; 
+import { SKILL_NAMES_DE } from '../../engine/characterEngine';
 
-export const ExpertiseSelection = ({ character, updateCharacter }) => {
-  const maxChoices = 2; // Schurken wählen 2 Expertisen auf Lvl 1
+// +++ NEU: Tooltip-Komponenten importieren +++
+import Tooltip from '../tooltip/Tooltip'; 
+import { SkillTooltip } from '../tooltip/SkillTooltip'; 
 
-  // === KORREKTUR 1: LOGIK ===
-  // Die Liste darf NUR Fertigkeiten anzeigen, die in der SkillSelection (Wähle 4)
-  // ausgewählt wurden. (Diese werden in 'character.skill_proficiencies_choice' gespeichert)
-  const proficientSkills = useMemo(() => {
-    return character.skill_proficiencies_choice || [];
-  }, [character.skill_proficiencies_choice]); // Abhängigkeit korrigiert
-  // === ENDE KORREKTUR 1 ===
+// +++ NEU: Die Skill-Detail-Daten importieren +++
+import skillDetails from '../../data/skillDetails.json';
 
-  // Füge Diebeswerkzeug hinzu (Schurken sind immer darin geübt)
-  const allOptions = [
-    ...proficientSkills,
-    "thieves_tools" // Ein spezieller Schlüssel für Diebeswerkzeug
-  ];
-  
-  const optionNames = {
-      ...SKILL_NAMES_DE,
-      "thieves_tools": "Diebeswerkzeug"
-  };
+// +++ NEU: importAll-Funktion für Icons +++
+function importAll(r) {
+  let images = {};
+  r.keys().forEach((item) => {
+    const key = item.replace('./', '').replace(/\.(webp|png|jpe?g|svg)$/, '');
+    images[key] = r(item);
+  });
+  return images;
+}
 
-  const selections = character.expertise_choices || [];
+// +++ NEU: Icons laden +++
+const skillIcons = importAll(require.context(
+  '../../assets/images/skills', // Der Pfad zu deinen Skill-Icons
+  false,
+  /\.(webp|png|jpe?g|svg)$/
+));
+// +++ ENDE NEU +++
 
-  const handleToggle = (key) => {
-    let newSelection = [...selections];
-    if (newSelection.includes(key)) {
-      newSelection = newSelection.filter(s => s !== key);
-    } else if (newSelection.length < maxChoices) {
-      newSelection.push(key);
+
+export const ExpertiseSelection = ({ 
+  options,  // Das sind die 4 Fertigkeiten, in denen der Schurke geübt ist
+  maxChoices, // Sollte 2 sein
+  selections = [], // Die 2 ausgewählten Skills (Default auf [] gesetzt)
+  setSelections 
+}) => {
+
+  // Deine Logik zum Auswählen (sieht gut aus)
+  const handleSelection = (skillKey) => {
+    const currentSelections = Array.isArray(selections) ? selections : [];
+    let newSelections;
+
+    if (currentSelections.includes(skillKey)) {
+      newSelections = currentSelections.filter(s => s !== skillKey);
+    } else if (currentSelections.length < maxChoices) {
+      newSelections = [...currentSelections, skillKey];
+    } else {
+      // Wenn max erreicht ist, keine Änderung
+      newSelections = [...currentSelections]; 
     }
-    updateCharacter({ expertise_choices: newSelection });
+    setSelections(newSelections);
   };
 
   return (
-    <div className="expertise-selection">
-      <div className="details-divider"></div>
-      {/* === GEÄNDERT === */}
-      <h3>Expertise {selections.length}/{maxChoices}</h3>
-      {/* === ENDE ÄNDERUNG === */}
+    <div className="skill-selection-container">
+      {/* Der Titel und die Beschreibung sind spezifisch für Expertise */}
+      <h4>Expertise {selections.length}/{maxChoices}</h4>
       <p className="panel-details-description">
-        Wähle {maxChoices} deiner geübten Fertigkeiten (oder Diebeswerkzeug). Dein Übungsbonus wird für diese verdoppelt.
+        Wähle {maxChoices} deiner geübten Fertigkeiten. Dein Übungsbonus wird für diese Fertigkeiten verdoppelt.
       </p>
 
-      {/* KORREKTUR 2: LAYOUT (aus vorheriger Anfrage beibehalten) */}
-      <div className="skill-grid"> 
-        {allOptions.map(key => {
-          const isSelected = selections.includes(key);
+      {/* Das Grid verwendet dieselben Stile wie SkillSelection */}
+      <div className="skill-grid">
+        {options.map((skillKey) => {
+          const skillName = SKILL_NAMES_DE[skillKey] || skillKey;
+          
+          // +++ NEU: Icon- und Tooltip-Daten holen +++
+          const iconSrc = skillIcons[skillKey];
+          const isSelected = selections.includes(skillKey);
+          const tooltipData = skillDetails[skillKey]; // Daten aus der JSON holen
+
           return (
-            <button
-              key={key}
-              className={`skill-choice ${isSelected ? 'selected' : ''}`}
-              onClick={() => handleToggle(key)}
+            // +++ NEU: Mit Tooltip umwickelt +++
+            <Tooltip
+              key={skillKey}
+              content={<SkillTooltip data={tooltipData} />}
             >
-              {optionNames[key]}
-            </button>
+              <div
+                className={`skill-choice ${isSelected ? 'selected' : ''}`}
+                onClick={() => handleSelection(skillKey)}
+                // Kein 'title'-Attribut, um Konflikte zu vermeiden
+              >
+                {/* +++ NEU: Icon-Render-Logik +++ */}
+                {iconSrc ? (
+                  <img 
+                    src={iconSrc} 
+                    alt={skillName}
+                    className="skill-icon" 
+                  />
+                ) : (
+                  // Fallback, falls Icon fehlt
+                  skillName.substring(0, 3).toUpperCase()
+                )}
+              </div>
+            </Tooltip>
           );
         })}
       </div>
-      {/* === ENDE KORREKTUR 2 === */}
     </div>
   );
 };
