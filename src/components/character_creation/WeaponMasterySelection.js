@@ -103,7 +103,6 @@ export const WeaponMasterySelection = ({ character, updateCharacter }) => {
                 className={`skill-choice ${isSelected ? 'selected' : ''} ${iconSrc ? 'has-icon' : ''}`}
                 onClick={() => handleToggle(weapon)}
                 disabled={!isSelected && currentSelections.length >= maxChoices}
-                title={weapon} // 'title' kann bleiben, dient als Fallback
               >
                 
                 {/* --- ANGEPASSTE RENDER-LOGIK --- */}
