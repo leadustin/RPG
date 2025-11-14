@@ -9,7 +9,8 @@ import { WeaponMasteryTooltip } from '../tooltip/WeaponMasteryTooltip'; // Unser
 
 // +++ NEU: Die Detail-Daten importieren +++
 import masteryDetails from '../../data/weaponMasteryDetails.json';
-
+// +++ DEBUGGING 1: PRÜFEN, OB DIE DATEI GELADEN WIRD +++
+console.log("Mastery Details (Ganze Datei):", masteryDetails);
 
 // +++ importAll-Funktion (kopiert von ToolInstrumentSelection) +++
 function importAll(r) {
@@ -83,7 +84,8 @@ export const WeaponMasterySelection = ({ character, updateCharacter }) => {
           // +++ NEU: Tooltip-Daten holen +++
           // Wir holen die Daten für die Waffe (z.B. "Streitaxt") aus der importierten JSON
           const tooltipData = masteryDetails[weapon];
-
+// +++ DEBUGGING 2: PRÜFEN, OB DER SCHLÜSSEL GEFUNDEN WIRD +++
+          console.log(`Suche Schlüssel: '${weapon}' | Daten gefunden:`, tooltipData);
           return (
             // +++ NEU: Button mit Tooltip umwickelt +++
             <Tooltip
