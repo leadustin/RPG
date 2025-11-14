@@ -8,11 +8,9 @@ import Tooltip from '../tooltip/Tooltip'; // Der generische Wrapper
 import { SkillTooltip } from '../tooltip/SkillTooltip'; // Die neue Inhaltskomponente
 
 // +++ NEU: Die Skill-Detail-Daten importieren +++
-// (Stelle sicher, dass du src/data/skillDetails.json erstellt hast, wie in meiner letzten Antwort)
 import skillDetails from '../../data/skillDetails.json';
 
-
-// +++ importAll-Funktion für Icons (war schon da) +++
+// +++ importAll-Funktion für Icons +++
 function importAll(r) {
   let images = {};
   r.keys().forEach((item) => {
@@ -27,36 +25,31 @@ const skillIcons = importAll(require.context(
   false,
   /\.(webp|png|jpe?g|svg)$/
 ));
-// +++ ENDE Icons +++
 
 export const SkillSelection = ({ 
   options, 
   maxChoices, 
-  selections, // <-- Diese Prop ist 'undefined' oder ein Objekt, was den Absturz verursacht
+  selections = [], // Default-Wert hinzufügen
   setSelections,
   isOpen,       
   onToggle,     
   isCollapsible 
 }) => {
 
-  // +++ CRASH-FIX (A) +++
-  // Wir stellen sicher, dass 'selections' IMMER ein Array ist, bevor wir es verwenden.
+  // Sicherstellen, dass selections immer ein Array ist
   const safeSelections = Array.isArray(selections) ? selections : [];
 
   const handleSelection = (skillKey) => {
-    setSelections(prev => {
-      // +++ CRASH-FIX (B) +++
-      // Auch hier 'prev' absichern, falls der State fehlerhaft initialisiert wurde
-      const currentSelections = Array.isArray(prev) ? prev : [];
+    // Direkt mit safeSelections arbeiten statt mit prev
+    const currentSelections = [...safeSelections];
 
-      if (currentSelections.includes(skillKey)) {
-        return currentSelections.filter(s => s !== skillKey);
-      }
-      if (currentSelections.length < maxChoices) {
-        return [...currentSelections, skillKey];
-      }
-      return currentSelections; // Gib immer ein Array zurück
-    });
+    if (currentSelections.includes(skillKey)) {
+      // Skill entfernen
+      setSelections(currentSelections.filter(s => s !== skillKey));
+    } else if (currentSelections.length < maxChoices) {
+      // Skill hinzufügen
+      setSelections([...currentSelections, skillKey]);
+    }
   };
 
   // --- Helper-Funktion zum Rendern des Grids (MODIFIZIERT FÜR TOOLTIPS) ---
@@ -66,8 +59,6 @@ export const SkillSelection = ({
         const skillName = SKILL_NAMES_DE[skillKey] || skillKey;
         const iconSrc = skillIcons[skillKey];
         
-        // +++ CRASH-FIX (C) +++
-        // Verwende 'safeSelections' statt 'selections'
         const isSelected = safeSelections.includes(skillKey);
         
         // +++ NEU: Tooltip-Daten holen +++
@@ -85,7 +76,6 @@ export const SkillSelection = ({
             <div
               className={`skill-choice ${isSelected ? 'selected' : ''}`}
               onClick={() => handleSelection(skillKey)}
-              // title={skillName} // <-- ENTFERNT! Verhindert Konflikt mit React-Tooltip
             >
               {iconSrc ? (
                 <img 
@@ -102,10 +92,10 @@ export const SkillSelection = ({
       })}
     </div>
   );
-  // --- ENDE Helper-Funktion ---\
+  // --- ENDE Helper-Funktion ---
 
 
-  // --- RENDER-LOGIK (unverändert) ---\
+  // --- RENDER-LOGIK ---
   if (isCollapsible) {
     const headerClassName = `collapsible-header ${isOpen ? 'open' : ''}`;
     return (
