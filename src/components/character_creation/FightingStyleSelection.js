@@ -4,7 +4,7 @@ import './PanelDetails.css';
 import './SkillSelection.css';
 
 // +++ NEU: Tooltip-Komponente und JSON-Daten importieren +++
-import { Tooltip } from '../tooltip/Tooltip';
+import Tooltip from '../tooltip/Tooltip';
 import fightingStylesData from '../../data/fightingStyles.json';
 // +++ ENDE NEU +++
 
