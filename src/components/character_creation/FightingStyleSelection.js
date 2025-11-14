@@ -3,41 +3,37 @@ import React from 'react';
 import './PanelDetails.css';
 import './SkillSelection.css';
 
-// +++ NEU: importAll-Funktion (kopiert von ToolInstrumentSelection) +++
+// +++ NEU: Tooltip-Komponente und JSON-Daten importieren +++
+import { Tooltip } from '../tooltip/Tooltip';
+import fightingStylesData from '../../data/fightingStyles.json';
+// +++ ENDE NEU +++
+
+// +++ Icon-Ladefunktion (unverändert) +++
 function importAll(r) {
   let images = {};
   r.keys().forEach((item) => {
-    // Extrahiert den Dateinamen ohne Endung als Key
-    // z.B. './Bogenschießen.png' -> 'Bogenschießen'
     const key = item.replace('./', '').replace(/\.(webp|png|jpe?g|svg)$/, '');
     images[key] = r(item);
   });
   return images;
 }
 
-// +++ NEU: Icons laden +++
-// Annahme: Die Icons liegen im 'styles'-Ordner unter 'assets/images/'.
+// +++ Icons laden (unverändert) +++
 const styleIcons = importAll(require.context(
-  '../../assets/images/styles', // <-- PASST DIESEN PFAD GGF. AN
+  '../../assets/images/styles', // Pfad zu Ihren Kampfstil-Icons
   false,
   /\.(webp|png|jpe?g|svg)$/
 ));
-// +++ ENDE NEU +++
+// +++ ENDE +++
 
+// --- ENTFERNT ---
+// const FIGHTING_STYLE_OPTIONS = [ ... ]; // Wird nicht mehr benötigt
 
-// Optionen extrahiert aus classes.json -> fighter -> features -> "Kampfstil"
-const FIGHTING_STYLE_OPTIONS = [
-  "Bogenschießen", 
-  "Verteidigung", 
-  "Duellieren", 
-  "Zwei-Waffen-Kampf"
-  // Fügen Sie hier bei Bedarf weitere Stile aus der Beschreibung hinzu
-];
 
 export const FightingStyleSelection = ({ character, updateCharacter }) => {
   
-  const handleSelect = (style) => {
-    updateCharacter({ fighting_style: style });
+  const handleSelect = (styleName) => {
+    updateCharacter({ fighting_style: styleName });
   };
 
   return (
@@ -45,37 +41,39 @@ export const FightingStyleSelection = ({ character, updateCharacter }) => {
       <div className="details-divider"></div>
       <h3>Kampfstil wählen</h3>
       <div className="skill-grid">
-        {FIGHTING_STYLE_OPTIONS.map(style => {
+        
+        {/* +++ GEÄNDERT: Iteration über JSON-Daten +++ */}
+        {fightingStylesData.map(style => {
+          // 'style' ist jetzt ein Objekt: { name: "...", description: "..." }
           
-          // +++ NEU: Icon-Logik +++
-          const isSelected = character.fighting_style === style;
-          const iconSrc = styleIcons[style]; // z.B. styleIcons["Bogenschießen"]
-          // +++ ENDE NEU +++
+          const isSelected = character.fighting_style === style.name;
+          const iconSrc = styleIcons[style.name]; // Holt Icon basierend auf dem 'name'
 
           return (
-            <button
-              key={style}
-              // MODIFIZIERT: 'has-icon' hinzugefügt
-              className={`skill-choice ${isSelected ? 'selected' : ''} ${iconSrc ? 'has-icon' : ''}`}
-              onClick={() => handleSelect(style)}
-              // NEU: 'title' hinzugefügt für Tooltip
-              title={style}
+            // +++ NEU: Mit Tooltip umschlossen +++
+            <Tooltip 
+              key={style.name} 
+              header={style.name} 
+              text={style.description}
             >
-              
-              {/* --- ANGEPASSTE RENDER-LOGIK --- */}
-              {/* WENN Icon existiert, DANN zeige Icon, SONST zeige Text */}
-              {iconSrc ? (
-                <img 
-                  src={iconSrc} 
-                  alt={style}
-                  className="skill-icon" // Die CSS-Klasse, die schon funktioniert
-                />
-              ) : (
-                <span>{style}</span>
-              )}
-              {/* --- ENDE ANPASSUNG --- */}
-
-            </button>
+              <button
+                className={`skill-choice ${isSelected ? 'selected' : ''} ${iconSrc ? 'has-icon' : ''}`}
+                onClick={() => handleSelect(style.name)}
+                // Das 'title'-Attribut wird nicht mehr benötigt, da der Tooltip das übernimmt
+              >
+                {/* Logik für Icon/Text (unverändert) */}
+                {iconSrc ? (
+                  <img 
+                    src={iconSrc} 
+                    alt={style.name}
+                    className="skill-icon" // Wiederverwendung der funktionierenden CSS-Klasse
+                  />
+                ) : (
+                  <span>{style.name}</span> // Fallback-Text
+                )}
+              </button>
+            </Tooltip>
+            // +++ ENDE NEU +++
           );
         })}
       </div>
