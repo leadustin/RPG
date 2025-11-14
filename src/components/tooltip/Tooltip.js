@@ -1,12 +1,9 @@
-// /src/components/tooltip/Tooltip.js
-import React, { useState, useRef, useEffect } from 'react';
+// /src/components/tooltip/Tooltip.js 
+import React, { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import './Tooltip.css';
 
-// Modulweiter "Active Tooltip"-Slot: stellt sicher, dass immer nur ein Tooltip aktiv ist.
-let activeTooltip = null;
-
-// Hilfsfunktion für Itemtypen (wie bei dir)
+// Hilfsfunktion für Itemtypen
 const formatItemType = (item) => {
   if (!item || !item.type) return null;
   const typeTranslations = {
@@ -25,61 +22,27 @@ const formatItemType = (item) => {
 };
 
 const Tooltip = ({ text, item, content, children }) => {
+
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const tooltipRef = useRef(null);
   const hideTimerRef = useRef(null);
 
-  // eindeutige id / identity für diese Instanz
-  const idRef = useRef(Symbol('tooltip'));
-
   let tooltipRoot = document.getElementById('tooltip-root');
   if (!tooltipRoot) tooltipRoot = document.body;
 
-  // Funktion, die diese Instanz sofort versteckt (wird vom "activeTooltip"-Slot genutzt)
-  const hideImmediately = () => {
-    if (hideTimerRef.current) {
-      clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = null;
-    }
-    setIsVisible(false);
-    // Falls diese Instanz aktuell registriert ist, leeren
-    if (activeTooltip && activeTooltip.id === idRef.current) {
-      activeTooltip = null;
-    }
-  };
-
-  // Funktion, die den "activeTooltip"-Slot auf diese Instanz setzt
-  const registerAsActive = () => {
-    // Falls eine andere Instanz aktiv ist, zwinge sie zu verschwinden
-    if (activeTooltip && activeTooltip.id !== idRef.current) {
-      if (typeof activeTooltip.hideImmediately === 'function') {
-        activeTooltip.hideImmediately();
-      }
-    }
-
-    // Setze uns als aktive Instanz
-    activeTooltip = {
-      id: idRef.current,
-      hideImmediately,
-    };
-  };
-
+  // Sofort anzeigen + Timer abbrechen
   const handleMouseEnter = (e) => {
-    // Wenn wir selbst einen hide-timer hatten, abbrechen
     if (hideTimerRef.current) {
       clearTimeout(hideTimerRef.current);
       hideTimerRef.current = null;
     }
 
-    // Stelle sicher, dass alle anderen verschwinden und wir als aktiv registriert sind
-    registerAsActive();
-
-    // Position setzen und sofort anzeigen
     setPosition({ top: e.clientY + 15, left: e.clientX + 15 });
     setIsVisible(true);
   };
 
+  // Position mit Kollisionserkennung
   const handleMouseMove = (e) => {
     let newTop = e.clientY + 15;
     let newLeft = e.clientX + 15;
@@ -100,6 +63,7 @@ const Tooltip = ({ text, item, content, children }) => {
     setPosition({ top: newTop, left: newLeft });
   };
 
+  // Verzögertes Ausblenden + Anti-Flacker-Puffer
   const handleMouseLeave = (e) => {
     const HIDE_DELAY_MS = 150;
     const buffer = 5; // 5px Grace-Zone
@@ -107,7 +71,7 @@ const Tooltip = ({ text, item, content, children }) => {
     const elem = e.currentTarget;
     const rect = elem.getBoundingClientRect();
 
-    // Maus noch in Nähe? Dann NICHT ausblenden
+    // Maus noch in der "Nähe"? → NICHT ausblenden
     if (
       e.clientX >= rect.left - buffer &&
       e.clientX <= rect.right + buffer &&
@@ -117,33 +81,10 @@ const Tooltip = ({ text, item, content, children }) => {
       return;
     }
 
-    // Start hide-timer
     hideTimerRef.current = setTimeout(() => {
-      // Nur ausblenden, wenn wir noch sichtbar sind
       setIsVisible(false);
-
-      // Wenn wir als active registriert sind, lösen wir die Registrierung
-      if (activeTooltip && activeTooltip.id === idRef.current) {
-        activeTooltip = null;
-      }
-
-      hideTimerRef.current = null;
     }, HIDE_DELAY_MS);
   };
-
-  // Cleanup beim Unmount: Timer clearen und ggf. activeSlot freigeben
-  useEffect(() => {
-    return () => {
-      if (hideTimerRef.current) {
-        clearTimeout(hideTimerRef.current);
-        hideTimerRef.current = null;
-      }
-      if (activeTooltip && activeTooltip.id === idRef.current) {
-        activeTooltip = null;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const tooltipClass = item ? 'item-tooltip' : 'text-tooltip';
 
