@@ -3,10 +3,11 @@ import React from 'react';
 import './PanelDetails.css';
 import './SkillSelection.css';
 
-// +++ NEU: Tooltip-Komponente und JSON-Daten importieren +++
+// +++ GEÄNDERT: FightingStyleTooltip importiert +++
 import Tooltip from '../tooltip/Tooltip';
+import { FightingStyleTooltip } from '../tooltip/FightingStyleTooltip'; // NEU
 import fightingStylesData from '../../data/fightingStyles.json';
-// +++ ENDE NEU +++
+// +++ ENDE +++
 
 // +++ Icon-Ladefunktion (unverändert) +++
 function importAll(r) {
@@ -26,9 +27,6 @@ const styleIcons = importAll(require.context(
 ));
 // +++ ENDE +++
 
-// --- ENTFERNT ---
-// const FIGHTING_STYLE_OPTIONS = [ ... ]; // Wird nicht mehr benötigt
-
 
 export const FightingStyleSelection = ({ character, updateCharacter }) => {
   
@@ -42,24 +40,26 @@ export const FightingStyleSelection = ({ character, updateCharacter }) => {
       <h3>Kampfstil wählen</h3>
       <div className="skill-grid">
         
-        {/* +++ GEÄNDERT: Iteration über JSON-Daten +++ */}
         {fightingStylesData.map(style => {
           // 'style' ist jetzt ein Objekt: { name: "...", description: "..." }
           
           const isSelected = character.fighting_style === style.name;
           const iconSrc = styleIcons[style.name]; // Holt Icon basierend auf dem 'name'
+          
+          // +++ NEU: Die Daten für den Tooltip sind das 'style'-Objekt selbst +++
+          const tooltipData = style;
 
           return (
-            // +++ NEU: Mit Tooltip umschlossen +++
+            // +++ GEÄNDERT: Tooltip-Wrapper verwendet jetzt 'content'-Prop +++
             <Tooltip 
               key={style.name} 
-              header={style.name} 
-              text={style.description}
+              content={
+                <FightingStyleTooltip data={tooltipData} />
+              }
             >
               <button
                 className={`skill-choice ${isSelected ? 'selected' : ''} ${iconSrc ? 'has-icon' : ''}`}
                 onClick={() => handleSelect(style.name)}
-                // Das 'title'-Attribut wird nicht mehr benötigt, da der Tooltip das übernimmt
               >
                 {/* Logik für Icon/Text (unverändert) */}
                 {iconSrc ? (
@@ -73,7 +73,7 @@ export const FightingStyleSelection = ({ character, updateCharacter }) => {
                 )}
               </button>
             </Tooltip>
-            // +++ ENDE NEU +++
+            // +++ ENDE GEÄNDERT +++
           );
         })}
       </div>
