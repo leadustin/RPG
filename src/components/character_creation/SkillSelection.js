@@ -5,9 +5,10 @@ import { SKILL_NAMES_DE } from '../../engine/characterEngine';
 
 // +++ NEU: Tooltip-Komponenten importieren +++
 import Tooltip from '../tooltip/Tooltip'; // Der generische Wrapper
-import { SkillTooltip } from '../tooltip/SkillTooltip'; // Unser neuer Inhalt
+import { SkillTooltip } from '../tooltip/SkillTooltip'; // Die neue Inhaltskomponente
 
 // +++ NEU: Die Skill-Detail-Daten importieren +++
+// (Stelle sicher, dass du src/data/skillDetails.json erstellt hast, wie in meiner letzten Antwort)
 import skillDetails from '../../data/skillDetails.json';
 
 
@@ -31,32 +32,43 @@ const skillIcons = importAll(require.context(
 export const SkillSelection = ({ 
   options, 
   maxChoices, 
-  selections, 
+  selections, // <-- Diese Prop ist 'undefined' oder ein Objekt, was den Absturz verursacht
   setSelections,
   isOpen,       
   onToggle,     
   isCollapsible 
 }) => {
 
+  // +++ CRASH-FIX (A) +++
+  // Wir stellen sicher, dass 'selections' IMMER ein Array ist, bevor wir es verwenden.
+  const safeSelections = Array.isArray(selections) ? selections : [];
+
   const handleSelection = (skillKey) => {
     setSelections(prev => {
-      if (prev.includes(skillKey)) {
-        return prev.filter(s => s !== skillKey);
+      // +++ CRASH-FIX (B) +++
+      // Auch hier 'prev' absichern, falls der State fehlerhaft initialisiert wurde
+      const currentSelections = Array.isArray(prev) ? prev : [];
+
+      if (currentSelections.includes(skillKey)) {
+        return currentSelections.filter(s => s !== skillKey);
       }
-      if (prev.length < maxChoices) {
-        return [...prev, skillKey];
+      if (currentSelections.length < maxChoices) {
+        return [...currentSelections, skillKey];
       }
-      return prev;
+      return currentSelections; // Gib immer ein Array zurück
     });
   };
 
-  // --- Helper-Funktion zum Rendern des Grids (MODIFIZIERT) ---
+  // --- Helper-Funktion zum Rendern des Grids (MODIFIZIERT FÜR TOOLTIPS) ---
   const renderSkillGrid = () => (
     <div className="skill-grid">
       {options.map((skillKey) => {
         const skillName = SKILL_NAMES_DE[skillKey] || skillKey;
         const iconSrc = skillIcons[skillKey];
-        const isSelected = selections.includes(skillKey);
+        
+        // +++ CRASH-FIX (C) +++
+        // Verwende 'safeSelections' statt 'selections'
+        const isSelected = safeSelections.includes(skillKey);
         
         // +++ NEU: Tooltip-Daten holen +++
         const tooltipData = skillDetails[skillKey];
@@ -66,13 +78,14 @@ export const SkillSelection = ({
           <Tooltip
             key={skillKey}
             content={
+              // Übergibt die Daten an unsere neue SkillTooltip-Komponente
               <SkillTooltip data={tooltipData} />
             }
           >
             <div
               className={`skill-choice ${isSelected ? 'selected' : ''}`}
               onClick={() => handleSelection(skillKey)}
-              // title={skillName} // <-- ENTFERNT, um Konflikt zu vermeiden
+              // title={skillName} // <-- ENTFERNT! Verhindert Konflikt mit React-Tooltip
             >
               {iconSrc ? (
                 <img 
@@ -98,7 +111,7 @@ export const SkillSelection = ({
     return (
       <div className="skill-selection-container">
         <h4 className={headerClassName} onClick={onToggle}>
-          Fertigkeiten {selections.length}/{maxChoices}
+          Fertigkeiten {safeSelections.length}/{maxChoices}
         </h4>
         {isOpen && renderSkillGrid()}
       </div>
@@ -107,7 +120,7 @@ export const SkillSelection = ({
 
   return (
     <div className="skill-selection-container">
-      <h4>Fertigkeiten {selections.length}/{maxChoices}</h4>
+      <h4>Fertigkeiten {safeSelections.length}/{maxChoices}</h4>
       <p className="panel-details-description">
         Wähle {maxChoices} Fertigkeiten, in denen du geübt bist.
       </p>
