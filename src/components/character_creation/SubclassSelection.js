@@ -106,7 +106,6 @@ export const SubclassSelection = ({ character, updateCharacter }) => {
       </div>
 
       {character.subclassKey && (
-        
           {level1Subclasses.find(sc => sc.key === character.subclassKey)?.description}
         </p>
       )}
