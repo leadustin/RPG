@@ -1,0 +1,37 @@
+/* src/components/tooltip/WeaponMasteryTooltip.css */
+.wm-tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
+  padding: 8px; /* Reduziertes Padding, da der Tooltip-Wrapper eigenen hat */
+  color: #eee;
+  text-align: left;
+}
+
+.wm-description {
+  font-style: italic;
+  margin: 0;
+  color: #ccc;
+}
+
+.wm-divider {
+  border-bottom: 1px solid #555;
+  margin: 4px 0;
+}
+
+.wm-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wm-stats div {
+  line-height: 1.3;
+}
+
+.wm-mastery p {
+  margin: 4px 0 0 0;
+  color: #ccc;
+  line-height: 1.3;
+}

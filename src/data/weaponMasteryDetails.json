@@ -1,0 +1,33 @@
+{
+  "Streitaxt": {
+    "description": "Robuste Axt für starke Hiebe, auch im Nahkampf vielseitig einsetzbar.",
+    "type": "Kriegswaffe · Vielseitig",
+    "damage": "1W8 (einhändig) / 1W10 (zweihändig)",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Vex (Quälen)",
+      "description": "Ein Treffer mit dieser Waffe gewährt dir Vorteil auf deinen nächsten Angriffswurf gegen dasselbe Ziel noch in dieser Runde."
+    }
+  },
+  "Großaxt": {
+    "description": "Eine massive, zweihändige Axt, die für ihre verheerenden kritischen Treffer bekannt ist.",
+    "type": "Kriegswaffe · Zweihändig",
+    "damage": "1W12",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Cleave (Spalten)",
+      "description": "Wenn du eine Kreatur mit dieser Waffe triffst, kannst du als Teil derselben Aktion einen Angriff gegen eine zweite Kreatur in deiner Reichweite (und in 1,5m Nähe des ersten Ziels) ausführen. Dieser zusätzliche Angriff kostet keine Aktion."
+    }
+  },
+  "Großschwert": {
+    "description": "Ein langes, zweihändiges Schwert, das sowohl für Hiebe als auch für Stiche geeignet ist.",
+    "type": "Kriegswaffe · Zweihändig",
+    "damage": "2W6",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Vex (Quälen)",
+      "description": "Ein Treffer mit dieser Waffe gewährt dir Vorteil auf deinen nächsten Angriffswurf gegen dasselbe Ziel noch in dieser Runde."
+    }
+  }
+
+}
