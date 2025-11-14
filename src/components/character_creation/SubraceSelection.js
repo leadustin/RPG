@@ -35,7 +35,6 @@ export const SubraceSelection = ({ subraces, selectedSubrace, onSubraceSelect })
         <div className="subrace-details">
           <div className="details-divider"></div>
           <h4>{selectedSubrace.name}</h4>
-          <p className="panel-details-description">{selectedSubrace.description}</p>
           <ul className="traits-list">
             {selectedSubrace.traits.map((trait) => (
               <li key={trait.name}>

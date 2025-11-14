@@ -104,12 +104,6 @@ export const SubclassSelection = ({ character, updateCharacter }) => {
           );
         })}
       </div>
-
-      {character.subclassKey && (
-        <p className="panel-details-description">
-          {level1Subclasses.find(sc => sc.key === character.subclassKey)?.description}
-        </p>
-      )}
     </div>
   );
 };

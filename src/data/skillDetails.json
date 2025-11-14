@@ -1,0 +1,92 @@
+{
+  "acrobatics": {
+    "name": "Akrobatik",
+    "attribute": "Geschicklichkeit",
+    "description": "Deine Geschicklichkeit (Akrobatik) Probe misst deine Fähigkeit, auf den Beinen zu bleiben. Sie umfasst schwierige Manöver wie das Balancieren auf einem Seil, das sichere Landen nach einem Sprung oder das Entkommen aus Fesseln."
+  },
+  "animal_handling": {
+    "name": "Tierkunde",
+    "attribute": "Weisheit",
+    "description": "Deine Weisheit (Tierkunde) Probe misst deine Fähigkeit, Tiere zu beruhigen, ihre Absichten einzuschätzen oder ein Reittier in einer gefährlichen Situation zu kontrollieren."
+  },
+  "arcana": {
+    "name": "Arkanum",
+    "attribute": "Intelligenz",
+    "description": "Deine Intelligenz (Arkanum) Probe misst dein Wissen über Zauber, magische Gegenstände, mystische Symbole, magische Traditionen, die Ebenen der Existenz und die Bewohner dieser Ebenen."
+  },
+  "athletics": {
+    "name": "Athletik",
+    "attribute": "Stärke",
+    "description": "Deine Stärke (Athletik) Probe misst deine körperliche Kraft. Sie wird bei schwierigen Situationen wie Klettern, Springen, Schwimmen oder dem Aufbrechen von Türen verwendet."
+  },
+  "deception": {
+    "name": "Täuschung",
+    "attribute": "Charisma",
+    "description": "Deine Charisma (Täuschung) Probe misst deine Fähigkeit, die Wahrheit durch Worte oder Taten zu verbergen. Dies kann das Irreführen von Wachen, das Lügen in einem Verhör oder das Fälschen von Dokumenten umfassen."
+  },
+  "history": {
+    "name": "Geschichte",
+    "attribute": "Intelligenz",
+    "description": "Deine Intelligenz (Geschichte) Probe misst dein Wissen über historische Ereignisse, legendäre Persönlichkeiten, alte Königreiche, vergangene Konflikte, Zivilisationen und die Ursprünge von sozialen oder politischen Traditionen."
+  },
+  "insight": {
+    "name": "Einblick",
+    "attribute": "Weisheit",
+    "description": "Deine Weisheit (Einblick) Probe misst deine Fähigkeit, die wahren Absichten einer Kreatur zu erkennen. Dies kann das Erkennen einer Lüge oder das Vorhersagen des nächsten Schritts einer Person im Gespräch sein."
+  },
+  "intimidation": {
+    "name": "Einschüchtern",
+    "attribute": "Charisma",
+    "description": "Deine Charisma (Einschüchtern) Probe misst deine Fähigkeit, andere durch Drohungen, feindselige Aktionen oder körperliche Präsenz zu beeinflussen. Dies kann das Erpressen von Informationen oder das Abschrecken von Feinden umfassen."
+  },
+  "investigation": {
+    "name": "Nachforschungen",
+    "attribute": "Intelligenz",
+    "description": "Deine Intelligenz (Nachforschungen) Probe misst deine Fähigkeit, Hinweise zu finden und daraus Schlüsse zu ziehen. Du könntest verborgene Objekte finden, die Bedeutung von Wunden analysieren oder eine Falle durch reines logisches Denken entdecken."
+  },
+  "medicine": {
+    "name": "Medizin",
+    "attribute": "Weisheit",
+    "description": "Deine Weisheit (Medizin) Probe misst deine Fähigkeit, Verletzungen zu stabilisieren, Krankheiten zu diagnostizieren oder die Todesursache einer Leiche festzustellen."
+  },
+  "nature": {
+    "name": "Naturkunde",
+    "attribute": "Intelligenz",
+    "description": "Deine Intelligenz (Naturkunde) Probe misst dein Wissen über Gelände, Pflanzen und Tiere, das Wetter und natürliche Zyklen. Du könntest Pflanzen identifizieren, Spuren lesen oder das Wetter vorhersagen."
+  },
+  "perception": {
+    "name": "Wahrnehmung",
+    "attribute": "Weisheit",
+    "description": "Deine Weisheit (Wahrnehmung) Probe misst deine Fähigkeit, deine Umgebung durch Sehen, Hören, Riechen oder Fühlen wahrzunehmen. Sie wird verwendet, um verborgene Dinge oder lauernde Gefahren zu entdecken."
+  },
+  "performance": {
+    "name": "Darbietung",
+    "attribute": "Charisma",
+    "description": "Deine Charisma (Darbietung) Probe misst deine Fähigkeit, ein Publikum mit Musik, Tanz, Schauspiel, Geschichtenerzählen oder einer anderen Form der Unterhaltung zu fesseln."
+  },
+  "persuasion": {
+    "name": "Überzeugen",
+    "attribute": "Charisma",
+    "description": "Deine Charisma (Überzeugen) Probe misst deine Fähigkeit, andere durch Anmut, Takt oder gute Argumente zu beeinflussen. Du könntest einen Wächter überzeugen, dich passieren zu lassen, oder einen Streit schlichten."
+  },
+  "religion": {
+    "name": "Religion",
+    "attribute": "Intelligenz",
+    "description": "Deine Intelligenz (Religion) Probe misst dein Wissen über Gottheiten, Rituale, heilige Symbole, religiöse Organisationen und die Kulte der Welt."
+  },
+  "sleight_of_hand": {
+    "name": "Fingerfertigkeit",
+    "attribute": "Geschicklichkeit",
+    "description": "Deine Geschicklichkeit (Fingerfertigkeit) Probe misst deine Fähigkeit, manuelle Tricks auszuführen, wie z.B. Taschendiebstahl, das unbemerkte Platzieren eines Gegenstandes oder das Manipulieren eines Schlosses."
+  },
+  "stealth": {
+    "name": "Heimlichkeit",
+    "attribute": "Geschicklichkeit",
+    "description": "Deine Geschicklichkeit (Heimlichkeit) Probe misst deine Fähigkeit, dich ungesehen und ungehört fortzubewegen, dich vor Feinden zu verstecken oder dich an einer Wache vorbeizuschleichen."
+  },
+  "survival": {
+    "name": "Überlebenskunst",
+    "attribute": "Weisheit",
+    "description": "Deine Weisheit (Überlebenskunst) Probe misst deine Fähigkeit, in der Wildnis zu überleben. Dies umfasst das Jagen, das Finden von Wasser, das Navigieren oder das Ertragen von extremem Wetter."
+  }
+}
