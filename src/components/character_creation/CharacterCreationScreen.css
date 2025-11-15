@@ -1,36 +1,15 @@
+/* src/components/character_creation/CharacterCreationScreen.css */
+
 .creation-screen-container {
-  height: 95vh;
-  width: auto;
   display: grid;
-  grid-template-columns: 200px 1fr 400px; /* Left | Center | Right */
-  gap: 20px;
-  padding: 20px;
-  box-sizing: border-box;
-  background-image: url('https://www.wargamer.com/wp-content/sites/wargamer/2023/07/baldurs-gate-3-locations-wyrms-crossing.jpg'); /* Platzhalter-Hintergrundbild */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.finalize-bar {
-  /* Positioniert die Leiste über allen drei Spalten am unteren Rand */
-  grid-column: 1 / -1; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 10px;
-}
-
-.finalize-bar button {
-  padding: 15px 40px;
-  font-size: 1.5em;
-  background-color: var(--color-selection);
-  border: 1px solid var(--color-text-light);
-  color: var(--color-background-dark);
-  font-weight: bold;
-}
-
-.finalize-bar button:hover {
-  background-color: var(--color-text-light);
-  border-color: var(--color-selection);
+  grid-template-columns: 250px 1fr;
+  height: 100vh;
+  width: 100%;
+  
+  /* Hintergrund wird jetzt vom body (style.css) übernommen */
+  /* background-color: #1a1a1a; <-- ENTFERNT */
+  
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box; 
 }

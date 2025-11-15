@@ -3,25 +3,15 @@ import React, { useState, useEffect } from 'react';
 import './RaceSelection.css';
 import './PanelDetails.css';
 import allRaceData from '../../data/races.json';
+import './CreationSidebar.css'; 
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 export const RaceSelection = ({ character, updateCharacter }) => {
   const [assignments, setAssignments] = useState({});
   const selectedRace = character.race;
-  const floatingBonuses = selectedRace.ability_bonuses.floating || [];
-
-  // KORREKTUR: Diese Funktion lädt das Bild als Modul, das React verwenden kann.
-  const getPortraitModule = (raceKey, gender, portraitIndex) => {
-    const genderString = gender === 'Männlich' ? 'male' : 'female';
-    try {
-      // require() gibt das Modul zurück, nicht nur den Pfad.
-      return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
-    } catch (e) {
-      console.error("Portrait not found:", raceKey, genderString, portraitIndex);
-      return ''; // Fallback
-    }
-  };
+  const selectedSubrace = character.subrace;
+  const selectedAncestry = character.ancestry; // NEU
 
   useEffect(() => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
@@ -29,161 +19,239 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     
     if (selectedRace.ability_bonuses.fixed) {
       Object.entries(selectedRace.ability_bonuses.fixed).forEach(([ability, value]) => {
-        initialAssignments[ability] = value;
+        initialAssignments[ability] = (initialAssignments[ability] || 0) + value;
       });
+    }
+
+    // floatingBonuses hier direkt aus selectedRace holen
+    const floatingBonuses = selectedRace.ability_bonuses.floating || [];
+    
+    if (floatingBonuses.length > 0) {
+      // Wenn es floating Boni gibt, initialisiere 'available'
+      initialAssignments.available = floatingBonuses.map((val, idx) => ({ index: idx, value: val, assignedTo: null }));
     }
     
     setAssignments(initialAssignments);
+  
+  }, [selectedRace]); // Nur selectedRace als Dependency
 
-    // KORREKTUR: Setzt das initial geladene Portrait-Modul
-    const initialPortraitModule = getPortraitModule(selectedRace.key, character.gender, 1);
 
+  const onSelectRace = (race) => {
+    // Beim Wechsel des Volks müssen wir die Zuweisungen zurücksetzen
     updateCharacter({ 
-      race: selectedRace, 
-      ability_bonus_assignments: initialAssignments, 
-      floating_bonus_assignments: {},
-      subrace: null, 
-      ancestry: null,
-      portrait: initialPortraitModule, // Speichert das Modul, nicht einen Index oder Pfad-String
-    });
-  }, [selectedRace]);
-
-  const updateCentralState = (newAssignments, floatingAssignments = {}) => {
-    updateCharacter({ 
-      ability_bonus_assignments: newAssignments,
-      floating_bonus_assignments: floatingAssignments 
+      race: race, 
+      subrace: null, // Subrace zurücksetzen
+      ancestry: null, // Abstammung zurücksetzen
+      ability_bonus_assignments: race.ability_bonuses.fixed || {}, // Feste Boni setzen
+      floating_bonus_assignments: {} // Floating Boni zurücksetzen
     });
   };
-  
-  const handleAssignBonus = (ability, bonusIndex) => {
-    const newFloatingAssignments = { ...character.floating_bonus_assignments } || {};
-    
-    if (floatingBonuses.length > 0) {
-      if (newFloatingAssignments[ability] === bonusIndex) {
-        delete newFloatingAssignments[ability];
+
+  // Handler für die Auswahl der Unterart
+  const onSelectSubrace = (subrace) => {
+    updateCharacter({ subrace: subrace });
+  };
+
+  // *** NEU: Handler für die Auswahl der Abstammung ***
+  const onSelectAncestry = (ancestry) => {
+    updateCharacter({ ancestry: ancestry });
+  };
+
+
+  const handleAssignBonus = (abiKey, index) => {
+    setAssignments(prev => {
+      const newFloating = { ...prev.floating_bonus_assignments };
+      const currentAssignment = newFloating[abiKey];
+      
+      if (currentAssignment === index) {
+        // Zuweisung aufheben
+        delete newFloating[abiKey];
       } else {
-        const existingAbility = Object.keys(newFloatingAssignments).find(
-          key => newFloatingAssignments[key] === bonusIndex
-        );
-        if (existingAbility) {
-          delete newFloatingAssignments[existingAbility];
+        // Zuweisung ändern oder neu setzen
+        // Entferne zuerst, falls dieser Bonus (index) woanders zugewiesen war
+        for (const key in newFloating) {
+          if (newFloating[key] === index) {
+            delete newFloating[key];
+          }
         }
-        newFloatingAssignments[ability] = bonusIndex;
+        // Setze die neue Zuweisung
+        newFloating[abiKey] = index;
       }
       
-      const combinedAssignments = { ...selectedRace.ability_bonuses.fixed };
-      
-      setAssignments({ ...combinedAssignments, ...newFloatingAssignments });
-      updateCentralState(combinedAssignments, newFloatingAssignments);
-    }
+      // Update des Character-Objekts im Haupt-State
+      updateCharacter({ floating_bonus_assignments: newFloating });
+
+      return {
+        ...prev,
+        floating_bonus_assignments: newFloating
+      };
+    });
   };
+
+  const isBonusAssigned = (abiKey, index) => {
+    return assignments.floating_bonus_assignments?.[abiKey] === index;
+  };
+
+  const isBonusUsed = (index) => {
+    return Object.values(assignments.floating_bonus_assignments || {}).includes(index);
+  };
+
+  if (!selectedRace) {
+    return <div>Lade Völker...</div>;
+  }
   
-  const isBonusAssigned = (ability, bonusIndex) => {
-    return character.floating_bonus_assignments?.[ability] === bonusIndex;
-  };
+  // floatingBonuses hier für die Render-Logik definieren
+  const floatingBonuses = selectedRace.ability_bonuses.floating || [];
   
-  const isBonusUsed = (bonusIndex) => {
-    return Object.values(character.floating_bonus_assignments || {}).includes(bonusIndex);
+  // *** NEU: Logik für den Detail-Titel ***
+  const getDetailTitle = () => {
+    if (selectedSubrace) return selectedSubrace.name;
+    if (selectedAncestry) return `${selectedRace.name} (${selectedAncestry.name})`;
+    return selectedRace.name;
   };
-  
-  // KORREKTUR: Eigene Funktion, um beim Geschlechtswechsel das Portrait zu aktualisieren
-  const handleGenderChange = (newGender) => {
-    // Setzt das Portrait auf das erste Bild des neuen Geschlechts zurück,
-    // um sicherzustellen, dass immer ein gültiges Portrait geladen ist.
-    const newPortraitModule = getPortraitModule(character.race.key, newGender, 1);
-    updateCharacter({ gender: newGender, portrait: newPortraitModule });
+
+  // *** NEU: Logik für die Detail-Beschreibung ***
+  const getDetailDescription = () => {
+    // Untervölker (wie Hochelf) haben eigene Beschreibungen
+    if (selectedSubrace) return selectedSubrace.description;
+    // Abstammungen (wie Roter Drache) haben keine, also die des Hauptvolks verwenden
+    return selectedRace.description;
   };
+
 
   return (
-    <div className="race-selection-container">
-      <div className="race-list">
-        {allRaceData.map(race => (
-          <button
-            key={race.key}
-            className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`}
-            onClick={() => updateCharacter({ race: race })}
-          >
-            {race.name}
-          </button>
-        ))}
+    <div className="race-panel-layout">
+      
+      {/* --- LINKE SPALTE (Völkerliste) --- */}
+      <div className="race-column-left">
+        <div className="race-box">
+          <h3>Völker</h3>
+          
+          <div className="race-list">
+            {allRaceData.map(race => (
+              <React.Fragment key={race.key}>
+                <button
+                  className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`}
+                  onClick={() => onSelectRace(race)}
+                >
+                  {race.name}
+                </button>
+
+                {/* --- Collapsible Container (Logik angepasst) --- */}
+                {selectedRace.key === race.key && (
+                  <>
+                    {/* Fall 1: Untervölker (z.B. Elf) */}
+                    {race.subraces && race.subraces.length > 0 && (
+                      <div className="subrace-collapsible-container">
+                        {race.subraces.map(subrace => (
+                          <button
+                            key={subrace.key}
+                            className={`subrace-button-nested ${selectedSubrace?.key === subrace.key ? 'selected' : ''}`}
+                            onClick={() => onSelectSubrace(subrace)}
+                          >
+                            {subrace.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Fall 2: Abstammungen (z.B. Drachenblütiger) */}
+                    {race.ancestries && race.ancestries.length > 0 && (
+                      <div className="subrace-collapsible-container">
+                        {race.ancestries.map(ancestry => (
+                          <button
+                            key={ancestry.key}
+                            className={`subrace-button-nested ${selectedAncestry?.key === ancestry.key ? 'selected' : ''}`}
+                            onClick={() => onSelectAncestry(ancestry)}
+                          >
+                            {ancestry.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+                {/* --- Ende Collapsible Container --- */}
+
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="race-details">
-        {/* Name und Geschlecht Felder */}
-        <div className="character-identity">
-            <div className="input-group">
-                <label htmlFor="charName">Name</label>
-                <input 
-                    type="text" 
-                    id="charName" 
-                    value={character.name}
-                    onChange={(e) => updateCharacter({ name: e.target.value })}
-                />
-            </div>
-            <div className="input-group">
-                <label>Geschlecht</label>
-                <div className="gender-buttons">
-                    <button 
-                        className={character.gender === 'Männlich' ? 'selected' : ''}
-                        onClick={() => handleGenderChange('Männlich')}
-                    >
-                        Männlich
-                    </button>
-                    <button 
-                        className={character.gender === 'Weiblich' ? 'selected' : ''}
-                        onClick={() => handleGenderChange('Weiblich')}
-                    >
-                        Weiblich
-                    </button>
-                </div>
-            </div>
+      {/* --- RECHTE SPALTE (Details) --- */}
+      <div className="race-column-right">
+        <div className="race-box">
+          <h2 className="panel-details-header">{getDetailTitle()}</h2>
+
+          <div className="race-details-content-wrapper">
+            <p className="panel-details-description">
+              {getDetailDescription()}
+            </p>
+            
+            <div className="details-divider"></div>
+
+            {/* Zeige immer die Boni des Hauptvolks */}
+            <h3>Attributs-Boost</h3>
+            <p>{selectedRace.ability_bonuses.text}</p>
+            
+            {floatingBonuses.length > 0 && (
+              <ul className="ability-bonus-list">
+                {ABILITIES.map(abiKey => (
+                  <li key={abiKey}>
+                    <span>{abiKey.toUpperCase()}</span>
+                    <div className="bonus-buttons">
+                      {floatingBonuses.map((bonusValue, index) => (
+                        <button
+                          key={`${abiKey}-${index}`}
+                          onClick={() => handleAssignBonus(abiKey, index)}
+                          className={isBonusAssigned(abiKey, index) ? 'selected' : ''}
+                          disabled={isBonusUsed(index) && !isBonusAssigned(abiKey, index)}
+                        >
+                          +{bonusValue}
+                        </button>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* *** Zeige die Traits (Merkmale) an (Logik angepasst) *** */}
+            <div className="details-divider"></div>
+            <h3>Merkmale</h3>
+            <ul className="traits-list-panel">
+              {/* Zeige die Merkmale des Hauptvolks (außer Odemwaffe, die wird ersetzt) */}
+              {selectedRace.traits
+                .filter(trait => !(selectedRace.key === 'dragonborn' && trait.name === 'Odemwaffe'))
+                .map(trait => (
+                 <li key={trait.name}>
+                    <strong>{trait.name}:</strong> {trait.description}
+                  </li>
+              ))}
+              
+              {/* Zeige die Merkmale des Untervolks, falls ausgewählt */}
+              {selectedSubrace && selectedSubrace.traits.map(trait => (
+                 <li key={trait.name}>
+                    <strong>{trait.name} ({selectedSubrace.name}):</strong> {trait.description}
+                  </li>
+              ))}
+
+              {/* Zeige die Merkmale der Abstammung, falls ausgewählt */}
+              {selectedRace.key === 'dragonborn' && selectedAncestry && (
+                <>
+                  <li>
+                    <strong>Schadensresistenz ({selectedAncestry.name}):</strong> Du hast Resistenz gegen {selectedAncestry.damage_type}.
+                  </li>
+                  <li>
+                    <strong>Odemwaffe ({selectedAncestry.name}):</strong> {selectedAncestry.breath_weapon} ({selectedAncestry.damage_type}).
+                  </li>
+                </>
+              )}
+            </ul>
+
+          </div> 
         </div>
-        <div className="details-divider"></div>
-
-        <h2>{selectedRace.name}</h2>
-        <div className="details-divider"></div>
-
-        <h3>Portrait</h3>
-        <div className="portrait-selection">
-          {[1, 2, 3, 4].map(index => {
-            const portraitModule = getPortraitModule(selectedRace.key, character.gender, index);
-            return (
-              <img
-                key={index}
-                src={portraitModule} // src erhält das geladene Modul
-                alt={`Portrait ${index}`}
-                className={`portrait-image ${character.portrait === portraitModule ? 'selected' : ''}`}
-                onClick={() => updateCharacter({ portrait: portraitModule })} // Speichert das Modul
-              />
-            );
-          })}
-        </div>
-        <div className="details-divider"></div>
-
-        <h3>Attributs-Boost</h3>
-        <p>{selectedRace.ability_bonuses.text}</p>
-        
-        {floatingBonuses.length > 0 && (
-          <ul className="ability-bonus-list">
-            {ABILITIES.map(abiKey => (
-              <li key={abiKey}>
-                <span>{abiKey.toUpperCase()}</span>
-                <div className="bonus-buttons">
-                  {floatingBonuses.map((bonusValue, index) => (
-                    <button
-                      key={`${abiKey}-${index}`}
-                      onClick={() => handleAssignBonus(abiKey, index)}
-                      className={isBonusAssigned(abiKey, index) ? 'selected' : ''}
-                      disabled={isBonusUsed(index) && !isBonusAssigned(abiKey, index)}
-                    >
-                      +{bonusValue}
-                    </button>
-                  ))}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     </div>
   );

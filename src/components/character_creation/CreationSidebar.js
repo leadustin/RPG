@@ -1,67 +1,74 @@
-// src/components/CreationSidebar.js
+// src/components/character_creation/CreationSidebar.js
 import React from 'react';
 import './CreationSidebar.css';
 
-// Übersetzungsobjekt für die deutschen Begriffe
-const stepTranslations = {
-  Race: 'Volk',
-  Subrace: 'Unterart',
-  Class: 'Klasse',
-  Background: 'Hintergrund',
-  Abilities: 'Fähigkeiten',
-};
+// Übersetzungsobjekt und Steps-Array wurden nach CharacterCreationScreen.js verschoben
 
-export const CreationSidebar = ({ currentStep, setCurrentStep, character, onFinalize }) => {
-  // Wir behalten die englischen Schlüssel für die Logik bei
-  const steps = ['Race', 'Subrace', 'Class', 'Background', 'Abilities'];
+export const CreationSidebar = ({ 
+  currentStep, 
+  steps,                  // NEU
+  stepTranslations,       // NEU
+  maxStepIndex,           // NEU
+  onStepSelect,           // GEÄNDERT (war setCurrentStep)
+  onPrev,                 // NEU
+  onNext,                 // NEU
+  character 
+}) => {
 
-  const hasSubraces = character.race?.subraces && character.race.subraces.length > 0;
-  const hasAncestries = character.race?.ancestries && character.race.ancestries.length > 0;
+  const currentStepIndex = steps.indexOf(currentStep);
+  const isLastStep = currentStepIndex === steps.length - 1;
 
-  const handleStepClick = (step) => {
-    // Die Logik hier bleibt unverändert, da wir die englischen Schlüssel verwenden
-    if (step === 'Subrace' && !hasSubraces && !hasAncestries) {
-      return;
-    }
-    setCurrentStep(step);
-  };
+  // handleStepClick wurde durch onStepSelect (aus Props) ersetzt
 
   return (
-    <div className="sidebar-panel">
+    // Wir fügen .ui-panel hier hinzu, um das Panel-Design anzuwenden
+    <div className="sidebar-panel ui-panel">
+      {/* Wir verwenden wieder deine originale <ul> Struktur */}
       <ul>
-        {steps.map(step => {
-          const isSubraceStep = step === 'Subrace';
+        {steps.map((step, index) => {
           
-          // Standard-Label aus unserem Übersetzungsobjekt holen
           let label = stepTranslations[step];
+          const isDisabled = index > maxStepIndex; // Prüfe, ob der Schritt gesperrt ist
 
-          // Sonderfall für Drachenblütige beibehalten
-          if (isSubraceStep && hasAncestries) {
-            label = 'Abstammung';
-          }
-          
-          const isDisabled = isSubraceStep && !hasSubraces && !hasAncestries;
+          // --- KLASSENLOGIK ANGEPASST ---
+          let liClass = '';
+          if (currentStep === step) liClass = 'active';
+          if (isDisabled) liClass += ' disabled'; // Füge 'disabled' Klasse hinzu
           
           return (
             <li 
               key={step}
-              // Die Logik für 'active' und 'disabled' funktioniert weiterhin
-              className={`${currentStep === step ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`}
-              onClick={() => handleStepClick(step)}
+              className={liClass}
+              // --- ONCLICK ANGEPASST ---
+              // Erlaube Klick nur, wenn nicht disabled
+              onClick={() => !isDisabled && onStepSelect(step)} 
             >
               {label}
             </li>
           );
         })}
       </ul>
-      <div className="sidebar-finalize-container">
-        {/* Der Button wird nur angezeigt, wenn der aktuelle Schritt 'Abilities' ist */}
-        {currentStep === 'Abilities' && (
-          <button className="finalize-button" onClick={onFinalize}>
-            Abenteuer beginnen
-          </button>
-        )}
+
+      {/* --- GEÄNDERT: Navigations-Buttons statt "Finalize" --- */}
+      <div className="sidebar-navigation">
+        <button 
+          className="ui-button" 
+          onClick={onPrev}
+          // Deaktiviere "Zurück" auf dem ersten Schritt
+          disabled={currentStepIndex === 0} 
+        >
+          Zurück
+        </button>
+        <button 
+          className="ui-button" 
+          onClick={onNext}
+        >
+          {/* Ändere den Button-Text auf dem letzten Schritt */}
+          {isLastStep ? 'Charakter erstellen' : 'Weiter'}
+        </button>
       </div>
+      {/* --- ENDE ÄNDERUNG --- */}
+
     </div>
   );
 };

@@ -99,3 +99,37 @@ export const formatAbilityScores = (scores) => {
     .map(([key, value]) => `${key.toUpperCase()}: ${value}`)
     .join(" | ");
 };
+
+/**
+ * HILFSFUNKTION: Würfelt eine Würfelformel (z.B. "1d8" oder "1d10+2").
+ */
+export const rollDiceFormula = (formula) => {
+  let total = 0;
+  // Regex, um den Hauptwürfelteil und den Modifikator zu trennen
+  const match = formula.match(/(\d+d\d+)([+-]\d+)?/);
+
+  if (!match) {
+    // Fallback für einfache Zahlen (z.B. Heilung)
+    return parseInt(formula, 10) || 0;
+  }
+
+  const dicePart = match[1]; // z.B. "1d8"
+  const modifierPart = match[2]; // z.B. "+2"
+
+  const [numDiceStr, numSidesStr] = dicePart.split("d");
+  const numDice = parseInt(numDiceStr, 10) || 1;
+  const numSides = parseInt(numSidesStr, 10);
+
+  if (!isNaN(numSides)) {
+    for (let i = 0; i < numDice; i++) {
+      total += Math.floor(Math.random() * numSides) + 1;
+    }
+  }
+
+  // Bonus-Teil
+  if (modifierPart) {
+    total += parseInt(modifierPart, 10);
+  }
+
+  return total;
+};

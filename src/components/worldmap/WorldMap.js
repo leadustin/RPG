@@ -12,7 +12,7 @@ const MAP_HEIGHT_TILES = 24;
 const MAP_WIDTH_PX = MAP_WIDTH_TILES * TILE_SIZE;
 const MAP_HEIGHT_PX = MAP_HEIGHT_TILES * TILE_SIZE;
 
-const CANVAS_WIDTH_PX = 1280;
+const CANVAS_WIDTH_PX = 1240;
 const CANVAS_HEIGHT_PX = 640;
 
 const MIN_ZOOM = 0.4;
@@ -66,7 +66,7 @@ export const WorldMap = ({
   character,
   onEnterLocation,
   onUpdatePosition,
-  onDiscoverLocation, // <--- KORREKTUR 1: Neue Prop empfangen
+  onDiscoverLocation,
 }) => {
   const canvasRef = useRef(null);
   const playerRef = useRef(null);
@@ -258,10 +258,9 @@ export const WorldMap = ({
     imagesLoaded,
     viewTransform,
     modal.show,
-    onEnterLocation,
     onUpdatePosition,
-    onDiscoverLocation, // <--- KORREKTUR 3: Abhängigkeit hinzugefügt
-    character, // <--- KORREKTUR 4: Abhängigkeit hinzugefügt (für discoveredLocations)
+    onDiscoverLocation,
+    character,
   ]);
 
   useEffect(() => {

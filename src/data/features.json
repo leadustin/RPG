@@ -1,0 +1,2648 @@
+[
+  {
+    "key": "metamagic_careful_spell",
+    "name": "Behutsamer Zauber",
+    "description": "Wenn du einen Zauber wirkst, der Kreaturen zu einem Rettungswurf zwingt, kannst du Zauberpunkte ausgeben, um eine Anzahl dieser Kreaturen (bis zu deinem CHA-Modifikator, min. 1) vor dem Effekt zu schützen. Diese Kreaturen bestehen den Rettungswurf automatisch.",
+    "cost": 1,
+    "feature_type": "metamagic",
+    "mechanics": {
+      "type": "protect_from_save",
+      "targets": "up_to_cha_mod_min_1",
+      "save_result": "auto_success"
+    }
+  },
+  {
+    "key": "metamagic_distant_spell",
+    "name": "Entfernter Zauber",
+    "description": "Wenn du einen Zauber mit einer Reichweite von 1,5m oder mehr wirkst, kannst du 1 Zauberpunkt ausgeben, um die Reichweite zu verdoppeln. Wenn der Zauber 'Berührung' hat, wird die Reichweite auf 9m erhöht.",
+    "cost": 1,
+    "feature_type": "metamagic",
+    "mechanics": {
+      "type": "increase_range",
+      "multiplicator_min_1_5m": 2,
+      "touch_range_value": 9,
+      "touch_range_unit": "meter"
+    }
+  },
+  {
+    "key": "metamagic_empowered_spell",
+    "name": "Verstärkter Zauber",
+    "description": "Wenn du den Schaden eines Zaubers würfelst, kannst du 1 Zauberpunkt ausgeben, um eine Anzahl von Schadenswürfeln (bis zu deinem CHA-Modifikator, min. 1) neu zu würfeln. Du musst das neue Ergebnis verwenden.",
+    "cost": 1,
+    "feature_type": "metamagic",
+    "mechanics": {
+      "type": "reroll_damage_dice",
+      "dice_count": "up_to_cha_mod_min_1"
+    }
+  },
+  {
+    "key": "metamagic_extended_spell",
+    "name": "Verlängerter Zauber",
+    "description": "Wenn du einen Zauber mit einer Dauer von 1 Minute oder länger wirkst, kannst du 1 Zauberpunkt ausgeben, um die Dauer zu verdoppeln (bis zu max. 24 Stunden).",
+    "cost": 1,
+    "feature_type": "metamagic",
+    "mechanics": {
+      "type": "extend_duration",
+      "multiplicator": 2,
+      "max_duration": "24_hours",
+      "min_base_duration": "1_minute"
+    }
+  },
+  {
+    "key": "metamagic_heightened_spell",
+    "name": "Erhöhter Zauber",
+    "description": "Wenn du einen Zauber wirkst, der eine Kreatur zu einem Rettungswurf zwingt, kannst du 3 Zauberpunkte ausgeben, um 1 Ziel des Zaubers Nachteil auf seinen ersten Rettungswurf gegen diesen Zauber zu geben.",
+    "cost": 3,
+    "feature_type": "metamagic",
+    "mechanics": {
+      "type": "impose_disadvantage_on_save",
+      "target_count": 1,
+      "save_count": 1
+    }
+  },
+  {
+    "key": "metamagic_quickened_spell",
+    "name": "Beschleunigter Zauber",
+    "description": "Wenn du einen Zauber mit einer Zauberzeit von 1 Aktion wirkst, kannst du 2 Zauberpunkte ausgeben, um die Zauberzeit auf 1 Bonusaktion zu ändern.",
+    "cost": 2,
+    "feature_type": "metamagic",
+    "mechanics": {
+      "type": "change_casting_time",
+      "from": "1_action",
+      "to": "1_bonus_action"
+    }
+  },
+  {
+    "key": "metamagic_subtle_spell",
+    "name": "Subtiler Zauber",
+    "description": "Wenn du einen Zauber wirkst, kannst du 1 Zauberpunkt ausgeben, um ihn ohne verbale (V) oder somatische (S) Komponenten zu wirken.",
+    "cost": 1,
+    "feature_type": "metamagic",
+    "mechanics": {
+      "type": "remove_components",
+      "components": ["V", "S"]
+    }
+  },
+  {
+    "key": "metamagic_twinned_spell",
+    "name": "Gezielter Zauber",
+    "description": "Wenn du einen Zauber wirkst, der nur 1 Kreatur als Ziel hat (und nicht dich selbst), kannst du Zauberpunkte (in Höhe des Zaubergrads, min. 1) ausgeben, um eine zweite Kreatur in Reichweite ebenfalls zum Ziel zu machen.",
+    "cost_per_level": 1,
+    "feature_type": "metamagic",
+    "mechanics": {
+      "type": "duplicate_target",
+      "cost_basis": "spell_level",
+      "min_cost": 1,
+      "target_restriction": "single_target_not_self"
+    }
+  },
+  {
+    "key": "pact_of_the_chain",
+    "name": "Pakt der Kette",
+    "description": "Du lernst den Zauber 'Vertrauten finden' (zählt nicht gegen bekannte Zauber). Du kannst zusätzlich eine 'verbesserte' Form wählen (Imp, Quasit, Sprite oder Pseudodrache).",
+    "feature_type": "pact_boon",
+    "mechanics": {
+      "type": "learn_spell_with_variant_forms",
+      "spell_key": "find_familiar",
+      "variant_forms": ["imp", "quasit", "sprite", "pseudodragon"]
+    }
+  },
+  {
+    "key": "pact_of_the_blade",
+    "name": "Pakt der Klinge",
+    "description": "Du kannst (als Aktion) eine Paktwaffe in deiner Hand erschaffen (beliebige Nahkampfwaffe). Du bist geübt mit ihr. Sie gilt als magisch. Du kannst auch eine magische Waffe (durch 1 Std. Ritual) zu deiner Paktwaffe machen.",
+    "feature_type": "pact_boon",
+    "mechanics": {
+      "type": "summon_pact_weapon",
+      "action_type": "action",
+      "grants_proficiency": true,
+      "is_magical": true
+    }
+  },
+  {
+    "key": "pact_of_the_tome",
+    "name": "Pakt des Wälzers",
+    "description": "Du erhältst ein 'Buch der Schatten'. Wähle 3 Zaubertricks (Cantrips) von einer beliebigen Klasse. Sie zählen als Hexenmeister-Zauber für dich, aber nicht gegen deine bekannten Zaubertricks.",
+    "feature_type": "pact_boon",
+    "mechanics": {
+      "type": "learn_cantrips_from_any_class",
+      "count": 3
+    }
+  },
+  {
+    "key": "invocation_agonizing_blast",
+    "name": "Qualvoller Strahl",
+    "description": "Voraussetzung: Zaubertrick 'Schauriger Strahl'. Wenn du mit 'Schauriger Strahl' triffst, addierst du deinen Charisma-Modifikator zum Schaden.",
+    "prerequisite": { "spell": "eldritch_blast" },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "add_ability_mod_to_damage",
+      "spell_key": "eldritch_blast",
+      "ability": "CHA",
+      "damage_type": "force"
+    }
+  },
+  {
+    "key": "invocation_armor_of_shadows",
+    "name": "Rüstung der Schatten",
+    "description": "Du kannst 'Magierrüstung' (Mage Armor) beliebig oft auf dich selbst wirken, ohne einen Zauberplatz oder Komponenten zu verbrauchen.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "mage_armor",
+      "target_restriction": "self"
+    }
+  },
+  {
+    "key": "invocation_ascendant_step",
+    "name": "Aufsteigender Schritt",
+    "description": "Voraussetzung: Stufe 9. Du kannst 'Schweben' (Levitate) beliebig oft auf dich selbst wirken, ohne einen Zauberplatz oder Komponenten zu verbrauchen.",
+    "prerequisite": { "level": 9 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "levitate",
+      "target_restriction": "self"
+    }
+  },
+  {
+    "key": "invocation_beast_speech",
+    "name": "Sprache der Bestien",
+    "description": "Du kannst 'Mit Tieren sprechen' (Speak with Animals) beliebig oft wirken, ohne einen Zauberplatz zu verbrauchen.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "speak_with_animals"
+    }
+  },
+  {
+    "key": "invocation_beguiling_influence",
+    "name": "Betörender Einfluss",
+    "description": "Du erhältst Übung in den Fertigkeiten 'Täuschung' (Deception) und 'Überzeugen' (Persuasion).",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "grant_proficiency",
+      "skills": ["deception", "persuasion"]
+    }
+  },
+  {
+    "key": "invocation_book_of_ancient_secrets",
+    "name": "Buch der Uralten Geheimnisse",
+    "description": "Voraussetzung: Pakt des Wälzers. Du kannst 2 Ritual-Zauber (Grad 1) von beliebigen Klassen in dein Buch eintragen. Du kannst weitere Ritual-Zauber finden und kopieren.",
+    "prerequisite": { "feature": "pact_of_the_tome" },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "learn_rituals",
+      "initial_count": 2,
+      "max_spell_level": 1
+    }
+  },
+  {
+    "key": "invocation_chains_of_carceri",
+    "name": "Ketten von Carceri",
+    "description": "Voraussetzung: Stufe 15, Pakt der Kette. Du kannst 'Monster festhalten' (Hold Monster) 1x pro langer Rast auf einen Himmlischen, Unhold oder Elementar wirken, ohne Zauberplatz.",
+    "prerequisite": { "level": 15, "feature": "pact_of_the_chain" },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "hold_monster",
+      "uses": "1_per_long_rest",
+      "target_restriction": ["celestial", "fiend", "elemental"]
+    }
+  },
+  {
+    "key": "invocation_devils_sight",
+    "name": "Teufelssicht",
+    "description": "Du kannst normal in Dunkelheit sehen, sowohl in magischer als auch in nicht-magischer, bis zu einer Reichweite von 36 Metern.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "grant_vision",
+      "vision_type": "devils_sight",
+      "range_value": 36,
+      "range_unit": "meter"
+    }
+  },
+  {
+    "key": "invocation_dreadful_word",
+    "name": "Furchtbares Wort",
+    "description": "Voraussetzung: Stufe 7. Du kannst 'Verwirrung' (Confusion) 1x pro langer Rast wirken, ohne Zauberplatz.",
+    "prerequisite": { "level": 7 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "confusion",
+      "uses": "1_per_long_rest"
+    }
+  },
+  {
+    "key": "invocation_eldritch_sight",
+    "name": "Schaurige Sicht",
+    "description": "Du kannst 'Magie entdecken' (Detect Magic) beliebig oft wirken, ohne einen Zauberplatz zu verbrauchen.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "detect_magic"
+    }
+  },
+  {
+    "key": "invocation_eldritch_spear",
+    "name": "Schauriger Speer",
+    "description": "Voraussetzung: Zaubertrick 'Schauriger Strahl'. Die Reichweite von 'Schauriger Strahl' beträgt 90 Meter.",
+    "prerequisite": { "spell": "eldritch_blast" },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "increase_spell_range",
+      "spell_key": "eldritch_blast",
+      "new_range": 90,
+      "range_unit": "meter"
+    }
+  },
+  {
+    "key": "invocation_eyes_of_the_rune_keeper",
+    "name": "Augen des Runenwächters",
+    "description": "Du kannst alle Schriften lesen.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "read_all_languages"
+    }
+  },
+  {
+    "key": "invocation_fiendish_vigor",
+    "name": "Unholdige Vitalität",
+    "description": "Du kannst 'Falsches Leben' (False Life) (Stufe 1) beliebig oft auf dich selbst wirken, ohne einen Zauberplatz oder Komponenten zu verbrauchen.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "false_life",
+      "target_restriction": "self"
+    }
+  },
+  {
+    "key": "invocation_gaze_of_two_minds",
+    "name": "Blick zweier Geister",
+    "description": "Du kannst (als Aktion) eine willige Kreatur berühren und bis zum Ende deines nächsten Zuges durch ihre Sinne sehen und hören (während du für deine eigenen Sinne 'Blind' und 'Taub' bist).",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "use_targets_senses",
+      "action_type": "action",
+      "duration": "end_of_next_turn"
+    }
+  },
+  {
+    "key": "invocation_lifedrinker",
+    "name": "Lebenssauger",
+    "description": "Voraussetzung: Stufe 12, Pakt der Klinge. Wenn du mit deiner Paktwaffe triffst, verursachst du zusätzlichen nekrotischen Schaden in Höhe deines Charisma-Modifikators (min. 1).",
+    "prerequisite": { "level": 12, "feature": "pact_of_the_blade" },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "add_ability_mod_to_damage_on_pact_weapon",
+      "ability": "CHA",
+      "damage_type": "necrotic"
+    }
+  },
+  {
+    "key": "invocation_mask_of_many_faces",
+    "name": "Maske der vielen Gesichter",
+    "description": "Du kannst 'Selbstverkleidung' (Disguise Self) beliebig oft wirken, ohne einen Zauberplatz zu verbrauchen.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "disguise_self"
+    }
+  },
+  {
+    "key": "invocation_master_of_myriad_forms",
+    "name": "Meister der Myriadenformen",
+    "description": "Voraussetzung: Stufe 15. Du kannst 'Gestalt verändern' (Alter Self) beliebig oft wirken, ohne einen Zauberplatz zu verbrauchen.",
+    "prerequisite": { "level": 15 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "alter_self"
+    }
+  },
+  {
+    "key": "invocation_minions_of_chaos",
+    "name": "Diener des Chaos",
+    "description": "Voraussetzung: Stufe 9. Du kannst 'Elementar beschwören' (Conjure Elemental) 1x pro langer Rast wirken, ohne Zauberplatz.",
+    "prerequisite": { "level": 9 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "conjure_elemental",
+      "uses": "1_per_long_rest"
+    }
+  },
+  {
+    "key": "invocation_mire_the_mind",
+    "name": "Geist im Sumpf",
+    "description": "Voraussetzung: Stufe 5. Du kannst 'Verlangsamen' (Slow) 1x pro langer Rast wirken, ohne Zauberplatz.",
+    "prerequisite": { "level": 5 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "slow",
+      "uses": "1_per_long_rest"
+    }
+  },
+  {
+    "key": "invocation_misty_visions",
+    "name": "Nebulöse Visionen",
+    "description": "Du kannst 'Stilles Trugbild' (Silent Image) beliebig oft wirken, ohne einen Zauberplatz oder Komponenten zu verbrauchen.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "silent_image"
+    }
+  },
+  {
+    "key": "invocation_one_with_shadows",
+    "name": "Eins mit den Schatten",
+    "description": "Voraussetzung: Stufe 5. Wenn du in einem Bereich mit dämmrigem Licht oder Dunkelheit bist, kannst du (als Aktion) unsichtbar werden, bis du dich bewegst, eine Aktion oder eine Reaktion ausführst.",
+    "prerequisite": { "level": 5 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "gain_condition_in_low_light",
+      "action_type": "action",
+      "condition": "invisible",
+      "condition_end_trigger": ["move", "action", "reaction"]
+    }
+  },
+  {
+    "key": "invocation_otherworldly_leap",
+    "name": "Außerweltlicher Sprung",
+    "description": "Voraussetzung: Stufe 9. Du kannst 'Springen' (Jump) beliebig oft auf dich selbst wirken, ohne einen Zauberplatz oder Komponenten zu verbrauchen.",
+    "prerequisite": { "level": 9 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "jump",
+      "target_restriction": "self"
+    }
+  },
+  {
+    "key": "invocation_repelling_blast",
+    "name": "Abstoßender Strahl",
+    "description": "Voraussetzung: Zaubertrick 'Schauriger Strahl'. Wenn du eine Kreatur mit 'Schauriger Strahl' triffst, kannst du sie 3 Meter von dir wegstoßen.",
+    "prerequisite": { "spell": "eldritch_blast" },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "on_hit_effect",
+      "spell_key": "eldritch_blast",
+      "effect": "push",
+      "value": 3,
+      "unit": "meter"
+    }
+  },
+  {
+    "key": "invocation_sculptor_of_flesh",
+    "name": "Former des Fleisches",
+    "description": "Voraussetzung: Stufe 7. Du kannst 'Verwandlung' (Polymorph) 1x pro langer Rast wirken, ohne Zauberplatz.",
+    "prerequisite": { "level": 7 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "polymorph",
+      "uses": "1_per_long_rest"
+    }
+  },
+  {
+    "key": "invocation_sign_of_ill_omen",
+    "name": "Zeichen des bösen Omens",
+    "description": "Voraussetzung: Stufe 5. Du kannst 'Fluch' (Bestow Curse) 1x pro langer Rast wirken, ohne Zauberplatz.",
+    "prerequisite": { "level": 5 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "bestow_curse",
+      "uses": "1_per_long_rest"
+    }
+  },
+  {
+    "key": "invocation_thirsting_blade",
+    "name": "Durstige Klinge",
+    "description": "Voraussetzung: Stufe 5, Pakt der Klinge. Du kannst deine Paktwaffe zweimal statt einmal angreifen, wenn du die Angriffsaktion nutzt.",
+    "prerequisite": { "level": 5, "feature": "pact_of_the_blade" },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "extra_attack",
+      "count": 2,
+      "restriction": "pact_weapon_attack_action"
+    }
+  },
+  {
+    "key": "invocation_thief_of_five_fates",
+    "name": "Dieb der fünf Schicksale",
+    "description": "Du kannst 'Fluch' (Bane) 1x pro langer Rast wirken, ohne Zauberplatz.",
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "bane",
+      "uses": "1_per_long_rest"
+    }
+  },
+  {
+    "key": "invocation_visions_of_distant_realms",
+    "name": "Visionen ferner Reiche",
+    "description": "Voraussetzung: Stufe 15. Du kannst 'Arkanes Auge' (Arcane Eye) beliebig oft wirken, ohne einen Zauberplatz zu verbrauchen.",
+    "prerequisite": { "level": 15 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "arcane_eye"
+    }
+  },
+  {
+    "key": "invocation_voice_of_the_chain_master",
+    "name": "Stimme des Kettenmeisters",
+    "description": "Voraussetzung: Pakt der Kette. Du kannst telepathisch mit deinem Vertrauten kommunizieren und durch seine Sinne sehen/hören, solange ihr auf derselben Ebene seid. Du kannst auch (unabhängig von der Entfernung) durch deinen Vertrauten sprechen (mit deiner eigenen Stimme).",
+    "prerequisite": { "feature": "pact_of_the_chain" },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "communicate_through_familiar",
+      "unlimited_range": "on_same_plane"
+    }
+  },
+  {
+    "key": "invocation_whispers_of_the_grave",
+    "name": "Flüstern des Grabes",
+    "description": "Voraussetzung: Stufe 9. Du kannst 'Mit Toten sprechen' (Speak with Dead) beliebig oft wirken, ohne einen Zauberplatz zu verbrauchen.",
+    "prerequisite": { "level": 9 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "speak_with_dead"
+    }
+  },
+  {
+    "key": "invocation_witch_sight",
+    "name": "Hexensicht",
+    "description": "Voraussetzung: Stufe 15. Du kannst die wahre Gestalt von Gestaltwandlern oder Kreaturen, die durch Illusions- oder Transmutationsmagie verwandelt wurden, in 9m Umkreis sehen.",
+    "prerequisite": { "level": 15 },
+    "feature_type": "invocation",
+    "mechanics": {
+      "type": "see_true_form_in_range",
+      "range_value": 9,
+      "range_unit": "meter",
+      "creature_types": ["shapechanger", "illusion", "transmutation"]
+    }
+  },
+  {
+    "key": "channel_divinity_turn_undead",
+    "name": "Göttliche Macht fokussieren: Untote vertreiben",
+    "description": "Als Aktion präsentierst du dein heiliges Symbol. Jeder Untote, der dich sehen oder hören kann, muss einen Weisheits-Rettungswurf bestehen oder wird für 1 Minute vertrieben (muss seine Aktion nutzen, um zu fliehen).",
+    "cost": 1,
+    "action_type": "action",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "turn_creatures",
+      "creature_types": ["undead"],
+      "range": 9,
+      "range_unit": "meter",
+      "save_throw": "wisdom",
+      "conditions_applied": ["frightened"],
+      "duration": "1_minute"
+    }
+  },
+  {
+    "key": "channel_divinity_preserve_life",
+    "name": "Göttliche Macht fokussieren: Leben erhalten",
+    "description": "Als Aktion heilst du eine Anzahl von Trefferpunkten in Höhe deines fünffachen Kleriker-Levels. Du kannst diese TP auf beliebige Kreaturen in 9m Umkreis verteilen (bis max. die Hälfte ihrer TP).",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "life_domain",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "healing_pool",
+      "base_multiplier": 5,
+      "base_on_level": "cleric",
+      "range": 9,
+      "range_unit": "meter",
+      "restriction": "max_half_targets_hp"
+    }
+  },
+  {
+    "key": "channel_divinity_sacred_weapon",
+    "name": "Göttliche Macht fokussieren: Heilige Waffe",
+    "description": "Als Aktion kannst du deine Waffe mit positiver Energie erfüllen (1 Minute). Du addierst deinen Charisma-Modifikator (min. +1) zu Angriffswürfen mit dieser Waffe. Die Waffe leuchtet (6m helles Licht).",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "oath_of_devotion",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "weapon_buff",
+      "duration": "1_minute",
+      "attack_mod_ability": "CHA",
+      "light_radius": 6
+    }
+  },
+  {
+    "key": "channel_divinity_turn_the_unholy",
+    "name": "Göttliche Macht fokussieren: Böses vertreiben",
+    "description": "Als Aktion präsentierst du dein heiliges Symbol. Jeder Unhold (Fiend) oder Untote (Undead) in 9m (der dich sehen/hören kann) muss einen Weisheits-Rettungswurf bestehen oder wird für 1 Minute vertrieben (muss fliehen).",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "oath_of_devotion",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "turn_creatures",
+      "creature_types": ["fiend", "undead"],
+      "range": 9,
+      "range_unit": "meter",
+      "save_throw": "wisdom",
+      "conditions_applied": ["frightened"],
+      "duration": "1_minute"
+    }
+  },
+  {
+    "key": "fighting_style_defense",
+    "name": "Verteidigung",
+    "description": "Solange du Rüstung trägst, erhältst du +1 Bonus auf deine Rüstungsklasse (AC).",
+    "classes": ["fighter", "paladin", "ranger"],
+    "feature_type": "fighting_style",
+    "mechanics": {
+      "type": "ac_bonus",
+      "value": 1,
+      "condition": "wearing_armor"
+    }
+  },
+  {
+    "key": "fighting_style_dueling",
+    "name": "Duellieren",
+    "description": "Wenn du eine Nahkampfwaffe in einer Hand führst und keine Waffe in der anderen, erhältst du +2 auf Schadenswürfe mit dieser Waffe.",
+    "classes": ["fighter", "paladin", "ranger"],
+    "feature_type": "fighting_style",
+    "mechanics": {
+      "type": "damage_bonus",
+      "value": 2,
+      "condition": "one_hand_melee_no_other_weapon"
+    }
+  },
+  {
+    "key": "fighting_style_great_weapon_fighting",
+    "name": "Zweihandwaffenkampf",
+    "description": "Wenn du bei einem Angriff mit einer zweihändigen Nahkampfwaffe eine 1 oder 2 auf einen Schadenswürfel würfelst, kannst du diesen Würfel einmal neu würfeln (du musst das neue Ergebnis verwenden).",
+    "classes": ["fighter", "paladin"],
+    "feature_type": "fighting_style",
+    "mechanics": {
+      "type": "damage_reroll",
+      "dice_values": [1, 2],
+      "condition": "two_handed_melee_weapon"
+    }
+  },
+  {
+    "key": "fighting_style_protection",
+    "name": "Schutz",
+    "description": "Wenn eine Kreatur, die du sehen kannst, ein Ziel (außer dir) in 1,5m Nähe angreift, kannst du (als Reaktion) deine Schild heben und dem Angreifer Nachteil auf den Angriffswurf geben.",
+    "classes": ["fighter", "paladin"],
+    "feature_type": "fighting_style",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "reaction_to_protect_ally",
+      "range": 1.5,
+      "range_unit": "meter",
+      "effect": "impose_disadvantage_on_attack_roll",
+      "condition": "wielding_shield"
+    }
+  },
+  {
+    "key": "fighting_style_archery",
+    "name": "Bogenschießen",
+    "description": "Du erhältst +2 Bonus auf Angriffswürfe mit Fernkampfwaffen.",
+    "classes": ["fighter", "ranger"],
+    "feature_type": "fighting_style",
+    "mechanics": {
+      "type": "attack_roll_bonus",
+      "value": 2,
+      "condition": "ranged_weapon"
+    }
+  },
+  {
+    "key": "fighting_style_two_weapon_fighting",
+    "name": "Kampf mit zwei Waffen",
+    "description": "Wenn du mit zwei Waffen kämpfst, kannst du deinen Attributsmodifikator zum Schaden des zweiten Angriffs (Bonusaktion) addieren.",
+    "classes": ["fighter", "ranger"],
+    "feature_type": "fighting_style",
+    "mechanics": {
+      "type": "two_weapon_fighting_damage_mod"
+    }
+  },
+  {
+    "key": "hunter_prey_colossus_slayer",
+    "name": "Beute des Jägers: Koloss-Töter",
+    "description": "Wenn du eine Kreatur triffst, die unter ihren maximalen TP ist, verursachst du 1W8 zusätzlichen Schaden (1x pro Zug).",
+    "archetype": "hunter",
+    "prerequisite": { "level": 3 },
+    "feature_type": "hunter_prey",
+    "mechanics": {
+      "type": "extra_damage_on_hit",
+      "dice": "1d8",
+      "uses": "once_per_turn",
+      "condition": "target_below_max_hp"
+    }
+  },
+  {
+    "key": "hunter_prey_giant_killer",
+    "name": "Beute des Jägers: Riesen-Mörder",
+    "description": "Wenn eine Kreatur (Groß oder größer) in 1,5m Nähe dich trifft oder verfehlt, kannst du (als Reaktion) sofort einen Waffenangriff gegen sie ausführen.",
+    "archetype": "hunter",
+    "prerequisite": { "level": 3 },
+    "feature_type": "hunter_prey",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "reaction_attack",
+      "trigger": "target_attacks_caster_in_range",
+      "range": 1.5,
+      "target_size": "large_or_larger"
+    }
+  },
+  {
+    "key": "hunter_prey_horde_breaker",
+    "name": "Beute des Jägers: Horden-Brecher",
+    "description": "Einmal pro Zug, wenn du einen Waffenangriff machst, kannst du einen weiteren Angriff gegen eine andere Kreatur in 1,5m Nähe zum ersten Ziel machen.",
+    "archetype": "hunter",
+    "prerequisite": { "level": 3 },
+    "feature_type": "hunter_prey",
+    "mechanics": {
+      "type": "extra_attack",
+      "count": 1,
+      "uses": "once_per_turn",
+      "condition": "vs_different_target_in_range",
+      "range": 1.5
+    }
+  },
+  {
+    "key": "totem_warrior_spirit_seeker",
+    "name": "Geistsucher",
+    "description": "Du erhältst die Fähigkeit, 'Mit Tieren sprechen' und 'Tier-Sinne' als Rituale zu wirken.",
+    "prerequisite": { "level": 3, "archetype": "path_of_the_totem_warrior" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "gain_ritual_spells",
+      "spells": ["speak_with_animals", "beast_sense"]
+    }
+  },
+  {
+    "key": "totem_warrior_totem_spirit",
+    "name": "Totemgeist",
+    "description": "Stufe 3: Du wählst einen Tiergeist (z. B. Bär, Adler, Wolf), der dir besondere Kräfte gewährt, während du im Kampfrausch bist.",
+    "prerequisite": { "level": 3, "archetype": "path_of_the_totem_warrior" },
+    "feature_type": "choice",
+    "mechanics": {
+      "type": "choice_of_rage_benefit"
+    }
+  },
+  {
+    "key": "totem_warrior_aspect_of_the_beast",
+    "name": "Aspekt des Tieres",
+    "description": "Stufe 6: Du erhältst dauerhafte Vorteile des gewählten Totemtiers, selbst außerhalb des Kampfrausches.",
+    "prerequisite": { "level": 6, "archetype": "path_of_the_totem_warrior" },
+    "feature_type": "choice",
+    "mechanics": {
+      "type": "choice_of_permanent_aspect"
+    }
+  },
+  {
+    "key": "totem_warrior_spirit_walker",
+    "name": "Totemische Wanderung (Spirit Walker)",
+    "description": "Stufe 10: Du kannst 'Mit der Natur kommunizieren' als Ritual wirken.",
+    "prerequisite": { "level": 10, "archetype": "path_of_the_totem_warrior" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "gain_ritual_spell",
+      "spell_key": "commune_with_nature"
+    }
+  },
+  {
+    "key": "totem_warrior_totemic_attunement",
+    "name": "Totemische Macht (Totemic Attunement)",
+    "description": "Stufe 14: Du erhältst die stärkste Gabe deines Totemtiers.",
+    "prerequisite": { "level": 14, "archetype": "path_of_the_totem_warrior" },
+    "feature_type": "choice",
+    "mechanics": {
+      "type": "choice_of_ultimate_totem_benefit"
+    }
+  },
+  {
+    "key": "ancestral_guardian_ancestral_protectors",
+    "name": "Ahnenbeschützer",
+    "description": "Stufe 3: Der erste Gegner, den du triffst, hat Nachteil auf Angriffe gegen andere Kreaturen als dich. Die Geister der Ahnen erscheinen, wenn du Gegner triffst.",
+    "prerequisite": { "level": 3, "archetype": "path_of_the_ancestral_guardian" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "on_hit_debuff",
+      "uses": "once_per_turn",
+      "effect": "disadvantage_on_attacks_vs_others"
+    }
+  },
+  {
+    "key": "ancestral_guardian_spirit_shield",
+    "name": "Geisterschilde",
+    "description": "Stufe 6: Als Reaktion, wenn ein Verbündeter in 9m Nähe Schaden nimmt, kannst du den Schaden um 2W6 reduzieren (steigt auf 3W6 (Lvl 10) und 4W6 (Lvl 14)).",
+    "prerequisite": { "level": 6, "archetype": "path_of_the_ancestral_guardian" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "damage_reduction_reaction",
+      "dice": "2d6",
+      "range": 9,
+      "scaling": {
+        "10": "3d6",
+        "14": "4d6"
+      }
+    }
+  },
+  {
+    "key": "ancestral_guardian_consult_the_spirits",
+    "name": "Beruhigender Geist (Consult the Spirits)",
+    "description": "Stufe 10: Du kannst 'Hellsehen' (Clairvoyance) 1x pro kurzer/langer Rast wirken, ohne Komponenten.",
+    "prerequisite": { "level": 10, "archetype": "path_of_the_ancestral_guardian" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "clairvoyance",
+      "uses": "1_per_short_or_long_rest",
+      "ignore_components": true
+    }
+  },
+  {
+    "key": "ancestral_guardian_vengeful_ancestors",
+    "name": "Ahnenhaftes Bollwerk (Vengeful Ancestors)",
+    "description": "Stufe 14: Wenn du 'Geisterschilde' nutzt, erleidet der Angreifer denselben Schaden, den du verhindert hast (als Energieschaden).",
+    "prerequisite": { "level": 14, "archetype": "path_of_the_ancestral_guardian" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "retaliation_damage",
+      "trigger": "use_spirit_shield",
+      "damage_type": "force",
+      "damage_amount": "equal_to_damage_reduced"
+    }
+  },
+  {
+    "key": "storm_herald_storm_aura",
+    "name": "Sturmaura",
+    "description": "Stufe 3: Wähle eine Aura (Wüste, Meer oder Tundra). Als Bonusaktion kannst du die Aura aktivieren (hält 10 Min). Sie verursacht Effekte (Feuerschaden, Blitzschaden oder Temp-TP) in 3m Umkreis.",
+    "prerequisite": { "level": 3, "archetype": "path_of_the_storm_herald" },
+    "feature_type": "subclass_feature",
+    "action_type": "bonus_action",
+    "mechanics": {
+      "type": "toggle_aura_choice",
+      "duration": "10_minutes",
+      "range": 3,
+      "range_unit": "meter",
+      "options": ["desert", "sea", "tundra"]
+    }
+  },
+  {
+    "key": "storm_herald_storm_soul",
+    "name": "Sturmseele",
+    "description": "Stufe 6: Du erhältst Resistenz (basierend auf deiner Aura-Wahl) und kannst in extremen Bedingungen überleben.",
+    "prerequisite": { "level": 6, "archetype": "path_of_the_storm_herald" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "gain_resistance_from_aura_choice",
+      "utility": "environmental_adaptation"
+    }
+  },
+  {
+    "key": "storm_herald_shielding_storm",
+    "name": "Schützende Aura (Shielding Storm)",
+    "description": "Stufe 10: Verbündete in deiner Aura erhalten ebenfalls die Resistenzen von 'Sturmseele'.",
+    "prerequisite": { "level": 10, "archetype": "path_of_the_storm_herald" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "share_resistance_in_aura",
+      "shared_feature_key": "storm_herald_storm_soul"
+    }
+  },
+  {
+    "key": "storm_herald_raging_storm",
+    "name": "Zorn des Sturms (Raging Storm)",
+    "description": "Stufe 14: Deine Aura wird mächtiger und erhält zusätzliche Effekte (z.B. Gegner zurückstoßen, Angreifer schädigen).",
+    "prerequisite": { "level": 14, "archetype": "path_of_the_storm_herald" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "upgrade_aura_effect",
+      "effect_type": "based_on_aura_choice"
+    }
+  },
+  {
+    "key": "beast_form_of_the_beast",
+    "name": "Form der Bestie",
+    "description": "Stufe 3: Wenn du in Kampfrausch verfällst, manifestierst du eine natürliche Waffe (Biss, Klauen oder Schwanz), die du für Angriffe nutzen kannst.",
+    "prerequisite": { "level": 3, "archetype": "path_of_the_beast" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "rage_natural_weapon_choice",
+      "action_type": "on_rage",
+      "options": ["bite", "claws", "tail"]
+    }
+  },
+  {
+    "key": "beast_bestial_soul",
+    "name": "Bestienspürsinn (Bestial Soul)",
+    "description": "Stufe 6: Deine natürlichen Waffen gelten als magisch. Du erhältst eine Anpassung (Schwimmen, Klettern oder Springen).",
+    "prerequisite": { "level": 6, "archetype": "path_of_the_beast" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "natural_weapon_upgrade",
+      "effect": "magical_attacks",
+      "utility_effect": "movement_adaptation_choice"
+    }
+  },
+  {
+    "key": "beast_infectious_fury",
+    "name": "Infektiöse Wut",
+    "description": "Stufe 10: Wenn du mit deinen natürlichen Waffen triffst, kannst du das Ziel zwingen (WE-RW), einen Verbündeten anzugreifen (1x pro Rast).",
+    "prerequisite": { "level": 10, "archetype": "path_of_the_beast" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "on_hit_force_attack",
+      "uses": "1_per_rest",
+      "save_throw": "wisdom"
+    }
+  },
+  {
+    "key": "beast_call_the_hunt",
+    "name": "König der Bestien (Call the Hunt)",
+    "description": "Stufe 14: Wenn du in Kampfrausch verfällst, wähle bis zu 5 Verbündete. Sie erhalten 5 temporäre TP. Deine 'Infektiöse Wut' kann nun öfter genutzt werden.",
+    "prerequisite": { "level": 14, "archetype": "path_of_the_beast" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "rage_start_temp_hp_and_fury_upgrade",
+      "temp_hp": 5,
+      "targets": 5
+    }
+  },
+  {
+    "key": "wild_magic_magical_surge",
+    "name": "Magische Wut (Magic Surge)",
+    "description": "Stufe 3: Wenn du in Kampfrausch verfällst, würfle auf der Wildmagie-Tabelle. Ein magischer Effekt tritt ein.",
+    "prerequisite": { "level": 3, "archetype": "path_of_wild_magic" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "on_rage_wild_magic_roll",
+      "table_key": "barbarian_wild_magic"
+    }
+  },
+  {
+    "key": "wild_magic_bolstering_magic",
+    "name": "Magiekanalisierung (Bolstering Magic)",
+    "description": "Stufe 6: Als Aktion kannst du (oder ein Verbündeter) einen W3 würfeln und zu Angriffs- oder Rettungswürfen addieren (hält 10 Min). Kann 1 Zauberplatz bis Grad 3 wiederherstellen.",
+    "prerequisite": { "level": 6, "archetype": "path_of_wild_magic" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "buff_and_resource_recovery",
+      "buff_dice": "1d3",
+      "buff_duration": "10_minutes",
+      "resource_recovery": "spell_slot_up_to_level_3"
+    }
+  },
+  {
+    "key": "wild_magic_unstable_backlash",
+    "name": "Wilde Explosion (Unstable Backlash)",
+    "description": "Stufe 10: Als Reaktion, wenn du Schaden nimmst oder bei einem RW scheiterst (im Kampfrausch), kannst du erneut auf der Wildmagie-Tabelle würfeln.",
+    "prerequisite": { "level": 10, "archetype": "path_of_wild_magic" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "reroll_wild_magic_reaction",
+      "trigger": "take_damage_or_fail_save_while_raging"
+    }
+  },
+  {
+    "key": "wild_magic_controlled_surge",
+    "name": "Kontrollierte Wildnis (Controlled Surge)",
+    "description": "Stufe 14: Wenn du auf der Wildmagie-Tabelle würfelst, kannst du zweimal würfeln und das Ergebnis wählen.",
+    "prerequisite": { "level": 14, "archetype": "path_of_wild_magic" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "wild_magic_advantage",
+      "effect": "roll_twice_choose_one"
+    }
+  },
+  {
+    "key": "zealot_divine_fury",
+    "name": "Göttliche Raserei",
+    "description": "Stufe 3: Der erste Gegner, den du triffst (im Kampfrausch), erleidet 1W6 + halbes Barbaren-Level (gleißend oder nekrotisch) Schaden extra.",
+    "prerequisite": { "level": 3, "archetype": "path_of_the_zealot" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "on_hit_extra_damage_rage",
+      "uses": "once_per_turn",
+      "damage_dice": "1d6",
+      "damage_bonus": "half_barbarian_level",
+      "damage_type": "radiant_or_necrotic"
+    }
+  },
+  {
+    "key": "zealot_warrior_of_the_gods",
+    "name": "Krieger des Glaubens",
+    "description": "Stufe 3: Wenn du stirbst, benötigen Zauber, um dich wiederzubeleben (wie 'Wiederbeleben'), keine materiellen Komponenten (Diamanten).",
+    "prerequisite": { "level": 3, "archetype": "path_of_the_zealot" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "cost_reduction_on_resurrection",
+      "effect": "remove_material_component_cost",
+      "spells": ["revivify", "raise_dead", "resurrection"]
+    }
+  },
+  {
+    "key": "zealot_fanatical_focus",
+    "name": "Zorn der Götter (Fanatical Focus)",
+    "description": "Stufe 6: Wenn du im Kampfrausch bei einem Rettungswurf scheiterst, kannst du ihn 1x pro Kampfrausch wiederholen.",
+    "prerequisite": { "level": 6, "archetype": "path_of_the_zealot" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "reroll_save_while_raging",
+      "uses": "once_per_rage"
+    }
+  },
+  {
+    "key": "zealot_zealous_presence",
+    "name": "Zorn der Götter (Zealous Presence)",
+    "description": "Stufe 10: Als Bonusaktion kannst du bis zu 10 Kreaturen (in 18m) Vorteil auf Angriffs- und Rettungswürfe bis zum Beginn deines nächsten Zuges geben (1x pro langer Rast).",
+    "prerequisite": { "level": 10, "archetype": "path_of_the_zealot" },
+    "feature_type": "subclass_feature",
+    "action_type": "bonus_action",
+    "mechanics": {
+      "type": "group_buff",
+      "uses": "1_per_long_rest",
+      "range": 18,
+      "effect": "advantage_on_attack_and_save_rolls",
+      "duration": "end_of_next_turn"
+    }
+  },
+  {
+    "key": "zealot_rage_beyond_death",
+    "name": "Ewiger Krieger (Rage Beyond Death)",
+    "description": "Stufe 14: Während deines Kampfrausches stirbst du nicht, wenn du auf 0 TP fällst. Du musst trotzdem Todesrettungswürfe ablegen (stirbst bei 3 Fehlschlägen). Du stirbst, wenn dein Kampfrausch endet und du 0 TP hast.",
+    "prerequisite": { "level": 14, "archetype": "path_of_the_zealot" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "ignore_death_while_raging",
+      "condition": "drop_to_0_hp_while_raging",
+      "restriction": "still_make_death_saves"
+    }
+  },
+  {
+    "key": "champion_improved_critical",
+    "name": "Verbesserter kritischer Treffer",
+    "description": "Stufe 3: Deine Waffenangriffe erzielen einen kritischen Treffer bei einem Würfelergebnis von 19 oder 20.",
+    "prerequisite": { "level": 3, "archetype": "champion" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "increase_crit_range",
+      "value": 19
+    }
+  },
+  {
+    "key": "champion_remarkable_athlete",
+    "name": "Bemerkenswerter Athlet",
+    "description": "Stufe 7: Du kannst die Hälfte deines Übungsbonus zu jedem Stärke-, Geschicklichkeits- oder Konstitutionswurf addieren, bei dem du nicht bereits geübt bist.",
+    "prerequisite": { "level": 7, "archetype": "champion" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "half_proficiency_to_checks",
+      "abilities": ["STR", "DEX", "CON"],
+      "condition": "not_proficient"
+    }
+  },
+  {
+    "key": "champion_additional_fighting_style",
+    "name": "Zusätzlicher Kampfstil",
+    "description": "Stufe 10: Du wählst einen zweiten Kampfstil.",
+    "prerequisite": { "level": 10, "archetype": "champion" },
+    "feature_type": "choice",
+    "mechanics": {
+      "type": "gain_extra_fighting_style"
+    }
+  },
+  {
+    "key": "champion_superior_critical",
+    "name": "Überlegener kritischer Treffer",
+    "description": "Stufe 15: Deine Waffenangriffe erzielen nun einen kritischen Treffer bei einem Würfelergebnis von 18–20.",
+    "prerequisite": { "level": 15, "archetype": "champion" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "increase_crit_range",
+      "value": 18
+    }
+  },
+  {
+    "key": "battle_master_combat_superiority",
+    "name": "Überlegenheit im Kampf",
+    "description": "Stufe 3: Du lernst Manöver. Du hast 4 Überlegenheitswürfel (W8), die du ausgeben kannst, um Manöver auszuführen. Du erhältst sie nach einer kurzen oder langen Rast zurück.",
+    "prerequisite": { "level": 3, "archetype": "battle_master" },
+    "feature_type": "subclass_resource",
+    "mechanics": {
+      "type": "gain_superiority_dice",
+      "initial_dice": 4,
+      "dice_type": "1d8",
+      "recovery": "short_or_long_rest"
+    }
+  },
+  {
+    "key": "battle_master_student_of_war",
+    "name": "Kriegskunststudent",
+    "description": "Stufe 3: Du erhältst Übung mit einem Handwerkerwerkzeug deiner Wahl.",
+    "prerequisite": { "level": 3, "archetype": "battle_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "gain_tool_proficiency",
+      "count": 1,
+      "tool_type": "artisan_tool"
+    }
+  },
+  {
+    "key": "battle_master_know_your_enemy",
+    "name": "Kenne deinen Feind",
+    "description": "Stufe 7: Nach 1 Minute Beobachtung kannst du 2 Werte eines Gegners (z.B. ST-Wert, RK, max. TP) im Vergleich zu dir selbst lernen.",
+    "prerequisite": { "level": 7, "archetype": "battle_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "learn_enemy_stats_after_observation"
+    }
+  },
+  {
+    "key": "battle_master_improved_combat_superiority",
+    "name": "Verbesserte Überlegenheit (W10)",
+    "description": "Stufe 10: Deine Überlegenheitswürfel werden zu W10.",
+    "prerequisite": { "level": 10, "archetype": "battle_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "upgrade_resource_dice",
+      "resource_key": "battle_master_combat_superiority",
+      "new_dice_type": "1d10"
+    }
+  },
+  {
+    "key": "battle_master_relentless",
+    "name": "Unermüdlich",
+    "description": "Stufe 15: Wenn du die Initiative würfelst und keine Überlegenheitswürfel mehr hast, erhältst du einen zurück.",
+    "prerequisite": { "level": 15, "archetype": "battle_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "resource_recovery",
+      "trigger": "roll_initiative_with_zero_resource",
+      "resource_key": "battle_master_combat_superiority",
+      "amount": 1
+    }
+  },
+  {
+    "key": "eldritch_knight_spellcasting",
+    "name": "Zauberwirken (Mystischer Ritter)",
+    "description": "Stufe 3: Du erhältst die Fähigkeit, Magierzauber (Intelligenz) zu wirken (1/3-Zauberwirker), hauptsächlich aus den Schulen der Bann- und Hervorrufungsmagie.",
+    "prerequisite": { "level": 3, "archetype": "eldritch_knight" },
+    "feature_type": "spellcasting_feature",
+    "mechanics": {
+      "type": "caster_type",
+      "caster_level_multiplier": "1/3",
+      "ability": "INT",
+      "restricted_schools": ["abjuration", "evocation"]
+    }
+  },
+  {
+    "key": "eldritch_knight_weapon_bond",
+    "name": "Waffenbindung",
+    "description": "Stufe 3: Als Bonusaktion kannst du eine Waffe in deiner Hand binden (kann nicht entwaffnet werden). Du kannst sie als Bonusaktion zu dir rufen.",
+    "prerequisite": { "level": 3, "archetype": "eldritch_knight" },
+    "feature_type": "subclass_feature",
+    "action_type": "bonus_action",
+    "mechanics": {
+      "type": "weapon_bond",
+      "effect": "cannot_be_disarmed",
+      "recal_action": "bonus_action"
+    }
+  },
+  {
+    "key": "eldritch_knight_war_magic",
+    "name": "Kriegsmagie",
+    "description": "Stufe 7: Wenn du deine Aktion nutzt, um einen Zaubertrick zu wirken, kannst du als Bonusaktion einen Waffenangriff machen.",
+    "prerequisite": { "level": 7, "archetype": "eldritch_knight" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "bonus_action_attack",
+      "trigger_action": "cast_cantrip",
+      "bonus_action_type": "weapon_attack"
+    }
+  },
+  {
+    "key": "eldritch_knight_eldritch_strike",
+    "name": "Mystischer Schlag",
+    "description": "Stufe 10: Wenn du eine Kreatur mit einem Waffenangriff triffst, hat sie beim nächsten Rettungswurf gegen einen deiner Zauber (vor Ende deines nächsten Zuges) Nachteil.",
+    "prerequisite": { "level": 10, "archetype": "eldritch_knight" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "on_hit_debuff",
+      "effect": "disadvantage_on_next_save_vs_spell",
+      "duration": "end_of_next_turn"
+    }
+  },
+  {
+    "key": "eldritch_knight_arcane_charge",
+    "name": "Arkane Aufladung",
+    "description": "Stufe 15: Wenn du deinen Tatendrang (Action Surge) einsetzt, kannst du dich vor oder nach der Aktion bis zu 9m teleportieren.",
+    "prerequisite": { "level": 15, "archetype": "eldritch_knight" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "action_surge_teleport",
+      "value": 9,
+      "unit": "meter"
+    }
+  },
+  {
+    "key": "eldritch_knight_improved_war_magic",
+    "name": "Verbesserte Kriegsmagie",
+    "description": "Stufe 18: Wenn du deine Aktion nutzt, um einen Zauber zu wirken, kannst du als Bonusaktion einen Waffenangriff machen.",
+    "prerequisite": { "level": 18, "archetype": "eldritch_knight" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "bonus_action_attack",
+      "trigger_action": "cast_any_spell",
+      "bonus_action_type": "weapon_attack"
+    }
+  },
+  {
+    "key": "shadow_arts",
+    "name": "Schattenkünste",
+    "description": "Stufe 3: Als Aktion kannst du 2 Ki-Punkte ausgeben, um 'Dunkelheit', 'Dunkelsicht', 'Spurlos' oder 'Stille' zu wirken, ohne Komponenten zu benötigen.",
+    "prerequisite": { "level": 3, "archetype": "way_of_shadow" },
+    "feature_type": "ki_spell",
+    "action_type": "action",
+    "resource_cost": { "type": "ki", "value": 2 },
+    "mechanics": {
+      "type": "cast_spell_without_components",
+      "spells": ["darkness", "darkvision", "pass_without_trace", "silence"]
+    }
+  },
+  {
+    "key": "shadow_step",
+    "name": "Schattenschritt",
+    "description": "Stufe 6: Wenn du in dämmrigem Licht/Dunkelheit bist, kannst du als Bonusaktion 18m zu einem anderen Punkt in dämmrigem Licht/Dunkelheit teleportieren. Du hast Vorteil bei deinem nächsten Nahkampfangriff.",
+    "prerequisite": { "level": 6, "archetype": "way_of_shadow" },
+    "feature_type": "subclass_feature",
+    "action_type": "bonus_action",
+    "mechanics": {
+      "type": "teleport_in_low_light",
+      "range": 18,
+      "range_unit": "meter",
+      "effect": "advantage_on_next_melee_attack"
+    }
+  },
+  {
+    "key": "shadow_cloak",
+    "name": "Schattenmantel",
+    "description": "Stufe 11: Wenn du in dämmrigem Licht/Dunkelheit bist, kannst du als Aktion unsichtbar werden, bis du angreifst, zauberst oder in helles Licht trittst.",
+    "prerequisite": { "level": 11, "archetype": "way_of_shadow" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "gain_condition_in_low_light",
+      "condition": "invisible",
+      "condition_end_trigger": ["attack", "cast_spell", "enter_bright_light"]
+    }
+  },
+  {
+    "key": "shadow_opportunist",
+    "name": "Opportunist",
+    "description": "Stufe 17: Wenn eine Kreatur (außer dir) von einem Verbündeten in 1,5m Nähe getroffen wird, kannst du als Reaktion einen Nahkampfangriff gegen sie ausführen.",
+    "prerequisite": { "level": 17, "archetype": "way_of_shadow" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "opportunity_attack_on_ally_hit",
+      "range": 1.5,
+      "range_unit": "meter"
+    }
+  },
+  {
+    "key": "elemental_discipline_fist_of_four_thunders",
+    "name": "Faust der vier Donner",
+    "description": "Voraussetzung: Stufe 3. Du kannst 2 Ki-Punkte ausgeben, um 'Donnerwelle' (Thunderwave) zu wirken.",
+    "prerequisite": { "level": 3, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 2 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "thunderwave"
+    }
+  },
+  {
+    "key": "elemental_discipline_fist_of_unbroken_air",
+    "name": "Faust der ungerbrochenen Luft",
+    "description": "Voraussetzung: Stufe 3. Als Aktion, gib 2 Ki-Punkte aus. Ziel in 9m muss ST-RW bestehen. Fehlschlag: 3W10 Wuchtschaden (+1W10 pro extra Ki-Punkt) und 6m weggestoßen. Erfolg: Halber Schaden, nicht gestoßen.",
+    "prerequisite": { "level": 3, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_attack",
+    "action_type": "action",
+    "resource_cost": { "type": "ki", "value": 2, "upcast_cost": 1 },
+    "mechanics": {
+      "type": "damage_and_push",
+      "range": 9,
+      "damage_dice": "3d10",
+      "damage_type": "bludgeoning",
+      "scaling_dice": "1d10",
+      "save_throw": "strength",
+      "push_distance": 6
+    }
+  },
+  {
+    "key": "elemental_discipline_water_whip",
+    "name": "Wasserpeitsche",
+    "description": "Voraussetzung: Stufe 3. Als Aktion, gib 2 Ki-Punkte aus. Ziel in 9m muss GE-RW bestehen. Fehlschlag: 3W10 Hieb-Schaden (+1W10 pro extra Ki-Punkt) und du kannst es 7,5m näher heranziehen oder zu Boden werfen (prone). Erfolg: Halber Schaden, kein Effekt.",
+    "prerequisite": { "level": 3, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_attack",
+    "action_type": "action",
+    "resource_cost": { "type": "ki", "value": 2, "upcast_cost": 1 },
+    "mechanics": {
+      "type": "damage_and_control",
+      "range": 9,
+      "damage_dice": "3d10",
+      "damage_type": "slashing",
+      "scaling_dice": "1d10",
+      "save_throw": "dexterity",
+      "control_effect": ["pull_7_5m", "prone"]
+    }
+  },
+  {
+    "key": "elemental_discipline_flames_of_the_phoenix",
+    "name": "Flammen des Phönix (Brennende Hände)",
+    "description": "Voraussetzung: Stufe 3. Du kannst 2 Ki-Punkte ausgeben, um 'Brennende Hände' (Burning Hands) zu wirken.",
+    "prerequisite": { "level": 3, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 2 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "burning_hands"
+    }
+  },
+  {
+    "key": "elemental_discipline_elemental_attunement",
+    "name": "Elementare Einstimmung",
+    "description": "Voraussetzung: Stufe 3. Du lernst den Zaubertrick 'Elementare Einstimmung'.",
+    "prerequisite": { "level": 3, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "mechanics": {
+      "type": "learn_cantrip",
+      "spell_key": "elemental_attunement"
+    }
+  },
+  {
+    "key": "elemental_discipline_clench_of_the_north_wind",
+    "name": "Griff des Nordwinds (Person festhalten)",
+    "description": "Voraussetzung: Stufe 6. Du kannst 3 Ki-Punkte ausgeben, um 'Person festhalten' (Hold Person) zu wirken.",
+    "prerequisite": { "level": 6, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 3 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "hold_person"
+    }
+  },
+  {
+    "key": "elemental_discipline_gong_of_the_summit",
+    "name": "Gong des Gipfels (Zerbersten)",
+    "description": "Voraussetzung: Stufe 6. Du kannst 3 Ki-Punkte ausgeben, um 'Zerbersten' (Shatter) zu wirken.",
+    "prerequisite": { "level": 6, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 3 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "shatter"
+    }
+  },
+  {
+    "key": "elemental_discipline_eternal_mountain_defense",
+    "name": "Ewige Bergverteidigung (Steinhaut)",
+    "description": "Voraussetzung: Stufe 11. Du kannst 5 Ki-Punkte ausgeben, um 'Steinhaut' (Stoneskin) auf dich selbst zu wirken.",
+    "prerequisite": { "level": 11, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 5 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "stoneskin",
+      "target_restriction": "self"
+    }
+  },
+  {
+    "key": "elemental_discipline_flames_of_the_phoenix_fireball",
+    "name": "Flammen des Phönix (Feuerball)",
+    "description": "Voraussetzung: Stufe 11. Du kannst 4 Ki-Punkte ausgeben, um 'Feuerball' (Fireball) zu wirken.",
+    "prerequisite": { "level": 11, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 4 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "fireball"
+    }
+  },
+  {
+    "key": "elemental_discipline_mist_stance",
+    "name": "Nebelgestalt (Gasförmige Gestalt)",
+    "description": "Voraussetzung: Stufe 11. Du kannst 4 Ki-Punkte ausgeben, um 'Gasförmige Gestalt' (Gaseous Form) auf dich selbst zu wirken.",
+    "prerequisite": { "level": 11, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 4 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "gaseous_form",
+      "target_restriction": "self"
+    }
+  },
+  {
+    "key": "elemental_discipline_ride_the_wind",
+    "name": "Auf dem Wind reiten (Fliegen)",
+    "description": "Voraussetzung: Stufe 11. Du kannst 4 Ki-Punkte ausgeben, um 'Fliegen' (Fly) auf dich selbst zu wirken.",
+    "prerequisite": { "level": 11, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 4 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "fly",
+      "target_restriction": "self"
+    }
+  },
+  {
+    "key": "elemental_discipline_river_of_hungry_flame",
+    "name": "Fluss der hungrigen Flamme (Feuerwand)",
+    "description": "Voraussetzung: Stufe 17. Du kannst 5 Ki-Punkte ausgeben, um 'Feuerwand' (Wall of Fire) zu wirken.",
+    "prerequisite": { "level": 17, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 5 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "wall_of_fire"
+    }
+  },
+  {
+    "key": "elemental_discipline_wave_of_rolling_earth",
+    "name": "Welle der rollenden Erde (Steinwand)",
+    "description": "Voraussetzung: Stufe 17. Du kannst 6 Ki-Punkte ausgeben, um 'Steinwand' (Wall of Stone) zu wirken.",
+    "prerequisite": { "level": 17, "archetype": "way_of_the_four_elements" },
+    "feature_type": "ki_spell",
+    "resource_cost": { "type": "ki", "value": 6 },
+    "mechanics": {
+      "type": "cast_spell",
+      "spell_key": "wall_of_stone"
+    }
+  },
+  {
+    "key": "thief_fast_hands",
+    "name": "Flinke Hände",
+    "description": "Stufe 3: Du kannst die Bonusaktion (Listige Aktion) nutzen, um Geschicklichkeits (Fingerfertigkeit)-Würfe, Diebeswerkzeug einzusetzen oder die 'Gegenstand benutzen'-Aktion auszuführen.",
+    "prerequisite": { "level": 3, "archetype": "thief" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "cunning_action_utility",
+      "options": ["sleight_of_hand", "thieves_tools", "use_an_object"]
+    }
+  },
+  {
+    "key": "thief_second_story_work",
+    "name": "Zweitstöckiges Arbeiten",
+    "description": "Stufe 3: Klettern kostet keine zusätzliche Bewegung. Dein Anlauf für Weitsprung ist auf 1,5m (statt 3m) reduziert.",
+    "prerequisite": { "level": 3, "archetype": "thief" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "movement_buff",
+      "climbing_cost": "no_extra_movement",
+      "running_jump_prerequisite_reduced": 1.5
+    }
+  },
+  {
+    "key": "thief_supreme_sneak",
+    "name": "Höchst unauffällig",
+    "description": "Stufe 9: Du hast Vorteil bei Geschicklichkeits (Heimlichkeit)-Würfen, wenn du dich in deinem Zug nicht mehr als die Hälfte deiner Bewegungsrate bewegst.",
+    "prerequisite": { "level": 9, "archetype": "thief" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "stealth_buff",
+      "effect": "advantage_on_stealth",
+      "condition": "move_max_half_speed"
+    }
+  },
+  {
+    "key": "thief_use_magic_device",
+    "name": "Magische Gegenstände benutzen",
+    "description": "Stufe 13: Du ignorierst alle Klassen-, Rassen- und Stufen-Anforderungen beim Benutzen von magischen Gegenständen.",
+    "prerequisite": { "level": 13, "archetype": "thief" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "ignore_magic_item_restrictions",
+      "restrictions": ["class", "race", "level"]
+    }
+  },
+  {
+    "key": "thief_thiefs_reflexes",
+    "name": "Reflexe des Diebes",
+    "description": "Stufe 17: Du darfst in der ersten Runde eines Kampfes zwei Züge machen (einen bei deinem normalen Initiative-Wurf, einen bei Initiative - 10).",
+    "prerequisite": { "level": 17, "archetype": "thief" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "extra_turn_on_first_round",
+      "initiative_penalty_for_second_turn": 10
+    }
+  },
+  {
+    "key": "assassin_bonus_proficiencies",
+    "name": "Zusätzliche Übungen (Meuchelmörder)",
+    "description": "Stufe 3: Du erhältst Übung mit dem Verkleidungszeug und dem Giftmischer-Set.",
+    "prerequisite": { "level": 3, "archetype": "assassin" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "gain_tool_proficiency",
+      "tools": ["disguise_kit", "poisoners_kit"]
+    }
+  },
+  {
+    "key": "assassin_assassinate",
+    "name": "Meucheln (Assassinate)",
+    "description": "Stufe 3: Du hast Vorteil bei Angriffswürfen gegen Kreaturen, die noch nicht gehandelt haben. Jeder Treffer gegen eine 'überraschte' (surprised) Kreatur ist ein kritischer Treffer.",
+    "prerequisite": { "level": 3, "archetype": "assassin" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "attack_buffs",
+      "advantage_condition": "target_has_not_acted",
+      "auto_crit_condition": "target_surprised"
+    }
+  },
+  {
+    "key": "assassin_infiltration_expertise",
+    "name": "Infiltrations-Expertise",
+    "description": "Stufe 9: Du kannst eine falsche Identität erschaffen. Du kannst die Sprache und das Verhalten anderer überzeugend imitieren.",
+    "prerequisite": { "level": 9, "archetype": "assassin" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "infiltrate_social_tools"
+    }
+  },
+  {
+    "key": "assassin_impostor",
+    "name": "Hochstapler (Impostor)",
+    "description": "Stufe 13: Du kannst (3 Std.) eine Person beobachten, um ihr Verhalten, ihre Sprache und ihr Aussehen meisterhaft zu imitieren.",
+    "prerequisite": { "level": 13, "archetype": "assassin" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "master_imitation",
+      "observation_time": "3_hours"
+    }
+  },
+  {
+    "key": "assassin_death_strike",
+    "name": "Todesstoß (Death Strike)",
+    "description": "Stufe 17: Wenn du eine 'überraschte' (surprised) Kreatur triffst, muss sie einen KO-Rettungswurf (SG 8 + GE-Mod + Übungsbonus) bestehen oder erleidet doppelten Schaden durch deinen Angriff.",
+    "prerequisite": { "level": 17, "archetype": "assassin" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "damage_multiplier",
+      "multiplier": 2,
+      "condition": "target_surprised",
+      "save_throw": "constitution",
+      "save_dc_formula": "8_plus_dex_mod_plus_proficiency"
+    }
+  },
+  {
+    "key": "arcane_trickster_spellcasting",
+    "name": "Zauberwirken (Arkaner Betrüger)",
+    "description": "Stufe 3: Du erhältst die Fähigkeit, Magierzauber (Intelligenz) zu wirken (1/3-Zauberwirker), hauptsächlich aus den Schulen der Illusion und Verzauberung.",
+    "prerequisite": { "level": 3, "archetype": "arcane_trickster" },
+    "feature_type": "spellcasting_feature",
+    "mechanics": {
+      "type": "caster_type",
+      "caster_level_multiplier": "1/3",
+      "ability": "INT",
+      "restricted_schools": ["illusion", "enchantment"]
+    }
+  },
+  {
+    "key": "arcane_trickster_mage_hand_legerdemain",
+    "name": "Magierhand-Taschentrick",
+    "description": "Stufe 3: Du lernst 'Magierhand'. Du kannst die Hand unsichtbar machen und sie nutzen, um Objekte in Behältern (die andere tragen) zu verstauen/zu holen oder Diebeswerkzeug aus der Ferne zu benutzen.",
+    "prerequisite": { "level": 3, "archetype": "arcane_trickster" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "mage_hand_upgrade",
+      "effect": "invisible_utility_actions"
+    }
+  },
+  {
+    "key": "arcane_trickster_magical_ambush",
+    "name": "Magischer Hinterhalt",
+    "description": "Stufe 9: Wenn du aus dem Verborgenen einen Zauber wirkst, hat das Ziel Nachteil auf seinen ersten Rettungswurf gegen diesen Zauber.",
+    "prerequisite": { "level": 9, "archetype": "arcane_trickster" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_ambush",
+      "effect": "disadvantage_on_first_save",
+      "condition": "casting_from_hiding"
+    }
+  },
+  {
+    "key": "arcane_trickster_versatile_trickster",
+    "name": "Vielseitiger Betrüger",
+    "description": "Stufe 13: Als Bonusaktion kannst du deine 'Magierhand' nutzen, um eine Kreatur in 1,5m Nähe zur Hand abzulenken. Du erhältst Vorteil bei Angriffswürfen gegen diese Kreatur bis zum Ende des Zuges.",
+    "prerequisite": { "level": 13, "archetype": "arcane_trickster" },
+    "feature_type": "subclass_feature",
+    "action_type": "bonus_action",
+    "mechanics": {
+      "type": "mage_hand_distraction",
+      "range": 1.5,
+      "range_unit": "meter",
+      "effect": "advantage_on_attacks_vs_target"
+    }
+  },
+  {
+    "key": "arcane_trickster_spell_thief",
+    "name": "Zauberdieb",
+    "description": "Stufe 17: Als Reaktion, wenn eine Kreatur einen Zauber auf dich zielt, kannst du versuchen, den Zauber zu stehlen (INT-RW vs SG 10 + Zaubergrad). Bei Erfolg wird der Zauber negiert und du 'kennst' ihn für 8 Stunden.",
+    "prerequisite": { "level": 17, "archetype": "arcane_trickster" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "spell_steal",
+      "save_throw": "intelligence",
+      "save_dc_formula": "10_plus_spell_level",
+      "effect": "negate_spell_and_learn_for_8_hours"
+    }
+  },
+  {
+    "key": "evocation_savant",
+    "name": "Hervorrufungs-Gelehrter",
+    "description": "Die Zeit und das Gold, die du benötigst, um einen Hervorrufungszauber in dein Zauberbuch zu kopieren, sind halbiert.",
+    "prerequisite": { "level": 2, "archetype": "school_of_evocation" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_copy_cost_reduction",
+      "school": "evocation",
+      "gold_multiplier": 0.5,
+      "time_multiplier": 0.5
+    }
+  },
+  {
+    "key": "sculpt_spells",
+    "name": "Zauber formen",
+    "description": "Wenn du einen Hervorrufungszauber wirkst, kannst du eine Anzahl von Kreaturen (1 + Zaubergrad) wählen, die automatisch bei ihren Rettungswürfen erfolgreich sind und keinen Schaden nehmen.",
+    "prerequisite": { "level": 2, "archetype": "school_of_evocation" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "protect_from_aoe_save",
+      "school": "evocation",
+      "targets_formula": "1_plus_spell_level",
+      "effect": "auto_save_no_damage"
+    }
+  },
+  {
+    "key": "potent_cantrip",
+    "name": "Mächtige Zaubertricks",
+    "description": "Wenn eine Kreatur bei einem Rettungswurf gegen einen deiner Magier-Zaubertricks erfolgreich ist, erleidet sie dennoch halben Schaden (aber keine zusätzlichen Effekte).",
+    "prerequisite": { "level": 6, "archetype": "school_of_evocation" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "cantrip_half_damage_on_save",
+      "school": "evocation"
+    }
+  },
+  {
+    "key": "empowered_evocation",
+    "name": "Ermächtigte Hervorrufung",
+    "description": "Du kannst deinen Intelligenz-Modifikator zu *einem* Schadenswurf deiner Hervorrufungszauber addieren.",
+    "prerequisite": { "level": 10, "archetype": "school_of_evocation" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "add_ability_mod_to_damage_roll",
+      "ability": "INT",
+      "school": "evocation",
+      "uses": "one_damage_roll_per_spell"
+    }
+  },
+  {
+    "key": "draconic_resilience_hp",
+    "name": "Drakonische Widerstandsfähigkeit (TP)",
+    "description": "Deine maximalen Trefferpunkte erhöhen sich um 1 pro Zauberstufe.",
+    "prerequisite": { "level": 1, "archetype": "draconic_bloodline" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "hp_bonus_per_level",
+      "value": 1,
+      "class_level": "sorcerer"
+    }
+  },
+  {
+    "key": "draconic_resilience_ac",
+    "name": "Drakonische Widerstandsfähigkeit (RK)",
+    "description": "Solange du keine Rüstung trägst, ist deine Rüstungsklasse 13 + dein Geschicklichkeitsmodifikator.",
+    "prerequisite": { "level": 1, "archetype": "draconic_bloodline" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "ac_calculation",
+      "formula": "13_plus_dex_mod",
+      "condition": "not_wearing_armor"
+    }
+  },
+  {
+    "key": "elemental_affinity",
+    "name": "Elementare Affinität",
+    "description": "Wenn du einen Zauber wirkst, der Schaden des mit deinem Drachenahnen verbundenen Typs verursacht, addierst du deinen Charisma-Modifikator zu einem Schadenswurf dieses Zaubers.",
+    "prerequisite": { "level": 6, "archetype": "draconic_bloodline" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "add_ability_mod_to_damage_roll",
+      "ability": "CHA",
+      "damage_type_source": "draconic_ancestry",
+      "uses": "one_damage_roll_per_spell"
+    }
+  },
+  {
+    "key": "life_domain_bonus_proficiency",
+    "name": "Bonusübung (Domäne des Lebens)",
+    "description": "Du erhältst Übung mit schwerer Rüstung.",
+    "prerequisite": { "level": 1, "archetype": "life_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "grant_proficiency",
+      "armor": ["heavy_armor"]
+    }
+  },
+  {
+    "key": "disciple_of_life",
+    "name": "Jünger des Lebens",
+    "description": "Immer wenn du einen Heilzauber des 1. oder höheren Grades wirkst, erhält das Ziel zusätzliche Trefferpunkte in Höhe von 2 + dem Grad des Zaubers.",
+    "prerequisite": { "level": 1, "archetype": "life_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_healing_bonus",
+      "bonus_formula": "2_plus_spell_level",
+      "min_spell_level": 1
+    }
+  },
+  {
+    "key": "blessed_healer",
+    "name": "Gesegneter Heiler",
+    "description": "Wenn du einen Heilzauber (Grad 1+) auf eine andere Kreatur wirkst, erhältst du selbst Trefferpunkte in Höhe von 2 + dem Grad des Zaubers zurück.",
+    "prerequisite": { "level": 6, "archetype": "life_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "self_heal_on_other_heal",
+      "bonus_formula": "2_plus_spell_level",
+      "min_spell_level": 1
+    }
+  },
+  {
+    "key": "divine_strike_life",
+    "name": "Göttlicher Schlag (Domäne des Lebens)",
+    "description": "Einmal pro Zug, wenn du mit einem Waffenangriff triffst, verursachst du zusätzlich 1W8 gleißenden Schaden (2W8 ab Stufe 14).",
+    "prerequisite": { "level": 8, "archetype": "life_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "extra_damage_on_hit",
+      "dice": "1d8",
+      "damage_type": "radiant",
+      "uses": "once_per_turn",
+      "scaling": { "14": "2d8" }
+    }
+  },
+  {
+    "key": "knowledge_blessing_of_knowledge",
+    "name": "Segen des Wissens",
+    "description": "Du lernst zwei Sprachen und erhältst Übung in zwei Fertigkeiten (Arkanum, Geschichte, Naturkunde oder Religion), wobei dein Übungsbonus verdoppelt wird.",
+    "prerequisite": { "level": 1, "archetype": "knowledge_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "grant_proficiency_and_expertise",
+      "languages": { "choose": 2, "from": "any" },
+      "skills": {
+        "choose": 2,
+        "from": ["arcanum", "history", "nature", "religion"],
+        "expertise": true
+      }
+    }
+  },
+  {
+    "key": "channel_divinity_knowledge_of_the_ages",
+    "name": "Göttliche Macht fokussieren: Wissen der Zeitalter",
+    "description": "Als Aktion kannst du Übung in einer Fertigkeit oder einem Werkzeug deiner Wahl für 10 Minuten erhalten.",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "knowledge_domain",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "gain_temp_proficiency",
+      "duration": "10_minutes",
+      "choice_type": "skill_or_tool"
+    }
+  },
+  {
+    "key": "channel_divinity_read_thoughts",
+    "name": "Göttliche Macht fokussieren: Gedanken lesen",
+    "description": "Du kannst deine Aktion nutzen, um die Gedanken einer Kreatur zu lesen oder sie zu bezaubern.",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "knowledge_domain",
+    "feature_type": "channel_divinity",
+    "prerequisite": { "level": 6 },
+    "mechanics": {
+      "type": "utility_spell_effect",
+      "spell_key": "detect_thoughts",
+      "secondary_effect": "charm_person_on_fail"
+    }
+  },
+  {
+    "key": "divine_strike_knowledge",
+    "name": "Göttlicher Schlag (Wissen)",
+    "description": "Einmal pro Zug, wenn du mit einem Waffenangriff triffst, verursachst du zusätzlich 1W8 psychischen Schaden (2W8 ab Stufe 14).",
+    "prerequisite": { "level": 8, "archetype": "knowledge_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "extra_damage_on_hit",
+      "dice": "1d8",
+      "damage_type": "psychic",
+      "uses": "once_per_turn",
+      "scaling": { "14": "2d8" }
+    }
+  },
+  {
+    "key": "light_bonus_cantrip",
+    "name": "Zusätzlicher Zaubertrick (Licht)",
+    "description": "Du lernst den Zaubertrick 'Licht'.",
+    "prerequisite": { "level": 1, "archetype": "light_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "learn_cantrip",
+      "spell_key": "light"
+    }
+  },
+  {
+    "key": "light_warding_flare",
+    "name": "Schützendes Aufflackern",
+    "description": "Als Reaktion, wenn du oder eine Kreatur in 9m Nähe angegriffen wird, kannst du dem Angreifer Nachteil auf den Angriffswurf geben.",
+    "prerequisite": { "level": 1, "archetype": "light_domain" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "reaction_impose_disadvantage_on_attack_roll",
+      "trigger": "ally_or_self_attacked_in_range",
+      "range": 9,
+      "range_unit": "meter"
+    }
+  },
+  {
+    "key": "channel_divinity_radiance_of_the_dawn",
+    "name": "Göttliche Macht fokussieren: Blendender Strahl",
+    "description": "Als Aktion vertreibst du Dunkelheit und verursachst 2W10 + Kleriker-Level gleißenden Schaden an Feinden (WE-Rettungswurf für halben Schaden).",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "light_domain",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "aoe_damage_and_effect",
+      "range": 9,
+      "range_unit": "meter",
+      "damage_dice": "2d10",
+      "damage_bonus_from_level": "cleric",
+      "damage_type": "radiant",
+      "save_throw": "constitution",
+      "effect_on_fail": "blinded",
+      "duration": "1_round"
+    }
+  },
+  {
+    "key": "divine_strike_light",
+    "name": "Göttlicher Schlag (Licht)",
+    "description": "Einmal pro Zug, wenn du mit einem Waffenangriff triffst, verursachst du zusätzlich 1W8 gleißenden Schaden (2W8 ab Stufe 14).",
+    "prerequisite": { "level": 8, "archetype": "light_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "extra_damage_on_hit",
+      "dice": "1d8",
+      "damage_type": "radiant",
+      "uses": "once_per_turn",
+      "scaling": { "14": "2d8" }
+    }
+  },
+  {
+    "key": "trickery_blessing_of_the_trickster",
+    "name": "Segen des Betrügers",
+    "description": "Als Aktion kannst du einer willigen Kreatur (außer dir) 1 Stunde lang Vorteil auf Geschicklichkeits (Heimlichkeit)-Würfe gewähren.",
+    "prerequisite": { "level": 1, "archetype": "trickery_domain" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "grant_advantage_on_skill",
+      "skill": "stealth",
+      "duration": "1_hour",
+      "target_restriction": "other_willing"
+    }
+  },
+  {
+    "key": "channel_divinity_invoke_duplicity",
+    "name": "Göttliche Macht fokussieren: Trugbild beschwören",
+    "description": "Als Aktion erschaffst du ein Trugbild von dir selbst, das sich bewegen kann und von dem aus du Zauber wirken kannst (hält 1 Min, Konzentration).",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "trickery_domain",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "summon_illusion_duplicate",
+      "duration": "1_minute",
+      "concentration": true,
+      "utility": "cast_spells_from_duplicate"
+    }
+  },
+  {
+    "key": "channel_divinity_cloak_of_shadows",
+    "name": "Göttliche Macht fokussieren: Unsichtbarkeit",
+    "description": "Als Aktion kannst du deine Aktion nutzen, um dich selbst unsichtbar zu machen, bis dein Zug endet.",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "trickery_domain",
+    "feature_type": "channel_divinity",
+    "prerequisite": { "level": 6 },
+    "mechanics": {
+      "type": "gain_condition",
+      "condition": "invisible",
+      "duration": "end_of_turn"
+    }
+  },
+  {
+    "key": "divine_strike_trickery",
+    "name": "Göttlicher Schlag (List)",
+    "description": "Einmal pro Zug, wenn du mit einem Waffenangriff triffst, verursachst du zusätzlich 1W8 Giftschaden (2W8 ab Stufe 14).",
+    "prerequisite": { "level": 8, "archetype": "trickery_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "extra_damage_on_hit",
+      "dice": "1d8",
+      "damage_type": "poison",
+      "uses": "once_per_turn",
+      "scaling": { "14": "2d8" }
+    }
+  },
+  {
+    "key": "war_bonus_proficiency",
+    "name": "Bonusübung (Krieg)",
+    "description": "Du erhältst Übung mit schwerer Rüstung und Kriegswaffen.",
+    "prerequisite": { "level": 1, "archetype": "war_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "grant_proficiency",
+      "armor": ["heavy_armor"],
+      "weapons": ["martial_weapons"]
+    }
+  },
+  {
+    "key": "war_priest",
+    "name": "Kriegspriester",
+    "description": "Wenn du die Angriffsaktion nutzt, kannst du als Bonusaktion einen Waffenangriff ausführen (so oft wie dein WE-Modifikator pro langer Rast).",
+    "prerequisite": { "level": 1, "archetype": "war_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "bonus_action_attack",
+      "trigger_action": "attack_action",
+      "uses_per_long_rest": "wisdom_modifier"
+    }
+  },
+  {
+    "key": "channel_divinity_guided_strike",
+    "name": "Göttliche Macht fokussieren: Geführter Schlag",
+    "description": "Wenn du einen Angriffswurf machst, kannst du diese Fähigkeit nutzen, um +10 auf den Wurf zu erhalten.",
+    "cost": 1,
+    "action_type": "free_action",
+    "trigger": "on_attack_roll",
+    "domain": "war_domain",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "add_bonus_to_attack_roll",
+      "value": 10
+    }
+  },
+  {
+    "key": "divine_strike_war",
+    "name": "Göttlicher Schlag (Krieg)",
+    "description": "Einmal pro Zug, wenn du mit einem Waffenangriff triffst, verursachst du zusätzlich 1W8 Schaden (vom Typ deiner Waffe) (2W8 ab Stufe 14).",
+    "prerequisite": { "level": 8, "archetype": "war_domain" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "extra_damage_on_hit",
+      "dice": "1d8",
+      "damage_type": "same_as_weapon",
+      "uses": "once_per_turn",
+      "scaling": { "14": "2d8" }
+    }
+  },
+  {
+    "key": "moon_combat_wild_shape",
+    "name": "Kampf-Tiergestalt",
+    "description": "Du kannst Tiergestalt als Bonusaktion annehmen und Zauberplätze opfern, um dich in Tiergestalt zu heilen.",
+    "prerequisite": { "level": 2, "archetype": "circle_of_the_moon" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "wild_shape_upgrade",
+      "action_type": "bonus_action",
+      "utility": "heal_as_bonus_action_by_spending_spell_slot"
+    }
+  },
+  {
+    "key": "moon_circle_forms",
+    "name": "Zirkelformen",
+    "description": "Du kannst dich in Tiere mit einem höheren Herausforderungsgrad (HG 1, steigend auf HG = Druiden-Level / 3) verwandeln.",
+    "prerequisite": { "level": 2, "archetype": "circle_of_the_moon" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "wild_shape_upgrade",
+      "max_cr_formula": "max(1, floor(druid_level / 3))",
+      "restriction": "level_2_no_flying_or_swimming_speed"
+    }
+  },
+  {
+    "key": "moon_primal_strike",
+    "name": "Urtümliche Schläge",
+    "description": "Deine Angriffe in Tiergestalt gelten als magisch, um Resistenzen zu überwinden.",
+    "prerequisite": { "level": 6, "archetype": "circle_of_the_moon" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "wild_shape_upgrade",
+      "effect": "attacks_are_magical"
+    }
+  },
+  {
+    "key": "moon_elemental_wild_shape",
+    "name": "Elementare Tiergestalt",
+    "description": "Du kannst 2 Anwendungen deiner Tiergestalt verbrauchen, um dich in ein Luftelementar, Erdelementar, Feuerelementar oder Wasserelementar zu verwandeln.",
+    "prerequisite": { "level": 10, "archetype": "circle_of_the_moon" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "wild_shape_upgrade",
+      "resource_cost": "2_uses",
+      "forms": ["air_elemental", "earth_elemental", "fire_elemental", "water_elemental"]
+    }
+  },
+  {
+    "key": "moon_thousand_forms",
+    "name": "Tausend Gestalten",
+    "description": "Du kannst den Zauber 'Gestalt verändern' beliebig oft auf dich selbst wirken, ohne einen Zauberplatz zu verbrauchen.",
+    "prerequisite": { "level": 14, "archetype": "circle_of_the_moon" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "at_will_spell",
+      "spell_key": "alter_self",
+      "target_restriction": "self"
+    }
+  },
+  {
+    "key": "channel_divinity_natures_wrath",
+    "name": "Göttliche Macht fokussieren: Zorn der Natur",
+    "description": "Als Aktion kannst du Ranken beschwören, die eine Kreatur in 3m Nähe fesseln (ST- oder GE-Rettungswurf, um zu entkommen).",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "oath_of_the_ancients",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "aoe_control",
+      "range": 3,
+      "range_unit": "meter",
+      "target_count": 1,
+      "save_throw": "strength_or_dexterity",
+      "conditions_applied": ["restrained"],
+      "duration": "1_minute_or_until_save"
+    }
+  },
+  {
+    "key": "channel_divinity_turn_the_faithless",
+    "name": "Göttliche Macht fokussieren: Untote vertreiben (Ahnen)",
+    "description": "Als Aktion präsentierst du dein heiliges Symbol. Jede Fee (Fey) oder Unhold (Fiend) in 9m (der dich sehen/hören kann) muss einen Weisheits-Rettungswurf bestehen oder wird vertrieben.",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "oath_of_the_ancients",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "turn_creatures",
+      "creature_types": ["fey", "fiend"],
+      "range": 9,
+      "range_unit": "meter",
+      "save_throw": "wisdom",
+      "conditions_applied": ["frightened"],
+      "duration": "1_minute"
+    }
+  },
+  {
+    "key": "ancients_aura_of_warding",
+    "name": "Aura der Behütung",
+    "description": "Ab Stufe 7 erhalten du und Verbündete in 3m Nähe Resistenz gegen Schaden durch Zauber.",
+    "prerequisite": { "level": 7, "archetype": "oath_of_the_ancients" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "aura_grant_resistance",
+      "range": 3,
+      "range_unit": "meter",
+      "resistance_type": "damage_from_spells"
+    }
+  },
+  {
+    "key": "channel_divinity_abjure_enemy",
+    "name": "Göttliche Macht fokussieren: Gegner verjagen",
+    "description": "Als Aktion kannst du einen Unhold oder Untoten in 18m Nähe verängstigen (WE-Rettungswurf). Bei Misserfolg ist er 1 Minute verängstigt und seine Bewegungsrate ist 0.",
+    "cost": 1,
+    "action_type": "action",
+    "domain": "oath_of_vengeance",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "single_target_control",
+      "range": 18,
+      "range_unit": "meter",
+      "target_types": ["fiend", "undead"],
+      "save_throw": "wisdom",
+      "conditions_applied": ["frightened", "speed_zero"],
+      "duration": "1_minute"
+    }
+  },
+  {
+    "key": "channel_divinity_vow_of_enmity",
+    "name": "Göttliche Macht fokussieren: Feindseligkeit schwören",
+    "description": "Als Bonusaktion kannst du einer Kreatur in 3m Nähe die Feindseligkeit schwören. Du hast 1 Minute lang Vorteil auf alle Angriffswürfe gegen sie.",
+    "cost": 1,
+    "action_type": "bonus_action",
+    "domain": "oath_of_vengeance",
+    "feature_type": "channel_divinity",
+    "mechanics": {
+      "type": "single_target_buff",
+      "range": 3,
+      "range_unit": "meter",
+      "effect": "advantage_on_attack_rolls_vs_target",
+      "duration": "1_minute",
+      "concentration": true
+    }
+  },
+  {
+    "key": "vengeance_relentless_avenger",
+    "name": "Unerbittlicher Rächer",
+    "description": "Wenn du eine Kreatur mit einem Gelegenheitsangriff triffst, kannst du als Reaktion sofort die Hälfte deiner Bewegungsrate bewegen.",
+    "prerequisite": { "level": 7, "archetype": "oath_of_vengeance" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "movement_on_opportunity_attack_hit",
+      "movement_multiplier": 0.5
+    }
+  },
+  {
+    "key": "beast_master_animal_companion",
+    "name": "Tiergefährte",
+    "description": "Du erhältst einen Tiergefährten (HG 1/4 oder niedriger), der dir im Kampf gehorcht.",
+    "prerequisite": { "level": 3, "archetype": "beast_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "gain_animal_companion",
+      "max_cr": 0.25,
+      "creature_type": "beast"
+    }
+  },
+  {
+    "key": "beast_master_coordinated_attack",
+    "name": "Koordinierter Angriff",
+    "description": "Wenn du die Angriffsaktion nutzt, kann dein Tiergefährte seine Reaktion nutzen, um selbst einen Angriff auszuführen.",
+    "prerequisite": { "level": 5, "archetype": "beast_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "companion_reaction_attack",
+      "trigger": "caster_attack_action"
+    }
+  },
+  {
+    "key": "beast_master_exceptional_training",
+    "name": "Außergewöhnliche Ausbildung",
+    "description": "Dein Tiergefährte kann als Bonusaktion in deinem Zug die Spurt-, Rückzugs- oder Helfen-Aktion nutzen.",
+    "prerequisite": { "level": 7, "archetype": "beast_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "companion_bonus_action",
+      "options": ["dash", "disengage", "help"]
+    }
+  },
+  {
+    "key": "beast_master_bestial_fury",
+    "name": "Bestialische Wut",
+    "description": "Dein Tiergefährte kann als Teil seiner Angriffsaktion zweimal angreifen.",
+    "prerequisite": { "level": 11, "archetype": "beast_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "companion_extra_attack",
+      "count": 2
+    }
+  },
+  {
+    "key": "beast_master_share_spells",
+    "name": "Geteilte Zauber",
+    "description": "Zauber, die nur dich selbst zum Ziel haben, können auch deinen Tiergefährten betreffen, wenn er in 9m Nähe ist.",
+    "prerequisite": { "level": 15, "archetype": "beast_master" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "companion_share_spells",
+      "target_restriction": "self_only_spells",
+      "range": 9,
+      "range_unit": "meter"
+    }
+  },
+  {
+    "key": "wild_magic_surge",
+    "name": "Wogen der Wilden Magie",
+    "description": "Nach dem Wirken eines Zaubers (Grad 1+) kann der SL dich zwingen, auf der 'Wilde Magie'-Tabelle zu würfeln.",
+    "prerequisite": { "level": 1, "archetype": "wild_magic" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "wild_magic_surge_roll",
+      "trigger": "after_cast_spell_level_1_plus",
+      "trigger_dice": "1d20",
+      "trigger_on_roll": 1,
+      "table_key": "wild_magic_surge_table"
+    }
+  },
+  {
+    "key": "wild_magic_tides_of_chaos",
+    "name": "Gezeiten des Chaos",
+    "description": "Einmal pro langer Rast kannst du dir Vorteil auf einen Angriffs-, Attributs- oder Rettungswurf geben. Dies lädt 'Wogen der Wilden Magie' wieder auf.",
+    "prerequisite": { "level": 1, "archetype": "wild_magic" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "gain_advantage_on_roll",
+      "roll_type": "attack_or_ability_or_save",
+      "uses": "1_per_long_rest",
+      "recharge_trigger": "on_wild_magic_surge"
+    }
+  },
+  {
+    "key": "wild_magic_bend_luck",
+    "name": "Glück Bändigen",
+    "description": "Als Reaktion kannst du 2 Zauberpunkte ausgeben, um eine Kreatur zu zwingen, einen Angriffs-, Attributs- oder Rettungswurf erneut zu würfeln (mit W4 Bonus/Malus).",
+    "prerequisite": { "level": 6, "archetype": "wild_magic" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "resource_cost": { "type": "sorcery_points", "value": 2 },
+    "mechanics": {
+      "type": "modify_roll_reaction",
+      "range": 18,
+      "range_unit": "meter",
+      "roll_type": "attack_or_ability_or_save",
+      "bonus_dice": "1d4",
+      "effect_type": "add_or_subtract"
+    }
+  },
+  {
+    "key": "wild_magic_controlled_chaos",
+    "name": "Kontrolliertes Chaos",
+    "description": "Wenn du einen 'Wilde Magie'-Effekt auslöst, kannst du zweimal würfeln und das Ergebnis wählen.",
+    "prerequisite": { "level": 14, "archetype": "wild_magic" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "wild_magic_surge_roll_modification",
+      "effect": "roll_twice_choose_one",
+      "trigger": "on_wild_magic_surge"
+    }
+  },
+  {
+    "key": "wild_magic_spell_bombardment",
+    "name": "Zauberbombardement",
+    "description": "Wenn du maximalen Schaden auf einem Schadenswürfel eines Zaubers erzielst, kannst du einen zusätzlichen Würfel desselben Typs würfeln und zum Schaden addieren.",
+    "prerequisite": { "level": 18, "archetype": "wild_magic" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "extra_damage_on_max_roll",
+      "trigger": "spell_damage_dice_max_result",
+      "effect": "roll_one_additional_dice_of_same_type",
+      "uses": "once_per_turn"
+    }
+  },
+  {
+    "key": "archfey_fey_presence",
+    "name": "Feenhafte Präsenz",
+    "description": "Als Aktion kannst du Kreaturen in einem 3m-Würfel um dich bezaubern oder verängstigen (WE-Rettungswurf, bis zum Ende deines nächsten Zuges).",
+    "prerequisite": { "level": 1, "archetype": "the_archfey" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "aoe_control",
+      "shape": "cube",
+      "range": 3,
+      "range_unit": "meter",
+      "save_throw": "wisdom",
+      "conditions_applied_choice": ["charmed", "frightened"],
+      "duration": "end_of_next_turn",
+      "uses": "1_per_short_or_long_rest"
+    }
+  },
+  {
+    "key": "archfey_misty_escape",
+    "name": "Nebliger Ausweg",
+    "description": "Als Reaktion, wenn du Schaden nimmst, kannst du dich unsichtbar machen und bis zu 18m teleportieren. Du bleibst unsichtbar bis zum Beginn deines nächsten Zuges.",
+    "prerequisite": { "level": 6, "archetype": "the_archfey" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "reaction_teleport_and_condition",
+      "trigger": "on_take_damage",
+      "teleport_range": 18,
+      "teleport_unit": "meter",
+      "condition": "invisible",
+      "condition_duration": "start_of_next_turn",
+      "uses": "1_per_short_or_long_rest"
+    }
+  },
+  {
+    "key": "archfey_beguiling_defenses",
+    "name": "Betörende Verteidigung",
+    "description": "Du bist immun gegen den 'Bezaubert'-Zustand. Wenn eine Kreatur versucht, dich zu bezaubern, kannst du (als Reaktion) den Zauber auf sie zurücklenken (WE-Rettungswurf).",
+    "prerequisite": { "level": 10, "archetype": "the_archfey" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "passive_immunity_and_reaction",
+      "immunity_type": "charmed",
+      "reaction_trigger": "creature_tries_to_charm_caster",
+      "reaction_effect": "turn_charm_back_on_target",
+      "reaction_save_throw": "wisdom"
+    }
+  },
+  {
+    "key": "archfey_dark_delirium",
+    "name": "Dunkler Delirium",
+    "description": "Als Aktion kannst du eine Kreatur in ein Trugbild versetzen (WE-Rettungswurf). Bei Misserfolg ist sie 1 Minute (Konzentration) bezaubert oder verängstigt.",
+    "prerequisite": { "level": 14, "archetype": "the_archfey" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "single_target_control",
+      "range": 18,
+      "range_unit": "meter",
+      "save_throw": "wisdom",
+      "conditions_applied_choice": ["charmed", "frightened"],
+      "duration": "1_minute",
+      "concentration": true,
+      "uses": "1_per_short_or_long_rest"
+    }
+  },
+  {
+    "key": "goo_awakened_mind",
+    "name": "Erwachtes Bewusstsein",
+    "description": "Du kannst telepathisch mit jeder Kreatur in 9m Entfernung sprechen, die du sehen kannst (sie muss deine Sprache nicht verstehen).",
+    "prerequisite": { "level": 1, "archetype": "the_great_old_one" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "gain_telepathy",
+      "range": 9,
+      "range_unit": "meter",
+      "restriction": "one_way_to_any_creature_no_language_needed"
+    }
+  },
+  {
+    "key": "goo_entropic_ward",
+    "name": "Entropischer Schutz",
+    "description": "Als Reaktion, wenn du angegriffen wirst, kannst du dem Angreifer Nachteil auf den Angriffswurf geben. Gelingt der Angriff trotzdem nicht, hast du Vorteil auf deinen nächsten Angriff gegen ihn.",
+    "prerequisite": { "level": 6, "archetype": "the_great_old_one" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "reaction_impose_disadvantage_on_attack_roll",
+      "trigger": "caster_attacked",
+      "effect_on_success": "gain_advantage_on_next_attack_vs_attacker",
+      "uses": "1_per_short_or_long_rest"
+    }
+  },
+  {
+    "key": "goo_thought_shield",
+    "name": "Gedankenschild",
+    "description": "Deine Gedanken können nicht telepathisch gelesen werden. Du erhältst Resistenz gegen psychischen Schaden.",
+    "prerequisite": { "level": 10, "archetype": "the_great_old_one" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "passive_immunity_and_resistance",
+      "immunity_type": "thoughts_read_telepathically",
+      "resistance_type": "psychic"
+    }
+  },
+  {
+    "key": "goo_create_thrall",
+    "name": "Leibeigenen erschaffen",
+    "description": "Als Aktion kannst du eine humanoide Kreatur berühren und sie permanent telepathisch versklaven (WE-Rettungswurf, um zu widerstehen).",
+    "prerequisite": { "level": 14, "archetype": "the_great_old_one" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "permanent_control_on_touch",
+      "target_type": "humanoid",
+      "save_throw": "wisdom",
+      "conditions_applied": ["charmed"],
+      "duration": "permanent_until_removed_by_greater_restoration",
+      "uses": "1_per_long_rest"
+    }
+  },
+  {
+    "key": "abjuration_savant",
+    "name": "Bannmagie-Gelehrter",
+    "description": "Kopierkosten und -zeit für Bannzauber sind halbiert.",
+    "prerequisite": { "level": 2, "archetype": "school_of_abjuration" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_copy_cost_reduction",
+      "school": "abjuration",
+      "gold_multiplier": 0.5,
+      "time_multiplier": 0.5
+    }
+  },
+  {
+    "key": "abjuration_arcane_ward",
+    "name": "Arkaner Schutz",
+    "description": "Du erschaffst einen Schutzschild (TP = Magier-Level x 2 + INT-Mod). Er lädt sich auf, wenn du Bannzauber wirkst.",
+    "prerequisite": { "level": 2, "archetype": "school_of_abjuration" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "summon_arcane_ward",
+      "hp_formula": "wizard_level_times_2_plus_int_mod",
+      "recharge_trigger": "on_cast_abjuration_spell",
+      "recharge_amount_formula": "2_times_spell_level"
+    }
+  },
+  {
+    "key": "abjuration_projected_ward",
+    "name": "Projizierter Schutz",
+    "description": "Als Reaktion kannst du den Schaden, den eine Kreatur in 9m Nähe erleidet, auf deinen Arkanen Schutz umleiten.",
+    "prerequisite": { "level": 6, "archetype": "school_of_abjuration" },
+    "feature_type": "subclass_feature",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "redirect_damage_to_ward",
+      "trigger": "ally_in_range_takes_damage",
+      "range": 9,
+      "range_unit": "meter"
+    }
+  },
+  {
+    "key": "abjuration_spell_resistance",
+    "name": "Zauberresistenz",
+    "description": "Du hast Vorteil bei Rettungswürfen gegen Zauber und Resistenz gegen Zauberschaden.",
+    "prerequisite": { "level": 14, "archetype": "school_of_abjuration" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "passive_buff",
+      "advantage_on_saves_vs_spells": true,
+      "resistance_type": "damage_from_spells"
+    }
+  },
+  {
+    "key": "conjuration_savant",
+    "name": "Beschwörungs-Gelehrter",
+    "description": "Kopierkosten und -zeit für Beschwörungszauber sind halbiert.",
+    "prerequisite": { "level": 2, "archetype": "school_of_conjuration" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_copy_cost_reduction",
+      "school": "conjuration",
+      "gold_multiplier": 0.5,
+      "time_multiplier": 0.5
+    }
+  },
+  {
+    "key": "conjuration_minor_conjuration",
+    "name": "Niedere Beschwörung",
+    "description": "Als Aktion kannst du einen unbelebten Gegenstand (max. 1m, 10 Pfund) für 1 Stunde erscheinen lassen.",
+    "prerequisite": { "level": 2, "archetype": "school_of_conjuration" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "conjure_minor_object",
+      "duration": "1_hour",
+      "max_size_meter": 1,
+      "max_weight_pounds": 10
+    }
+  },
+  {
+    "key": "conjuration_benign_transposition",
+    "name": "Gütiger Teleport",
+    "description": "Als Aktion kannst du dich bis zu 9m teleportieren oder den Platz mit einer willigen Kreatur tauschen.",
+    "prerequisite": { "level": 6, "archetype": "school_of_conjuration" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "teleport_or_swap",
+      "range": 9,
+      "range_unit": "meter",
+      "uses": "1_per_long_rest_or_cast_conjuration_spell"
+    }
+  },
+  {
+    "key": "conjuration_focused_conjuration",
+    "name": "Fokussierte Beschwörung",
+    "description": "Deine Konzentration auf Beschwörungszauber kann nicht durch Schaden gebrochen werden.",
+    "prerequisite": { "level": 10, "archetype": "school_of_conjuration" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "concentration_buff",
+      "school": "conjuration",
+      "effect": "cannot_be_broken_by_damage"
+    }
+  },
+  {
+    "key": "conjuration_durable_summons",
+    "name": "Robuste Beschwörungen",
+    "description": "Jede Kreatur, die du beschwörst, erhält 30 temporäre Trefferpunkte.",
+    "prerequisite": { "level": 14, "archetype": "school_of_conjuration" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "summon_buff",
+      "trigger": "on_summon_creature_spell",
+      "temp_hp_bonus": 30
+    }
+  },
+  {
+    "key": "divination_savant",
+    "name": "Erkenntnis-Gelehrter",
+    "description": "Kopierkosten und -zeit für Erkenntniszauber sind halbiert.",
+    "prerequisite": { "level": 2, "archetype": "school_of_divination" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_copy_cost_reduction",
+      "school": "divination",
+      "gold_multiplier": 0.5,
+      "time_multiplier": 0.5
+    }
+  },
+  {
+    "key": "divination_portent_lvl_2",
+    "name": "Omen (2 Würfel)",
+    "description": "Nach einer langen Rast würfelst du zwei W20. Du kannst jederzeit einen Wurf (Angriff, Rettung, Attribut) durch einen dieser Würfe ersetzen.",
+    "prerequisite": { "level": 2, "archetype": "school_of_divination" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "resource_portent_dice",
+      "dice_count": 2,
+      "recovery": "long_rest"
+    }
+  },
+  {
+    "key": "divination_expert_divination",
+    "name": "Geübtes Omen (Expert Divination)",
+    "description": "Wenn du einen Erkenntniszauber wirkst, erhältst du einen verbrauchten Zauberplatz (max. Grad 5) zurück.",
+    "prerequisite": { "level": 6, "archetype": "school_of_divination" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_slot_recovery_on_cast",
+      "school": "divination",
+      "max_slot_level_recovered": 5,
+      "uses": "1_per_short_or_long_rest"
+    }
+  },
+  {
+    "key": "divination_the_third_eye",
+    "name": "Drittes Auge",
+    "description": "Als Aktion kannst du Dunkelsicht, Äthersicht, 'Unsichtbares sehen' oder 'Schrift lesen' erhalten.",
+    "prerequisite": { "level": 10, "archetype": "school_of_divination" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "gain_utility_vision",
+      "options": ["darkvision", "ethereal_sight", "see_invisibility", "read_all_writing"],
+      "uses": "1_per_short_or_long_rest"
+    }
+  },
+  {
+    "key": "divination_portent_lvl_14",
+    "name": "Großes Omen (3 Würfel)",
+    "description": "Du würfelst nun drei W20 für dein Omen.",
+    "prerequisite": { "level": 14, "archetype": "school_of_divination" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "resource_upgrade",
+      "feature_key": "divination_portent_lvl_2",
+      "dice_count": 3
+    }
+  },
+  {
+    "key": "necromancy_savant",
+    "name": "Nekromantie-Gelehrter",
+    "description": "Kopierkosten und -zeit für Nekromantie-Zauber sind halbiert.",
+    "prerequisite": { "level": 2, "archetype": "school_of_necromancy" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_copy_cost_reduction",
+      "school": "necromancy",
+      "gold_multiplier": 0.5,
+      "time_multiplier": 0.5
+    }
+  },
+  {
+    "key": "necromancy_grim_harvest",
+    "name": "Schauerlicher Segen",
+    "description": "Wenn du Kreaturen mit einem Nekromantie-Zauber (Grad 1+) tötest, erhältst du Trefferpunkte (2x Zaubergrad, 3x bei 'Finger des Todes') zurück.",
+    "prerequisite": { "level": 2, "archetype": "school_of_necromancy" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "self_heal_on_kill_with_spell",
+      "school": "necromancy",
+      "min_spell_level": 1,
+      "heal_formula": "2_times_spell_level"
+    }
+  },
+  {
+    "key": "necromancy_undead_thralls",
+    "name": "Untote Diener",
+    "description": "Wenn du Untote erschaffst, erhalten sie mehr TP (gleich deinem Magier-Level) und fügen deinen INT-Modifikator zu ihrem Waffenschaden hinzu.",
+    "prerequisite": { "level": 6, "archetype": "school_of_necromancy" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "summon_buff",
+      "trigger": "on_animate_undead",
+      "hp_bonus_formula": "wizard_level",
+      "damage_bonus_formula": "INT_mod"
+    }
+  },
+  {
+    "key": "necromancy_inured_to_undead",
+    "name": "Nekrotische Resistenz",
+    "description": "Du erhältst Resistenz gegen nekrotischen Schaden und deine maximalen TP können nicht reduziert werden.",
+    "prerequisite": { "level": 10, "archetype": "school_of_necromancy" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "passive_resistance_and_immunity",
+      "resistance_type": "necrotic",
+      "immunity_type": "max_hp_reduction"
+    }
+  },
+  {
+    "key": "necromancy_command_undead",
+    "name": "Untote befehligen",
+    "description": "Als Aktion kannst du einen Untoten (WE-Rettungswurf) übernehmen. Bei Misserfolg ist er 24h dein Diener.",
+    "prerequisite": { "level": 14, "archetype": "school_of_necromancy" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "single_target_control",
+      "target_types": ["undead"],
+      "save_throw": "wisdom",
+      "conditions_applied": ["charmed"],
+      "duration": "24_hours"
+    }
+  },
+  {
+    "key": "transmutation_savant",
+    "name": "Verwandlungs-Gelehrter",
+    "description": "Kopierkosten und -zeit für Verwandlungszauber sind halbiert.",
+    "prerequisite": { "level": 2, "archetype": "school_of_transmutation" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "spell_copy_cost_reduction",
+      "school": "transmutation",
+      "gold_multiplier": 0.5,
+      "time_multiplier": 0.5
+    }
+  },
+  {
+    "key": "transmutation_minor_alchemy",
+    "name": "Niedere Alchemie",
+    "description": "Du kannst die physischen Eigenschaften eines unbelebten Gegenstands (Holz zu Eisen, Kupfer zu Silber etc.) für 1 Stunde verändern.",
+    "prerequisite": { "level": 2, "archetype": "school_of_transmutation" },
+    "feature_type": "subclass_feature",
+    "action_type": "action",
+    "mechanics": {
+      "type": "transform_material",
+      "duration": "1_hour",
+      "max_size_cubic_meter": 0.15
+    }
+  },
+  {
+    "key": "transmutation_transmuters_stone",
+    "name": "Stein der Weisen",
+    "description": "Du erschaffst einen Stein, der Dunkelsicht, Geschwindigkeitsbonus, KO-Rettungswurf-Übung oder eine Schadensresistenz gewährt.",
+    "prerequisite": { "level": 6, "archetype": "school_of_transmutation" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "create_magic_item",
+      "item_key": "transmuters_stone",
+      "passive_buff_options": ["darkvision", "speed_bonus_3m", "con_save_proficiency", "resistance_acid_cold_fire_lightning_or_thunder"]
+    }
+  },
+  {
+    "key": "transmutation_shapechanger",
+    "name": "Gestaltwandler",
+    "description": "Du kannst 'Verwandlung' (Polymorph) auf dich selbst anwenden (HG 1 oder niedriger), ohne einen Zauberplatz zu verbrauchen (1x pro kurzer Rast).",
+    "prerequisite": { "level": 10, "archetype": "school_of_transmutation" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "limited_use_spell",
+      "spell_key": "polymorph",
+      "target_restriction": "self",
+      "special_restriction": "max_cr_1_beast",
+      "uses": "1_per_short_or_long_rest"
+    }
+  },
+  {
+    "key": "transmutation_master_transmuter",
+    "name": "Meister-Verwandler",
+    "description": "Du kannst deinen Verwandlungsstein zerstören, um 'Mächtige Verwandlung' zu wirken, Tote wiederzubeleben, alle Krankheiten zu heilen oder eine Kreatur permanent zu verjüngen.",
+    "prerequisite": { "level": 14, "archetype": "school_of_transmutation" },
+    "feature_type": "subclass_feature",
+    "mechanics": {
+      "type": "consume_item_for_major_effect",
+      "item_key": "transmuters_stone",
+      "options": ["cast_polymorph_any", "cast_raise_dead", "remove_all_curses_diseases_poisons", "restore_youth"]
+    }
+  }
+]

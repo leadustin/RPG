@@ -1,4 +1,3 @@
-import allArmor from "../data/items/armor.json";
 import allClassData from "../data/classes.json";
 import { LEVEL_XP_TABLE } from "../utils/helpers";
 
@@ -27,31 +26,19 @@ export const getProficiencyBonus = (level) => {
  */
 export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
-
-  let totalBonus = 0;
-
-  // Fixe Boni (z.B. bei Menschen)
-  if (
-    character.ability_bonus_assignments &&
-    character.ability_bonus_assignments[abilityKey]
-  ) {
-    totalBonus += character.ability_bonus_assignments[abilityKey];
-  }
-
-  // Floating Boni (z.B. bei Halbelfen)
-  if (
-    character.race?.ability_bonuses?.floating &&
-    character.floating_bonus_assignments
-  ) {
-    const floatingBonuses = character.race.ability_bonuses.floating;
-    const bonusIndex = character.floating_bonus_assignments[abilityKey];
-
-    if (bonusIndex !== undefined && floatingBonuses[bonusIndex] !== undefined) {
-      totalBonus += floatingBonuses[bonusIndex];
+ 
+    // VEREINFACHTE LOGIK FÜR 2024-Regeln
+    // Annahme: Alle gewählten Boni (+2/+1 oder +1/+1/+1) werden
+    // in 'ability_bonus_assignments' gespeichert.
+    // z.B.: { str: 2, dex: 1 } ODER { str: 1, con: 1, wis: 1 }
+    if (
+      character.ability_bonus_assignments &&
+      character.ability_bonus_assignments[abilityKey]
+    ) {
+      return character.ability_bonus_assignments[abilityKey];
     }
-  }
-
-  return totalBonus;
+ 
+    return 0;
 };
 
 /**
@@ -217,7 +204,6 @@ export const SKILL_NAMES_DE = {
 export const isProficientInSkill = (character, skillKey) => {
   const {
     race,
-    class: charClass,
     background,
     skill_proficiencies_choice,
   } = character;
@@ -365,46 +351,6 @@ export const SKILL_DESCRIPTIONS_DE = {
     "Heimlichkeit (Geschicklichkeit): Die Fähigkeit, sich ungesehen und ungehört an anderen vorbeizuschleichen.",
   survival:
     "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden.",
-};
-
-// --- *** 4. NEUE/WIEDERHERGESTELLTE FUNKTIONEN AB HIER *** ---
-
-/**
- * HILFSFUNKTION: Würfelt eine Würfelformel (z.B. "1d8" oder "1d10+2").
- */
-export const rollDiceFormula = (formula) => {
-  let total = 0;
-  const parts = formula.split(/([+-])/); // Trennt nach + oder -
-
-  // Würfel-Teil (z.B. "1d8")
-  const dicePart = parts[0];
-  const [numDiceStr, numSidesStr] = dicePart.split("d");
-  const numDice = parseInt(numDiceStr, 10) || 1;
-  const numSides = parseInt(numSidesStr, 10);
-
-  if (!isNaN(numSides)) {
-    for (let i = 0; i < numDice; i++) {
-      total += Math.floor(Math.random() * numSides) + 1;
-    }
-  } else {
-    // Falls es kein Würfelwurf ist, sondern nur eine Zahl (sollte nicht passieren)
-    total += parseInt(dicePart, 10) || 0;
-  }
-
-  // Bonus-Teil (z.B. "+2" oder "-1")
-  if (parts[1] && parts[2]) {
-    const operator = parts[1];
-    const bonus = parseInt(parts[2], 10);
-    if (!isNaN(bonus)) {
-      if (operator === "+") {
-        total += bonus;
-      } else if (operator === "-") {
-        total -= bonus;
-      }
-    }
-  }
-
-  return total;
 };
 
 /**
@@ -575,9 +521,6 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   const finalHpGain = hpRollResult;
 
   const newMaxHP = oldMaxHP + finalHpGain;
-
-  // Aktuelle HP um den *Gewinn* erhöhen (nicht auf max setzen)
-  const newCurrentHP = (character.stats.hp || oldMaxHP) + finalHpGain;
 
   // Entferne das pendingLevelUp-Flag und wende die Stats an
   const { pendingLevelUp, ...restOfCharacter } = character;

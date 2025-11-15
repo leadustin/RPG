@@ -1,0 +1,116 @@
+/* src/components/character_creation/AncestrySelection.css */
+
+/* * Eigenes 2-Spalten-Layout für AncestrySelection.
+ * (Stil-Logik basiert auf IdentitySelection.css, aber mit eigenen Klassennamen)
+ */
+
+.ancestry-grid-layout {
+  display: grid;
+  /* 1fr 1.2fr (von IdentitySelection.css) */
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  height: 100%; /* Stellt sicher, dass das Layout die Höhe füllt */
+  overflow: hidden;
+}
+
+/* Linke Spalte (Liste) */
+.ancestry-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto; 
+  padding-right: 10px;
+}
+
+/* Rechte Spalte (Details) */
+.ancestry-column-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto; 
+  padding-right: 10px;
+}
+
+/* * Eigene Box-Klasse (Stil kopiert von .summary-box)
+ * Diese wird anstelle von .summary-box verwendet.
+ */
+.ancestry-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 15px;
+  
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+/* --- Scrollbar-Styling (angepasst an NEUE Klassen) --- */
+.ancestry-column-list::-webkit-scrollbar,
+.ancestry-column-details::-webkit-scrollbar {
+  width: 8px;
+}
+.ancestry-column-list::-webkit-scrollbar-track,
+.ancestry-column-details::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.ancestry-column-list::-webkit-scrollbar-thumb,
+.ancestry-column-details::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+.ancestry-column-list,
+.ancestry-column-details {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+
+/* --- NEU: Button-Stile (kopiert von .race-grid/.race-button) --- */
+
+.ancestry-button-grid {
+  display: grid;
+  /* Passt die Spaltenanzahl automatisch an die Breite an */
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.ancestry-button {
+  background-color: var(--theme-button-bg);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  color: var(--theme-text-color);
+  text-shadow: var(--theme-text-shadow);
+  font-family: var(--theme-font);
+  font-size: 1em;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+}
+
+.ancestry-button:hover {
+  background-color: var(--theme-button-hover-bg);
+  border-color: var(--color-selection);
+  transform: translateY(-2px);
+}
+
+.ancestry-button.selected {
+  background-color: var(--color-selection);
+  border-color: var(--color-text-light);
+  color: #000; /* Besserer Kontrast auf Gold */
+  text-shadow: none;
+  box-shadow: 0 0 10px rgba(168, 126, 76, 0.6);
+}
+
+.ancestry-button span {
+  font-weight: bold;
+}

@@ -1,38 +1,68 @@
-// src/components/AncestrySelection.js
+// src/components/character_creation/AncestrySelection.js
 import React from 'react';
-import './SubraceSelection.css'; // Wir können die gleichen Stile wiederverwenden
-import './PanelDetails.css';
+import './PanelDetails.css'; // Behalten für .details-divider, .traits-list
+// import './RaceSelection.css'; // <-- ENTFERNT
+import './AncestrySelection.css'; // <-- ENTHÄLT JETZT ALLE STILE
 
-export const AncestrySelection = ({ character, updateCharacter }) => {
-  const { race, ancestry } = character;
+export const AncestrySelection = ({ ancestries, selectedAncestry, onAncestrySelect }) => {
+
+  if (!ancestries || ancestries.length === 0) {
+    return <div className="panel-details">Für dieses Volk sind keine Abstammungen verfügbar.</div>;
+  }
 
   return (
-    <div className="subrace-container">
-      <h2>Wähle eine Abstammung für {race.name}</h2>
-      <p>Deine Wahl bestimmt den Schadenstyp deiner Odemwaffe und deiner Schadensresistenz.</p>
-      <div className="details-divider"></div>
-      <div className="ancestry-grid">
-        {race.ancestries.map(anc => (
-          <button
-            key={anc.key}
-            className={`subrace-button ${ancestry?.key === anc.key ? 'selected' : ''}`}
-            onClick={() => updateCharacter({ ancestry: anc })}
-          >
-            {anc.name}
-          </button>
-        ))}
-      </div>
+    <div className="ancestry-grid-layout"> 
       
-      {ancestry && (
-        <div className="subrace-details">
-          <div className="details-divider"></div>
-          <h3>{ancestry.name} Drache</h3>
-          <ul className="features-list">
-            <li><strong>Schadensresistenz:</strong> {ancestry.damage_type}</li>
-            <li><strong>Odemwaffe:</strong> {ancestry.breath_weapon}</li>
-          </ul>
+      {/* --- LINKE SPALTE (Liste) --- */}
+      <div className="ancestry-column-list">
+        <div className="ancestry-box">
+          <h3>Abstammung wählen</h3>
+          <p className="panel-details-description">
+            Wähle die Abstammung deines Drachenblütigen. Dies bestimmt deinen Odem-Angriff und deine Schadensresistenz.
+          </p>
+          
+          {/* KLASSE GEÄNDERT */}
+          <div className="ancestry-button-grid">
+            {ancestries.map((ancestry) => (
+              <button
+                key={ancestry.key}
+                /* KLASSE GEÄNDERT */
+                className={`ancestry-button ${
+                  selectedAncestry?.key === ancestry.key ? "selected" : ""
+                }`}
+                onClick={() => onAncestrySelect(ancestry)}
+              >
+                <span>{ancestry.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+      </div>
+
+      {/* --- RECHTE SPALTE (Details) --- */}
+      <div className="ancestry-column-details">
+        <div className="ancestry-box">
+          {selectedAncestry ? (
+            <React.Fragment> 
+              <div className="details-divider"></div> 
+              <h4>{selectedAncestry.name}</h4>
+              <ul className="traits-list">
+                <li>
+                  <strong>Schadensresistenz:</strong> {selectedAncestry.damage_resistance_type}
+                </li>
+                <li>
+                  <strong>Odemwaffe:</strong> {selectedAncestry.breath_weapon_description || 'Beschreibung der Odemwaffe...'}
+                </li>
+              </ul>
+            </React.Fragment>
+          ) : (
+            <div className="ancestry-details-placeholder" style={{ margin: 'auto', textAlign: 'center' }}>
+              <p>Wähle links eine Abstammung, um die Details anzuzeigen.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
     </div>
   );
 };

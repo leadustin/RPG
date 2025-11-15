@@ -6,7 +6,6 @@ import {
   saveAutoSave,
   deleteAutoSave,
   saveToSlot,
-  loadFromSlot,
 } from "../utils/persistence";
 // *** 1. IMPORT ERWEITERT (aus vorherigem Schritt, bleibt gleich) ***
 import {
@@ -14,11 +13,10 @@ import {
   calculateAC,
   grantXpToCharacter,
   applyLevelUp,
-  rollDiceFormula,
 } from "../engine/characterEngine";
 import allRaceData from "../data/races.json";
 import locationsData from "../data/locations.json";
-
+import { rollDiceFormula } from "../utils/helpers";
 // Item-Daten importieren
 import armorData from "../data/items/armor.json";
 import weaponsData from "../data/items/weapons.json";
@@ -203,6 +201,67 @@ export const useGameState = () => {
       level: 1,
       experience: 0,
     };
+
+    // --- START: NEUER, SEHR DETAILLIERTER LOG-BLOCK ---
+    // Dieser Block erfasst alle Felder aus dem `character`-State der CreationScreen.
+    const characterCreationSummary = {
+      // --- Identität & Volk ---
+      Name: characterWithStats.name,
+      Geschlecht: characterWithStats.gender,
+      Alter: characterWithStats.age,
+      Groesse: characterWithStats.height,
+      Gewicht: characterWithStats.weight,
+      Gesinnung: characterWithStats.alignment,
+      Rasse: characterWithStats.race.name,
+      Subrasse: characterWithStats.subrace?.name || "Keine",
+      Abstammung: characterWithStats.ancestry?.name || "Keine",
+
+      // --- Klasse & Hintergrund ---
+      Klasse: characterWithStats.class.name,
+      Subklasse_Key: characterWithStats.subclassKey || "Keine",
+      Hintergrund: characterWithStats.background.name,
+      Hintergrund_Sprachen: characterWithStats.background_choices.languages,
+      Hintergrund_Werkzeuge: characterWithStats.background_choices.tools,
+
+      // --- Attribute (Rohdaten) ---
+      Basis_Attribute: characterWithStats.abilities,
+      Attributsbonus_Zuweisung: characterWithStats.ability_bonus_assignments,
+
+      // --- Fähigkeiten (Proficiencies) ---
+      Gewaehlte_Skills: characterWithStats.skill_proficiencies_choice,
+      Gewaehlte_Expertise: characterWithStats.expertise_choices,
+      Waffen_Meisterschaft: characterWithStats.weapon_mastery_choices,
+
+      // --- Klassenspezifische Auswahl (Lvl 1) ---
+      Kampfstil: characterWithStats.fighting_style || "Kein",
+      Bevorzugter_Feind: characterWithStats.favored_enemy || "Kein",
+      Gelaende: characterWithStats.natural_explorer || "Kein",
+      Klassen_Werkzeug: characterWithStats.class_tool_choice || "Kein",
+      Barden_Instrumente: characterWithStats.tool_proficiencies_choice,
+
+      // --- Magie (Lvl 1) ---
+      Zaubertricks: characterWithStats.cantrips_known,
+      Zauberbuch: characterWithStats.spellbook,
+      Bekannte_Zauber: characterWithStats.spells_known,
+      Vorbereitete_Zauber: characterWithStats.spells_prepared,
+
+      // --- ABGELEITETE DATEN (Zur Kontrolle) ---
+      Finale_Attribute_mit_Bonus: characterWithStats.stats.abilities,
+      Start_Inventar_IDs: characterWithStats.inventory.map((item) => item.id),
+      Start_Ausruestung: Object.keys(characterWithStats.equipment).map(
+        (slot) => ({
+          slot: slot,
+          item: characterWithStats.equipment[slot]?.name,
+        })
+      ),
+    };
+
+    // Log der detaillierten Zusammenfassung
+    console.log(
+      "--- CHARAKTER ERSTELLT: DETAILLOG ALLER AUSWAHLEN ---",
+      characterCreationSummary
+    );
+    // --- ENDE: NEUER LOG-BLOCK ---
 
     // --- LOG-ANPASSUNG ---
     setGameState({

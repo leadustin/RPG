@@ -190,6 +190,31 @@
 }
 
 /* Subklassen Sektion */
+.subclass-selection {
+  max-height: 45vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.subclass-selection::-webkit-scrollbar {
+  width: 10px;
+}
+
+.subclass-selection::-webkit-scrollbar-track {
+  background: #2a2a2a; /* Hintergrund der Leiste */
+  border-radius: 5px;
+}
+
+.subclass-selection::-webkit-scrollbar-thumb {
+  background: #555; /* Der "Anfasser" (der bewegliche Teil) */
+  border-radius: 5px;
+}
+
+.subclass-selection::-webkit-scrollbar-thumb:hover {
+  background: #777; /* "Anfasser" beim Darüberfahren */
+}
 .subclass-option {
   padding: 12px;
   border: 2px solid #555;
@@ -235,19 +260,7 @@
   width: 100%;
   margin-bottom: 1rem; /* Fügt etwas Abstand zum Button hinzu */
 }
-#dice-box .dice-box-canvas {
-  /* Zwingt das Canvas, die Breite seines Eltern-Containers (#dice-box) 
-    anzunehmen.
-  */
-  width: 100% !important; 
-  
-  /* Zwingt das Canvas auf eine feste Höhe. 
-    Passe die 400px nach Bedarf an.
-  */
-  height: 400px !important; 
-
-  /* Stellt sicher, dass das gestreckte Objekt gut aussieht, 
-    falls es das Seitenverhältnis ändert.
-  */
-  object-fit: contain; 
+.dice-box-canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
