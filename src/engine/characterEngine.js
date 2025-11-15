@@ -443,13 +443,20 @@ export const checkForLevelUp = (character) => {
       )
     );
 
+    // KORREKTUR: Prüfen, ob eine Attributssteigerung ansteht (basierend auf Feature-Namen)
+    // Dies ersetzt die alte 'nextLevel % 4 === 0' Logik
+    const isAbilityIncrease = classData?.features.some(f =>
+      f.level === nextLevel &&
+      f.name.toLowerCase() === "fähigkeitspunkte / merkmal"
+    );
+
     // Bereite die Daten für das Modal vor
     return {
       ...character,
       pendingLevelUp: {
         newLevel: nextLevel,
         hpRollFormula: getHpRollFormula(character),
-        isAbilityIncrease: nextLevel % 4 === 0, // Info für ASI
+        isAbilityIncrease: isAbilityIncrease, // <-- KORRIGIERTE LOGIK
         // Nur als Subklassen-Wahl markieren, wenn noch keine Subklasse gewählt wurde
         isSubclassChoice: isSubclassChoiceLevel && !character.subclassKey, 
       },
@@ -515,10 +522,16 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   // --- Ende: Neue Fähigkeiten hinzufügen ---
 
   // Alte HP berechnen (basierend auf dem Level *vor* dem Aufstieg)
-  const oldMaxHP = calculateMaxHP(character);
+  // KORREKTUR: Nimm den aktuell gespeicherten Wert (character.stats.maxHp), anstatt ihn neu zu berechnen (calculateMaxHP(character)).
+  const oldMaxHP = character.stats.maxHp;
 
-  // Nimm den reinen Würfelwurf
-  const finalHpGain = hpRollResult;
+  // Annahme: hpRollResult ist das Ergebnis der Formel (z.B. 1d8 + KON-Mod)
+  let finalHpGain = hpRollResult;
+
+  // KORREKTUR: Füge den Hügelzwerg-Bonus hinzu (erhält +1 pro Stufe)
+  if (character.subrace?.key === "hill-dwarf") {
+    finalHpGain += 1;
+  }
 
   const newMaxHP = oldMaxHP + finalHpGain;
 
