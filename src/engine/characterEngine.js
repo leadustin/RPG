@@ -372,36 +372,7 @@ const getHpRollFormula = (character) => {
   return `${formula}${conMod > 0 ? "+" : ""}${conMod}`;
 };
 
-/**
- * BERECHNET MAXIMALE HP
- * (Wird für Stufenaufstiege benötigt)
- */
-export const calculateMaxHP = (character) => {
-  if (!character || !character.class || !character.abilities) return 1;
 
-  const finalCon =
-    character.abilities.con + getRacialAbilityBonus(character, "con");
-  const conMod = getAbilityModifier(finalCon);
-  const level = character.level || 1;
-
-  const hitDieValue = character.class.hit_die || 8;
-
-  // Level 1: Max. Würfelwert + KON
-  let hp = hitDieValue + conMod;
-
-  // Level 2+: Durchschnittlicher Wurf (aufgerundet) + KON
-  if (level > 1) {
-    // D&D 5e Durchschnitt: (Würfel / 2) + 1. (z.B. d8 -> 4 + 1 = 5)
-    const avgRoll = Math.floor(hitDieValue / 2) + 1;
-    hp += (avgRoll + conMod) * (level - 1);
-  }
-
-  if (character.subrace?.key === "hill-dwarf") {
-    hp += level;
-  }
-
-  return hp;
-};
 
 /**
  * PRÜFT AUF STUFENAUFSTIEG
