@@ -372,36 +372,7 @@ const getHpRollFormula = (character) => {
   return `${formula}${conMod > 0 ? "+" : ""}${conMod}`;
 };
 
-/**
- * BERECHNET MAXIMALE HP
- * (Wird für Stufenaufstiege benötigt)
- */
-export const calculateMaxHP = (character) => {
-  if (!character || !character.class || !character.abilities) return 1;
 
-  const finalCon =
-    character.abilities.con + getRacialAbilityBonus(character, "con");
-  const conMod = getAbilityModifier(finalCon);
-  const level = character.level || 1;
-
-  const hitDieValue = character.class.hit_die || 8;
-
-  // Level 1: Max. Würfelwert + KON
-  let hp = hitDieValue + conMod;
-
-  // Level 2+: Durchschnittlicher Wurf (aufgerundet) + KON
-  if (level > 1) {
-    // D&D 5e Durchschnitt: (Würfel / 2) + 1. (z.B. d8 -> 4 + 1 = 5)
-    const avgRoll = Math.floor(hitDieValue / 2) + 1;
-    hp += (avgRoll + conMod) * (level - 1);
-  }
-
-  if (character.subrace?.key === "hill-dwarf") {
-    hp += level;
-  }
-
-  return hp;
-};
 
 /**
  * PRÜFT AUF STUFENAUFSTIEG
@@ -443,13 +414,20 @@ export const checkForLevelUp = (character) => {
       )
     );
 
+    // KORREKTUR: Prüfen, ob eine Attributssteigerung ansteht (basierend auf Feature-Namen)
+    // Dies ersetzt die alte 'nextLevel % 4 === 0' Logik
+    const isAbilityIncrease = classData?.features.some(f =>
+      f.level === nextLevel &&
+      f.name.toLowerCase() === "fähigkeitspunkte / merkmal"
+    );
+
     // Bereite die Daten für das Modal vor
     return {
       ...character,
       pendingLevelUp: {
         newLevel: nextLevel,
         hpRollFormula: getHpRollFormula(character),
-        isAbilityIncrease: nextLevel % 4 === 0, // Info für ASI
+        isAbilityIncrease: isAbilityIncrease, // <-- KORRIGIERTE LOGIK
         // Nur als Subklassen-Wahl markieren, wenn noch keine Subklasse gewählt wurde
         isSubclassChoice: isSubclassChoiceLevel && !character.subclassKey, 
       },
@@ -515,10 +493,16 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   // --- Ende: Neue Fähigkeiten hinzufügen ---
 
   // Alte HP berechnen (basierend auf dem Level *vor* dem Aufstieg)
-  const oldMaxHP = calculateMaxHP(character);
+  // KORREKTUR: Nimm den aktuell gespeicherten Wert (character.stats.maxHp), anstatt ihn neu zu berechnen (calculateMaxHP(character)).
+  const oldMaxHP = character.stats.maxHp;
 
-  // Nimm den reinen Würfelwurf
-  const finalHpGain = hpRollResult;
+  // Annahme: hpRollResult ist das Ergebnis der Formel (z.B. 1d8 + KON-Mod)
+  let finalHpGain = hpRollResult;
+
+  // KORREKTUR: Füge den Hügelzwerg-Bonus hinzu (erhält +1 pro Stufe)
+  if (character.subrace?.key === "hill-dwarf") {
+    finalHpGain += 1;
+  }
 
   const newMaxHP = oldMaxHP + finalHpGain;
 

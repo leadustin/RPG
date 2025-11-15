@@ -2,21 +2,23 @@
 import React from 'react';
 import './PartyPortraits.css';
 
-// --- GEÄNDERT: Nimmt activeCharacterId und onSelectCharacter entgegen ---
 export const PartyPortraits = ({ party, activeCharacterId, onSelectCharacter }) => {
   return (
     <div className="party-portraits-container">
       {party.map(member => {
-        // Sicherstellen, dass HP-Daten vorhanden sind (für zukünftige Gefährten)
-        const hp = member.stats?.hp ?? 10;
-        const maxHp = member.stats?.maxHp ?? 10;
-        
+        // hp als Zahl auslesen, egal ob Object oder Number
+        const rawHp = member.stats?.hp ?? 10;
+        const hp = typeof rawHp === 'object' && rawHp.total !== undefined ? rawHp.total : rawHp;
+
+        const maxHpRaw = member.stats?.maxHp ?? 10;
+        const maxHp = typeof maxHpRaw === 'object' && maxHpRaw.total !== undefined ? maxHpRaw.total : maxHpRaw;
+
         return (
           <div 
             key={member.id} 
-            // --- GEÄNDERT: Fügt 'active' Klasse und onClick Handler hinzu ---
             className={`portrait-item ${member.id === activeCharacterId ? 'active' : ''}`}
             onClick={() => onSelectCharacter(member.id)}
+            title={member.stats?.hpDetail ? `${member.stats.hpDetail.die} + Mod ${member.stats.hpDetail.bonus} = ${member.stats.hpDetail.total}` : undefined}
           >
             <img src={member.portrait} alt={member.name} className="character-portrait-img" />
             
@@ -30,7 +32,6 @@ export const PartyPortraits = ({ party, activeCharacterId, onSelectCharacter }) 
                 <span className="hp-text">{`${hp} / ${maxHp}`}</span>
               </div>
             </div>
-
           </div>
         );
       })}

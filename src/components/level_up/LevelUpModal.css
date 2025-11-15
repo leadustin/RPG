@@ -48,28 +48,19 @@
 .dice-roll-area {
   min-height: 400px; 
   margin: 15px 0;
-  
-  /* POSITIONIERUNG: Mache dies zum "Anker" für das Kind-Element */
   position: relative; 
 }
 
 .dice-result {
-  /* Deine Stile (sind super!) */
-  font-size: 5em; /* Ich habe es etwas größer gemacht */
+  font-size: 2em;
   font-weight: bold;
   color: #fff;
   text-shadow: 0 0 10px #d4af37;
-
-  /* POSITIONIERUNG: Absolut in der Mitte des Eltern-Containers */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
-  /* STAPELN: Stelle sicher, dass es ÜBER dem Canvas liegt */
   z-index: 10;
-  
-  /* KLICKEN: Erlaube Klicks "durch" die Zahl hindurch zum Canvas */
   pointer-events: none; 
 }
 
@@ -203,17 +194,17 @@
 }
 
 .subclass-selection::-webkit-scrollbar-track {
-  background: #2a2a2a; /* Hintergrund der Leiste */
+  background: #2a2a2a;
   border-radius: 5px;
 }
 
 .subclass-selection::-webkit-scrollbar-thumb {
-  background: #555; /* Der "Anfasser" (der bewegliche Teil) */
+  background: #555; 
   border-radius: 5px;
 }
 
 .subclass-selection::-webkit-scrollbar-thumb:hover {
-  background: #777; /* "Anfasser" beim Darüberfahren */
+  background: #777; 
 }
 .subclass-option {
   padding: 12px;
@@ -258,7 +249,7 @@
 
 .dice-roll-area #dice-box {
   width: 100%;
-  margin-bottom: 1rem; /* Fügt etwas Abstand zum Button hinzu */
+  margin-bottom: 1rem; 
 }
 .dice-box-canvas {
   width: 100% !important;
