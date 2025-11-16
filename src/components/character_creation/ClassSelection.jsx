@@ -68,7 +68,8 @@ export const ClassSelection = ({ character, updateCharacter }) => {
   // --- ENDE NEU ---
   
   if (!selectedClass) {
-    return <div>Lade Klassen...</div>;
+    // +++ GEÄNDERT +++
+    return <div>{t('common.loadingClasses')}</div>;
   }
 
   // --- Skill-Optionen-Logik (bleibt gleich) ---
@@ -147,18 +148,19 @@ export const ClassSelection = ({ character, updateCharacter }) => {
             {classIcons[cls.icon] && (
               <img 
                 src={classIcons[cls.icon]} 
-                alt={`${cls.name} Icon`} 
+                // +++ GEÄNDERT +++
+                alt={t('classSelection.classIconAlt', { className: cls.name })}
                 className="class-icon"
               />
             )}
-            <span>{cls.name}</span>
+            <span>{cls.name}</span> {/* HINWEIS: Aus JSON, nicht übersetzt */}
           </button>
         ))}
       </div>
 
       {/* --- Klassendetails (STARK ERWEITERT) --- */}
       <div className="class-details class-summary-box">
-        <p className="class-description">{selectedClass.description}</p>
+        <p className="class-description">{selectedClass.description}</p> {/* HINWEIS: Aus JSON, nicht übersetzt */}
         <div className="details-divider"></div>
         <h3>{t("classSelection.classCharacteristics")}</h3>
         <ul className="features-list">
@@ -166,6 +168,7 @@ export const ClassSelection = ({ character, updateCharacter }) => {
             .filter(feature => feature.level === 1)
             .map(feature => (
               <li key={feature.name}>
+                 {/* HINWEIS: feature.name & feature.description kommen aus JSON */}
                 <strong>{feature.name}:</strong> {feature.description}
               </li>
             ))

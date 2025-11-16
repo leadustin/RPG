@@ -13,25 +13,147 @@
     "wis_short": "WEI",
     "cha_short": "CHA"
   },
-
+  "common": {
+    "loadingRaces": "Lade Völker...",
+    "loadingClasses": "Lade Klassen...",
+    "loadingBackgrounds": "Lade Hintergründe...",
+    "back": "Zurück",
+    "next": "Weiter",
+    "choose": "Wähle...",
+    "total": "Gesamt"
+  },
   "creation": {
     "title": "Charaktererstellung",
     "finalize": "Charakter abschließen",
+    "default_name": "Held",
     "step_race": "Volk",
     "step_subrace": "Unterrasse",
     "step_ancestry": "Abstammung",
     "step_class": "Klasse",
     "step_background": "Hintergrund",
-    "step_abilities": "Attribute",
+    "step_abilities": "Fähigkeiten",
     "step_skills": "Fertigkeiten",
     "step_name": "Name",
+    "step_identity": "Identität",
+    "step_summary": "Zusammenfassung",
     "summary_race": "Volk",
     "summary_class": "Klasse",
     "summary_background": "Hintergrund",
     "summary_abilities": "Attribute",
-    "summary_skills": "Fertigkeiten"
+    "summary_skills": "Fertigkeiten",
+    "identity": {
+      "title": "Identität",
+      "description": "Lege das Aussehen und die persönlichen Details deines Charakters fest.",
+      "general": "Allgemein",
+      "name": "Charaktername",
+      "gender": "Geschlecht",
+      "male": "Männlich",
+      "female": "Weiblich",
+      "details": "Details",
+      "age": "Alter:",
+      "height": "Größe:",
+      "weight": "Gewicht:",
+      "alignment": "Gesinnung",
+      "chooseAlignment": "Wähle Gesinnung...",
+      "portrait": "Portrait"
+    },
+    "race": {
+      "abilityBoost": "Attributs-Boost",
+      "traits": "Merkmale",
+      "damageResistance": "Schadensresistenz",
+      "damageResistanceDesc": "Du hast Resistenz gegen {{type}}.",
+      "breathWeapon": "Odemwaffe"
+    },
+    "background": {
+      "skillsAndTools": "Fertigkeiten & Werkzeuge",
+      "proficientSkills": "Geübte Fertigkeiten:",
+      "proficientTools": "Geübte Werkzeuge:",
+      "languages": "Sprachen:",
+      "feature": "Merkmal: {{name}}",
+      "chooseLanguage": "Wähle eine Sprache...",
+      "chooseTool": "Wähle ein Werkzeug...",
+      "chooseInstrument": "Wähle ein Instrument..."
+    },
+    "skills": {
+      "choose": "Wähle {{count}} Fertigkeiten aus der Liste:"
+    },
+    "summary": {
+      "combatStats": "Kampfwerte",
+      "hp": "Trefferpunkte",
+      "ac": "Rüstungsklasse",
+      "initiative": "Initiative",
+      "expertiseThievesToolsTooltip": "Expertise in Diebeswerkzeug (DEX). Dein Übungsbonus wird verdoppelt.",
+      "thievesToolsExpertise": "Diebeswerkzeug (E)"
+    }
   },
-
+  "alignments": {
+    "lg": "Rechtschaffen Gut",
+    "ng": "Neutral Gut",
+    "cg": "Chaotisch Gut",
+    "ln": "Rechtschaffen Neutral",
+    "n": "Neutral",
+    "cn": "Chaotisch Neutral",
+    "le": "Rechtschaffen Böse",
+    "ne": "Neutral Böse",
+    "ce": "Chaotisch Böse"
+  },
+  "languages": {
+    "common": "Gemeinsprache",
+    "elfish": "Elfisch",
+    "gnomish": "Gnomisch",
+    "halfling": "Halblingisch",
+    "infernal": "Infernalisch",
+    "orcish": "Orkisch",
+    "dwarvish": "Zwergisch",
+    "draconic": "Drakonisch",
+    "celestial": "Himmlisch"
+  },
+  "tools": {
+    "categories": {
+      "gameSet": "Spieleset",
+      "artisan": "Handwerkerwerkzeug"
+    },
+    "card": "Spielkartenset",
+    "dice": "Würfelspielset",
+    "dragonchess": "Drachenschachspiel",
+    "alchemist": "Alchemistenwerkzeug",
+    "brewer": "Brauerwerkzeug",
+    "calligrapher": "Kalligraphenwerkzeug",
+    "smith": "Schmiedewerkzeug",
+    "carpenter": "Zimmermannswerkzeug",
+    "cartographer": "Kartographenwerkzeug",
+    "cobbler": "Schusterwerkzeug",
+    "cook": "Kochgeschirr",
+    "glassblower": "Glasblasewerkzeug",
+    "jeweler": "Juwelierswerkzeug",
+    "leatherworker": "Lederwerkzeug",
+    "mason": "Maurerwerkzeug",
+    "painter": "Malerwerkzeug",
+    "potter": "Töpferwerkzeug",
+    "stonecarver": "Steinmetzwerkzeug",
+    "tinker": "Flickwerkzeug",
+    "weaver": "Weberwerkzeug",
+    "woodcarver": "Holzschnitzerwerkzeug",
+    "thieves_tools": "Diebeswerkzeug",
+    "disguise_kit": "Verkleidungssatz",
+    "forgery_kit": "Fälschersatz",
+    "herbalism_kit": "Kräuterkundesatz",
+    "navigator_tools": "Navigationswerkzeuge",
+    "poisoner_kit": "Giftmischersatz"
+  },
+  "instruments": {
+    "category": "Musikinstrument",
+    "bagpipes": "Dudelsack",
+    "drum": "Trommel",
+    "dulcimer": "Glockenspiel",
+    "flute": "Flöte",
+    "lute": "Laute",
+    "lyre": "Lyra",
+    "horn": "Horn",
+    "panflute": "Panflöte",
+    "shawm": "Schalmei",
+    "viol": "Gambe"
+  },
   "startScreen": {
     "title": "Das RPG",
     "continue": "Fortsetzen",
@@ -41,19 +163,16 @@
     "deleteAutosave": "Autosave löschen",
     "options": "Optionen"
   },
-
   "startScreen.options": {
     "options": "Optionen"
   },
-
   "optionsMenu": {
-  "title": "Optionen",
-  "languageSelection": "Sprache auswählen",
-  "languageDe": "Deutsch",
-  "languageEn": "Englisch",
-  "close": "Schließen"
-},
-
+    "title": "Optionen",
+    "languageSelection": "Sprache auswählen",
+    "languageDe": "Deutsch",
+    "languageEn": "Englisch",
+    "close": "Schließen"
+  },
   "characterCreation": {
     "generationMethod": "Generierungsmethode",
     "pointBuy": "Point Buy",
@@ -66,10 +185,10 @@
     "rollAgain": "Werte erneut würfeln",
     "rolledValues": "Gewürfelte Werte",
     "clickToRoll": "Klicke auf \"Würfeln\"",
-    "valuesPresetFor": "Werte voreingestellt für",
+    "valuesPresetFor": "Werte voreingestellt für {{class}}",
     "swapIfNeeded": "Tausche sie bei Bedarf.",
     "attributeBonuses": "Attributsboni (Herkunft)",
-    "chooseAttributeBonuses": "Wähle deine Attributsboni (PHB 2024)",
+    "chooseAttributeBonuses": "Wähle deine Attributsboni (PHB 2024).",
     "strengthsFocused": "Stärken (+2 / +1)",
     "balanced": "Ausgeglichen (+1 / +1 / +1)",
     "plus2Bonus": "+2 Bonus",
@@ -78,15 +197,14 @@
     "plus1BonusB": "+1 Bonus (B)",
     "plus1BonusC": "+1 Bonus (C)",
     "choose": "Wähle...",
-    "attributes": "Attribute",
+    "attributes": "Attribut",
     "base": "Basis",
     "bonus": "Bonus"
   },
-
   "classSelection": {
-    "classCharacteristics": "Klassenmerkmale (Stufe 1)"
+    "classCharacteristics": "Klassenmerkmale (Stufe 1)",
+    "classIconAlt": "{{className}} Icon"
   },
-  
   "location": {
     "elfenwacht": {
       "name": "Elfenwacht",

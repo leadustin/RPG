@@ -3,42 +3,48 @@ import React, { useState } from "react";
 import "./CharacterCreationScreen.css";
 import { CreationSidebar } from "./CreationSidebar";
 import { SelectionPanel } from "./SelectionPanel";
+import { useTranslation } from "react-i18next"; // +++ NEU
 
 import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";
 import allBackgroundData from "../../data/backgrounds.json";
 
-// --- NEU: Schritte und Übersetzungen hier definieren ---
+// --- Die Schlüssel für die Schritte (bleiben gleich) ---
 const STEPS = ['Class', 'Background', 'Race', 'Abilities', 'Identity', 'Zusammenfassung'];
 
-const stepTranslations = {
-  Race: 'Volk',
-  Class: 'Klasse',
-  Background: 'Hintergrund',
-  Abilities: 'Fähigkeiten',
-  Identity: 'Identität',
-  Zusammenfassung: 'Zusammenfassung', 
-};
-// --- ENDE NEU ---
+// --- stepTranslations wird jetzt dynamisch mit t() erstellt ---
+// (Muss *innerhalb* der Komponente stattfinden)
 
 export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
-  // --- GEÄNDERT: Start bei STEPS[0] ---
-  const [currentStep, setCurrentStep] = useState(STEPS[0]);
-  // --- NEU: State für den maximal erreichten Schritt ---
-  const [maxStepIndex, setMaxStepIndex] = useState(0); 
+  const { t } = useTranslation(); // +++ NEU: Hook holen
+
+  // --- NEU: stepTranslations hier dynamisch definieren ---
+  const stepTranslations = {
+    Race: t('creation.step_race'),
+    Class: t('creation.step_class'),
+    Background: t('creation.step_background'),
+    Abilities: t('creation.step_abilities'), // "Fähigkeiten"
+    Identity: t('creation.step_identity'), // "Identität"
+    Zusammenfassung: t('creation.step_summary'), // "Zusammenfassung"
+  };
   // --- ENDE NEU ---
+
+  const [currentStep, setCurrentStep] = useState(STEPS[0]);
+  const [maxStepIndex, setMaxStepIndex] = useState(0); 
 
   // Standard-Rasse (Mensch) und deren Standard-Werte holen
   const defaultRace = allRaceData.find((r) => r.key === "human");
   const defaultProps = defaultRace?.physical_props;
 
   const [character, setCharacter] = useState({
-    name: "Held",
-    gender: "Männlich",
+    // --- GEÄNDERT: Logik-Werte statt übersetzter Strings ---
+    name: t('creation.default_name'), // "Held" -> t()
+    gender: "male", // "Männlich" -> "male"
     age: defaultProps?.age?.default || 20,
     height: defaultProps?.height?.default || 1.75,
     weight: defaultProps?.weight?.default || 75,
-    alignment: "Neutral",
+    alignment: "n", // "Neutral" -> "n"
+    // --- ENDE ÄNDERUNG ---
     race: allRaceData.find((r) => r.key === "human"),
     subrace: null,
     ancestry: null,
@@ -93,8 +99,9 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
       newValues.portrait = null; // Wichtig, damit das useEffect in IdentitySelection greift
       
       // WICHTIG: Auch Gender zurücksetzen, damit useEffect das richtige Portrait lädt
+      // (Stellt sicher, dass 'gender' nicht auf 'null' gesetzt wird, falls es nicht in newValues ist)
       if (!newValues.gender) {
-        newValues.gender = character.gender;
+        newValues.gender = character.gender; // Behalte das aktuelle Gender
       }
     }
     // +++ ENDE: NEUE LOGIK FÜR RASSENWECHSEL +++
@@ -137,26 +144,18 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
   };
   // --- ENDE NEUE HANDLER ---
 
-
-  // handleFinalize wird nicht mehr direkt von der Sidebar aufgerufen,
-  // sondern von handleNextStep, wenn der letzte Schritt erreicht ist.
-  // const handleFinalize = () => {
-  //   onCharacterFinalized(character);
-  // };
-
   return (
     // Das Container-Div ist jetzt einfacher
     <div className="creation-screen-container">
       <CreationSidebar
-        steps={STEPS} // NEU
-        stepTranslations={stepTranslations} // NEU
+        steps={STEPS} 
+        stepTranslations={stepTranslations} // Das dynamische Objekt übergeben
         currentStep={currentStep}
-        maxStepIndex={maxStepIndex} // NEU
-        onStepSelect={handleStepSelect} // GEÄNDERT
-        onPrev={handlePrevStep} // NEU
-        onNext={handleNextStep} // NEU
+        maxStepIndex={maxStepIndex} 
+        onStepSelect={handleStepSelect} 
+        onPrev={handlePrevStep} 
+        onNext={handleNextStep} 
         character={character}
-        // onFinalize wird jetzt von handleNextStep verwaltet
       />
       {/* SelectionPanel bleibt für die Logik der Inhaltsanzeige verantwortlich */}
       <SelectionPanel

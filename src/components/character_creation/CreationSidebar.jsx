@@ -1,6 +1,7 @@
 // src/components/character_creation/CreationSidebar.js
 import React from 'react';
 import './CreationSidebar.css';
+import { useTranslation } from "react-i18next"; // +++ NEU
 
 // Übersetzungsobjekt und Steps-Array wurden nach CharacterCreationScreen.js verschoben
 
@@ -14,7 +15,7 @@ export const CreationSidebar = ({
   onNext,                 // NEU
   character 
 }) => {
-
+  const { t } = useTranslation(); // +++ NEU
   const currentStepIndex = steps.indexOf(currentStep);
   const isLastStep = currentStepIndex === steps.length - 1;
 
@@ -30,7 +31,7 @@ export const CreationSidebar = ({
           let label = stepTranslations[step];
           const isDisabled = index > maxStepIndex; // Prüfe, ob der Schritt gesperrt ist
 
-          // --- KLASSENLOGIK ANGEPASST ---
+          // --- KLASSENLOGIK ANGEPASST ---\
           let liClass = '';
           if (currentStep === step) liClass = 'active';
           if (isDisabled) liClass += ' disabled'; // Füge 'disabled' Klasse hinzu
@@ -39,7 +40,7 @@ export const CreationSidebar = ({
             <li 
               key={step}
               className={liClass}
-              // --- ONCLICK ANGEPASST ---
+              // --- ONCLICK ANGEPASST ---\
               // Erlaube Klick nur, wenn nicht disabled
               onClick={() => !isDisabled && onStepSelect(step)} 
             >
@@ -57,18 +58,17 @@ export const CreationSidebar = ({
           // Deaktiviere "Zurück" auf dem ersten Schritt
           disabled={currentStepIndex === 0} 
         >
-          Zurück
+          {t('common.back')} {/* +++ GEÄNDERT +++ */}
         </button>
         <button 
           className="ui-button" 
           onClick={onNext}
         >
+          {/* +++ GEÄNDERT +++ */}
           {/* Ändere den Button-Text auf dem letzten Schritt */}
-          {isLastStep ? 'Charakter erstellen' : 'Weiter'}
+          {isLastStep ? t('creation.finalize') : t('common.next')}
         </button>
       </div>
-      {/* --- ENDE ÄNDERUNG --- */}
-
     </div>
   );
 };

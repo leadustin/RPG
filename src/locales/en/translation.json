@@ -1,94 +1,218 @@
 {
-    "abilities": {
-        "str": "Strength",
-        "dex": "Dexterity",
-        "con": "Constitution",
-        "int": "Intelligence",
-        "wis": "Wisdom",
-        "cha": "Charisma",
-        "str_short": "STR",
-        "dex_short": "DEX",
-        "con_short": "CON",
-        "int_short": "INT",
-        "wis_short": "WIS",
-        "cha_short": "CHA"
+  "abilities": {
+    "str": "Strength",
+    "dex": "Dexterity",
+    "con": "Constitution",
+    "int": "Intelligence",
+    "wis": "Wisdom",
+    "cha": "Charisma",
+    "str_short": "STR",
+    "dex_short": "DEX",
+    "con_short": "CON",
+    "int_short": "INT",
+    "wis_short": "WIS",
+    "cha_short": "CHA"
+  },
+  "common": {
+    "loadingRaces": "Loading races...",
+    "loadingClasses": "Loading classes...",
+    "loadingBackgrounds": "Loading backgrounds...",
+    "back": "Back",
+    "next": "Next",
+    "choose": "Choose...",
+    "total": "Total"
+  },
+  "creation": {
+    "title": "Character Creation",
+    "finalize": "Finalize Character",
+    "default_name": "Hero",
+    "step_race": "Race",
+    "step_subrace": "Subrace",
+    "step_ancestry": "Ancestry",
+    "step_class": "Class",
+    "step_background": "Background",
+    "step_abilities": "Abilities",
+    "step_skills": "Skills",
+    "step_name": "Name",
+    "step_identity": "Identity",
+    "step_summary": "Summary",
+    "summary_race": "Race",
+    "summary_class": "Class",
+    "summary_background": "Background",
+    "summary_abilities": "Abilities",
+    "summary_skills": "Skills",
+    "identity": {
+      "title": "Identity",
+      "description": "Define the appearance and personal details of your character.",
+      "general": "General",
+      "name": "Character Name",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "details": "Details",
+      "age": "Age:",
+      "height": "Height:",
+      "weight": "Weight:",
+      "alignment": "Alignment",
+      "chooseAlignment": "Choose alignment...",
+      "portrait": "Portrait"
     },
-    "creation": {
-        "title": "Character Creation",
-        "finalize": "Finalize Character",
-        "step_race": "Race",
-        "step_subrace": "Subrace",
-        "step_ancestry": "Ancestry",
-        "step_class": "Class",
-        "step_background": "Background",
-        "step_abilities": "Abilities",
-        "step_skills": "Skills",
-        "step_name": "Name",
-        "summary_race": "Race",
-        "summary_class": "Class",
-        "summary_background": "Background",
-        "summary_abilities": "Abilities",
-        "summary_skills": "Skills"
+    "race": {
+      "abilityBoost": "Ability Boost",
+      "traits": "Traits",
+      "damageResistance": "Damage Resistance",
+      "damageResistanceDesc": "You have resistance to {{type}} damage.",
+      "breathWeapon": "Breath Weapon"
     },
-    "startScreen": {
-        "title": "My RPG",
-        "continue": "Continue",
-        "newGame": "New Game",
-        "loadGame": "Load Game",
-        "saveGame": "Save Game",
-        "deleteAutosave": "Delete Autosave",
-        "options": "Options"
+    "background": {
+      "skillsAndTools": "Skills & Tools",
+      "proficientSkills": "Skill Proficiencies:",
+      "proficientTools": "Tool Proficiencies:",
+      "languages": "Languages:",
+      "feature": "Feature: {{name}}",
+      "chooseLanguage": "Choose a language...",
+      "chooseTool": "Choose a tool...",
+      "chooseInstrument": "Choose an instrument..."
     },
-    "startScreen.options": {
-        "options": "Options"
+    "skills": {
+      "choose": "Choose {{count}} skills from the list:"
     },
-    "optionsMenu": {
-        "title": "Options",
-        "languageSelection": "Select Language",
-        "languageDe": "German",
-        "languageEn": "English",
-        "close": "Close"
-    },
-    "characterCreation": {
-        "generationMethod": "Generation Method",
-        "pointBuy": "Point Buy",
-        "standardArray": "Standard Array",
-        "rollMethodWithDice": "Roll Dice",
-        "details": "Details",
-        "remainingPoints": "Remaining Points",
-        "rolling": "Rolling...",
-        "loadingDice": "Loading Dice...",
-        "rollAgain": "Roll Values Again",
-        "rolledValues": "Rolled Values",
-        "clickToRoll": "Click \"Roll\"",
-        "valuesPresetFor": "Values preset for",
-        "swapIfNeeded": "Swap if needed.",
-        "attributeBonuses": "Attribute Bonuses (Origin)",
-        "chooseAttributeBonuses": "Choose your attribute bonuses (PHB 2024).",
-        "strengthsFocused": "Strengths (+2 / +1)",
-        "balanced": "Balanced (+1 / +1 / +1)",
-        "plus2Bonus": "+2 Bonus",
-        "plus1Bonus": "+1 Bonus",
-        "plus1BonusA": "+1 Bonus (A)",
-        "plus1BonusB": "+1 Bonus (B)",
-        "plus1BonusC": "+1 Bonus (C)",
-        "choose": "Choose...",
-        "attributes": "Attributes",
-        "base": "Base",
-        "bonus": "Bonus"
-    },
-    "classSelection": {
-        "classCharacteristics": "Class Characteristics (Level 1)"
-  
-    },
-    "location": {
-        "elfenwacht": {
-            "name": "Elvenwatch",
-            "description": "An old elven watchtower, surrounded by a dense forest."
-        },
-        "goblinhoehle": {
-            "name": "Goblin Cave",
-            "description": "A damp, foul-smelling cave inhabited by wild goblins."
-        }
+    "summary": {
+      "combatStats": "Combat Stats",
+      "hp": "Hit Points",
+      "ac": "Armor Class",
+      "initiative": "Initiative",
+      "expertiseThievesToolsTooltip": "Expertise in Thieves' Tools (DEX). Your proficiency bonus is doubled.",
+      "thievesToolsExpertise": "Thieves' Tools (E)"
     }
+  },
+  "alignments": {
+    "lg": "Lawful Good",
+    "ng": "Neutral Good",
+    "cg": "Chaotic Good",
+    "ln": "Lawful Neutral",
+    "n": "True Neutral",
+    "cn": "Chaotic Neutral",
+    "le": "Lawful Evil",
+    "ne": "Neutral Evil",
+    "ce": "Chaotic Evil"
+    },
+    "languages": {
+    "common": "Common",
+    "elfish": "Elvish",
+    "gnomish": "Gnomish",
+    "halfling": "Halfling",
+    "infernal": "Infernal",
+    "orcish": "Orcish",
+    "dwarvish": "Dwarvish",
+    "draconic": "Draconic",
+    "celestial": "Celestial"
+  },
+  "tools": {
+    "categories": {
+      "gameSet": "Gaming Set",
+      "artisan": "Artisan's Tools"
+    },
+    "card": "Playing Card Set",
+    "dice": "Dice Set",
+    "dragonchess": "Dragonchess Set",
+    "alchemist": "Alchemist's Supplies",
+    "brewer": "Brewer's Supplies",
+    "calligrapher": "Calligrapher's Supplies",
+    "smith": "Smith's Tools",
+    "carpenter": "Carpenter's Tools",
+    "cartographer": "Cartographer's Tools",
+    "cobbler": "Cobbler's Tools",
+    "cook": "Cook's Utensils",
+    "glassblower": "Glassblower's Tools",
+    "jeweler": "Jeweler's Tools",
+    "leatherworker": "Leatherworker's Tools",
+    "mason": "Mason's Tools",
+    "painter": "Painter's Supplies",
+    "potter": "Potter's Tools",
+    "stonecarver": "Stonecarver's Tools",
+    "tinker": "Tinker's Tools",
+    "weaver": "Weaver's Tools",
+    "woodcarver": "Woodcarver's Tools",
+    "thieves_tools": "Thieves' Tools",
+    "disguise_kit": "Disguise Kit",
+    "forgery_kit": "Forgery Kit",
+    "herbalism_kit": "Herbalism Kit",
+    "navigator_tools": "Navigator's Tools",
+    "poisoner_kit": "Poisoner's Kit"
+  },
+  "instruments": {
+    "category": "Musical Instrument",
+    "bagpipes": "Bagpipes",
+    "drum": "Drum",
+    "dulcimer": "Dulcimer",
+    "flute": "Flute",
+    "lute": "Lute",
+    "lyre": "Lyre",
+    "horn": "Horn",
+    "panflute": "Pan Flute",
+    "shawm": "Shawm",
+    "viol": "Viol"
+  },
+  "startScreen": {
+    "title": "My RPG",
+    "continue": "Continue",
+    "newGame": "New Game",
+    "loadGame": "Load Game",
+    "saveGame": "Save Game",
+    "deleteAutosave": "Delete Autosave",
+    "options": "Options"
+  },
+  "startScreen.options": {
+    "options": "Options"
+  },
+  "optionsMenu": {
+    "title": "Options",
+    "languageSelection": "Select Language",
+    "languageDe": "German",
+    "languageEn": "English",
+    "close": "Close"
+  },
+  "characterCreation": {
+    "generationMethod": "Generation Method",
+    "pointBuy": "Point Buy",
+    "standardArray": "Standard Array",
+    "rollMethodWithDice": "Roll Dice",
+    "details": "Details",
+    "remainingPoints": "Remaining Points",
+    "rolling": "Rolling...",
+    "loadingDice": "Loading Dice...",
+    "rollAgain": "Roll Values Again",
+    "rolledValues": "Rolled Values",
+    "clickToRoll": "Click \"Roll\"",
+    "valuesPresetFor": "Values preset for {{class}}",
+    "swapIfNeeded": "Swap if needed.",
+    "attributeBonuses": "Attribute Bonuses (Origin)",
+    "chooseAttributeBonuses": "Choose your attribute bonuses (PHB 2024).",
+    "strengthsFocused": "Strengths (+2 / +1)",
+    "balanced": "Balanced (+1 / +1 / +1)",
+    "plus2Bonus": "+2 Bonus",
+    "plus1Bonus": "+1 Bonus",
+    "plus1BonusA": "+1 Bonus (A)",
+    "plus1BonusB": "+1 Bonus (B)",
+    "plus1BonusC": "+1 Bonus (C)",
+    "choose": "Choose...",
+    "attributes": "Attribute",
+    "base": "Base",
+    "bonus": "Bonus"
+  },
+  "classSelection": {
+    "classCharacteristics": "Class Characteristics (Level 1)",
+    "classIconAlt": "{{className}} Icon"
+  },
+  "location": {
+    "elfenwacht": {
+      "name": "Elvenwatch",
+      "description": "An old elven watchtower, surrounded by a dense forest."
+    },
+    "goblinhoehle": {
+      "name": "Goblin Cave",
+      "description": "A damp, foul-smelling cave inhabited by wild goblins."
+    }
+  }
 }
