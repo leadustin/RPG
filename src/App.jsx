@@ -11,7 +11,7 @@ import LevelUpModal from "./components/level_up/LevelUpModal";
 import CharacterSheet from "./components/character_sheet/CharacterSheet";
 import { TileMap } from "./components/maps/TileMap";
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
-import { loadAutoSave, getSaveSlots } from "./utils/persistence"; // loadAutoSave importiert
+import { loadAutoSave, getSaveSlots } from "./utils/persistence";
 import locationsData from "./data/locations.json";
 import { EventLog } from "./components/event_log/EventLog";
 import "./App.css";
@@ -20,7 +20,7 @@ function App() {
   const {
     gameState,
     handleNewGame,
-    handleLoadAutoSaveGame, // Neuer Handler
+    handleLoadAutoSaveGame,
     handleDeleteGame,
     handleSaveToSlot,
     handleLoadFromSlot,
@@ -79,12 +79,12 @@ function App() {
         return (
           <StartScreen
             onNewGame={handleNewGame}
-            onContinueGame={handleLoadAutoSaveGame} // Neu
+            onContinueGame={handleLoadAutoSaveGame}
             onLoadGame={() => setSaveManagerMode("load")}
             onSaveGame={() => setSaveManagerMode("save")}
             onDeleteGame={handleDeleteGame}
             isGameLoaded={!!gameState.character}
-            autoSaveExists={autoSaveExists} // Neu
+            autoSaveExists={autoSaveExists}
             saveFileExists={saveFileExists}
           />
         );
@@ -111,12 +111,12 @@ function App() {
         return (
           <StartScreen
             onNewGame={handleNewGame}
-            onContinueGame={handleLoadAutoSaveGame} // Neu
+            onContinueGame={handleLoadAutoSaveGame}
             onLoadGame={() => setSaveManagerMode("load")}
             onSaveGame={() => setSaveManagerMode("save")}
             onDeleteGame={handleDeleteGame}
             isGameLoaded={!!gameState.character}
-            autoSaveExists={autoSaveExists} // Neu
+            autoSaveExists={autoSaveExists}
             saveFileExists={saveFileExists}
           />
         );

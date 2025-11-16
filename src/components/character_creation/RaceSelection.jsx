@@ -4,14 +4,16 @@ import './RaceSelection.css';
 import './PanelDetails.css';
 import allRaceData from '../../data/races.json';
 import './CreationSidebar.css'; 
+import { useTranslation } from "react-i18next"; // +++ NEU
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 export const RaceSelection = ({ character, updateCharacter }) => {
+  const { t } = useTranslation(); // +++ NEU
   const [assignments, setAssignments] = useState({});
   const selectedRace = character.race;
   const selectedSubrace = character.subrace;
-  const selectedAncestry = character.ancestry; // NEU
+  const selectedAncestry = character.ancestry;
 
   useEffect(() => {
     // Bei Rassenwechsel die Zuweisungen zurücksetzen
@@ -97,7 +99,8 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   };
 
   if (!selectedRace) {
-    return <div>Lade Völker...</div>;
+    // +++ GEÄNDERT +++
+    return <div>{t('common.loadingRaces')}</div>;
   }
   
   // floatingBonuses hier für die Render-Logik definieren
@@ -105,6 +108,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   
   // *** NEU: Logik für den Detail-Titel ***
   const getDetailTitle = () => {
+    // HINWEIS: Diese Namen kommen aus der JSON-Datei und sind noch nicht übersetzt
     if (selectedSubrace) return selectedSubrace.name;
     if (selectedAncestry) return `${selectedRace.name} (${selectedAncestry.name})`;
     return selectedRace.name;
@@ -112,9 +116,8 @@ export const RaceSelection = ({ character, updateCharacter }) => {
 
   // *** NEU: Logik für die Detail-Beschreibung ***
   const getDetailDescription = () => {
-    // Untervölker (wie Hochelf) haben eigene Beschreibungen
+    // HINWEIS: Diese Beschreibungen kommen aus der JSON-Datei
     if (selectedSubrace) return selectedSubrace.description;
-    // Abstammungen (wie Roter Drache) haben keine, also die des Hauptvolks verwenden
     return selectedRace.description;
   };
 
@@ -125,7 +128,8 @@ export const RaceSelection = ({ character, updateCharacter }) => {
       {/* --- LINKE SPALTE (Völkerliste) --- */}
       <div className="race-column-left">
         <div className="race-box">
-          <h3>Völker</h3>
+          {/* +++ GEÄNDERT +++ */}
+          <h3>{t('creation.step_race')}</h3>
           
           <div className="race-list">
             {allRaceData.map(race => (
@@ -134,7 +138,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
                   className={`race-button ${selectedRace.key === race.key ? 'selected' : ''}`}
                   onClick={() => onSelectRace(race)}
                 >
-                  {race.name}
+                  {race.name} {/* HINWEIS: Aus JSON, nicht übersetzt */}
                 </button>
 
                 {/* --- Collapsible Container (Logik angepasst) --- */}
@@ -149,7 +153,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
                             className={`subrace-button-nested ${selectedSubrace?.key === subrace.key ? 'selected' : ''}`}
                             onClick={() => onSelectSubrace(subrace)}
                           >
-                            {subrace.name}
+                            {subrace.name} {/* HINWEIS: Aus JSON, nicht übersetzt */}
                           </button>
                         ))}
                       </div>
@@ -164,7 +168,7 @@ export const RaceSelection = ({ character, updateCharacter }) => {
                             className={`subrace-button-nested ${selectedAncestry?.key === ancestry.key ? 'selected' : ''}`}
                             onClick={() => onSelectAncestry(ancestry)}
                           >
-                            {ancestry.name}
+                            {ancestry.name} {/* HINWEIS: Aus JSON, nicht übersetzt */}
                           </button>
                         ))}
                       </div>
@@ -191,15 +195,15 @@ export const RaceSelection = ({ character, updateCharacter }) => {
             
             <div className="details-divider"></div>
 
-            {/* Zeige immer die Boni des Hauptvolks */}
-            <h3>Attributs-Boost</h3>
-            <p>{selectedRace.ability_bonuses.text}</p>
+            {/* +++ GEÄNDERT +++ */}
+            <h3>{t('creation.race.abilityBoost')}</h3>
+            <p>{selectedRace.ability_bonuses.text}</p> {/* HINWEIS: Aus JSON, nicht übersetzt */}
             
             {floatingBonuses.length > 0 && (
               <ul className="ability-bonus-list">
                 {ABILITIES.map(abiKey => (
                   <li key={abiKey}>
-                    <span>{abiKey.toUpperCase()}</span>
+                    <span>{t(`abilities.${abiKey}_short`)}</span> {/* +++ GEÄNDERT (Kürzel) +++ */}
                     <div className="bonus-buttons">
                       {floatingBonuses.map((bonusValue, index) => (
                         <button
@@ -219,13 +223,17 @@ export const RaceSelection = ({ character, updateCharacter }) => {
 
             {/* *** Zeige die Traits (Merkmale) an (Logik angepasst) *** */}
             <div className="details-divider"></div>
-            <h3>Merkmale</h3>
+            {/* +++ GEÄNDERT +++ */}
+            <h3>{t('creation.race.traits')}</h3>
             <ul className="traits-list-panel">
               {/* Zeige die Merkmale des Hauptvolks (außer Odemwaffe, die wird ersetzt) */}
               {selectedRace.traits
+                 // HINWEIS: 'Odemwaffe' ist hier hartkodiert, was i18n erschwert.
+                 // Idealerweise würde man auf einen Schlüssel (z.B. 'breath_weapon') prüfen.
                 .filter(trait => !(selectedRace.key === 'dragonborn' && trait.name === 'Odemwaffe'))
                 .map(trait => (
                  <li key={trait.name}>
+                    {/* HINWEIS: trait.name & trait.description kommen aus JSON */}
                     <strong>{trait.name}:</strong> {trait.description}
                   </li>
               ))}
@@ -241,10 +249,14 @@ export const RaceSelection = ({ character, updateCharacter }) => {
               {selectedRace.key === 'dragonborn' && selectedAncestry && (
                 <>
                   <li>
-                    <strong>Schadensresistenz ({selectedAncestry.name}):</strong> Du hast Resistenz gegen {selectedAncestry.damage_type}.
+                    {/* +++ GEÄNDERT +++ */}
+                    <strong>{t('creation.race.damageResistance')} ({selectedAncestry.name}):</strong> 
+                    {t('creation.race.damageResistanceDesc', { type: selectedAncestry.damage_type })}
                   </li>
                   <li>
-                    <strong>Odemwaffe ({selectedAncestry.name}):</strong> {selectedAncestry.breath_weapon} ({selectedAncestry.damage_type}).
+                    {/* +++ GEÄNDERT +++ */}
+                    <strong>{t('creation.race.breathWeapon')} ({selectedAncestry.name}):</strong> 
+                    {selectedAncestry.breath_weapon} ({selectedAncestry.damage_type}).
                   </li>
                 </>
               )}

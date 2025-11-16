@@ -5,7 +5,7 @@ import './PanelDetails.css';
 import allClassData from '../../data/classes.json';
 import { SkillSelection } from './SkillSelection';
 import { SKILL_NAMES_DE } from '../../engine/characterEngine';
-
+import { useTranslation } from "react-i18next";
 // +++ IMPORTS ERWEITERT +++
 import { SubclassSelection } from './SubclassSelection';
 import { FightingStyleSelection } from './FightingStyleSelection';
@@ -16,10 +16,6 @@ import { ToolInstrumentSelection } from './ToolInstrumentSelection';
 import { WeaponMasterySelection } from './WeaponMasterySelection'; // NEU
 // +++ IMPORTS ENDE +++
 
-
-// +++
-// +++ VITE-ERSATZ für require.context +++
-// +++
 
 // 1. Lade alle Bildmodule aus dem 'classes'-Ordner
 const classIconModules = import.meta.glob(
@@ -37,12 +33,10 @@ for (const path in classIconModules) {
   classIcons[key] = iconUrl;
 }
 
-// +++ 
-// +++ ENDE VITE-ERSATZ +++
-// +++
 
 
 export const ClassSelection = ({ character, updateCharacter }) => {
+  const { t } = useTranslation();
   const selectedClass = character.class;
   const skillChoiceData = selectedClass.proficiencies.skills;
 
@@ -74,7 +68,8 @@ export const ClassSelection = ({ character, updateCharacter }) => {
   // --- ENDE NEU ---
   
   if (!selectedClass) {
-    return <div>Lade Klassen...</div>;
+    // +++ GEÄNDERT +++
+    return <div>{t('common.loadingClasses')}</div>;
   }
 
   // --- Skill-Optionen-Logik (bleibt gleich) ---
@@ -153,25 +148,27 @@ export const ClassSelection = ({ character, updateCharacter }) => {
             {classIcons[cls.icon] && (
               <img 
                 src={classIcons[cls.icon]} 
-                alt={`${cls.name} Icon`} 
+                // +++ GEÄNDERT +++
+                alt={t('classSelection.classIconAlt', { className: cls.name })}
                 className="class-icon"
               />
             )}
-            <span>{cls.name}</span>
+            <span>{cls.name}</span> {/* HINWEIS: Aus JSON, nicht übersetzt */}
           </button>
         ))}
       </div>
 
       {/* --- Klassendetails (STARK ERWEITERT) --- */}
       <div className="class-details class-summary-box">
-        <p className="class-description">{selectedClass.description}</p>
+        <p className="class-description">{selectedClass.description}</p> {/* HINWEIS: Aus JSON, nicht übersetzt */}
         <div className="details-divider"></div>
-        <h3>Klassenmerkmale (Stufe 1)</h3>
+        <h3>{t("classSelection.classCharacteristics")}</h3>
         <ul className="features-list">
           {selectedClass.features
             .filter(feature => feature.level === 1)
             .map(feature => (
               <li key={feature.name}>
+                 {/* HINWEIS: feature.name & feature.description kommen aus JSON */}
                 <strong>{feature.name}:</strong> {feature.description}
               </li>
             ))

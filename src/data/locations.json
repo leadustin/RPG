@@ -1,21 +1,21 @@
 [
   {
     "id": "elfenwacht",
-    "name": "Elfenwacht",
+    "name": "location.elfenwacht.name",
     "x": 1000,
     "y": 1400,
     "radius": 10,
-    "description": "Ein alter Wachturm der Elfen, umgeben von einem dichten Wald.",
+    "description": "location.elfenwacht.description",
     "mapFile": "elfenwacht.json",
     "xp": 300
   },
   {
     "id": "goblinhoehle",
-    "name": "Goblinhoehle",
+    "name": "location.goblinhoehle.name",
     "x": 1100,
     "y": 1400,
     "radius": 10,
-    "description": "Eine feuchte, übelriechende Höhle, die von wilden Goblins bewohnt wird.",
+    "description": "location.goblinhoehle.description",
     "mapFile": "goblinhoehle.json",
     "xp": 600
   },

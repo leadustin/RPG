@@ -1,25 +1,27 @@
 // src/components/character_creation/IdentitySelection.js
 
 import React from 'react';
+import { useTranslation } from 'react-i18next'; // Importieren
 import './PanelDetails.css';
 import './IdentitySelection.css';
 
-// Die 9 D&D-Gesinnungen
-const ALIGNMENT_OPTIONS = [
-  "Rechtschaffen Gut",
-  "Neutral Gut",
-  "Chaotisch Gut",
-  "Rechtschaffen Neutral",
-  "Neutral",
-  "Chaotisch Neutral",
-  "Rechtschaffen Böse",
-  "Neutral Böse",
-  "Chaotisch Böse"
+// Statische Schlüssel für Gesinnungen (Werte, die gespeichert werden)
+const ALIGNMENT_KEYS = [
+  "lg",
+  "ng",
+  "cg",
+  "ln",
+  "n",
+  "cn",
+  "le",
+  "ne",
+  "ce"
 ];
 
-// Funktion aus RaceSelection.js
+// Funktion aus RaceSelection.js - angepasst für 'male'/'female'
 const getPortraitModule = (raceKey, gender, portraitIndex) => {
-  const genderString = gender === 'Männlich' ? 'male' : 'female';
+  // Stellt sicher, dass gender 'male' oder 'female' ist
+  const genderString = gender === 'male' ? 'male' : 'female';
   try {
     return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
   } catch (e) {
@@ -29,6 +31,7 @@ const getPortraitModule = (raceKey, gender, portraitIndex) => {
 };
 
 export const IdentitySelection = ({ character, updateCharacter }) => {
+  const { t } = useTranslation(); // i18n-Hook initialisieren
   const selectedRace = character.race;
   const physicalProps = selectedRace?.physical_props || {};
 
@@ -39,15 +42,21 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
 
   // Sicherstellen, dass portrait initial gesetzt ist
   React.useEffect(() => {
+    // Standard-Geschlecht auf 'male' setzen, falls nicht definiert
+    const currentGender = character.gender || 'male';
+    if (!character.gender) {
+        updateCharacter({ gender: 'male' });
+    }
+
     if (!character.portrait && selectedRace) {
-      const defaultPortrait = getPortraitModule(selectedRace.key, character.gender, 1);
+      const defaultPortrait = getPortraitModule(selectedRace.key, currentGender, 1);
       if (defaultPortrait) {
         updateCharacter({ portrait: defaultPortrait });
       }
     }
   }, [character.portrait, character.gender, selectedRace, updateCharacter]);
 
-  const portraitCount = selectedRace?.portraits || 4; 
+  const portraitCount = selectedRace?.portraits || 4;
 
   // Helper-Funktion für Höhe-Formatierung (z.B. 1.75 -> "1,75m")
   const formatHeight = (value) => {
@@ -60,23 +69,23 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
   };
 
   return (
-    <div className="identity-selection-wrapper"> 
-      <h2 className="panel-details-header">Identität</h2>
+    <div className="identity-selection-wrapper">
+      <h2 className="panel-details-header">{t('creation.identity.title')}</h2>
       <p className="panel-details-description">
-        Lege das Aussehen und die persönlichen Details deines Charakters fest.
+        {t('creation.identity.description')}
       </p>
 
-      <div className="summary-panel-layout"> 
+      <div className="summary-panel-layout">
 
         {/* --- LINKE SPALTE (Eingabefelder) --- */}
         <div className="summary-column-left">
 
           {/* Box 1: Name & Geschlecht */}
           <div className="summary-box">
-            <h3>Allgemein</h3>
+            <h3>{t('creation.identity.general')}</h3>
             <div className="identity-grid-two-columns">
               <div className="input-group">
-                <label htmlFor="char-name">Charaktername</label>
+                <label htmlFor="char-name">{t('creation.identity.name')}</label>
                 <input
                   id="char-name"
                   type="text"
@@ -86,19 +95,19 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
               </div>
 
               <div className="input-group">
-                <label>Geschlecht</label>
+                <label>{t('creation.identity.gender')}</label>
                 <div className="gender-buttons">
                   <button
-                    className={character.gender === 'Männlich' ? 'selected' : ''}
-                    onClick={() => updateCharacter({ gender: 'Männlich' })}
+                    className={character.gender === 'male' ? 'selected' : ''}
+                    onClick={() => updateCharacter({ gender: 'male' })}
                   >
-                    Männlich
+                    {t('creation.identity.male')}
                   </button>
                   <button
-                    className={character.gender === 'Weiblich' ? 'selected' : ''}
-                    onClick={() => updateCharacter({ gender: 'Weiblich' })}
+                    className={character.gender === 'female' ? 'selected' : ''}
+                    onClick={() => updateCharacter({ gender: 'female' })}
                   >
-                    Weiblich
+                    {t('creation.identity.female')}
                   </button>
                 </div>
               </div>
@@ -107,13 +116,14 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
 
           {/* Box 2: Details mit Slidern */}
           <div className="summary-box">
-            <h3>Details</h3>
+            <h3>{t('creation.identity.details')}</h3>
             <div className="details-sliders">
 
               {/* Alter */}
               <div className="slider-group">
                 <label htmlFor="char-age">
-                  Alter: <span className="slider-value">{character.age || ageConfig.default}</span>
+                  {t('creation.identity.age')}{' '}
+                  <span className="slider-value">{character.age || ageConfig.default}</span>
                 </label>
                 <input
                   id="char-age"
@@ -134,7 +144,8 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
               {/* Größe */}
               <div className="slider-group">
                 <label htmlFor="char-height">
-                  Größe: <span className="slider-value">{formatHeight(character.height || heightConfig.default)}</span>
+                  {t('creation.identity.height')}{' '}
+                  <span className="slider-value">{formatHeight(character.height || heightConfig.default)}</span>
                 </label>
                 <input
                   id="char-height"
@@ -155,7 +166,8 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
               {/* Gewicht */}
               <div className="slider-group">
                 <label htmlFor="char-weight">
-                  Gewicht: <span className="slider-value">{formatWeight(character.weight || weightConfig.default)}</span>
+                  {t('creation.identity.weight')}{' '}
+                  <span className="slider-value">{formatWeight(character.weight || weightConfig.default)}</span>
                 </label>
                 <input
                   id="char-weight"
@@ -175,16 +187,16 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
 
               {/* Gesinnung als Dropdown */}
               <div className="input-group" style={{ marginTop: '15px' }}>
-                <label htmlFor="char-alignment">Gesinnung</label>
+                <label htmlFor="char-alignment">{t('creation.identity.alignment')}</label>
                 <select
                   id="char-alignment"
-                  className="identity-select" 
+                  className="identity-select"
                   value={character.alignment || ''}
                   onChange={(e) => updateCharacter({ alignment: e.target.value })}
                 >
-                  <option value="" disabled>Wähle Gesinnung...</option>
-                  {ALIGNMENT_OPTIONS.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
+                  <option value="" disabled>{t('creation.identity.chooseAlignment')}</option>
+                  {ALIGNMENT_KEYS.map(key => (
+                    <option key={key} value={key}>{t(`alignments.${key}`)}</option>
                   ))}
                 </select>
               </div>
@@ -198,7 +210,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
 
           {/* Box 3: Portrait (scrollbar) */}
           <div className="summary-box">
-            <h3>Portrait</h3>
+            <h3>{t('creation.identity.portrait')}</h3>
             <ul className="portrait-grid">
               {Array.from({ length: portraitCount }, (_, i) => i + 1).map(index => {
                 const portraitModule = getPortraitModule(selectedRace.key, character.gender, index);

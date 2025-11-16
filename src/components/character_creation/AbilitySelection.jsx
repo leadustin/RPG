@@ -1,5 +1,6 @@
 // src/components/AbilitySelection.jsx
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from "react-i18next";
 import DiceBox from "@3d-dice/dice-box";
 import './AbilitySelection.css';
 import './PanelDetails.css';
@@ -56,6 +57,7 @@ const roll4d6DropLowest = () => {
 };
 
 export const AbilitySelection = ({ character, updateCharacter }) => {
+  const { t } = useTranslation();
   const [scores, setScores] = useState(character.abilities);
   const [points, setPoints] = useState(27);
   const [generationMethod, setGenerationMethod] = useState('pointBuy');
@@ -173,7 +175,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     setTriPlus1B('');
     setTriPlus1C('');
   };
-  // --- ENDE NEUER EFFEKT ---
 
   // Handler für Point Buy
   const handleScoreChange = (ability, delta) => {
@@ -357,35 +358,35 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
         <div className="ability-column-left">
           
           <div className="ability-box">
-            <h3>Generierungsmethode</h3>
+            <h3>{t("characterCreation.generationMethod")}</h3>
             <div className="method-selection">
               <button 
                 onClick={() => handleMethodChange('pointBuy')} 
                 className={generationMethod === 'pointBuy' ? 'active' : ''}
               >
-                Point Buy
+                {t("characterCreation.pointBuy")}
               </button>
               <button 
                 onClick={() => handleMethodChange('standardArray')}
                 className={generationMethod === 'standardArray' ? 'active' : ''}
               >
-                Standard Array
+                {t("characterCreation.standardArray")}
               </button>
               <button 
                 onClick={() => handleMethodChange('roll')}
                 className={generationMethod === 'roll' ? 'active' : ''}
               >
-                Auswürfeln (4W6)
+              {t("characterCreation.rollMethodWithDice")}
               </button>
             </div>
           </div>
 
           <div className="ability-box">
-            <h3>Details</h3>
+            <h3>{t("characterCreation.details")}</h3>
             {/* A: Point Buy UI */}
             {generationMethod === 'pointBuy' && (
               <div className="points-display">
-                Verbleibende Punkte: <span>{points}</span>
+                {t("characterCreation.remainingPoints")}: <span>{points}</span>
               </div>
             )}
 
@@ -425,9 +426,9 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
             {generationMethod === 'standardArray' && (
               <div className="assignment-info">
                  <div className="scores-to-assign">
-                  Werte voreingestellt für 
+                  {t("characterCreation.valuesPresetFor")} 
                   <strong>{character.class.name}</strong>. 
-                  Tausche sie bei Bedarf.
+                  {t("characterCreation.swapIfNeeded")}
                 </div>
               </div>
             )}
@@ -435,22 +436,22 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
 
           {/* === NEUER BLOCK FÜR 2024-BONI === */}
           <div className="ability-box">
-            <h3>Attributsboni (Herkunft)</h3>
+            <h3>{t("characterCreation.attributeBonuses")}</h3>
             <p className="bonus-description">
-              Wähle deine Attributsboni (PHB 2024).
+              {t("characterCreation.chooseAttributeBonuses")}
             </p>
             <div className="method-selection">
               <button
                 onClick={() => handleBonusModeChange('plus2plus1')}
                 className={bonusMode === 'plus2plus1' ? 'active' : ''}
               >
-                Stärken (+2 / +1)
+                {t("characterCreation.strengthsFocused")}
               </button>
               <button
                 onClick={() => handleBonusModeChange('plus1plus1plus1')}
                 className={bonusMode === 'plus1plus1plus1' ? 'active' : ''}
               >
-                Ausgeglichen (+1 / +1 / +1)
+                {t("characterCreation.balanced")}
               </button>
             </div>
 
@@ -459,18 +460,18 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
               {bonusMode === 'plus2plus1' && (
                 <>
                   <div className="bonus-select-wrap">
-                    <label>+2 Bonus</label>
+                    <label>{t("characterCreation.plus2Bonus")}</label>
                     <select value={plus2Ability} onChange={(e) => setPlus2Ability(e.target.value)}>
-                      <option value="">Wähle...</option>
+                      <option value="">{t("characterCreation.choose")}</option>
                       {ABILITIES.map(abi => (
                         <option key={abi} value={abi} disabled={abi === plus1Ability}>{abi.toUpperCase()}</option>
                       ))}
                     </select>
                   </div>
                   <div className="bonus-select-wrap">
-                    <label>+1 Bonus</label>
+                    <label>{t("characterCreation.plus1Bonus")}</label>
                     <select value={plus1Ability} onChange={(e) => setPlus1Ability(e.target.value)}>
-                      <option value="">Wähle...</option>
+                      <option value="">{t("characterCreation.choose")}</option>
                       {ABILITIES.map(abi => (
                         <option key={abi} value={abi} disabled={abi === plus2Ability}>{abi.toUpperCase()}</option>
                       ))}
@@ -482,27 +483,27 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
               {bonusMode === 'plus1plus1plus1' && (
                 <>
                   <div className="bonus-select-wrap">
-                    <label>+1 Bonus (A)</label>
+                    <label>{t("characterCreation.plus1BonusA")}</label>
                     <select value={triPlus1A} onChange={(e) => setTriPlus1A(e.target.value)}>
-                      <option value="">Wähle...</option>
+                      <option value="">{t("characterCreation.choose")}</option>
                       {ABILITIES.map(abi => (
                         <option key={abi} value={abi} disabled={abi === triPlus1B || abi === triPlus1C}>{abi.toUpperCase()}</option>
                       ))}
                     </select>
                   </div>
                   <div className="bonus-select-wrap">
-                    <label>+1 Bonus (B)</label>
+                    <label>{t("characterCreation.plus1BonusB")}</label>
                     <select value={triPlus1B} onChange={(e) => setTriPlus1B(e.target.value)}>
-                      <option value="">Wähle...</option>
+                      <option value="">{t("characterCreation.choose")}</option>
                       {ABILITIES.map(abi => (
                         <option key={abi} value={abi} disabled={abi === triPlus1A || abi === triPlus1C}>{abi.toUpperCase()}</option>
                       ))}
                     </select>
                   </div>
                   <div className="bonus-select-wrap">
-                    <label>+1 Bonus (C)</label>
+                    <label>{t("characterCreation.plus1BonusC")}</label>
                     <select value={triPlus1C} onChange={(e) => setTriPlus1C(e.target.value)}>
-                      <option value="">Wähle...</option>
+                      <option value="">{t("characterCreation.choose")}</option>
                       {ABILITIES.map(abi => (
                         <option key={abi} value={abi} disabled={abi === triPlus1A || abi === triPlus1B}>{abi.toUpperCase()}</option>
                       ))}
@@ -518,7 +519,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
         {/* === RECHTE SPALTE: Attributliste === */}
         <div className="ability-column-right">
           <div className="ability-box">
-            <h3>Attribute</h3>
+            <h3>{t("characterCreation.attributes")}</h3>
             <ul className="ability-list features-list">
               {ABILITIES.map(abi => {
                 const racialBonus = getRacialAbilityBonus(character, abi);
@@ -549,7 +550,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
                             disabled={generationMethod === 'roll' && (scoresToAssign.length === 0 && scores[abi] === 8)}
                           >
                             {generationMethod === 'roll' && (
-                              <option value={0}>Basis (8)</option>
+                              <option value={0}>{t("characterCreation.base")} (8)</option>
                             )}
                             {getDropdownOptions(abi).map(scoreVal => (
                               <option key={scoreVal} value={scoreVal}>{scoreVal}</option>
@@ -559,7 +560,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
                     )}
 
                     <div className="ability-modifier">
-                      (Bonus: {racialBonus > 0 ? `+${racialBonus}` : racialBonus})
+                      ({t("characterCreation.bonus")}: {racialBonus > 0 ? `+${racialBonus}` : racialBonus})
                     </div>
                     <div className="final-score">
                       {finalScore}
