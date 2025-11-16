@@ -1,0 +1,222 @@
+[
+  {
+    "id": "belt-of-hill-giant-strength",
+    "name": "Gürtel der Hügelriesenstärke",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 5000,
+    "description": "Ein einfacher, aber mächtiger Gürtel, der seinem Träger die Stärke eines Hügelriesen verleiht.",
+    "bonus": "Setzt den Stärkewert des Trägers auf 21.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-stone-giant-strength",
+    "name": "Gürtel der Steinriesenstärke",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 8000,
+    "description": "Dieser Gürtel ist mit steinernen Symbolen verziert und verleiht die gewaltige Kraft eines Steinriesen.",
+    "bonus": "Setzt den Stärkewert des Trägers auf 23.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-frost-giant-strength",
+    "name": "Gürtel der Frostriesenstärke",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 12000,
+    "description": "Ein aus dem Barthaar eines Frostriesen gefertigter Gürtel, der eiskalte Stärke verleiht.",
+    "bonus": "Setzt den Stärkewert des Trägers auf 25.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-fire-giant-strength",
+    "name": "Gürtel der Feuerriesenstärke",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 16000,
+    "description": "Dieser Gürtel scheint von innen heraus zu glühen und verleiht die feurige Kraft eines Feuerriesen.",
+    "bonus": "Setzt den Stärkewert des Trägers auf 27.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-cloud-giant-strength",
+    "name": "Gürtel der Wolkenriesenstärke",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 20000,
+    "description": "Ein leichter, fast ätherischer Gürtel, der die himmelhohe Stärke eines Wolkenriesen verleiht.",
+    "bonus": "Setzt den Stärkewert des Trägers auf 29.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-storm-giant-strength",
+    "name": "Gürtel der Sturmriesenstärke",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 25000,
+    "description": "In diesem Gürtel knistert die Macht eines Sturms. Er verleiht die gottgleiche Stärke eines Sturmriesen.",
+    "bonus": "Setzt den Stärkewert des Trägers auf 30.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-dwarvenkind",
+    "name": "Gürtel der Zwergenart",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 2,
+    "value": 10000,
+    "description": "Ein Gürtel, der die Widerstandsfähigkeit und einige der angeborenen Fähigkeiten eines Zwerges verleiht.",
+    "bonus": "Erhöht die Konstitution um 2. Vorteil bei Rettungswürfen gegen Gift und Resistenz gegen Giftschaden.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-incredible-dexterity",
+    "name": "Gürtel der unglaublichen Geschicklichkeit",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 8000,
+    "description": "Dieser geschmeidige Ledergürtel macht seinen Träger außergewöhnlich flink und agil.",
+    "bonus": "Erhöht die Geschicklichkeit um 2.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-mighty-constitution",
+    "name": "Gürtel der mächtigen Konstitution",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 8000,
+    "description": "Ein breiter, robuster Gürtel, der die Ausdauer und Zähigkeit des Trägers erhöht.",
+    "bonus": "Erhöht die Konstitution um 2.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "monks-belt",
+    "name": "Mönchsgürtel",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 6000,
+    "description": "Ein einfacher Stoffgürtel, der die unbewaffneten Schläge eines Mönchs verstärkt.",
+    "bonus": "Unbewaffnete Schläge verursachen 1W6 zusätzlichen Schaden.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-lesser-healing",
+    "name": "Gürtel der geringen Heilung",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 1000,
+    "description": "Dieser Gürtel strahlt eine schwache, beruhigende Wärme aus und heilt einmal pro Tag eine kleine Menge an Wunden.",
+    "bonus": "Einmal pro Tag kann der Träger 1W8 Trefferpunkte heilen.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-greater-healing",
+    "name": "Gürtel der großen Heilung",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 5000,
+    "description": "Ein Gürtel mit einem warmen, pulsierenden Edelstein, der einmal pro Tag schwere Wunden heilen kann.",
+    "bonus": "Einmal pro Tag kann der Träger 3W8 Trefferpunkte heilen.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-many-pockets",
+    "name": "Gürtel der vielen Taschen",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 3,
+    "value": 2000,
+    "description": "Dieser Gürtel hat eine erstaunliche Anzahl von Taschen und Beuteln, von denen einige größer sind, als sie scheinen.",
+    "bonus": "Erhöht die Tragekapazität um 50 Pfund.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-the-wide-earth",
+    "name": "Gürtel der weiten Erde",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 7000,
+    "description": "Ein Gürtel aus dem Leder eines Bulette, der es dem Träger erlaubt, sich durch die Erde zu bewegen.",
+    "bonus": "Einmal pro Tag kann der Träger den Zauber 'Mit Erde verschmelzen' wirken.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-the-serpent",
+    "name": "Gürtel der Schlange",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 3000,
+    "description": "Dieser schuppige Gürtel zuckt gelegentlich und kann sich in eine Giftschlange verwandeln.",
+    "bonus": "Einmal pro Tag kann der Träger den Gürtel in eine Giftschlange verwandeln, die für ihn kämpft.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-resistance-fire",
+    "name": "Gürtel der Feuerresistenz",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 4000,
+    "description": "Ein Gürtel aus rotem Drachenleder, der vor den schlimmsten Flammen schützt.",
+    "bonus": "Gewährt Resistenz gegen Feuerschaden.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-resistance-cold",
+    "name": "Gürtel der Kälteresistenz",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 4000,
+    "description": "Ein Gürtel aus weißem Drachenleder, der vor eisigen Temperaturen schützt.",
+    "bonus": "Gewährt Resistenz gegen Kälteschaden.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-resistance-acid",
+    "name": "Gürtel der Säureresistenz",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 4000,
+    "description": "Ein Gürtel aus schwarzem Drachenleder, der vor ätzenden Substanzen schützt.",
+    "bonus": "Gewährt Resistenz gegen Säureschaden.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-resistance-lightning",
+    "name": "Gürtel der Blitzresistenz",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 4000,
+    "description": "Ein Gürtel aus blauem Drachenleder, der vor elektrischen Entladungen schützt.",
+    "bonus": "Gewährt Resistenz gegen Blitzschaden.",
+    "icon": "placeholder_belt.webp"
+  },
+  {
+    "id": "belt-of-resistance-poison",
+    "name": "Gürtel der Giftresistenz",
+    "type": "belt",
+    "slot": "belt",
+    "weight": 1,
+    "value": 4000,
+    "description": "Ein Gürtel aus grünem Drachenleder, der vor den meisten Giften schützt.",
+    "bonus": "Gewährt Resistenz gegen Giftschaden.",
+    "icon": "placeholder_belt.webp"
+  }
+]

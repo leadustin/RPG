@@ -1,0 +1,81 @@
+/* src/components/character_creation/CreationSidebar.css */
+
+/* Stellt sicher, dass die Sidebar-Elemente den Platz korrekt aufteilen */
+.sidebar-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px; /* Etwas weniger horizontales Padding */
+}
+
+/* Die Liste soll den meisten Platz einnehmen */
+.sidebar-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1; /* WICHTIG: Drückt die Navigation nach unten */
+  font-size: 1.25rem; /* Größere Schrift */
+}
+
+.sidebar-panel li {
+  padding: 18px 20px; /* Mehr Padding */
+  margin-bottom: 8px; /* Größerer Abstand */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  color: var(--theme-text-color);
+  font-family: var(--theme-font);
+  border-left: 4px solid transparent; /* Platzhalter für den aktiven Rand */
+}
+
+/* --- NEU: Deaktivierter Zustand --- */
+.sidebar-panel li.disabled {
+  color: #666; /* Ausgegraut */
+  cursor: not-allowed;
+  background-color: transparent;
+  border-left-color: transparent;
+}
+.sidebar-panel li.disabled:hover {
+  background-color: transparent;
+}
+/* --- ENDE NEU --- */
+
+
+.sidebar-panel li:not(.disabled):hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-panel li.active {
+  background-color: rgba(140, 120, 83, 0.2);
+  border-left: 4px solid var(--theme-panel-border-color);
+  font-weight: bold;
+  color: #fff;
+}
+
+
+/* --- GEÄNDERT: Container für die Navigations-Buttons --- */
+.sidebar-navigation {
+  flex-shrink: 0; /* Verhindert, dass der Container schrumpft */
+  padding: 15px 10px 0 10px; /* Abstand nach oben, Padding links/rechts */
+  margin-top: 15px; /* Abstand zur Liste */
+  border-top: 1px solid var(--theme-panel-border-color);
+  display: flex;
+  justify-content: space-between; /* Buttons an die Enden drücken */
+  gap: 10px;
+}
+
+/* Stellt sicher, dass die Buttons die .ui-button-Stile verwenden (sollten sie durch die Klasse in der JS-Datei) */
+.sidebar-navigation .ui-button {
+  width: 48%; /* Jeder Button nimmt fast die Hälfte ein */
+  padding: 0.75rem 0.5rem; /* Weniger horizontales Padding, damit Text passt */
+  font-size: 1rem;
+}
+
+/* Stil für deaktivierte Buttons (wird von public/style.css .disabled geerbt, aber wir überschreiben hier zur Sicherheit) */
+.sidebar-navigation .ui-button:disabled {
+  background-color: #2a2a2a;
+  color: #555;
+  border-color: #444;
+  cursor: not-allowed;
+  box-shadow: none;
+  text-shadow: none;
+}

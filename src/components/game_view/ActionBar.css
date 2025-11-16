@@ -1,0 +1,238 @@
+/* --- ActionBar.css --- */
+
+/* UI Container */
+.ui-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    pointer-events: none;
+    padding: 20px;
+    box-sizing: border-box;
+    
+    font-family: 'Merriweather', serif; 
+    color: #d0c0b0;
+}
+
+/* Ornament-Stil für Panels */
+.ui-panel, .ui-button {
+    background-image: linear-gradient(rgba(20, 20, 20, 0.85), rgba(20, 20, 20, 0.85)),
+                      linear-gradient(to bottom, #8c7853, #5c4e34);
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
+    border: 2px solid transparent;
+    border-radius: 12px; 
+    box-shadow: 
+        inset 0 0 8px rgba(0, 0, 0, 0.7),
+        0 0 10px rgba(0, 0, 0, 0.4);
+    pointer-events: all;
+    font-family: 'Cinzel', serif;
+    text-shadow: 1px 1px 2px #000;
+}
+
+/* Container für die gesamte untere Leiste */
+.hotbar-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: flex-end;
+    gap: 10px; 
+}
+
+/* Haupt-Panel (Hotbar) */
+.hotbar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Abstand zwischen Slot-Bereich und Tab-Bereich */
+    padding: 10px;
+    position: relative;
+}
+
+/* Container für den gesamten Slot-Bereich (links + mitte) */
+.hotbar-main-area {
+    display: flex;
+    flex-direction: row; 
+    align-items: flex-start; 
+    gap: 10px; /* Abstand zwischen linkem Block und Hauptblock */
+}
+
+/* Container für die 2x3 Slots (links) */
+.left-side-slots-integrated {
+    display: flex;
+    flex-direction: row; 
+    gap: 1px; /* Abstand zwischen Spalten */
+}
+
+/* Spalte für die linken Slots */
+.side-slot-column {
+    display: flex;
+    flex-direction: column; 
+    gap: 1px; /* Abstand zwischen Slots */
+}
+
+/* Container für die 2x16 (oder 1x16 / 3x16) Slots */
+.main-slots-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1px; /* Abstand zwischen Reihen */
+}
+
+/* Slot-Reihen */
+.hotbar-top-row, .hotbar-bottom-row, .hotbar-extra-row {
+    display: flex;
+    gap: 1px; /* Abstand zwischen Slots */
+}
+
+/* Dieser Stil gilt jetzt für ALLE Slots (Mitte + Seiten) */
+.hotbar-slot {
+    width: 45px;
+    height: 45px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #444;
+    border-radius: 8px; 
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+    position: relative;
+    overflow: hidden; 
+}
+.hotbar-slot:hover {
+    border-color: #8c7853;
+    background-color: rgba(50, 50, 50, 0.6);
+}
+.hotbar-slot img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 2px #000);
+}
+
+/* halbe Slot-Höhe */
+.hotbar-slot-half {
+    height: 22px; 
+}
+
+
+.slot-key {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 0.6em;
+    color: #a0a0a0;
+    text-shadow: 1px 1px 1px #000;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 1px 3px;
+    border-radius: 3px;
+}
+
+/* --- NEU: Footer für Tabs und Row-Controls --- */
+.hotbar-footer {
+    display: flex;
+    justify-content: space-between; /* Schiebt Tabs nach links, Controls nach rechts */
+    align-items: center;
+}
+
+.hotbar-tab-container {
+    display: flex;
+    justify-content: center; /* Zentriert die Tabs im verbleibenden Raum */
+    flex-grow: 1; /* Nimmt den meisten Platz ein */
+    gap: 5px;
+}
+.hotbar-tab {
+    background-color: rgba(50, 50, 50, 0.9);
+    color: #d0c0b0;
+    padding: 5px 12px;
+    border-radius: 8px; 
+    cursor: pointer;
+    font-size: 0.8em;
+    border: 1px solid #444;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.hotbar-tab:hover {
+    background-color: #5c4e34;
+    border-color: #8c7853;
+}
+.hotbar-tab.active {
+    background-color: #8c7853;
+    border-color: #d0c0b0;
+    color: #fff;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+/* --- NEU: Stile für +/- Buttons --- */
+.hotbar-row-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.hotbar-row-button {
+    /* Nimmt Tab-Stile als Basis */
+    background-color: rgba(50, 50, 50, 0.9);
+    color: #d0c0b0;
+    border: 1px solid #444;
+    border-radius: 6px; /* Etwas kleiner */
+    
+    /* Größen-Anpassung */
+    font-size: 1.1em; /* Größere Schrift für +/i */
+    font-family: 'Merriweather', serif; /* Besser lesbares +/i */
+    padding: 2px 8px;
+    line-height: 1.2;
+    
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.hotbar-row-button:hover {
+    background-color: #5c4e34;
+    border-color: #8c7853;
+}
+
+.hotbar-row-button:disabled {
+    background-color: rgba(30, 30, 30, 0.8);
+    color: #666;
+    border-color: #333;
+    cursor: not-allowed;
+}
+
+/* Globale Icons/Steuerelemente über der Hotbar */
+.global-controls {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    background-color: rgba(20, 20, 20, 0.9);
+    padding: 5px 10px;
+    border-radius: 8px; 
+    border: 1px solid #444;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.7);
+}
+.global-control-icon {
+    width: 25px;
+    height: 25px;
+    background-color: rgba(0, 50, 100, 0.7);
+    border: 1px solid #00c0ff;
+    border-radius: 5px; 
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.global-control-icon:hover {
+    background-color: rgba(0, 80, 150, 0.9);
+    border-color: #00ffff;
+}
+
+/* JavaScript Hilfsklasse */
+.hidden {
+    display: none !important;
+}

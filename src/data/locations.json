@@ -1,0 +1,202 @@
+[
+  {
+    "id": "elfenwacht",
+    "name": "Elfenwacht",
+    "x": 1000,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein alter Wachturm der Elfen, umgeben von einem dichten Wald.",
+    "mapFile": "elfenwacht.json",
+    "xp": 300
+  },
+  {
+    "id": "goblinhoehle",
+    "name": "Goblinhoehle",
+    "x": 1100,
+    "y": 1400,
+    "radius": 10,
+    "description": "Eine feuchte, übelriechende Höhle, die von wilden Goblins bewohnt wird.",
+    "mapFile": "goblinhoehle.json",
+    "xp": 600
+  },
+  {
+    "id": "verlassenes_dorf",
+    "name": "Verlassenes Dorf",
+    "x": 1200,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein Dorf, das vor langer Zeit von seinen Bewohnern aufgegeben wurde. Die Gründe dafür sind unbekannt.",
+    "mapFile": "verlassenes_dorf.json",
+    "xp": 1800
+  },
+  {
+    "id": "ruine_der_koenige",
+    "name": "Ruine Der Koenige",
+    "x": 1300,
+    "y": 1400,
+    "radius": 10,
+    "description": "Verfallene Hallen, in denen einst ein Königreich blühte. Jetzt nur noch Schatten und Staub.",
+    "mapFile": "ruine_der_koenige.json",
+    "xp": 3800
+  },
+  {
+    "id": "sumpf_von_darr",
+    "name": "Sumpf Von Darr",
+    "x": 1400,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein nebliger, gefährlicher Sumpf, der von seltsamen Kreaturen bevölkert ist.",
+    "mapFile": "sumpf_von_darr.json",
+    "xp": 7500
+  },
+  {
+    "id": "zwergenmine",
+    "name": "Zwergenmine",
+    "x": 1500,
+    "y": 1400,
+    "radius": 10,
+    "description": "Eine verlassene Mine, deren Gänge tief in den Fels führen.",
+    "mapFile": "zwergenmine.json",
+    "xp": 9000
+  },
+  {
+    "id": "turm_des_magiers",
+    "name": "Turm Des Magiers",
+    "x": 1600,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein hoher Turm, von magischer Energie erfüllt, die selbst die Luft zum Flimmern bringt.",
+    "mapFile": "turm_des_magiers.json",
+    "xp": 11000
+  },
+  {
+    "id": "steinwacht",
+    "name": "Steinwacht",
+    "x": 1700,
+    "y": 1400,
+    "radius": 10,
+    "description": "Eine alte Bastion, halb im Gebirge verborgen.",
+    "mapFile": "steinwacht.json",
+    "xp": 14000
+  },
+  {
+    "id": "nebelhaine",
+    "name": "Nebelhaine",
+    "x": 1800,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein uralter Wald, dessen Bäume von dichtem Nebel umgeben sind.",
+    "mapFile": "nebelhaine.json",
+    "xp": 16000
+  },
+  {
+    "id": "drachenpass",
+    "name": "Drachenpass",
+    "x": 1900,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein gefährlicher Gebirgspfad, auf dem man die Knochen alter Drachen finden kann.",
+    "mapFile": "drachenpass.json",
+    "xp": 21000
+  },
+  {
+    "id": "frostspitze",
+    "name": "Frostspitze",
+    "x": 2000,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein verschneiter Gipfel, auf dem uralte Eisriesen leben sollen.",
+    "mapFile": "frostspitze.json",
+    "xp": 15000
+  },
+  {
+    "id": "verfluchter_tempel",
+    "name": "Verfluchter Tempel",
+    "x": 2100,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein verlassener Tempel, in dessen Hallen sich das Böse selbst manifestiert.",
+    "mapFile": "verfluchter_tempel.json",
+    "xp": 20000
+  },
+  {
+    "id": "glutkessel",
+    "name": "Glutkessel",
+    "x": 2200,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein Lavasee, der das Herz eines alten Vulkans bildet.",
+    "mapFile": "glutkessel.json",
+    "xp": 20000
+  },
+  {
+    "id": "finsterwald",
+    "name": "Finsterwald",
+    "x": 2300,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein düsterer Wald, in dem kein Vogel singt und kein Licht den Boden erreicht.",
+    "mapFile": "finsterwald.json",
+    "xp": 25000
+  },
+  {
+    "id": "wuestenruinen",
+    "name": "Wuestenruinen",
+    "x": 2400,
+    "y": 1400,
+    "radius": 10,
+    "description": "Verblasste Ruinen, halb vom Sand verschluckt, voller Geheimnisse vergangener Zeiten.",
+    "mapFile": "wuestenruinen.json",
+    "xp": 30000
+  },
+  {
+    "id": "mondklippe",
+    "name": "Mondklippe",
+    "x": 2500,
+    "y": 1400,
+    "radius": 10,
+    "description": "Eine steile Klippe mit Blick auf das Meer, die bei Vollmond in silbernes Licht getaucht wird.",
+    "mapFile": "mondklippe.json",
+    "xp": 30000
+  },
+  {
+    "id": "obsidianfeste",
+    "name": "Obsidianfeste",
+    "x": 2600,
+    "y": 1400,
+    "radius": 10,
+    "description": "Eine schwarze Festung aus vulkanischem Glas, Symbol der Macht vergangener Reiche.",
+    "mapFile": "obsidianfeste.json",
+    "xp": 40000
+  },
+  {
+    "id": "himmelspforte",
+    "name": "Himmelspforte",
+    "x": 2700,
+    "y": 1400,
+    "radius": 10,
+    "description": "Ein mystischer Ort, an dem Himmel und Erde zu verschmelzen scheinen.",
+    "mapFile": "himmelspforte.json",
+    "xp": 40000
+  },
+  {
+    "id": "schattenkrone",
+    "name": "Schattenkrone",
+    "x": 2800,
+    "y": 1400,
+    "radius": 10,
+    "description": "Der mythische letzte Ort – eine Stadt aus Schatten und Licht, wo Legenden geboren werden.",
+    "mapFile": "schattenkrone.json",
+    "xp": 50000
+  },
+  {
+    "id": "halle_der_legenden",
+    "name": "Halle Der Legenden",
+    "x": 2900,
+    "y": 1400,
+    "radius": 10,
+    "description": "Hier endet der Pfad der Sterblichen – und beginnt der Weg der Legenden.",
+    "mapFile": "halle_der_legenden.json",
+    "xp": 0
+  }
+]

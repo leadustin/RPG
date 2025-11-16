@@ -1,0 +1,289 @@
+/* +++ NEU FÜR PORTRAIT-LAYOUT +++ */
+.summary-header.summary-basics-flex {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-align: left;
+}
+.summary-portrait-img-small {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border-light);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.summary-header-info {
+  flex-grow: 1;
+}
+.summary-header-info h2 { margin: 0; }
+.summary-header-info h3 { margin: 0; font-size: 0.9em; }
+.summary-header-info p { margin: 5px 0 0 0; }
+/* +++ ENDE NEU +++ */
+/* --- NEUE LAYOUT-STRUKTUR (Ganz oben hinzufügen) --- */
+.summary-panel-layout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 20px;
+  height: 100%;
+  overflow: hidden; 
+}
+
+/* Linke Spalte: Feste Stats */
+.summary-column-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto; 
+  padding-right: 10px; 
+}
+
+/* Rechte Spalte: Scrollbare Listen */
+.summary-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto; 
+  padding-right: 10px; 
+}
+
+/* Stil für jede einzelne Box */
+.summary-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 15px;
+  flex-shrink: 0;
+}
+
+/* Rechte Spalte: Boxen sollen sich vertikal ausdehnen */
+.summary-column-right .summary-box {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+}
+/* Rechte Spalte: Listen in den Boxen sollen scrollen */
+.summary-column-right .summary-box ul {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+/* --- ENDE NEUE LAYOUT-STRUKTUR --- */
+
+
+/* --- ANPASSUNG FÜR BOX 1 (Grundlagen) --- */
+.summary-basics {
+  display: flex;
+  align-items: center; /* Vertikal zentrieren */
+  gap: 15px; /* Abstand zwischen Bild und Text */
+  
+  /* Entferne die alte Zentrierung, falls vorhanden */
+  text-align: left; 
+}
+
+.summary-portrait-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px; /* Passend zu den Boxen */
+  border: 2px solid var(--theme-panel-border-color);
+  object-fit: cover;
+  flex-shrink: 0; 
+}
+
+.summary-basics-info {
+  flex-grow: 1; 
+}
+
+.summary-basics-info h3 {
+  margin: 0 0 5px 0;
+  color: var(--color-text-light);
+}
+.summary-basics-info p {
+  margin: 5px 0 0 0;
+  font-size: 0.9em;
+}
+
+/* Kampfwerte (AC, HP, Prof) */
+.summary-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  text-align: center;
+  list-style-type: none; /* Entfernt <li>-Punkte */
+  padding: 0; /* Entfernt <ul>-Padding */
+  margin: 0; /* Entfernt <ul>-Margin */
+}
+.summary-stats-grid li {
+  position: relative; /* Wichtig für Tooltip */
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+}
+.stat-box .stat-value {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: var(--color-text-light);
+}
+.stat-box .stat-label {
+  font-size: 0.8em;
+  text-transform: uppercase;
+}
+
+/* Attribute (STR, DEX, etc.) */
+.ability-summary-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.ability-summary-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border-bottom: 1px solid var(--color-border-light);
+  position: relative; /* Wichtig für Tooltip */
+}
+.ability-summary-list li:last-child {
+  border-bottom: none;
+}
+.stat-display {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+.stat-label {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.stat-value {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #fff;
+}
+.stat-modifier {
+  font-size: 1.2em;
+  color: var(--color-selection);
+}
+
+
+/* Fertigkeiten & Features Listen */
+.skill-summary-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  /* Scroll-Verhalten wird jetzt von der .summary-column-right gehandhabt */
+}
+
+.skill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--color-border-dark);
+  position: relative; /* Wichtig für Tooltip */
+}
+.skill-item:last-child {
+  border-bottom: none;
+}
+
+.skill-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.proficiency-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-border-light);
+  flex-shrink: 0;
+}
+.proficiency-dot.proficient {
+  background-color: var(--color-selection);
+}
+.skill-ability {
+  font-size: 0.8em;
+  color: #aaa;
+  font-style: italic;
+}
+.skill-bonus {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Scrollbar-Styling (für beide Spalten) */
+.summary-column-left::-webkit-scrollbar,
+.summary-column-right::-webkit-scrollbar,
+.summary-column-right .summary-box ul::-webkit-scrollbar {
+  width: 8px;
+}
+.summary-column-left::-webkit-scrollbar-track,
+.summary-column-right::-webkit-scrollbar-track,
+.summary-column-right .summary-box ul::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.summary-column-left::-webkit-scrollbar-thumb,
+.summary-column-right::-webkit-scrollbar-thumb,
+.summary-column-right .summary-box ul::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+.summary-column-left,
+.summary-column-right,
+.summary-column-right .summary-box ul {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+/* --- NEU: Stile für Collapsible Boxen --- */
+.collapsible-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none; /* Verhindert Textmarkierung beim Klicken */
+  margin-bottom: 10px; /* Fügt etwas Abstand hinzu, wenn geöffnet */
+}
+
+/* Entfernt den Standard-Margin der h3, wenn sie klickbar ist */
+.collapsible-header {
+  margin: 0; 
+}
+/* Fügt Abstand hinzu, *nur* wenn die Liste geöffnet ist */
+.collapsible-header.open {
+   margin-bottom: 10px;
+}
+
+
+.collapsible-header:hover {
+  color: var(--color-selection); /* Leichter Hover-Effekt */
+}
+
+.collapse-icon {
+  font-size: 0.8em;
+  margin-left: 10px;
+  transform: translateY(1px); /* Kleine optische Anpassung */
+}
+
+.scrollable-list-box {
+  max-height: 400px;
+  overflow-y: auto;
+  flex-grow: 0; 
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+.scrollable-list-box::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollable-list-box::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.scrollable-list-box::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}

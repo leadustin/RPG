@@ -1,0 +1,46 @@
+/* src/components/character_creation/SelectionPanel.css */
+.selection-panel {
+  /* Stile (background, border, padding, backdrop-filter) 
+    kommen jetzt von der .ui-panel Klasse (global).
+  */
+  
+  /* Layout-Stile (wichtig für Scrolling) */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* Verhindert, dass das Panel selbst scrollt */
+  box-sizing: border-box;
+}
+
+/* * Stellt sicher, dass der Inhalt des Panels scrollbar ist,
+ * nicht das Panel selbst.
+*/
+.selection-panel > * {
+    height: 100%;
+    overflow-y: auto; /* Der *Inhalt* (z.B. RaceSelection) wird scrollbar */
+    
+    /* * Wir fügen ein negatives Margin hinzu, um das .ui-panel Padding (20px) 
+     * auszugleichen, damit der Scroll-Inhalt bis zum Rand geht.
+    */
+    margin: -20px; 
+    padding: 20px; /* Stellt das Padding für den Inhalt wieder her */
+}
+
+/* Scrollbar-Styling (passend zum Theme) */
+.selection-panel > *::-webkit-scrollbar {
+  width: 8px;
+}
+.selection-panel > *::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.selection-panel > *::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+
+/* IE/Edge Scrollbar */
+.selection-panel > * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}

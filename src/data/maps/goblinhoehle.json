@@ -1,0 +1,37 @@
+{
+    "width": 10,
+    "height": 10,
+    "tilewidth": 32,
+    "tileheight": 32,
+    
+    "layers": [
+        {
+            "type": "tilelayer",
+            "visible": true,
+            "data": [
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ]
+        }
+    ],
+    
+    "tilesets": [ 
+        {
+            "image": "placeholder.png",
+            "columns": 1,
+            "tilewidth": 32,
+            "tileheight": 32,
+            "firstgid": 1,
+            "tilecount": 1,
+            "name": "platzhalter"
+        }
+    ]
+}

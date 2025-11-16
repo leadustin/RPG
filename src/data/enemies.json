@@ -1,0 +1,194 @@
+{
+  "goblin": {
+    "name": "Goblin",
+    "cr": "1/4",
+    "xp": 50,
+    "size": "Klein",
+    "type": "Humanoid (Goblinoid)",
+    "alignment": "Neutral Böse",
+    "ac": 15,
+    "hp": {
+      "average": 7,
+      "dice": "2W6"
+    },
+    "speed": "9m",
+    "stats": {
+      "str": 8,
+      "dex": 14,
+      "con": 10,
+      "int": 10,
+      "wis": 8,
+      "cha": 8
+    },
+    "skills": {
+      "stealth": 6
+    },
+    "senses": {
+      "darkvision": "18m",
+      "passive_perception": 9
+    },
+    "languages": ["Gemeinsprache", "Goblinisch"],
+    "abilities": [
+      {
+        "name": "Flinke Flucht",
+        "description": "Der Goblin kann in jeder seiner Runden als Bonusaktion die Rückzugs- oder Verstecken-Aktion nutzen."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Krummsäbel",
+        "type": "Nahkampfwaffenangriff",
+        "attack_bonus": 4,
+        "reach": "1,5m",
+        "target": "ein Ziel",
+        "damage": {
+          "average": 5,
+          "dice": "1W6 + 2"
+        },
+        "damage_type": "Hieb"
+      },
+      {
+        "name": "Kurzbogen",
+        "type": "Fernkampfwaffenangriff",
+        "attack_bonus": 4,
+        "range": "24/96m",
+        "target": "ein Ziel",
+        "damage": {
+          "average": 5,
+          "dice": "1W6 + 2"
+        },
+        "damage_type": "Stich"
+      }
+    ],
+    "loot": {
+      "gold_dice": "2W6",
+      "items": [
+        "item_lederrüstung_schrott", 
+        "item_krummsäbel_rostig"
+      ]
+    }
+  },
+  "orc": {
+    "name": "Ork",
+    "cr": "1/2",
+    "xp": 100,
+    "size": "Mittel",
+    "type": "Humanoid (Ork)",
+    "alignment": "Chaotisch Böse",
+    "ac": 13,
+    "hp": {
+      "average": 15,
+      "dice": "2W8 + 6"
+    },
+    "speed": "9m",
+    "stats": {
+      "str": 16,
+      "dex": 12,
+      "con": 16,
+      "int": 7,
+      "wis": 11,
+      "cha": 10
+    },
+    "skills": {
+      "intimidation": 2
+    },
+    "senses": {
+      "darkvision": "18m",
+      "passive_perception": 10
+    },
+    "languages": ["Gemeinsprache", "Orkisch"],
+    "abilities": [
+      {
+        "name": "Aggressiv",
+        "description": "Als Bonusaktion in seinem Zug kann der Ork sich bis zu seiner Bewegungsrate auf einen feindlichen Charakter zubewegen, den er sehen kann."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Zweihandaxt",
+        "type": "Nahkampfwaffenangriff",
+        "attack_bonus": 5,
+        "reach": "1,5m",
+        "target": "ein Ziel",
+        "damage": {
+          "average": 9,
+          "dice": "1W12 + 3"
+        },
+        "damage_type": "Hieb"
+      },
+      {
+        "name": "Wurfspeer",
+        "type": "Nahkampf- oder Fernkampfwaffenangriff",
+        "attack_bonus": 5,
+        "range": "1,5m oder 9/36m",
+        "target": "ein Ziel",
+        "damage": {
+          "average": 6,
+          "dice": "1W6 + 3"
+        },
+        "damage_type": "Stich"
+      }
+    ],
+    "loot": {
+      "gold_dice": "2W8",
+      "items": ["item_zweihandaxt", "item_wurfspeer_x2"]
+    }
+  },
+  "acolyte": {
+    "name": "Akolyth",
+    "cr": "1/4",
+    "xp": 50,
+    "size": "Mittel",
+    "type": "Humanoid (beliebige Rasse)",
+    "alignment": "Beliebige Gesinnung",
+    "ac": 10,
+    "hp": {
+      "average": 9,
+      "dice": "2W8"
+    },
+    "speed": "9m",
+    "stats": {
+      "str": 10,
+      "dex": 10,
+      "con": 10,
+      "int": 10,
+      "wis": 14,
+      "cha": 11
+    },
+    "skills": {
+      "medicine": 4,
+      "religion": 2
+    },
+    "senses": {
+      "passive_perception": 12
+    },
+    "languages": ["Eine beliebige Sprache (meist Gemeinsprache)"],
+    "abilities": [],
+    "spellcasting": {
+      "ability": "wis",
+      "dc": 12,
+      "attack_bonus": 4,
+      "cantrips": ["licht", "heilige_flamme", "thaumaturgie"],
+      "slots_level_1": 3,
+      "spells_level_1": ["segen", "wunden_heilen", "zuflucht"]
+    },
+    "actions": [
+      {
+        "name": "Knüppel",
+        "type": "Nahkampfwaffenangriff",
+        "attack_bonus": 2,
+        "reach": "1,5m",
+        "target": "ein Ziel",
+        "damage": {
+          "average": 2,
+          "dice": "1W4"
+        },
+        "damage_type": "Wucht"
+      }
+    ],
+    "loot": {
+      "gold_dice": "4W4",
+      "items": ["item_knueppel", "item_heiliges_symbol_holz"]
+    }
+  }
+}

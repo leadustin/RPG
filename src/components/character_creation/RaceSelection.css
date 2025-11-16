@@ -1,0 +1,257 @@
+/* src/components/character_creation/RaceSelection.css */
+
+/* ---
+  LAYOUT-STILE (Eindeutig für RaceSelection) 
+--- */
+.race-panel-layout {
+  display: grid;
+  grid-template-columns: 0.6fr 2.0fr; /* 1:1.2 Spalten-Verhältnis */
+  gap: 20px;
+  flex-grow: 1; 
+  overflow: hidden;
+  height: 100%;
+}
+
+.race-column-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* GEÄNDERT: Spalte soll scrollen, nicht der Inhalt */
+  overflow-y: auto;
+  height: 100%;
+  /* Optional: Padding für den neuen Scrollbar */
+  padding-right: 5px;
+}
+
+.race-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* GEÄNDERT: Spalte soll scrollen, nicht der Inhalt */
+  overflow-y: auto;
+  height: 100%;
+  /* Optional: Padding für den neuen Scrollbar */
+  padding-right: 5px;
+}
+
+/* Stil für jede einzelne Box */
+.race-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 10px;
+  
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+/* Header in den Boxen */
+.race-box h3 {
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-light);
+  flex-shrink: 0;
+}
+
+.race-box h2.panel-details-header {
+   margin: 0 0 15px 0;
+   padding-bottom: 10px;
+   border-bottom: 1px solid var(--color-selection);
+   flex-shrink: 0;
+}
+
+
+/* ---
+  SPEZIFISCHE STILE FÜR RACESELECTION (Inhalt der Boxen)
+--- */
+
+.race-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+/* Stile für die Völker-Buttons */
+.race-button {
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.6rem 1.5rem;
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-align: center;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.race-button:hover {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.race-button.selected {
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+  font-weight: bold;
+  color: var(--theme-text-color);
+}
+
+/* ---
+  *** NEUE STILE FÜR UNTERVÖLKER (Gemäß Screenshot) ***
+--- */
+
+.subrace-collapsible-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Abstand zwischen Untervölker-Buttons */
+  padding: 10px;
+  margin-left: 15px; /* Einrückung */
+  margin-top: -5px; /* Verbindet es visuell mit dem Haupt-Button */
+  margin-bottom: 5px; /* Abstand zum nächsten Volk */
+  background: rgba(0, 0, 0, 0.15); /* Leicht anderer Hintergrund */
+  border: 1px solid var(--theme-panel-border-color);
+  border-top: none; /* Entfernt die obere Kante */
+  border-radius: 0 0 5px 5px;
+}
+
+.subrace-button-nested {
+  /* Erbt von .race-button, aber überschreibt einiges */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.4rem 1.0rem; /* Etwas kleiner */
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  font-size: 15px; /* Etwas kleiner */
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-align: center;
+  width: 100%; 
+}
+
+.subrace-button-nested:hover {
+  background-color: var(--theme-button-bg-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.subrace-button-nested.selected {
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--color-selection); /* Hebt sich vom Haupt-Button ab */
+  font-weight: bold;
+  color: var(--theme-text-color);
+}
+
+
+/* ---
+  RECHTE SPALTE (Details)
+--- */
+
+/* Stile für die Attributs-Boni */
+.ability-bonus-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 15px;
+}
+
+.ability-bonus-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.bonus-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.bonus-buttons button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 1.1em;
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  font-family: var(--theme-font);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bonus-buttons button:hover:not(:disabled) {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.bonus-buttons button.selected {
+  background-color: var(--theme-button-bg);
+  border-color: var(--color-text-light);
+}
+
+.bonus-buttons button:disabled {
+  background-color: var(--color-background-light);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* NEU: Trait-Liste in der rechten Spalte */
+.traits-list-panel {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 15px;
+  font-size: 0.95rem;
+  color: var(--color-text-normal);
+}
+
+.traits-list-panel li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border-dark);
+}
+
+.traits-list-panel li:last-child {
+  border-bottom: none;
+}
+
+.traits-list-panel strong {
+  color: var(--color-text-light);
+  margin-right: 5px;
+}
+
+
+/* --- Scrollbar-Styling (ANGEPASST) --- */
+/* Ziel: Die Spalten, die jetzt scrollen */
+.race-column-left::-webkit-scrollbar,
+.race-column-right::-webkit-scrollbar {
+  width: 8px;
+}
+.race-column-left::-webkit-scrollbar-track,
+.race-column-right::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.race-column-left::-webkit-scrollbar-thumb,
+.race-column-right::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+.race-column-left,
+.race-column-right {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}

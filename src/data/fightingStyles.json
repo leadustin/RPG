@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Verteidigung",
+    "description": "Solange du eine Rüstung trägst, erhältst du einen dauerhaften +1 Bonus auf deine Rüstungsklasse."
+  },
+  {
+    "name": "Zweikampf",
+    "description": "Wenn du eine Einhandwaffe führst und keine andere Waffe, erhältst du +2 auf den Schaden deiner Angriffe."
+  },
+  {
+    "name": "Großwaffe",
+    "description": "Wenn du beim Schadenswurf einer Zweihand- oder vielseitigen Waffe eine 1 oder 2 würfelst, darfst du diesen Würfel einmal wiederholen."
+  },
+  {
+    "name": "Bogenschießen",
+    "description": "Du erhältst einen +2 Bonus auf Angriffswürfe mit Fernkampfwaffen."
+  },
+  {
+    "name": "Kampf mit zwei Waffen",
+    "description": "Du addierst deinen Attributsmodifikator zum Schaden deines Nebenhandangriffs."
+  },
+  {
+    "name": "Schutz",
+    "description": "Wenn ein Verbündeter in 1,5 m von dir angegriffen wird, erhält der Angreifer Nachteil. Du musst ein Schild tragen. (Reaktion)"
+  }
+]

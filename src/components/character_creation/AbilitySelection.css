@@ -1,0 +1,369 @@
+/* src/components/AbilitySelection.css */
+
+
+.ability-selection-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+}
+
+.ability-panel-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr; /* Linke Spalte schmaler */
+  gap: 20px;
+  flex-grow: 1; 
+  overflow: hidden;
+}
+
+/* Linke Spalte */
+.ability-column-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto; 
+  padding-right: 10px; 
+}
+
+/* Rechte Spalte */
+.ability-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto; 
+  padding-right: 10px; 
+}
+
+/* Stil für jede einzelne Box */
+.ability-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 15px;
+  flex-shrink: 0;
+}
+
+/* Header in den Boxen */
+.ability-box h3 {
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-light);
+}
+
+/* Rechte Spalte: Box soll sich vertikal ausdehnen */
+.ability-column-right .ability-box {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+  flex-grow: 0; /* Wichtig: Box füllt die Spalte */
+}
+/* Rechte Spalte: Liste in der Box soll scrollen */
+.ability-column-right .ability-box ul {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* ---
+  SPEZIFISCHE STILE FÜR ABILITYSELECTION 
+--- */
+
+/* --- Box-Inhalte (Punkte & Zuweisung) --- */
+.points-display {
+  text-align: center;
+  font-size: 1.5em;
+  padding: 10px 0; 
+}
+
+.points-display span {
+  color: var(--color-selection);
+  font-weight: bold;
+}
+
+.assignment-info {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 5px 0;
+}
+
+.scores-to-assign {
+  font-size: 1.1em;
+  color: var(--color-text-light);
+}
+.scores-to-assign strong {
+  color: var(--color-selection);
+  margin-left: 8px; 
+}
+
+
+/* --- Button-Stile (Methodenauswahl & Würfeln) --- */
+.method-selection {
+  display: flex;
+  flex-direction: column; 
+  gap: 10px;
+}
+
+.method-selection button {
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.6rem 1.2rem; 
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-align: center;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.method-selection button:hover:not(.active) {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.method-selection button.active {
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+  font-weight: bold;
+  color: var(--theme-text-color);
+}
+
+.ability-roll-button {
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+  font-weight: bold;
+  color: var(--theme-text-color);
+  border-radius: 5px;
+  padding: 0.6rem 1.5rem;
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  border-width: 1px;
+  border-style: solid;
+}
+.ability-roll-button:hover {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+.ability-roll-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--theme-button-bg); /* Standard-Button-Farbe */
+  border-color: var(--theme-panel-border-color);
+  box-shadow: none;
+}
+
+/* --- NEU: DiceBox Container-Stil --- */
+#ability-dice-box {
+  width: 100%;
+  height: 400px; /* WICHTIG: Muss eine Höhe haben */
+  margin-bottom: 0px; /* War vorher 15px, aber gap regelt das */
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1a1a1a; /* Dunkler Hintergrund für den Ladezustand */
+  border: 1px solid var(--theme-panel-border-color);
+  box-sizing: border-box;
+}
+
+
+/* --- Attribut-Liste (rechte Spalte) --- */
+.ability-list {
+  list-style-type: none;
+  padding: 0 5px 0 0; 
+  margin: 0;
+}
+
+.ability-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px !important;
+  padding: 5px 0;
+}
+
+.ability-item strong {
+  flex-basis: 50px;
+  margin-bottom: 0 !important;
+  font-size: 1.1em;
+}
+
+/* --- +/- Buttons --- */
+.ability-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ability-controls button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 1.1em;
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  font-family: var(--theme-font);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.ability-controls button:hover:not(:disabled) {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.ability-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.base-score {
+  font-size: 1.2em;
+  width: 25px;
+  text-align: center;
+}
+
+/* --- Array/Roll Dropdown --- */
+.ability-controls-select {
+  margin: 0 5px;
+  flex-basis: 120px;
+}
+
+.ability-controls-select select {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 1em;
+  background-color: var(--theme-button-bg);
+  border: 1px solid var(--color-border-dark);
+  color: var(--color-text-light);
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-family: var(--font-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%2nmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c9a55a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20128c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4l128-128c3.6-3.6%205.4-7.8%205.4-12.8%200-5-1.8-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 0.8em;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.ability-controls-select select:focus {
+  border-color: var(--color-selection);
+  box-shadow: 0 0 0 2px rgba(168, 126, 76, 0.4);
+  outline: none;
+}
+
+.ability-controls-select select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Modifier & Final Score --- */
+.ability-modifier {
+  flex-basis: 90px;
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+}
+
+.final-score {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--color-selection);
+  flex-basis: 30px;
+  text-align: right;
+  margin-left: auto; 
+}
+
+/* --- Scrollbar-Styling --- */
+.ability-column-left::-webkit-scrollbar,
+.ability-column-right::-webkit-scrollbar,
+.ability-column-right .ability-box ul::-webkit-scrollbar {
+  width: 8px;
+}
+.ability-column-left::-webkit-scrollbar-track,
+.ability-column-right::-webkit-scrollbar-track,
+.ability-column-right .ability-box ul::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.ability-column-left::-webkit-scrollbar-thumb,
+.ability-column-right::-webkit-scrollbar-thumb,
+.ability-column-right .ability-box ul::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+.ability-column-left,
+.ability-column-right,
+.ability-column-right .ability-box ul {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+.dice-box-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/*
+=================================
+NEUE CSS-REGELN FÜR 2024-BONI
+=================================
+*/
+
+.bonus-description {
+  font-size: 0.9rem;
+  color: var(--theme-text-color-light);
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.bonus-selection-dropdowns {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--theme-panel-divider-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bonus-select-wrap {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bonus-select-wrap label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--theme-text-color-light);
+}
+
+.bonus-select-wrap select {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  background-color: var(--theme-button-bg);
+  border: 1px solid var(--theme-input-border-color);
+  color: var(--theme-input-text-color);
+  border-radius: 4px;
+}

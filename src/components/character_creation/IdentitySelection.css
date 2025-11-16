@@ -1,0 +1,345 @@
+/* src/components/character_creation/IdentitySelection.css */
+
+/* --- NEU: Haupt-Wrapper für IdentitySelection --- */
+.identity-selection-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Füllt den übergeordneten Container */
+  width: 100%;
+}
+
+/* ---
+  LAYOUT-STILE (Kopiert & angepasst von SummaryPanel.css) 
+--- */
+
+.summary-panel-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  flex-grow: 1; /* WICHTIG: Füllt den restlichen Platz (ersetzt height: 100%) */
+  overflow: hidden; /* Verhindert Überlaufen der Spalten */
+}
+
+/* Linke Spalte */
+.summary-column-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto; 
+  padding-right: 10px; 
+}
+
+/* Rechte Spalte */
+.summary-column-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  overflow-y: auto; 
+  padding-right: 10px; 
+}
+
+/* Stil für jede einzelne Box */
+.summary-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 15px;
+  flex-shrink: 0;
+}
+
+/* Header in den Boxen */
+.summary-box h3 {
+  margin: 0 0 10px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-light);
+}
+
+/* Rechte Spalte: Boxen sollen sich vertikal ausdehnen */
+.summary-column-right .summary-box {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+}
+/* Rechte Spalte: Listen in den Boxen sollen scrollen */
+.summary-column-right .summary-box ul {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* ---
+  SPEZIFISCHE STILE FÜR IDENTITYSELECTION 
+--- */
+
+/* Layout für Name & Geschlecht */
+.identity-grid-two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Zwei gleich breite Spalten */
+  gap: 20px; /* Abstand zwischen den Spalten */
+}
+
+/* --- Stil für Eingabegruppen (Label & Input/Select) --- */
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  color: var(--color-text-secondary); 
+}
+
+.input-group input[type="text"],
+.identity-select { 
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 1em;
+  background-color: var(--theme-button-bg);
+  border: 1px solid var(--color-border-dark); 
+  color: var(--color-text-light); 
+  box-sizing: border-box; 
+  border-radius: 4px; 
+  font-family: var(--font-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-group input[type="text"]:focus,
+.identity-select:focus {
+  border-color: var(--color-selection); 
+  box-shadow: 0 0 0 2px rgba(168, 126, 76, 0.4); 
+  outline: none;
+}
+
+/* --- Stil für Geschlechts-Buttons (AKTUALISIERT AUF SKILL-ITEM-STIL) --- */
+.gender-buttons {
+  display: flex;
+  gap: 8px; /* Etwas mehr Abstand */
+}
+
+.gender-buttons button {
+   /* Gekopierte Stile von .sidebar-panel li */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.4rem 1.5rem; /* Angepasst von sidebar */
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+  /* Wichtig: Layout von .skill-choice beibehalten */
+  text-align: center;
+  box-sizing: border-box; 
+  /* font-size: 0.9em; */
+  width: 100%; /* Stellt sicher, dass Buttons die volle Breite nutzen */
+}
+
+.gender-buttons button:hover:not(.selected) {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.gender-buttons button.selected {
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+  font-weight: bold;
+  color: var(--theme-text-color);
+}
+
+/* NEU: Ränder an hellen Stil angepasst */
+.gender-buttons button:first-child {
+  border-left: 1px solid var(--color-border-light); 
+}
+.gender-buttons button:last-child {
+  border-right: 1px solid var(--color-border-light); 
+}
+
+
+/* --- Stil für Gesinnung-Dropdown (.identity-select) --- */
+.identity-select {
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c9a55a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20128c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4l128-128c3.6-3.6%205.4-7.8%205.4-12.8%200-5-1.8-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 12px center; 
+  background-size: 0.8em;
+  -webkit-appearance: none; 
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.identity-select option {
+  background-color: var(--color-input-bg); 
+  color: var(--color-text-light);
+}
+
+
+/* --- Stil für Portrait-Grid (AKTUALISIERT) --- */
+ul.portrait-grid {
+  list-style-type: none; 
+  padding: 5px; 
+  margin: 0; 
+  
+  display: grid;
+  /* NEU: 4 Spalten */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  
+  flex-grow: 1; 
+  overflow-y: auto; 
+  padding-right: 5px; 
+}
+
+ul.portrait-grid li {
+  padding: 0; 
+}
+
+
+.portrait-image {
+  /* NEU: Feste Größe 120x120px */
+  width: 120px;
+  height: 120px;
+  /* NEU: Zentriert das Bild in der Grid-Zelle (falls Zelle breiter als 120px) */
+  margin: 0 auto;
+  aspect-ratio: unset; /* Deaktiviert, da feste Größe */
+  
+  object-fit: cover;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  display: block; 
+}
+
+.portrait-image:hover {
+  transform: scale(1.05);
+  border-color: var(--color-text-secondary); 
+}
+
+.portrait-image.selected {
+  border-color: var(--color-selection);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(168, 126, 76, 0.6); 
+}
+
+
+/* --- Scrollbar-Styling (Kopiert von SummaryPanel.css) --- */
+.summary-column-left::-webkit-scrollbar,
+.summary-column-right::-webkit-scrollbar,
+.summary-column-right .summary-box ul::-webkit-scrollbar {
+  width: 8px;
+}
+.summary-column-left::-webkit-scrollbar-track,
+.summary-column-right::-webkit-scrollbar-track,
+.summary-column-right .summary-box ul::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.summary-column-left::-webkit-scrollbar-thumb,
+.summary-column-right::-webkit-scrollbar-thumb,
+.summary-column-right .summary-box ul::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+.summary-column-left,
+.summary-column-right,
+.summary-column-right .summary-box ul {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+/* Am Ende von IdentitySelection.css hinzufügen: */
+
+/* --- Slider-Gruppen Layout --- */
+.details-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slider-group label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+}
+
+.slider-value {
+  font-weight: bold;
+  color: var(--color-selection);
+  font-size: 1.05em;
+}
+
+/* --- Slider-Styling --- */
+.identity-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.3);
+  outline: none;
+  transition: background 0.2s;
+}
+
+.identity-slider:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Slider Thumb (Chrome, Safari, Edge) */
+.identity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-selection);
+  cursor: pointer;
+  border: 2px solid var(--color-border-light);
+  box-shadow: 0 0 8px rgba(168, 126, 76, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.identity-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(168, 126, 76, 0.8);
+}
+
+/* Slider Thumb (Firefox) */
+.identity-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-selection);
+  cursor: pointer;
+  border: 2px solid var(--color-border-light);
+  box-shadow: 0 0 8px rgba(168, 126, 76, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.identity-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(168, 126, 76, 0.8);
+}
+
+/* Slider Track (Firefox) */
+.identity-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Min/Max Anzeige unter dem Slider */
+.slider-minmax {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75em;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+  margin-top: -3px;
+}

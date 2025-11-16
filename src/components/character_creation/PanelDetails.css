@@ -1,0 +1,79 @@
+/* src/components/PanelDetails.css */
+/* Diese Datei enthält geteilte Stile für Detailansichten in Panels. */
+
+.details-divider {
+  height: 1px;
+  background-color: #333;
+  margin: 20px 0;
+}
+
+.features-list {
+  padding-left: 0;
+  list-style: none;
+  font-family: sans-serif; /* Wir nutzen hier eine lesbarere Schrift für Fließtext */
+}
+
+.features-list li {
+  margin-bottom: 0px;
+  line-height: 1.0;
+}
+
+.features-list strong {
+  color: var(--color-text-light);
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* --- NEU: Stile für Ranger-Dropdown-Menüs (JETZT KORRIGIERT) --- */
+
+/* Wir zielen auf .panel-select ab, die in der JS-Datei verwendete Klasse */
+.panel-select {
+  /* Grundlegendes Aussehen (von CreationSidebar.css übernommen) */
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  
+  /* Layout & Abstand */
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 0.9em;
+  margin-bottom: 15px; /* Abstand zwischen den beiden Menüs */
+
+  /* Entfernt den Standard-Pfeil des Betriebssystems */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Eigener Pfeil, der zum goldenen Thema passt */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c9a55a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20128c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4l128-128c3.6-3.6%205.4-7.8%205.4-12.8%200-5-1.8-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 0.8em;
+}
+
+/* Stellt sicher, dass die <option>-Elemente (die Liste)
+   im Dropdown auch dunkel sind */
+.panel-select option {
+  background-color: var(--theme-button-bg, #333);
+  color: var(--theme-text-color, white);
+}
+
+.skill-choice.has-icon {
+  /* Stellt sicher, dass Icon und Text zentriert sind */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Abstand zwischen Icon und Text */
+}
+
+.subclass-icon {
+  width: 32px;  /* Passen Sie die Größe nach Bedarf an */
+  height: 32px;
+  object-fit: contain;
+  /* Verhindert, dass das Bild auf Maus-Events reagiert */
+  pointer-events: none; 
+}

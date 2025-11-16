@@ -1,0 +1,383 @@
+/* Import Custom Font */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&display=swap');
+
+/* Container, der von Rnd gerendert wird */
+.event-log-rnd-container {
+  background-color: rgba(10, 10, 15, 0.75);
+  border: 1px solid #555;
+  border-radius: 8px;
+  color: #eee;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  overflow: hidden;
+  opacity: 0.7;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  /* WICHTIG für react-rnd */
+  height: 100%;
+}
+
+/* Volle Opazität beim Hovern */
+.event-log-rnd-container.is-hovered {
+  opacity: 1;
+  background-color: rgba(15, 15, 20, 0.9);
+}
+
+/* Header-Bereich zum Ziehen */
+.event-log-header {
+  margin: 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid #555;
+  text-align: left;
+  background-color: rgba(0, 0, 0, 0.4);
+  cursor: move;
+  flex-shrink: 0;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.event-log-header h4 {
+  margin: 0;
+  color: #ccc;
+  user-select: none;
+}
+
+.filter-toggle-btn,
+.hide-log-btn {
+  padding: 2px 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #666;
+  border-radius: 4px;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.2s;
+  min-width: 24px;
+}
+
+.filter-toggle-btn:hover,
+.hide-log-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ccc;
+}
+
+.hide-log-btn {
+  color: #f88;
+}
+
+.hide-log-btn:hover {
+  background-color: rgba(255, 100, 100, 0.2);
+  color: #faa;
+}
+
+/* Toggle Button wenn Log ausgeblendet */
+.event-log-toggle-btn {
+  position: fixed;
+  /* Position wird dynamisch per inline-style gesetzt */
+  padding: 10px 16px;
+  background-color: rgba(10, 10, 15, 0.9);
+  border: 1px solid #555;
+  border-radius: 8px;
+  color: #ccc;
+  cursor: grab;
+  font-size: 0.9em;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  z-index: 999;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  white-space: nowrap;
+  min-width: fit-content;
+  width: auto;
+  height: auto;
+}
+
+.event-log-toggle-btn:hover {
+  background-color: rgba(15, 15, 20, 0.95);
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
+
+.event-log-toggle-btn:active {
+  cursor: grabbing;
+}
+
+.new-entries-badge {
+  background-color: #f44;
+  color: white;
+  font-size: 0.75em;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Settings & Filter Bereich (ausgeklappt) */
+.event-log-settings-filters {
+  padding: 10px 12px;
+  border-bottom: 1px solid #444;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.settings-row,
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-label {
+  color: #aaa;
+  font-weight: 500;
+  font-size: 0.85em;
+}
+
+.font-size-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.font-size-btn {
+  padding: 4px 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 0.8em;
+  transition: all 0.2s;
+}
+
+.font-size-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: #777;
+}
+
+.font-size-btn.active {
+  background-color: rgba(100, 150, 255, 0.3);
+  border-color: #6496ff;
+  color: #fff;
+}
+
+/* Suche Input */
+.search-input {
+  flex: 1;
+  padding: 4px 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 0.85em;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #6496ff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+/* Transparenz Slider */
+.opacity-slider {
+  flex: 1;
+  height: 4px;
+  background: linear-gradient(to right, rgba(255,255,255,0.3), rgba(255,255,255,1));
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #6496ff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.opacity-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #6496ff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Max Entries Input */
+.max-entries-input {
+  width: 80px;
+  padding: 4px 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 0.85em;
+  outline: none;
+  text-align: center;
+}
+
+.max-entries-input:focus {
+  border-color: #6496ff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Checkbox Label */
+.setting-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 0.85em;
+}
+
+.setting-checkbox-label input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Filter-Bereich */
+.event-log-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  user-select: none;
+}
+
+.event-log-filters label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+.event-log-filters label:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.event-log-filters input[type="checkbox"] {
+  margin: 0;
+}
+
+/* Log-Liste - KRITISCHE EINSTELLUNGEN FÜR SCROLL */
+.event-log-list {
+  list-style: none;
+  padding: 10px 12px;
+  margin: 0;
+  font-size: 0.9em;
+  overflow-y: scroll !important; /* Erzwingt Scrollbar */
+  overflow-x: hidden;
+  text-align: left;
+  box-sizing: border-box;
+  
+  /* WICHTIG: Diese Kombination ermöglicht Scrollen in Flexbox */
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%; /* Begrenzt die Höhe */
+  
+  /* WICHTIG: Stellt sicher, dass Mouse-Events funktionieren */
+  pointer-events: auto;
+  touch-action: pan-y; /* Erlaubt vertikales Scrollen auf Touch-Geräten */
+  
+  /* Custom Schriftart */
+  font-family: 'Cormorant Garamond', serif;
+  
+  /* Custom Scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #555 #222;
+}
+
+.event-log-list::-webkit-scrollbar {
+  width: 8px;
+}
+.event-log-list::-webkit-scrollbar-track {
+  background: #222;
+}
+.event-log-list::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.event-log-list li {
+  padding: 3px 0;
+  border-bottom: 1px solid #2a2a2a;
+  display: flex;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.event-log-list li:last-child {
+  border-bottom: none;
+}
+
+.log-timestamp {
+  color: #888;
+  flex-shrink: 0;
+  font-size: 0.9em;
+}
+
+.log-message {
+  color: #ddd;
+  word-break: break-word;
+}
+
+.log-empty {
+  color: #777;
+  font-style: italic;
+}
+
+/* Farbcodes für Log-Typen */
+.log-type-xp .log-message {
+  color: #a6e22e; /* Hellgrün */
+}
+.log-type-level .log-message {
+  color: #66d9ef; /* Cyan */
+  font-weight: bold;
+}
+.log-type-combat .log-message {
+  color: #f92672; /* Pink/Rot */
+}
+.log-type-item .log-message {
+  color: #e6db74; /* Gelb */
+}
+.log-type-dialog .log-message {
+  color: #ae81ff; /* Lila */
+  font-style: italic;
+}

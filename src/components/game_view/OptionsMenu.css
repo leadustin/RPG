@@ -1,0 +1,84 @@
+/* --- OptionsMenu.css --- */
+/* Angepasst, um dem Stil von ActionBar.css zu entsprechen */
+
+.options-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Höherer z-index als das LevelUpModal (1001) */
+  z-index: 1002; 
+}
+
+/* * Das Menü selbst übernimmt jetzt den .ui-panel-Stil 
+ * aus ActionBar.css für einen konsistenten Look.
+*/
+.options-menu {
+  /* 1. Hintergrund (Füllung) */
+  background-image: linear-gradient(rgba(20, 20, 20, 0.95), rgba(20, 20, 20, 0.95)),
+                    /* 2. Hintergrund (Rand) */
+                    linear-gradient(to bottom, #8c7853, #5c4e34);
+  
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  border: 2px solid transparent;
+  border-radius: 12px; 
+  box-shadow: 
+      inset 0 0 8px rgba(0, 0, 0, 0.7),
+      0 0 20px rgba(0, 0, 0, 0.6); /* Stärkerer Außenschatten für Pop-up */
+  
+  font-family: 'Cinzel', serif;
+  text-shadow: 1px 1px 2px #000;
+  color: #d0c0b0;
+
+  /* Layout-Stile */
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 300px;
+  text-align: center;
+}
+
+.options-menu h2 {
+  margin-top: 0;
+  color: #fff; /* Heller als der Standardtext */
+  font-family: 'Cinzel', serif;
+}
+
+/* * Button-Stile angepasst an .hotbar-tab
+*/
+.options-menu button {
+  background-color: rgba(50, 50, 50, 0.9);
+  color: #d0c0b0;
+  padding: 10px 20px;
+  border-radius: 8px; 
+  cursor: pointer;
+  font-size: 1em;
+  border: 1px solid #444;
+  transition: background-color 0.2s, border-color 0.2s;
+  
+  /* Schriftart-Anpassungen */
+  font-family: 'Cinzel', serif;
+  text-shadow: 1px 1px 2px #000;
+}
+
+/* Hover-Stil angepasst an .hotbar-tab:hover */
+.options-menu button:hover {
+  background-color: #5c4e34;
+  border-color: #8c7853;
+  color: #fff;
+}
+
+/* Aktiv-Stil (beim Klicken) angepasst an .hotbar-tab.active */
+.options-menu button:active {
+  background-color: #8c7853;
+  border-color: #d0c0b0;
+  color: #fff;
+  transform: translateY(1px);
+}

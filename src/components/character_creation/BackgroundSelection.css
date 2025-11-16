@@ -1,0 +1,135 @@
+/* src/components/character_creation/BackgroundSelection.css */
+
+/* ---
+  LAYOUT-STILE (Eindeutig für BackgroundSelection) 
+--- */
+.background-panel-layout {
+  display: grid;
+  grid-template-columns: 0.5fr 2.0fr; /* 1:1.2 Spalten-Verhältnis */
+  gap: 20px;
+  flex-grow: 1; 
+  overflow: hidden; 
+  height: 100%; 
+}
+
+.background-column-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  /* Spalte soll scrollen */
+  overflow-y: auto;
+  height: 100%;
+  padding-right: 5px; 
+}
+
+.background-column-right {
+  display: flex;  
+  flex-direction: column;
+  gap: 20px; 
+  /* Spalte soll scrollen */
+  overflow-y: auto;
+  height: 100%;
+  padding-right: 5px; 
+}
+
+/* Stil für jede einzelne Box */
+.background-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 15px;
+  
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* Verhindert, dass Boxen schrumpfen */
+}
+
+/* Header in den Boxen */
+.background-box h3 {
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-light);
+  flex-shrink: 0; 
+}
+
+.background-box h2.panel-details-header {
+   margin: 0 0 15px 0;
+   padding-bottom: 10px;
+   border-bottom: 1px solid var(--color-selection);
+   flex-shrink: 0;
+}
+
+
+/* ---
+  SPEZIFISCHE STILE FÜR BACKGROUNDSELECTION (Inhalt der Boxen)
+--- */
+
+/* Wrapper für die Button-Liste in der linken Box */
+.background-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Scrollen wird von .background-column-left übernommen */
+}
+
+/* Wrapper für den Detail-Inhalt in der rechten Box */
+.background-details-content-wrapper {
+  /* Scrollen wird von .background-column-right übernommen */
+}
+
+
+/* Stile für die Hintergrund-Buttons 
+  (Kopiert von .race-button)
+*/
+.background-button {
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.6rem 1.5rem;
+  font-family: var(--theme-font);
+  font-size: 16px;
+  text-shadow: var(--theme-text-shadow);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-align: center;
+  box-sizing: border-box; 
+  width: 100%; 
+}
+
+.background-button:hover {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.background-button.selected {
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+  font-weight: bold;
+  color: var(--theme-text-color);
+}
+
+
+/* --- Scrollbar-Styling (Kopiert von RaceSelection.css) --- */
+.background-column-left::-webkit-scrollbar,
+.background-column-right::-webkit-scrollbar {
+  width: 8px;
+}
+.background-column-left::-webkit-scrollbar-track,
+.background-column-right::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.background-column-left::-webkit-scrollbar-thumb,
+.background-column-right::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 4px;
+}
+.background-column-left,
+.background-column-right {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}

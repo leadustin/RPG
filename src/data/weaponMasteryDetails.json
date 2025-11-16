@@ -1,0 +1,172 @@
+{
+  "Streitaxt": {
+    "description": "Robuste Axt für starke Hiebe, auch im Nahkampf vielseitig einsetzbar.",
+    "type": "Kriegswaffe · Vielseitig",
+    "damage": "1W8 (einhändig) / 1W10 (zweihändig)",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Vex (Quälen)",
+      "description": "Ein Treffer mit dieser Waffe gewährt dir Vorteil auf deinen nächsten Angriffswurf gegen dasselbe Ziel noch in dieser Runde."
+    }
+  },
+  "Großaxt": {
+    "description": "Eine massive, zweihändige Axt, die für ihre verheerenden kritischen Treffer bekannt ist.",
+    "type": "Kriegswaffe · Zweihändig",
+    "damage": "1W12",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Cleave (Spalten)",
+      "description": "Wenn du eine Kreatur triffst, kannst du als Teil derselben Aktion einen Angriff gegen eine zweite Kreatur in Reichweite ausführen."
+    }
+  },
+  "Großschwert": {
+    "description": "Ein langes, zweihändiges Schwert, das sowohl für Hiebe als auch für Stiche geeignet ist.",
+    "type": "Kriegswaffe · Zweihändig",
+    "damage": "2W6",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Vex (Quälen)",
+      "description": "Ein Treffer mit dieser Waffe gewährt dir Vorteil auf deinen nächsten Angriffswurf gegen dasselbe Ziel noch in dieser Runde."
+    }
+  },
+  "Kriegshammer": {
+    "description": "Ein schwerer Hammer, der Rüstungen durchschlagen und Knochen brechen kann.",
+    "type": "Kriegswaffe · Vielseitig",
+    "damage": "1W8 (einhändig) / 1W10 (zweihändig)",
+    "damage_type": "Wucht",
+    "mastery": {
+      "name": "Push (Stoßen)",
+      "description": "Bei einem Treffer kannst du das Ziel 3 Meter von dir wegstoßen (Stärke-Rettungswurf, um zu widerstehen)."
+    }
+  },
+  "Langschwert": {
+    "description": "Ein klassisches, vielseitiges Schwert, das einhändig oder zweihändig für mehr Schaden geführt werden kann.",
+    "type": "Kriegswaffe · Vielseitig",
+    "damage": "1W8 (einhändig) / 1W10 (zweihändig)",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Sap (Entkräften)",
+      "description": "Bei einem Treffer kannst du dem Ziel bis zum Beginn deines nächsten Zuges Nachteil auf seine Angriffswürfe auferlegen."
+    }
+  },
+  "Großkeule": {
+    "description": "Eine schwere, zweihändige Keule.",
+    "type": "Kriegswaffe · Zweihändig",
+    "damage": "2W6",
+    "damage_type": "Wucht",
+    "mastery": {
+      "name": "Push (Stoßen)",
+      "description": "Bei einem Treffer kannst du das Ziel 3 Meter von dir wegstoßen (Stärke-Rettungswurf, um zu widerstehen)."
+    }
+  },
+  "Rapier": {
+    "description": "Ein schlankes und elegantes Schwert, das auf Präzision und schnelle Stiche ausgelegt ist.",
+    "type": "Kriegswaffe · Finesse",
+    "damage": "1W8",
+    "damage_type": "Stich",
+    "mastery": {
+      "name": "Vex (Quälen)",
+      "description": "Ein Treffer mit dieser Waffe gewährt dir Vorteil auf deinen nächsten Angriffswurf gegen dasselbe Ziel noch in dieser Runde."
+    }
+  },
+  "Handaxt": {
+    "description": "Eine leichte Axt, die sich gut für den Kampf mit zwei Waffen oder als Wurfwaffe eignet.",
+    "type": "Einfache Waffe · Leicht",
+    "damage": "1W6",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Nick (Gelegenheit)",
+      "description": "Wenn du mit deiner Aktion mit dieser Waffe angreifst, kannst du als Bonusaktion einen weiteren Angriff mit derselben Waffe ausführen."
+    }
+  },
+  "Kurzschwert": {
+    "description": "Ein leichtes und schnelles Schwert, das sich gut für schnelle Angriffe und den Kampf mit zwei Waffen eignet.",
+    "type": "Kriegswaffe · Finesse, Leicht",
+    "damage": "1W6",
+    "damage_type": "Stich",
+    "mastery": {
+      "name": "Vex (Quälen)",
+      "description": "Ein Treffer mit dieser Waffe gewährt dir Vorteil auf deinen nächsten Angriffswurf gegen dasselbe Ziel noch in dieser Runde."
+    }
+  },
+  "Krummsäbel": {
+    "description": "Eine gekrümmte Klinge, die sich gut für schnelle Hiebe eignet.",
+    "type": "Kriegswaffe · Finesse, Leicht",
+    "damage": "1W6",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Nick (Gelegenheit)",
+      "description": "Wenn du mit deiner Aktion mit dieser Waffe angreifst, kannst du als Bonusaktion einen weiteren Angriff mit derselben Waffe ausführen."
+    }
+  },
+  "Wurfspeer": {
+    "description": "Ein leichter Speer, der sowohl im Nahkampf als auch auf Distanz effektiv ist.",
+    "type": "Einfache Waffe · Wurfwaffe",
+    "damage": "1W6",
+    "damage_type": "Stich",
+    "mastery": {
+      "name": "Nick (Gelegenheit)",
+      "description": "Wenn du mit deiner Aktion mit dieser Waffe angreifst, kannst du als Bonusaktion einen weiteren Angriff mit derselben Waffe ausführen."
+    }
+  },
+  "Hellebarde": {
+    "description": "Eine Stangenwaffe mit einer Axtklinge und einer Speerspitze.",
+    "type": "Kriegswaffe · Zweihändig, Reichweite",
+    "damage": "1W10",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Push (Stoßen)",
+      "description": "Bei einem Treffer kannst du das Ziel 3 Meter von dir wegstoßen (Stärke-Rettungswurf, um zu widerstehen)."
+    }
+  },
+  "Glefe": {
+    "description": "Eine Stangenwaffe mit einer einschneidigen Klinge an der Spitze.",
+    "type": "Kriegswaffe · Zweihändig, Reichweite",
+    "damage": "1W10",
+    "damage_type": "Hieb",
+    "mastery": {
+      "name": "Cleave (Spalten)",
+      "description": "Wenn du eine Kreatur triffst, kannst du als Teil derselben Aktion einen Angriff gegen eine zweite Kreatur in Reichweite ausführen."
+    }
+  },
+  "Lanze": {
+    "description": "Eine lange Stangenwaffe, die primär vom Pferderücken aus eingesetzt wird.",
+    "type": "Kriegswaffe · Reichweite, Speziell",
+    "damage": "1W12",
+    "damage_type": "Stich",
+    "mastery": {
+      "name": "Push (Stoßen)",
+      "description": "Bei einem Treffer kannst du das Ziel 3 Meter von dir wegstoßen (Stärke-Rettungswurf, um zu widerstehen)."
+    }
+  },
+  "Morgenstern": {
+    "description": "Ein Stachelkopf an einem Schaft, der Rüstungen durchdringt.",
+    "type": "Kriegswaffe",
+    "damage": "1W8",
+    "damage_type": "Stich",
+    "mastery": {
+      "name": "Sap (Entkräften)",
+      "description": "Bei einem Treffer kannst du dem Ziel bis zum Beginn deines nächsten Zuges Nachteil auf seine Angriffswürfe auferlegen."
+    }
+  },
+  "Pike": {
+    "description": "Eine extrem lange Stangenwaffe, die entwickelt wurde, um Feinde auf Abstand zu halten.",
+    "type": "Kriegswaffe · Zweihändig, Reichweite",
+    "damage": "1W10",
+    "damage_type": "Stich",
+    "mastery": {
+      "name": "Push (Stoßen)",
+      "description": "Bei einem Treffer kannst du das Ziel 3 Meter von dir wegstoßen (Stärke-Rettungswurf, um zu widerstehen)."
+    }
+  },
+  "Dreizack": {
+    "description": "Ein dreizackiger Speer, der sich auch zum Werfen eignet.",
+    "type": "Kriegswaffe · Vielseitig, Wurfwaffe",
+    "damage": "1W6 (einhändig) / 1W8 (zweihändig)",
+    "damage_type": "Stich",
+    "mastery": {
+      "name": "Vex (Quälen)",
+      "description": "Ein Treffer mit dieser Waffe gewährt dir Vorteil auf deinen nächsten Angriffswurf gegen dasselbe Ziel noch in dieser Runde."
+    }
+  }
+}

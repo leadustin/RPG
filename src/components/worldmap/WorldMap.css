@@ -1,0 +1,68 @@
+.world-map-viewport {
+    /*Die Größe wird jetzt vom Wrapper in GameView.css gesteuert. */
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    width: 1240px;
+    height: 640px;
+}
+
+.world-map-viewport:active {
+    cursor: grabbing;
+}
+
+.world-map-viewport canvas {
+    /* Das Canvas soll sich an den Container anpassen, ohne sich zu verzerren */
+    display: block;
+    max-width: 1240px;
+    max-height: 640px;
+    width: 1240px;
+    height: 640px;
+    object-fit: contain; /* WICHTIG: Behält das Seitenverhältnis bei */
+    margin: auto; /* Zentriert das Canvas, falls es Ränder gibt */
+}
+
+.mouse-coords {
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-family: monospace;
+    z-index: 1; /* Stellt sicher, dass die Koordinaten über dem Canvas liegen */
+}
+
+/* Modal-Stil für die Weltkarte */
+.interaction-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  border: 2px solid #a98658;
+  border-radius: 10px;
+  padding: 20px 40px;
+  color: white;
+  text-align: center;
+  z-index: 1000;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.interaction-modal p {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.interaction-modal button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  font-size: 1em;
+  cursor: pointer;
+  background-color: #8b4513;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+/* Ende Modal-Stil */

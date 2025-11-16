@@ -1,0 +1,157 @@
+/* public/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+/* WICHTIG: Wir importieren 'Cinzel' (non-decorative) für das neue UI-Theme */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+
+:root {
+  /* Deine originalen Variablen (bleiben erhalten) */
+  --font-main: 'Cinzel Decorative', serif;
+  --font-sub: 'Cinzel', serif; /* Diese Schrift wird jetzt wichtiger */
+  --color-text-light: #f5e6c8;
+  --color-text-dark: #6a5b4c;
+  --color-background-dark: #000000;
+  --color-background-medium: #1c1c1c;
+  --color-background-light: #4e4642;
+  --color-border-dark: #1f1a18;
+  --color-border-light: #5a524c;
+  --color-button-primary: #5c4a3e;
+  --color-button-hover: #7b6a5e;
+  --color-button-active: #9a8a7e;
+  --color-selection: #d0c0b0; 
+  --color-shadow: rgba(0, 0, 0, 0.5);
+
+  /* --- NEUE THEME-Variablen (aus OptionsMenu.css) --- */
+  --theme-font: 'Cinzel', serif;
+  --theme-text-color: #d0c0b0;
+  --theme-text-shadow: 1px 1px 2px #000;
+  
+  --theme-panel-bg: linear-gradient(rgba(20, 20, 20, 0.95), rgba(20, 20, 20, 0.95));
+  --theme-panel-border: linear-gradient(to bottom, #8c7853, #5c4e34);
+  --theme-panel-border-color: #8c7853;
+  --theme-panel-shadow-inset: inset 0 0 8px rgba(0, 0, 0, 0.7);
+  --theme-panel-shadow-outset: 0 0 20px rgba(0, 0, 0, 0.6);
+  
+  --theme-button-bg: rgba(50, 50, 50, 0.9);
+  --theme-button-bg-hover: rgba(70, 70, 70, 0.95);
+  --theme-button-bg-active: rgba(40, 40, 40, 0.9);
+  --theme-button-glow-hover: 0 0 10px #8c7853;
+  --theme-button-shadow-active: inset 0 0 5px #000;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background-dark);
+  color: var(--color-text-light);
+  font-family: var(--font-main); /* Standard-Schrift bleibt 'Cinzel Decorative' */
+  overflow: hidden; 
+  font-size: 16px;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-main);
+    color: var(--color-text-light);
+    text-shadow: 1px 1px 2px var(--color-shadow);
+}
+
+/* Deine originale Button-Definition (bleibt erhalten) */
+button {
+    font-family: var(--font-main);
+    color: var(--color-text-light);
+    background-color: var(--color-button-primary);
+    border: 1px solid var(--color-border-light);
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+button:hover {
+    background-color: var(--color-button-hover);
+    border-color: var(--color-selection);
+}
+
+button:active {
+    background-color: var(--color-button-active);
+}
+
+/* --------------------------------------------------- */
+/* --- NEUE GLOBALE THEME-KLASSEN (aus OptionsMenu) --- */
+/* --------------------------------------------------- */
+
+/* 1. Die wiederverwendbare Panel-Klasse */
+.ui-panel {
+  /* Farb- und Schrift-Stile */
+  font-family: var(--theme-font); /* Verwendet die 'Cinzel' Schrift */
+  text-shadow: var(--theme-text-shadow);
+  color: var(--theme-text-color);
+
+  /* Hintergrund & Rand (der Gradient-Trick aus OptionsMenu.css) */
+  background-image: var(--theme-panel-bg), var(--theme-panel-border);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  
+  box-shadow: var(--theme-panel-shadow-inset), var(--theme-panel-shadow-outset);
+  
+  /* Layout-Stile */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Überschreibt h3-Tags INNERHALB des neuen Panels für den korrekten Font */
+.ui-panel h3 {
+    font-family: var(--theme-font);
+}
+
+/* 2. Die wiederverwendbare Button-Klasse */
+.ui-button {
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--theme-font); /* Verwendet 'Cinzel' */
+  text-shadow: var(--theme-text-shadow);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block; /* Stellt konsistentes Verhalten sicher */
+}
+
+.ui-button:hover {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.ui-button:active,
+.ui-button.active { /* 'active' für Klick, '.active' für ausgewählten Zustand */
+  background-color: var(--theme-button-bg-active);
+  box-shadow: var(--theme-button-shadow-active);
+}
+
+/* 3. Eine "Selected"-Klasse für Buttons, die ausgewählt sind (z.B. aktives Volk) */
+.ui-button.selected {
+  background-color: var(--theme-button-bg-active);
+  box-shadow: var(--theme-button-glow-hover), var(--theme-button-shadow-active);
+  border-color: #fff; /* Hebt die Auswahl hervor */
+  color: #fff;
+}
+
+/* 4. Eine "Disabled"-Klasse */
+.ui-button.disabled {
+  background-color: #2a2a2a;
+  color: #555;
+  border-color: #444;
+  cursor: not-allowed;
+  box-shadow: none;
+  text-shadow: none;
+}

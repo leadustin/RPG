@@ -1,0 +1,754 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+:root {
+    --bg-color: #1a1a1a;
+    --primary-text-color: #e0e0e0;
+    --secondary-text-color: #a0a0a0;
+    --border-color: #444;
+    --slot-bg: #2a2a2a;
+    --container-bg: #1e1e1e;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--primary-text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.game-ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100; 
+  background-color: #1a1a1a; 
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #202020;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main-nav .nav-btn {
+    background: none;
+    border: none;
+    color: var(--secondary-text-color);
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.main-nav .nav-btn.active,
+.main-nav .nav-btn:hover {
+    color: var(--primary-text-color);
+    border-bottom: 2px solid #d4af37;
+}
+
+.party-gold {
+    font-size: 16px;
+}
+
+.party-gold .gold-amount {
+    color: #d4af37;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.main-content {
+    display: flex;
+    height: calc(100% - 57px);
+}
+
+/* Linke Spalte: Porträts */
+.left-sidebar {
+    padding: 20px; /* Dieser Wert sorgt für den Abstand zum Rand */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.left-sidebar .character-portrait {
+    position: relative;
+    cursor: pointer;
+    /* Gib dem Container eine feste Größe, z.B. 150x150px */
+    width: 120px;
+    height: 120px;
+    border-radius: 5px; /* Optional: für abgerundete Ecken */
+    overflow: hidden; /* Verhindert, dass das Bild über den Rand hinausgeht */
+}
+
+.left-sidebar .hp-bar-wrapper {
+    position: absolute;
+    bottom: 5px; /* Positioniert den Balken am unteren Rand des Portraits */
+    left: 5px;
+    right: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    height: 14px; /* Etwas größer für bessere Lesbarkeit */
+    border: 1px solid #222;
+}
+
+.left-sidebar .hp-current {
+    background-color: #c0392b;
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease-in-out;
+}
+
+.left-sidebar .hp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px black, 0 0 3px black;
+    white-space: nowrap;
+}
+
+.character-portrait {
+    margin-bottom: 15px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 4px;
+}
+
+.character-portrait.active {
+    border-color: #d4af37;
+}
+
+.character-portrait img {
+    width: 100%;
+    border-radius: 4px;
+}
+
+.hp-bar {
+    background-color: #970b0b;
+    border-radius: 3px;
+    height: 18px;
+    position: relative;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 0px;
+}
+
+.hp-bar .hp-current {
+    background-color: #900;
+    height: 100%;
+    border-radius: 3px;
+}
+
+.hp-bar span {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    color: white;
+}
+
+/* Mittlere Spalte: Inventar */
+.inventory-section {
+    flex: 0 0 40%;
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-color);
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-right: 10px; /* Etwas Platz am Rand */
+}
+
+.inventory-header h4 {
+  margin: 0;
+}
+
+.weight-display {
+  font-size: 0.9em;
+  color: #bdbdbd;
+  background-color: #2c2c2c;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid #444;
+}
+
+/* Stil für überladene Charaktere */
+.weight-display.encumbered {
+  color: #ef5350; /* Ein auffälliges Rot */
+  font-weight: bold;
+  border-color: #ef5350;
+}
+
+.filter-btn {
+    background-color: #333;
+    border: 1px solid var(--border-color);
+    color: var(--primary-text-color);
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.character-inventory {
+    margin-bottom: 20px;
+}
+
+.inventory-owner.toggle-inventory {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 5px 0;
+    user-select: none;
+}
+
+.inventory-owner h3 {
+    margin: 0;
+}
+
+.inventory-details {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--secondary-text-color);
+}
+
+.toggle-icon {
+    font-size: 24px;
+    font-weight: bold;
+    user-select: none;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr); 
+    gap: 5px; 
+    box-sizing: content-box;
+    max-height: 305px; /* Eine ausreichend große Höhe, um alle Items anzuzeigen */
+    overflow-y: auto;
+    padding-top: 5px;
+    padding-left: 0px;
+    padding-right: 15px;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+}
+
+.character-inventory.collapsed .inventory-grid {
+    max-height: 0;
+    padding-top: 0;
+    margin-bottom: 0;
+}
+
+.inventory-slot {
+  width: 55px; /* Oder die gewünschte feste Größe für Slots */
+  height: 55px; /* Oder die gewünschte feste Größe für Slots */
+  background-color: var(--slot-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  display: flex; /* Wichtig für die Bildzentrierung und -skalierung */
+  justify-content: center; /* Zentriert horizontal */
+  align-items: center; /* Zentriert vertikal */
+  overflow: visible; /* Verhindert, dass das Bild über den Slot hinausragt */
+}
+
+.inventory-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Optional: Ein schöneres Design für die neue Scrollbar */
+.inventory-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.inventory-grid::-webkit-scrollbar-track {
+  background: #2c2c2c; /* Hintergrund der Scroll-Leiste */
+  border-radius: 4px;
+}
+
+.inventory-grid::-webkit-scrollbar-thumb {
+  background-color: #666; /* Die Farbe des Scroll-Balkens */
+  border-radius: 4px;
+  border: 2px solid #2c2c2c; /* Ein kleiner Rand um den Balken */
+}
+
+.inventory-grid::-webkit-scrollbar-thumb:hover {
+  background-color: #888; /* Farbe beim Darüberfahren */
+}
+
+/* --- RECHTE SPALTE: CHARAKTER-SHEET --- */
+.right-panel-character-sheet {
+    flex-grow: 1;
+    display: flex;
+    background-color: var(--container-bg);
+    padding: 20px;
+    gap: 20px;
+}
+
+/* GEÄNDERT: gap steuert jetzt alle vertikalen Abstände einheitlich */
+.equipment-column-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* Labels linksbündig ausrichten */
+    flex: 0 0 120px;
+    gap: 12px;
+    /* Einheitlicher Abstand zwischen den Elementen */
+}
+
+.two-column-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+    /* Stellt sicher, dass das Grid die volle Breite der Spalte einnimmt */
+}
+
+.equipment-slot {
+    width: 55px;
+    height: 55px;
+    background-color: var(--slot-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+/* GEÄNDERT: margin angepasst für das neue Layout */
+.slot-label {
+    font-size: 12px;
+    color: var(--secondary-text-color);
+    margin: 0;
+    /* Kein eigener Abstand mehr, wird durch gap gesteuert */
+    text-align: center;
+    width: 100%;
+}
+
+
+.camp-button {
+    width: 100%;
+    padding: 10px 5px;
+    background-color: var(--slot-bg);
+    border: 1px solid var(--border-color);
+    color: var(--secondary-text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: auto;
+}
+
+.character-model-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.character-viewer {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+}
+
+.character-viewer img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.weapon-slots-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 250px;
+}
+
+.weapon-slot {
+    width: 100%;
+    height: 45px;
+    background-color: var(--slot-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    color: var(--secondary-text-color);
+}
+
+.stats-column-right {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* --- NEUE STILE FÜR DIE STAT-TABS --- */
+.stat-tab-nav {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 15px; /* Abstand zum Inhalt */
+}
+
+.stat-tab-btn {
+  flex: 1; /* Tabs füllen den Platz gleichmäßig aus */
+  background: none;
+  border: none;
+  color: var(--secondary-text-color);
+  padding: 8px 5px; /* Etwas Paddinb */
+  cursor: pointer;
+  font-size: 13px; /* Kleinere Schrift für die Tabs */
+  font-weight: bold;
+  border-bottom: 2px solid transparent; /* Platzhalter für den aktiven Strich */
+  transition: all 0.2s ease;
+  white-space: nowrap; /* Verhindert Zeilenumbruch */
+}
+
+.stat-tab-btn:hover {
+  color: var(--primary-text-color);
+}
+
+.stat-tab-btn.active {
+  color: #d4af37; /* Gold-Akzent, passend zu den anderen aktiven Elementen */
+  border-bottom-color: #d4af37;
+}
+
+.stat-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Stellt den Abstand zwischen den Sektionen wieder her */
+  /* Sorgt dafür, dass der Inhalt den verbleibenden Platz einnimmt */
+  flex-grow: 1;
+  max-height: 420px; /* Höhe anpassen, falls nötig */
+  overflow-y: auto;
+}
+
+/* --- NEUE STILE FÜR ZENTRIERTE STATS-ANZEIGE --- */
+.character-info-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 15px; /* Abstand zu den Attributen */
+  border-bottom: 1px solid var(--border-color); /* Trennlinie */
+  margin-bottom: 0px; /* Abstand nach der Trennlinie */
+}
+
+.char-race-centered {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--primary-text-color);
+  margin: 0;
+  text-align: center;
+}
+
+.class-icon-wrapper-centered {
+  width: 64px;
+  height: 64px;
+  margin: 8px 0; /* Abstand oben/unten */
+}
+/* .class-icon (bereits vorhanden) wird hier wiederverwendet */
+
+.char-subclass-centered {
+  font-size: 14px;
+  color: #d4af37; /* Gold-Akzent für Subklasse */
+  margin: 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.char-class-centered {
+  font-size: 14px;
+  color: var(--secondary-text-color);
+  margin: 4px 0 0 0;
+  text-align: center;
+}
+
+.char-background-centered {
+  font-size: 12px;
+  color: var(--secondary-text-color);
+  font-style: italic;
+  margin: 4px 0 0 0;
+  text-align: center;
+}
+
+.class-icon {
+    width: 64px;
+    height: 64px;
+    background-color: #26263100;
+}
+
+.class-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.primary-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 0px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stat-block {
+    text-align: center;
+}
+
+.stat-block .stat-value {
+    font-size: 16px;
+    font-weight: bold;
+    display: block;
+}
+
+.stat-block .stat-label {
+    font-size: 12px;
+    color: var(--secondary-text-color);
+}
+
+.combat-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.combat-stat {
+    display: flex;
+    justify-content: space-between;
+}
+
+.combat-stat span:first-child {
+    color: var(--secondary-text-color);
+}
+
+.close-btn {
+    background: #514937;
+  color: #a2763e;
+  border: none;
+  border-radius: 20%;
+  width: 40px;
+  height: 35px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: unset;
+}
+
+/* --- NEUER ABSCHNITT FÜR DAS ZAUBERBUCH --- */
+.spells-section {
+    flex-grow: 1; /* Nimmt den gesamten verfügbaren Platz ein */
+    padding: 20px;
+    overflow-y: auto; /* Erlaubt scrollen, falls der Inhalt zu lang wird */
+}
+
+.spells-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.spells-header h2 {
+  margin: 0;
+}
+
+.spells-content {
+  /* Hier kannst du das Layout für deine Zauber definieren, z.B. ein Grid */
+}
+
+/* Schild-Spezifische Styles */
+
+.toggle-btn {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: var(--slot-bg);
+    border: 1px solid var(--border-color);
+    color: var(--primary-text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.toggle-btn:hover {
+    background-color: #3a3a3a;
+}
+
+.toggle-btn:disabled {
+    background-color: #1a1a1a;
+    color: var(--secondary-text-color);
+    cursor: not-allowed;
+    border-color: #333;
+}
+
+.combat-style-indicator {
+    width: 100%;
+    padding: 6px 8px;
+    background-color: rgba(0, 150, 0, 0.2);
+    border: 1px solid rgba(0, 150, 0, 0.4);
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 8px;
+}
+
+.style-active {
+    color: #4caf50;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Slot-Placeholder Styling */
+.slot-placeholder {
+    font-size: 10px;
+    color: var(--secondary-text-color);
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Item Icon Styling */
+.item-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Erweiterte Hover-Effekte für Slots */
+.equipment-slot:hover {
+    border-color: #d4af37;
+}
+
+/* Spezielle Styling für Schilde */
+.equipment-slot.off-hand .item-icon[alt*="schild" i],
+.equipment-slot.off-hand .item-icon[alt*="shield" i] {
+    filter: hue-rotate(30deg);
+}
+
+/* Two-Handed Display Styling */
+.equipment-slot.two-handed-display {
+    background-color: rgba(100, 100, 100, 0.1);
+}
+
+.equipment-slot.two-handed-display:hover {
+    border-color: #aaa;
+    cursor: not-allowed;
+}
+
+.two-handed-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffd700;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ffd700;
+}
+
+.char-race-centered,
+.class-icon-wrapper-centered,
+.char-subclass-centered,
+.char-class-centered {
+  cursor: help; /* Zeigt ein Fragezeichen beim Hovern */
+}
+
+/* Stile für den "Details"-Tab (Fertigkeitenliste) */
+.details-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+}
+/* Stile für die Fertigkeiten-Liste (kann auch .details-tab-content sein) */
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 275px;
+}
+
+.skill-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Abstand zwischen Header und Skills */
+  margin-bottom: 12px; /* Abstand zwischen den Gruppen */
+}
+
+.skill-group-header {
+  font-family: var(--font-main);
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #d4af37; /* Gold */
+  text-align: center;
+  padding: 6px;
+  background-color: #222;
+  border-radius: 4px;
+  border-bottom: 2px solid #d4af37;
+}
+
+.skill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2a2a2e;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  cursor: default;
+  transition: background-color 0.2s;
+}
+
+.skill-row:hover {
+  background-color: #3a3a40;
+}
+
+.skill-name {
+  font-family: var(--font-main);
+  font-size: 0.9em;
+  color: #eee;
+}
+
+.skill-ability {
+  font-size: 0.85em;
+  color: #aaa;
+  margin-left: 4px;
+}
+
+.skill-bonus {
+  font-family: var(--font-main);  
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #fff;
+  background-color: #1a1a1c;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-width: 30px;
+  text-align: center;
+}

@@ -1,0 +1,73 @@
+.spellbook-tab {
+    display: flex;
+    height: 100%;
+    color: #e0e0e0;
+}
+
+.spell-list-container {
+    flex: 1;
+    padding: 20px;
+    border-right: 1px solid #444;
+    overflow-y: auto;
+}
+
+.spell-level-section {
+    margin-bottom: 20px;
+}
+
+.spell-level-section h3 {
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.spell-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.spell-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.spell-list li:hover {
+    background-color: #3a3a3a;
+}
+
+.spell-details-container {
+    flex: 2;
+    padding: 20px;
+}
+
+.spell-details-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #888;
+    font-style: italic;
+}
+
+.spell-details {
+    padding: 15px;
+    background-color: #2c2c2c;
+    border-radius: 5px;
+    height: 100%;
+}
+
+.spell-details h3 {
+    margin-top: 0;
+    color: #d4af37;
+}
+
+.spell-details p {
+    line-height: 1.6;
+}
+
+.spell-details em {
+    color: #aaa;
+}

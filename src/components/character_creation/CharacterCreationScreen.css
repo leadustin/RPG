@@ -1,0 +1,15 @@
+/* src/components/character_creation/CharacterCreationScreen.css */
+
+.creation-screen-container {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  height: 100vh;
+  width: 100%;
+  
+  /* Hintergrund wird jetzt vom body (style.css) übernommen */
+  /* background-color: #1a1a1a; <-- ENTFERNT */
+  
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box; 
+}

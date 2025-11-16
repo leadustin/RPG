@@ -1,0 +1,99 @@
+/* src/components/game_view/PartyPortraits.css */
+
+.party-portraits-container {
+    display: flex;
+    justify-content: center; /* NEU: Zentriert die Porträts horizontal */
+    gap: 10px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    align-items: flex-start; 
+    height: 100%; 
+}
+
+/* --- GEÄNDERT: Übergänge entfernt und 'border' sichergestellt --- */
+.portrait-item {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    /* WICHTIG: Der transparente Rand (2px) ist der Platz, 
+       durch den der Hintergrund-Gradient (der Rand) scheint */
+    border: 2px solid transparent;
+    border-radius: 5px;
+    overflow: hidden; /* Stellt sicher, dass das img die Ecken abrundet */
+    cursor: pointer; 
+    
+    /* Setzt Standard-Hintergründe (gut für 'active' Umschaltung) */
+    background-image: none;
+    background-origin: padding-box;
+    background-clip: padding-box;
+}
+
+/* --- NEU: Styling für den aktiven Rahmen (wie in OptionsMenu.css) --- */
+.portrait-item.active {
+    /* 1. Hintergrund (Füllung) - wird vom img verdeckt, aber das ist OK */
+    background-image: linear-gradient(rgba(20, 20, 20, 0.95), rgba(20, 20, 20, 0.95)),
+                      /* 2. Hintergrund (Rand) */
+                      linear-gradient(to bottom, #8c7853, #5c4e34);
+    
+    /* Zeigt Hintergrund 1 im Padding, Hintergrund 2 im Border */
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
+
+    /* Leuchteffekt im Farbton des Randes */
+    box-shadow: 0 0 8px #8c7853; 
+}
+
+.character-portrait-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    display: block;
+}
+
+.character-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); 
+    color: white;
+    padding: 5px;
+    font-size: 0.8em;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    pointer-events: none; 
+}
+
+.character-overlay .name {
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.hp-bar-wrapper {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(50, 50, 50, 0.7);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 3px;
+}
+
+.hp-bar {
+    height: 100%;
+    background-color: #e74c3c; 
+    width: 100%; 
+    transition: width 0.3s ease-in-out;
+}
+
+.hp-text {
+    position: absolute;
+    bottom: 5px; 
+    left: 5px;
+    right: 5px;
+    text-align: center;
+    font-size: 0.7em;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}

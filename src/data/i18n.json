@@ -1,0 +1,33 @@
+{
+  "abilities": {
+    "str": "Stärke",
+    "dex": "Geschicklichkeit",
+    "con": "Konstitution",
+    "int": "Intelligenz",
+    "wis": "Weisheit",
+    "cha": "Charisma",
+    "str_short": "STR",
+    "dex_short": "GES",
+    "con_short": "KON",
+    "int_short": "INT",
+    "wis_short": "WEI",
+    "cha_short": "CHA"
+  },
+  "creation": {
+    "title": "Charaktererstellung",
+    "finalize": "Charakter abschließen",
+    "step_race": "Volk",
+    "step_subrace": "Unterrasse",
+    "step_ancestry": "Abstammung",
+    "step_class": "Klasse",
+    "step_background": "Hintergrund",
+    "step_abilities": "Attribute",
+    "step_skills": "Fertigkeiten",
+    "step_name": "Name",
+    "summary_race": "Volk",
+    "summary_class": "Klasse",
+    "summary_background": "Hintergrund",
+    "summary_abilities": "Attribute",
+    "summary_skills": "Fertigkeiten"
+  }
+}

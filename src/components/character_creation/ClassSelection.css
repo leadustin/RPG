@@ -1,0 +1,138 @@
+/* src/components/ClassSelection.css */
+
+.class-selection-container {
+  display: flex;
+  height: 100%;
+  gap: 20px;
+}
+
+.class-summary-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 15px;
+  flex-shrink: 0;
+}
+
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: min-content;
+  gap: 8px;
+  width: fit-content; /* Feste Breite statt flex-basis */
+  flex-shrink: 0; /* Verhindert Schrumpfen */
+  align-content: start;
+}
+
+.class-button {
+  width: auto;
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  padding: 0.75rem 1rem;
+  font-family: var(--theme-font);
+  text-shadow: var(--theme-text-shadow);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+  /* Layout: Icon oben, Text unten */
+  box-sizing: border-box; 
+  font-size: 0.8em;
+  display: flex;
+  flex-direction: column; /* Vertikal statt horizontal */
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* Abstand zwischen Icon und Text */
+  min-height: 120px; /* Mindesthöhe für bessere Proportionen */
+}
+
+.class-button:hover {
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
+}
+
+.class-button.selected { /* .selected wird in ClassSelection.js verwendet */
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+}
+
+.class-icon-placeholder {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-background-light);
+  border: 1px solid var(--color-border-light);
+}
+
+.class-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.class-button span {
+  font-family: var(--font-main);
+  font-size: 0.95em;
+  text-align: center;
+}
+
+.class-details {
+  flex: 1; /* Nimmt den restlichen Platz ein */
+  min-width: 0; /* Verhindert Overflow */
+  padding-left: 20px;
+  border-left: 1px solid var(--color-border-light);
+  overflow-y: auto;
+}
+
+.class-details h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--color-selection);
+  font-size: 1.8em;
+  text-align: center;
+  border-bottom: 2px solid var(--color-border-light);
+  padding-bottom: 10px;
+}
+
+.class-description {
+  font-family: sans-serif;
+  line-height: 1.6;
+  font-size: 1em;
+  color: var(--color-text-light);
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.class-details h3 {
+  margin-top: 20px;
+  margin-bottom: 12px;
+  color: var(--color-selection);
+  font-size: 0.9em;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.features-list li {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-border-light);
+  border-radius: 5px;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+}
+
+.features-list li strong {
+  display: block;
+  color: var(--color-selection);
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}

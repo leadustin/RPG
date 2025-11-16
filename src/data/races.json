@@ -1,0 +1,460 @@
+[
+  {
+  "key": "human",
+  "name": "Mensch",
+  "description": "Menschen sind die anpassungsfähigsten und ehrgeizigsten unter den Völkern, die stets bestrebt sind, ihre Spuren in der Welt zu hinterlassen.",
+  "ability_bonuses": {
+    "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+    "bonuses": {}
+  },
+  "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
+  "size": "Mittel",
+  "speed": 9,
+  "portraits": 4, 
+  "physical_props": {
+    "age": { "min": 18, "max": 100, "default": 25, "step": 1 },
+    "height": { "min": 1.60, "max": 1.95, "default": 1.75, "step": 0.01 },
+    "weight": { "min": 50, "max": 110, "default": 75, "step": 1 }
+  },
+  "languages": ["Gemeinsprache", "Eine zusätzliche Sprache deiner Wahl"],
+  "traits": [
+  {
+    "name": "Vielseitige Natur",
+    "description": "Du erhältst eine zusätzliche Fertigkeit deiner Wahl und ein Talent (Feat) deiner Wahl. Dieses Merkmal repräsentiert die außergewöhnliche Anpassungsfähigkeit der Menschen."
+  }
+]
+  
+},
+  {
+    "key": "elf",
+    "name": "Elf",
+    "description": "Elfen sind ein magisches Volk von überirdischer Anmut, das eine tiefe Verbindung zur Natur und zur Magie besitzt.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Obwohl Elfen mit etwa 100 Jahren als erwachsen gelten, können sie über 750 Jahre alt werden.",
+    "size": "Mittel",
+    "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 100, "max": 750, "default": 125, "step": 1 },
+      "height": { "min": 1.50, "max": 1.90, "default": 1.75, "step": 0.01 },
+      "weight": { "min": 45, "max": 85, "default": 65, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Elfisch"],
+    "traits": [
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Geschärfte Sinne",
+        "description": "Du bist geübt in der Fertigkeit Wahrnehmung."
+      },
+      {
+        "name": "Feen-Abstammung",
+        "description": "Du hast Vorteil bei Rettungswürfen gegen Bezauberung."
+      },
+      {
+        "name": "Trance",
+        "description": "Du musst nicht schlafen und benötigst nur 4 Stunden für eine lange Rast."
+      }
+    ],
+    "subraces": [
+      {
+        "key": "high-elf",
+        "name": "Hochelf",
+        "traits": [
+          {
+            "name": "Waffenübung der Elfen",
+            "description": "Du bist geübt im Umgang mit Langschwert, Kurzschwert, Kurzbogen und Langbogen."
+          },
+          {
+            "name": "Zaubertrick",
+            "description": "Du kennst einen Zaubertrick deiner Wahl aus der Zauberliste des Magiers."
+          }
+        ]
+      },
+      {
+        "key": "wood-elf",
+        "name": "Waldelf",
+        "traits": [
+          {
+            "name": "Waffenübung der Elfen",
+            "description": "Du bist geübt im Umgang mit Langschwert, Kurzschwert, Kurzbogen und Langbogen."
+          },
+          {
+            "name": "Flink",
+            "description": "Deine Bewegungsrate ist auf 10,5 Meter erhöht."
+          },
+          {
+            "name": "Maske der Wildnis",
+            "description": "Du kannst versuchen, dich zu verstecken, selbst wenn du nur leicht von Laub, starkem Regen, fallendem Schnee, Nebel oder anderen natürlichen Phänomenen verdeckt bist."
+          }
+        ]
+      },
+      {
+        "key": "drow",
+        "name": "Drow (Dunkelelf)",
+        "traits": [
+          {
+            "name": "Überlegene Dunkelsicht",
+            "description": "Deine Dunkelsicht hat einen Radius von 36 Metern."
+          },
+          {
+            "name": "Sonnenlicht-Empfindlichkeit",
+            "description": "Du hast Nachteil bei Angriffs- und Wahrnehmungswürfen, die auf Sicht basieren, wenn du, das Ziel deines Angriffs oder das, was du wahrzunehmen versuchst, in direktem Sonnenlicht steht."
+          },
+          {
+            "name": "Drow-Magie",
+            "description": "Du kennst den Zaubertrick 'Tanzende Lichter'. Ab Stufe 3 kannst du 'Feenfeuer' und ab Stufe 5 'Dunkelheit' einmal pro langer Rast wirken."
+          },
+          {
+            "name": "Waffenübung der Drow",
+            "description": "Du bist geübt im Umgang mit Rapier, Kurzschwert und Handarmbrust."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "dwarf",
+    "name": "Zwerg",
+    "description": "Zwerge sind ein standhaftes Volk, bekannt für ihre Zähigkeit, ihre Handwerkskunst und ihre tiefe Verbundenheit zu den Bergen.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Zwerge gelten mit etwa 50 Jahren als jung und können bis zu 350 Jahre alt werden.",
+    "size": "Mittel",
+    "speed": 7.5,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 50, "max": 350, "default": 100, "step": 1 },
+      "height": { "min": 1.20, "max": 1.45, "default": 1.35, "step": 0.01 },
+      "weight": { "min": 60, "max": 100, "default": 80, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Zwergisch"],
+    "traits": [
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Zwergen-Zähigkeit",
+        "description": "Du hast Vorteil bei Rettungswürfen gegen Gift und Resistenz gegen Giftschaden."
+      },
+      {
+        "name": "Stein-Gespür",
+        "description": "Du verdoppelst deinen Übungsbonus für Intelligenz (Geschichte)-Würfe in Bezug auf Steinmetzarbeiten."
+      }
+    ],
+    "subraces": [
+      {
+        "key": "hill-dwarf",
+        "name": "Hügelzwerg",
+        "traits": [
+          {
+            "name": "Waffenübung der Zwerge",
+            "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer."
+          },
+          {
+            "name": "Zwergen-Zähigkeit (HP)",
+            "description": "Dein Trefferpunkte-Maximum erhöht sich pro Stufe um 1."
+          }
+        ]
+      },
+      {
+        "key": "mountain-dwarf",
+        "name": "Bergzwerg",
+        "traits": [
+          {
+            "name": "Waffenübung der Zwerge",
+            "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer."
+          },
+          {
+            "name": "Rüstungsübung der Zwerge",
+            "description": "Du bist geübt im Umgang mit leichten und mittelschweren Rüstungen."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "halfling",
+    "name": "Halbling",
+    "description": "Halblinge sind ein fröhliches und gutmütiges Volk, das die Annehmlichkeiten von Heim und Herd schätzt.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Ein Halbling erreicht mit 20 Jahren das Erwachsenenalter und lebt meist bis zur Mitte seines zweiten Jahrhunderts (ca. 150 Jahre).",
+    "size": "Klein",
+    "speed": 7.5,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 20, "max": 150, "default": 30, "step": 1 },
+      "height": { "min": 0.80, "max": 1.00, "default": 0.90, "step": 0.01 },
+      "weight": { "min": 15, "max": 22, "default": 18, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Halblingisch"],
+    "traits": [
+      {
+        "name": "Glückspilz",
+        "description": "Wenn du bei einem Wurf eine 1 würfelst, kannst du den Würfel erneut werfen."
+      },
+      {
+        "name": "Mutig",
+        "description": "Du hast Vorteil bei Rettungswürfen gegen Verängstigung."
+      },
+      {
+        "name": "Flink",
+        "description": "Du kannst dich durch den Raum größerer Kreaturen bewegen."
+      }
+    ],
+    "subraces": [
+      {
+        "key": "lightfoot-halfling",
+        "name": "Leichtfuß-Halbling",
+        "traits": [
+          {
+            "name": "Von Natur aus heimlich",
+            "description": "Du kannst versuchen, dich zu verstecken, auch wenn du nur von einer Kreatur verdeckt wirst."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "dragonborn",
+    "name": "Drachenblütiger",
+    "description": "Drachenblütige sind stolze, ehrbare Krieger, die von den Drachen abstammen und deren Stärke und Arroganz teilen.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Junge Drachenblütige wachsen schnell heran und gelten mit 15 Jahren als erwachsen. Sie werden etwa 80 Jahre alt.",
+    "size": "Mittel",
+    "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 15, "max": 80, "default": 22, "step": 1 },
+      "height": { "min": 1.70, "max": 2.10, "default": 1.90, "step": 0.01 },
+      "weight": { "min": 80, "max": 160, "default": 110, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Drakonisch"],
+    "traits": [
+      {
+        "name": "Odemwaffe",
+        "description": "Deine Abstammung bestimmt deine Odemwaffe und Schadensresistenz."
+      }
+    ],
+    "ancestries": [
+      {
+        "key": "black",
+        "name": "Schwarz",
+        "damage_type": "Säure",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "blue",
+        "name": "Blau",
+        "damage_type": "Blitz",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "brass",
+        "name": "Messing",
+        "damage_type": "Feuer",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "bronze",
+        "name": "Bronze",
+        "damage_type": "Blitz",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "copper",
+        "name": "Kupfer",
+        "damage_type": "Säure",
+        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
+      },
+      {
+        "key": "gold",
+        "name": "Gold",
+        "damage_type": "Feuer",
+        "breath_weapon": "15-Fuß-Kegel (GES-Rettungswurf)"
+      },
+      {
+        "key": "green",
+        "name": "Grün",
+        "damage_type": "Gift",
+        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
+      },
+      {
+        "key": "red",
+        "name": "Rot",
+        "damage_type": "Feuer",
+        "breath_weapon": "15-Fuß-Kegel (GES-Rettungswurf)"
+      },
+      {
+        "key": "silver",
+        "name": "Silber",
+        "damage_type": "Kälte",
+        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
+      },
+      {
+        "key": "white",
+        "name": "Weiß",
+        "damage_type": "Kälte",
+        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
+      }
+    ]
+  },
+  {
+    "key": "gnome",
+    "name": "Gnom",
+    "description": "Gnome sind ein kleines, enthusiastisches Volk von Erfindern, Alchemisten und Illusionisten, die vor Energie sprühen.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Gnome werden mit etwa 40 Jahren erwachsen und können 350 bis 500 Jahre alt werden.",
+    "size": "Klein",
+    "speed": 7.5,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 40, "max": 450, "default": 100, "step": 1 },
+      "height": { "min": 0.90, "max": 1.15, "default": 1.05, "step": 0.01 },
+      "weight": { "min": 17, "max": 24, "default": 20, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Gnomisch"],
+    "traits": [
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Gnomische List",
+        "description": "Du hast Vorteil bei Intelligenz-, Weisheits- und Charisma-Rettungswürfen gegen Magie."
+      }
+    ],
+    "subraces": [
+      {
+        "key": "rock-gnome",
+        "name": "Felsengnom",
+        "traits": [
+          {
+            "name": "Wissen des Tüftlers",
+            "description": "Dein Übungsbonus wird bei Würfen auf die Geschichte von magischen/alchemistischen Objekten verdoppelt."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "half-elf",
+    "name": "Halbelf",
+    "description": "Halbelfen vereinen die Neugier und den Ehrgeiz der Menschen mit der Anmut und den geschärften Sinnen der Elfen.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Halbelfen werden mit etwa 20 Jahren erwachsen und leben oft länger als 180 Jahre.",
+    "size": "Mittel",
+    "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 20, "max": 180, "default": 28, "step": 1 },
+      "height": { "min": 1.50, "max": 1.90, "default": 1.70, "step": 0.01 },
+      "weight": { "min": 50, "max": 110, "default": 70, "step": 1 }
+    },
+    "languages": [
+      "Gemeinsprache",
+      "Elfisch",
+      "Eine zusätzliche Sprache deiner Wahl"
+    ],
+    "traits": [
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Feen-Abstammung",
+        "description": "Du hast Vorteil bei Rettungswürfen gegen Bezauberung."
+      },
+      {
+        "name": "Fertigkeits-Vielseitigkeit",
+        "description": "Du erhältst Übung in zwei Fertigkeiten deiner Wahl."
+      }
+    ]
+  },
+  {
+    "key": "half-orc",
+    "name": "Halbork",
+    "description": "Halborks sind ein Volk von beeindruckender Stärke und emotionaler Intensität, das die besten (und manchmal auch die wildesten) Eigenschaften seiner beiden Erblinien in sich vereint.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Halborks werden mit etwa 14 Jahren erwachsen und leben selten länger als 75 Jahre.",
+    "size": "Mittel",
+    "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 14, "max": 75, "default": 20, "step": 1 },
+      "height": { "min": 1.60, "max": 2.05, "default": 1.85, "step": 0.01 },
+      "weight": { "min": 70, "max": 140, "default": 95, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Orkisch"],
+    "traits": [
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Bedrohlich",
+        "description": "Du bist geübt in der Fertigkeit Einschüchtern."
+      },
+      {
+        "name": "Unbarmherzige Ausdauer",
+        "description": "Wenn du auf 0 TP fällst, fällst du stattdessen auf 1 TP (einmal pro langer Rast)."
+      },
+      {
+        "name": "Wilde Angriffe",
+        "description": "Bei einem kritischen Treffer kannst du einen zusätzlichen Waffenschadenswürfel werfen."
+      }
+    ]
+  },
+  {
+    "key": "tiefling",
+    "name": "Tiefling",
+    "description": "Gezeichnet durch einen infernalischen Pakt in ihrer Ahnenreihe, wandeln Tieflinge als Außenseiter mit übernatürlicher Ausstrahlung durch die Welt.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Tieflinge werden im gleichen Tempo erwachsen wie Menschen, leben aber einige Jahre länger (bis ca. 110 Jahre).",
+    "size": "Mittel",
+    "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 18, "max": 120, "default": 25, "step": 1 },
+      "height": { "min": 1.50, "max": 1.90, "default": 1.70, "step": 0.01 },
+      "weight": { "min": 50, "max": 110, "default": 70, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Infernalisch"],
+    "traits": [
+      {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
+        "name": "Höllische Resistenz",
+        "description": "Du hast Resistenz gegen Feuerschaden."
+      }
+    ]
+  }
+]

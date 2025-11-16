@@ -1,0 +1,26 @@
+/* Stellt sicher, dass die App den gesamten verfügbaren Platz einnimmt */
+.App {
+  text-align: center;
+  width: 1440px; /* Feste Breite des Spiels */
+  height: 920px; /* Nimmt die volle Höhe des Bildschirms ein */
+  display: flex;
+  justify-content: center; /* Zentriert den Inhalt horizontal */
+  align-items: center;     /* Zentriert den Inhalt vertikal */
+  background-color: #111;  /* Dunkler Hintergrund für den Bereich außerhalb des Spiels */
+}
+
+/* Dies ist der neue Container, der die Breite begrenzt. 
+  Wir fügen ihn in App.js hinzu.
+*/
+.game-container {
+  width: 1440px; /* Feste Breite des Spiels */
+  height: 920px; /* Feste Höhe des Spiels */
+  margin: 0 auto; /* Zentriert den Container horizontal */
+  border: 2px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Optional: fügt einen leichten Schatten hinzu */
+  position: relative; /* Wichtig für Overlays wie das CharacterSheet */
+  overflow: hidden; /* Verhindert, dass Inhalte aus dem Container ragen */
+  display: flex; /* Stellt sicher, dass die Ansicht darin korrekt angezeigt wird */
+  flex-direction: column;
+}

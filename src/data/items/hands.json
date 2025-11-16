@@ -1,0 +1,222 @@
+[
+  {
+    "id": "gauntlets-of-ogre-power",
+    "name": "Panzerhandschuhe der Ogerkraft",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 2,
+    "value": 8000,
+    "description": "Diese groben Eisenhandschuhe verleihen dem Träger die rohe Stärke eines Ogers.",
+    "bonus": "Setzt den Stärkewert des Trägers auf 19.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gloves-of-thievery",
+    "name": "Handschuhe des Diebstahls",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 0.5,
+    "value": 3000,
+    "description": "Dünne, schwarze Lederhandschuhe, die das Geschick bei filigranen Handgriffen verbessern.",
+    "bonus": "Vorteil bei Fingerfertigkeitswürfen (Schleichen) und beim Schlösserknacken.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gloves-of-missile-snaring",
+    "name": "Handschuhe des Geschossfangs",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 3000,
+    "description": "Diese Handschuhe scheinen fast instinktiv nach ankommenden Geschossen zu greifen.",
+    "bonus": "Als Reaktion kann der Träger versuchen, ein auf ihn abgeschossenes Projektil zu fangen und den Schaden zu reduzieren oder zu negieren.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "bracers-of-archery",
+    "name": "Armschienen des Bogenschießens",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 2,
+    "value": 1500,
+    "description": "Verzierte Armschienen, die die Treffsicherheit mit Bögen verbessern.",
+    "bonus": "+2 auf den Schaden bei Angriffen mit Lang- und Kurzbögen.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "bracers-of-defense",
+    "name": "Armschienen der Verteidigung",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 2,
+    "value": 6000,
+    "description": "Diese Armschienen erzeugen ein schützendes Kraftfeld um den Träger, solange er keine Rüstung trägt.",
+    "bonus": "+2 auf die Rüstungsklasse, wenn keine Rüstung getragen wird.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gloves-of-swimming-and-climbing",
+    "name": "Handschuhe des Schwimmens und Kletterns",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 1200,
+    "description": "Handschuhe mit kleinen Schwimmhäuten und rauem Griff, die die Fortbewegung im Wasser und an Klippen erleichtern.",
+    "bonus": "Vorteil bei Athletikwürfen zum Schwimmen und Klettern.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gloves-of-the-growling-underdog",
+    "name": "Handschuhe des knurrenden Außenseiters",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 2000,
+    "description": "Diese Handschuhe verleihen dem Träger im Nahkampf einen Vorteil, wenn er von Feinden umzingelt ist.",
+    "bonus": "Vorteil bei Nahkampfangriffswürfen, wenn zwei oder mehr Gegner in der Nähe sind.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "hellriders-pride",
+    "name": "Stolz der Höllenreiter",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 2500,
+    "description": "Wenn der Träger einen Verbündeten heilt, erhält dieser zusätzlich Widerstand gegen Waffenschaden.",
+    "bonus": "Wenn der Träger einen Verbündeten heilt, erhält dieser Resistenz gegen Hieb-, Stich- und Wuchtschaden für 2 Runden.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "the-spell-sparkler",
+    "name": "Der Zauberfunke",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 4500,
+    "description": "Diese Handschuhe laden sich mit magischer Energie auf, wenn der Träger Zauber wirkt.",
+    "bonus": "Jedes Mal, wenn der Träger mit einem Zauber oder Zaubertrick Schaden verursacht, erhält er 2 Blitzladungen.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gloves-of-heroism",
+    "name": "Handschuhe des Heldentums",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 3000,
+    "description": "Diese Handschuhe verleihen dem Träger Mut und Stärke in entscheidenden Momenten.",
+    "bonus": "Wenn der Träger eine Aktion nutzt, um anzugreifen, erhält er temporäre Trefferpunkte.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gloves-of-power",
+    "name": "Handschuhe der Macht",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 3500,
+    "description": "Handschuhe, die mit dem Zeichen des Absoluten versehen sind und Gegner schwächen können.",
+    "bonus": "Treffer im Nahkampf können das Ziel mit 'Bane' belegen, was seine Angriffs- und Rettungswürfe senkt.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "winter's-grasp",
+    "name": "Griff des Winters",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 4000,
+    "description": "Eiskalte Handschuhe, die Gegner anfälliger für Kälte machen.",
+    "bonus": "Wenn der Träger Kälteschaden verursacht, fügt er zusätzlichen Kälteschaden zu.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "abyss-beckoners",
+    "name": "Rufer des Abgrunds",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 5500,
+    "description": "Diese Handschuhe rufen die Macht des Abgrunds an und stärken beschworene Kreaturen.",
+    "bonus": "Beschworene Kreaturen des Trägers verursachen zusätzlichen nekrotischen Schaden.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "daredevil-gloves",
+    "name": "Draufgänger-Handschuhe",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 6000,
+    "description": "Diese Handschuhe ermöglichen es, Zauber im Nahkampf zu wirken, ohne einen Nachteil zu erleiden.",
+    "bonus": "Zauber, die auf kurze Distanz gewirkt werden, haben keinen Nachteil bei Angriffswürfen.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gemini-gloves",
+    "name": "Zwillingshandschuhe",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 7000,
+    "description": "Diese Handschuhe ermöglichen es, einen Zaubertrick, der normalerweise nur ein Ziel trifft, auf ein zweites Ziel in der Nähe zu wirken.",
+    "bonus": "Einmal pro kurzer Rast kann ein Zaubertrick auf ein zusätzliches Ziel wirken.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gloves-of-the-automaton",
+    "name": "Handschuhe des Automaten",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 2,
+    "value": 8500,
+    "description": "Schwere, mechanische Handschuhe, die den Träger kurzzeitig in einen Konstrukt verwandeln.",
+    "bonus": "Einmal pro langer Rast kann der Träger für 10 Runden als Konstrukt agieren, was ihm Vorteile und Resistenzen verleiht.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "gloves-of-soul-catching",
+    "name": "Handschuhe des Seelenfangs",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 20000,
+    "description": "Legendäre Handschuhe, die unbewaffneten Angriffen immense Kraft verleihen und die Lebenskraft der Getroffenen absorbieren.",
+    "bonus": "Unbewaffnete Angriffe verursachen zusätzlichen Energieschaden. Einmal pro Zug kann der Träger bei einem Treffer Trefferpunkte zurückgewinnen oder einen Vorteil auf Angriffe und Rettungswürfe erhalten.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "quickspell-gloves",
+    "name": "Schnellzauber-Handschuhe",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 9000,
+    "description": "Diese Handschuhe erlauben es, einen Zaubertrick als Bonusaktion zu wirken, anstatt als Aktion.",
+    "bonus": "Einmal pro kurzer Rast kann ein Zaubertrick als Bonusaktion gewirkt werden.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "flawed-helldusk-gloves",
+    "name": "Fehlerhafte Höllendämmerungs-Handschuhe",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 1,
+    "value": 5000,
+    "description": "Eine weniger mächtige Version der Höllendämmerungs-Handschuhe. Sie verleihen Waffen- und Zauberangriffen zusätzliche Kraft.",
+    "bonus": "+1 auf Zauberangriffswürfe. Waffenangriffe verursachen zusätzlichen Feuerschaden.",
+    "icon": "placeholder_hands.webp"
+  },
+  {
+    "id": "thunder-palm-gauntlets",
+    "name": "Donnerhand-Panzerhandschuhe",
+    "type": "hands",
+    "slot": "hands",
+    "weight": 2,
+    "value": 6500,
+    "description": "Diese Panzerhandschuhe können eine Welle von donnernder Energie freisetzen.",
+    "bonus": "Verursachen bei einem Treffer zusätzlichen Donnerschaden und können das Ziel zurückstoßen.",
+    "icon": "placeholder_hands.webp"
+  }
+]
