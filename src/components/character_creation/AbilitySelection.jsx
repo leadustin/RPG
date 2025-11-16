@@ -110,7 +110,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     return () => {
       if (diceBoxRef.current) {
         console.log("Cleaning up DiceBox instance...");
-        // DiceBox v1.1.0 verwendet clear() statt cleanup()
+        
         try {
           if (typeof diceBoxRef.current.clear === 'function') {
             diceBoxRef.current.clear();
