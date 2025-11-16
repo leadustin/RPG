@@ -1,4 +1,4 @@
-// src/components/AbilitySelection.js
+// src/components/AbilitySelection.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import DiceBox from "@3d-dice/dice-box";
 import './AbilitySelection.css';
