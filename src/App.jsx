@@ -1,5 +1,4 @@
-// src/App.js
-
+// src/App.jsx
 import React, { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -7,7 +6,7 @@ import { useGameState } from "./hooks/useGameState";
 import { StartScreen } from "./components/start_screen/StartScreen";
 import { CharacterCreationScreen } from "./components/character_creation/CharacterCreationScreen";
 import GameView from "./components/game_view/GameView";
-import { LevelUpModal } from "./components/level_up/LevelUpModal";
+import { LevelUpScreen } from "./components/level_up/LevelUpScreen";
 import CharacterSheet from "./components/character_sheet/CharacterSheet";
 import { TileMap } from "./components/maps/TileMap";
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
@@ -139,7 +138,7 @@ function App() {
           )}
 
           {gameState.character && gameState.character.pendingLevelUp && (
-          <LevelUpModal
+          <LevelUpScreen
             character={gameState.character}
             onConfirm={handleConfirmLevelUp}
           />
@@ -172,5 +171,5 @@ function App() {
     </DndProvider>
   );
 }
-
+//OK
 export default App;
