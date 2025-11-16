@@ -1,42 +1,43 @@
-// src/components/start_screen/StartScreen.js
-
+// src/components/start_screen/StartScreen.jsx
 import React from "react";
 import "./StartScreen.css";
+import { useTranslation } from "react-i18next"; // 1. Importieren
 
 export const StartScreen = ({
   onNewGame,
-  onContinueGame, // Neu
+  onContinueGame,
   onLoadGame,
   onSaveGame,
   onDeleteGame,
   isGameLoaded,
-  autoSaveExists, // Neu
+  autoSaveExists,
   saveFileExists,
 }) => {
+  const { t } = useTranslation(); // 2. Hook aufrufen
+
   return (
     <div className="start-screen-container">
       <div className="menu-box">
-        <h1>Mein RPG</h1>
-        {/* Neuer "Fortsetzen"-Button, der den Autosave lädt */}
+        {/* 3. Hartcodierte Strings durch t('key') ersetzen */}
+        <h1>{t("startScreen.title")}</h1>
         <button onClick={onContinueGame} disabled={!autoSaveExists}>
-          Fortsetzen
+          {t("startScreen.continue")}
         </button>
-        <button onClick={onNewGame}>Neues Spiel</button>
-        {/* "Spiel laden" öffnet jetzt den Slot Manager */}
+        <button onClick={onNewGame}>{t("startScreen.newGame")}</button>
         <button onClick={onLoadGame} disabled={!saveFileExists}>
-          Spiel laden
+          {t("startScreen.loadGame")}
         </button>
         <button onClick={onSaveGame} disabled={!isGameLoaded}>
-          Spiel speichern
+          {t("startScreen.saveGame")}
         </button>
         <button
           onClick={onDeleteGame}
-          disabled={!autoSaveExists} // Sollte nur den Autosave löschen
+          disabled={!autoSaveExists}
           className="delete-button"
         >
-          Autosave löschen
+          {t("startScreen.deleteAutosave")}
         </button>
-        <button disabled>Optionen</button>
+        <button disabled>{t("startScreen.options")}</button>
       </div>
     </div>
   );
