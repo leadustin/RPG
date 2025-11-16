@@ -255,3 +255,33 @@
   width: 100% !important;
   height: 100% !important;
 }
+
+.levelup-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #444;
+}
+
+.levelup-section h4 {
+  color: #d4af37;
+  margin-bottom: 10px;
+}
+
+/* Stellt sicher, dass die Meisterschafts-Auswahl im Modal scrollbar ist */
+.levelup-modal .weapon-mastery-selection {
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 5px 10px 5px 5px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.levelup-modal .weapon-mastery-selection .skill-grid {
+  /* Kleinere Icons im Modal */
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+}
+
+.levelup-modal .weapon-mastery-selection .skill-choice {
+  width: 50px;
+  height: 50px;
+}

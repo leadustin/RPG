@@ -1,3 +1,4 @@
+// src/engine/characterEngine.jsx
 import allClassData from "../data/classes.json";
 import { LEVEL_XP_TABLE } from "../utils/helpers";
 
@@ -28,9 +29,6 @@ export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
  
     // VEREINFACHTE LOGIK FÜR 2024-Regeln
-    // Annahme: Alle gewählten Boni (+2/+1 oder +1/+1/+1) werden
-    // in 'ability_bonus_assignments' gespeichert.
-    // z.B.: { str: 2, dex: 1 } ODER { str: 1, con: 1, wis: 1 }
     if (
       character.ability_bonus_assignments &&
       character.ability_bonus_assignments[abilityKey]
@@ -60,9 +58,6 @@ export const calculateInitialHP = (character) => {
 
 /**
  * Berechnet die Rüstungsklasse (AC) nach 5e-Regeln.
- * Berücksichtigt angelegte Rüstung, Schilde und Klassen-Features.
- * @param {object} character - Das zentrale Charakter-Objekt.
- * @returns {number} - Die finale Rüstungsklasse.
  */
 export const calculateAC = (character) => {
   if (!character || !character.abilities || !character.class) {
@@ -197,9 +192,6 @@ export const SKILL_NAMES_DE = {
 
 /**
  * Prüft, ob ein Charakter in einer Fertigkeit geübt ist.
- * @param {object} character - Das zentrale Charakter-Objekt.
- * @param {string} skillKey - Der Schlüssel der Fertigkeit (z.B. 'stealth').
- * @returns {boolean} - True, wenn geübt, sonst false.
  */
 export const isProficientInSkill = (character, skillKey) => {
   const {
@@ -237,9 +229,6 @@ export const isProficientInSkill = (character, skillKey) => {
 
 /**
  * Berechnet den finalen Bonus für eine bestimmte Fertigkeit.
- * @param {object} character - Das zentrale Charakter-Objekt.
- * @param {string} skillKey - Der Schlüssel der Fertigkeit.
- * @returns {number} - Der finale Bonus.
  */
 export const calculateSkillBonus = (character, skillKey) => {
   const abilityKey = SKILL_MAP[skillKey];
@@ -262,7 +251,6 @@ export const calculateSkillBonus = (character, skillKey) => {
  * Berechnet den Nahkampfschaden basierend auf der Waffe und den Attributen.
  */
 export const calculateMeleeDamage = (character) => {
-  // *** 3. BUGFIX: Liest von 'character.abilities' statt 'character.stats.abilities' ***
   const strScore =
     character.abilities.str + getRacialAbilityBonus(character, "str");
   const strModifier = getAbilityModifier(strScore);
@@ -373,6 +361,32 @@ const getHpRollFormula = (character) => {
 };
 
 
+// +++ START NEUE HILFSFUNKTION (Hinzugefügt) +++
+/**
+ * Findet die korrekte Anzahl an Meisterschaften für die aktuelle Stufe.
+ * Liest dynamisch alle 'level_X_count'-Einträge.
+ */
+const getMasteryCountForLevel = (masteryData, level) => {
+  if (!masteryData) return 0;
+  let currentMax = 0;
+  let bestLevel = 0;
+
+  // Iteriert durch alle "level_X_count"-Einträge in der JSON
+  for (const key in masteryData) {
+    if (key.startsWith("level_") && key.endsWith("_count")) {
+      const levelKey = parseInt(key.split('_')[1]);
+      
+      // Finde die höchste Stufe, die der Charakter erreicht hat
+      if (level >= levelKey && levelKey > bestLevel) {
+        bestLevel = levelKey;
+        currentMax = masteryData[key];
+      }
+    }
+  }
+  return currentMax;
+};
+// +++ ENDE NEUE HILFSFUNKTION +++
+
 
 /**
  * PRÜFT AUF STUFENAUFSTIEG
@@ -396,7 +410,6 @@ export const checkForLevelUp = (character) => {
       `STUFENAUFSTIEG ANSTEHEND: ${character.name} ist bereit für Stufe ${nextLevel}!`
     );
 
-    // *** 2. ZUSÄTZLICHE DATEN FÜR DAS MODAL SAMMELN ***
     const classData = allClassData.find(c => c.key === character.class.key);
     
     // Prüfen, ob eine Subklassen-Wahl ansteht (basierend auf Feature-Namen)
@@ -415,11 +428,25 @@ export const checkForLevelUp = (character) => {
     );
 
     // KORREKTUR: Prüfen, ob eine Attributssteigerung ansteht (basierend auf Feature-Namen)
-    // Dies ersetzt die alte 'nextLevel % 4 === 0' Logik
     const isAbilityIncrease = classData?.features.some(f =>
       f.level === nextLevel &&
       f.name.toLowerCase() === "fähigkeitspunkte / merkmal"
     );
+
+    // +++ START: NEUE LOGIK FÜR WAFFENMEISTERSCHAFT (Hinzugefügt) +++
+    
+    // Finde die aktuelle und die neue Anzahl an Meisterschaften
+    const currentMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, level);
+    const newMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, nextLevel);
+
+    // Prüfe, ob die Anzahl sich erhöht hat
+    const isMasteryIncrease = newMasteryCount > currentMasteryCount;
+
+    if (isMasteryIncrease) {
+        console.log(`Neue Waffenmeisterschaft freigeschaltet auf Stufe ${nextLevel}! (Anzahl: ${newMasteryCount})`);
+    }
+    // +++ ENDE: NEUE LOGIK +++
+
 
     // Bereite die Daten für das Modal vor
     return {
@@ -428,8 +455,12 @@ export const checkForLevelUp = (character) => {
         newLevel: nextLevel,
         hpRollFormula: getHpRollFormula(character),
         isAbilityIncrease: isAbilityIncrease, // <-- KORRIGIERTE LOGIK
-        // Nur als Subklassen-Wahl markieren, wenn noch keine Subklasse gewählt wurde
         isSubclassChoice: isSubclassChoiceLevel && !character.subclassKey, 
+        
+        // +++ NEUE DATEN FÜR DAS MODAL HINZUGEFÜGT +++
+        isMasteryIncrease: isMasteryIncrease,
+        newMasteryCount: newMasteryCount,
+        currentMasteryCount: currentMasteryCount 
       },
     };
   }
@@ -493,13 +524,10 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   // --- Ende: Neue Fähigkeiten hinzufügen ---
 
   // Alte HP berechnen (basierend auf dem Level *vor* dem Aufstieg)
-  // KORREKTUR: Nimm den aktuell gespeicherten Wert (character.stats.maxHp), anstatt ihn neu zu berechnen (calculateMaxHP(character)).
   const oldMaxHP = character.stats.maxHp;
 
-  // Annahme: hpRollResult ist das Ergebnis der Formel (z.B. 1d8 + KON-Mod)
   let finalHpGain = hpRollResult;
 
-  // KORREKTUR: Füge den Hügelzwerg-Bonus hinzu (erhält +1 pro Stufe)
   if (character.subrace?.key === "hill-dwarf") {
     finalHpGain += 1;
   }

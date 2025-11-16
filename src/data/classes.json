@@ -16,7 +16,8 @@
   },
   "weapon_mastery": {
     "level_1_count": 2,
-    "level_9_count": 3,
+    "level_4_count": 3,
+    "level_10_count": 4,
     "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
   },
   "features": [
@@ -637,6 +638,13 @@
       "choose": 2,
       "from": ["Akrobatik", "Tierkunde", "Athletik", "Geschichte", "Einblick", "Einschüchtern", "Wahrnehmung", "Überlebenskunst"]
     }
+  }, 
+  "weapon_mastery": {
+    "level_1_count": 3,
+    "level_4_count": 4,
+    "level_10_count": 5,
+    "level_16_count": 6,
+    "available_weapons": ["Handaxt", "Streitaxt","Großaxt","Großschwert","Großkeule","Hellebarde","Glefe","Pike","Lanze","Langschwert","Kurzschwert","Krummsäbel","Rapier","Morgenstern","Kriegshammer","Dreizack","Wurfspeer"]
   },
   "features": [
     { "level": 1, "name": "Kampfstil", "description": "Du nimmst einen besonderen Kampfstil als deine Spezialität an (z.B. Bogenschießen, Verteidigung, Duellieren, Zwei-Waffen-Kampf)." },

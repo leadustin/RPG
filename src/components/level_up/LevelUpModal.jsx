@@ -1,21 +1,54 @@
-// src/components/level_up/LevelUpModal.js
+// src/components/level_up/LevelUpModal.jsx
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import DiceBox from "@3d-dice/dice-box";
 import { getRacialAbilityBonus } from '../../engine/characterEngine';
-import { rollDiceFormula } from "../../utils/helpers";
+// rollDiceFormula wird jetzt LOKAL definiert, nicht importiert
 import allClassData from '../../data/classes.json'; 
 import './LevelUpModal.css';
+
+// Import der wiederverwendeten Komponente
+import { WeaponMasterySelection } from '../character_creation/WeaponMasterySelection';
 
 const getRacialHpBonus = (character) => {
   if (character.subrace?.key === 'hill-dwarf') return 1;
   return 0;
 };
 
+// +++ START: WIEDERHERGESTELLTE HILFSFUNKTION +++
+/**
+ * Verarbeitet Würfelergebnisse für eine Formel.
+ * (Diese Funktion war vorher lokal in dieser Datei)
+ */
+const rollDiceFormula = (formula, results) => {
+  let bonus = 0;
+  if (formula.includes('+')) {
+    bonus = parseInt(formula.split('+')[1] || 0);
+  } else if (formula.includes('-')) {
+    bonus = -parseInt(formula.split('-')[1] || 0);
+  }
+  
+  // 'results' von dice-box ist ein Array von Objekten, z.B. [{ value: 5 }]
+  const diceValues = results.map(r => r.value);
+  
+  const diceSum = diceValues.reduce((a, b) => a + b, 0);
+
+  return {
+    total: diceSum + bonus, // Die Endsumme
+    dice: diceValues,       // Das Array der Würfe [5]
+    bonus: bonus            // Der Modifikator (z.B. 2)
+  };
+};
+// +++ ENDE: WIEDERHERGESTELLTE HILFSFUNKTION +++
+
+
 const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) => {
   const handleIncrease = (key) => {
     if (points > 0 && (choices[key] || 0) < 2) {
-      const newChoices = { ...choices, [key]: (choices[key] || 0) + 1 };
-      onChange(newChoices, points - 1);
+      const currentPointsUsed = Object.values(choices).reduce((a, b) => a + b, 0);
+      if (currentPointsUsed < 2) {
+        const newChoices = { ...choices, [key]: (choices[key] || 0) + 1 };
+        onChange(newChoices, points - 1);
+      }
     }
   };
 
@@ -33,9 +66,9 @@ const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) 
       {Object.keys(finalAbilities).map((key) => (
         <div key={key} className="asi-row">
           <span className="asi-label">{key.toUpperCase()} ({finalAbilities[key]})</span>
-          <button onClick={() => handleDecrease(key)} disabled={!choices[key] || choices[key] <= 0}>-</button>
-          <span className="asi-choice">+{choices[key] || 0}</span>
-          <button onClick={() => handleIncrease(key)} disabled={points <= 0 || (choices[key] || 0) >= 2}>+</button>
+          <button onClick={() => handleDecrease(key)} disabled={!choices[key]}>-</button>
+          <span className="asi-choice">{choices[key] || 0}</span>
+          <button onClick={() => handleIncrease(key)} disabled={points === 0 || choices[key] >= 2}>+</button>
         </div>
       ))}
     </div>
@@ -44,16 +77,12 @@ const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) 
 
 const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
   const classData = allClassData.find(c => c.key === classKey);
-  const subclasses = classData?.subclasses || [];
-
-  if (subclasses.length === 0) {
-    return <p>Keine Subklassen für diese Klasse verfügbar.</p>;
-  }
+  if (!classData || !classData.subclasses) return <p>Fehler: Klassendaten nicht gefunden.</p>;
 
   return (
     <div className="subclass-selection">
       <h4>Wähle deinen Archetyp</h4>
-      {subclasses.map(sc => (
+      {classData.subclasses.map(sc => (
         <div 
           key={sc.key} 
           className={`subclass-option ${selectedKey === sc.key ? 'selected' : ''}`}
@@ -67,137 +96,109 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
   );
 };
 
-const LevelUpModal = ({ character, onConfirm }) => {
-  const [step, setStep] = useState('hp');
-  const [isRolling, setIsRolling] = useState(false);
-  const [rollResult, setRollResult] = useState(null);
 
-  const initialAsiPoints = character?.pendingLevelUp?.isAbilityIncrease ? 2 : 0;
-  const [asiPoints, setAsiPoints] = useState(initialAsiPoints);
+export const LevelUpModal = ({ character, onConfirm }) => {
+  const { newLevel } = character.pendingLevelUp;
+  const [step, setStep] = useState(0); // 0: HP, 1: Choices, 2: Summary
+  const [rollResult, setRollResult] = useState(null);
+  const [asiPoints, setAsiPoints] = useState(2);
   const [asiChoices, setAsiChoices] = useState({});
   const [selectedSubclass, setSelectedSubclass] = useState(null);
+  
+  const [masteryChoices, setMasteryChoices] = useState(character.weapon_mastery_choices || []);
 
-  const diceContainerRef = useRef(null);
   const diceBoxRef = useRef(null);
 
+  const { 
+    hpRollFormula, 
+    isAbilityIncrease, 
+    isSubclassChoice,
+    isMasteryIncrease,
+    newMasteryCount
+  } = character.pendingLevelUp;
+
+  const racialHpBonus = getRacialHpBonus(character);
+
   const finalAbilities = useMemo(() => {
-    if (!character) return {};
-    return {
-      str: character.abilities.str + getRacialAbilityBonus(character, 'str'),
-      dex: character.abilities.dex + getRacialAbilityBonus(character, 'dex'),
-      con: character.abilities.con + getRacialAbilityBonus(character, 'con'),
-      int: character.abilities.int + getRacialAbilityBonus(character, 'int'),
-      wis: character.abilities.wis + getRacialAbilityBonus(character, 'wis'),
-      cha: character.abilities.cha + getRacialAbilityBonus(character, 'cha'),
-    };
+    const final = {};
+    for (const key in character.abilities) {
+      final[key] = character.abilities[key] + getRacialAbilityBonus(character, key);
+    }
+    return final;
   }, [character]);
 
-  // init DiceBox
   useEffect(() => {
-    async function initDice() {
-      if (!diceContainerRef.current || diceBoxRef.current) return;
-      try {
-        diceBoxRef.current = new DiceBox("#dice-box", {
-          assetPath: '/assets/dice-box/',
-          scale: 20,
-          width: 500,
-          height: 400
-        });
-        await diceBoxRef.current.init();
-      } catch (err) {
-        console.error('Failed to init DiceBox', err);
-      }
+    if (diceBoxRef.current) {
+      new DiceBox("#dice-box", {
+        assetPath: "/assets/dice-box/",
+        theme: "default",
+		    scale: 20,
+        width: 500,
+        height: 400
+      }).init().then((dice) => {
+        diceBoxRef.current = dice;
+      });
     }
-    initDice();
   }, []);
 
-  if (!character || !character.pendingLevelUp) return null;
-
-  const { newLevel, hpRollFormula, isAbilityIncrease, isSubclassChoice } = character.pendingLevelUp;
-
-  const getNextStep = (current) => {
-    if (current === 'hp') {
-      if (isAbilityIncrease) return 'asi';
-      if (isSubclassChoice) return 'subclass';
-      return 'summary';
-    }
-    if (current === 'asi') {
-      if (isSubclassChoice) return 'subclass';
-      return 'summary';
-    }
-    return 'summary';
-  };
-
-  const classToDieSides = () => {
-    const c = (character.class?.key || '').toLowerCase();
-    if (c.includes('barb')) return 12;
-    if (c.includes('fight') || c.includes('kämpf')) return 10;
-    if (c.includes('wizard') || c.includes('mage')) return 6;
-    return 8;
-  };
-
-  const handleRoll = async () => {
-    if (isRolling) return;
-    setIsRolling(true);
-    setRollResult(null);
-
-    const sides = classToDieSides();
-    const notation = `1d${sides}`;
-
-    try {
-      let diceTotal = 0;
-
-      if (diceBoxRef.current) {
-        const ret = diceBoxRef.current.roll(notation);
-        const results = await ret;
-
-        if (results) {
-          if (typeof results.total === 'number') {
-            diceTotal = results.total;
-          } else if (Array.isArray(results) && results.length > 0) {
-            diceTotal = results.reduce((sum, r) => sum + (r.value || 0), 0);
-          } else if (results.rolls && Array.isArray(results.rolls)) {
-            diceTotal = results.rolls.reduce((sum, r) => sum + (r.value || 0), 0);
-          }
-        }
-      } else {
-        diceTotal = rollDiceFormula(hpRollFormula);
+  const handleRollHP = async () => {
+    if (diceBoxRef.current) {
+      const results = await diceBoxRef.current.roll(hpRollFormula);
+      // Diese Funktion ist jetzt wieder lokal verfügbar
+      const formulaResult = rollDiceFormula(hpRollFormula, results); 
+      setRollResult({ ...formulaResult, racialBonus: racialHpBonus });
+    } else {
+      console.warn("DiceBox nicht initialisiert. Nutze Fallback-Wurf.");
+      const fallbackRoll = Math.floor(Math.random() * parseInt(hpRollFormula.split('d')[1] || 8)) + 1;
+      
+      let bonus = 0;
+      if (hpRollFormula.includes('+')) {
+        bonus = parseInt(hpRollFormula.split('+')[1] || 0);
+      } else if (hpRollFormula.includes('-')) {
+        bonus = -parseInt(hpRollFormula.split('-')[1] || 0);
       }
 
-      const match = hpRollFormula.match(/(\d+)d(\d+)(?:\s*\+\s*(\d+))?/i);
-      const bonus = parseInt(match?.[3] || 0, 10);
-
-      const racialBonus = getRacialHpBonus(character);
-
-      // total OHNE racialBonus !!! (Variante A)
-      setRollResult({
-        die: diceTotal,
-        bonus,
-        racialBonus,
-        total: diceTotal + bonus
+      // Dieser Block enthält jetzt den .dice-Fix
+      setRollResult({ 
+        total: fallbackRoll + bonus, 
+        dice: [fallbackRoll],
+        bonus: bonus, 
+        racialBonus: racialHpBonus 
       });
-
-      setIsRolling(false);
-
-    } catch (err) {
-      console.error('Error rolling dice-box', err);
-      const fallback = rollDiceFormula(hpRollFormula);
-      const racialBonus = getRacialHpBonus(character);
-
-      setRollResult({
-        die: fallback,
-        bonus: 0,
-        racialBonus,
-        total: fallback
-      });
-
-      setIsRolling(false);
     }
   };
 
-  const handleHpConfirm = () => {
-    if (!rollResult || isRolling) return;
-    setStep(getNextStep('hp'));
+  const handleConfirmHP = () => {
+    if (!isAbilityIncrease && !isSubclassChoice && !isMasteryIncrease) {
+      setStep(2); 
+    } else {
+      setStep(1);
+    }
+  };
+
+  const handleConfirmChoices = () => {
+    if (isAbilityIncrease && asiPoints > 0) {
+      alert("Bitte verteile alle Attributspunkte.");
+      return;
+    }
+    if (isSubclassChoice && !selectedSubclass) {
+      alert("Bitte wähle einen Archetyp.");
+      return;
+    }
+    if (isMasteryIncrease && masteryChoices.length < newMasteryCount) {
+       alert(`Bitte wähle deine ${newMasteryCount}. Waffenmeisterschaft aus.`);
+       return;
+    }
+    setStep(2);
+  };
+
+  const handleConfirmAll = () => {
+    const choices = {
+      asi: asiChoices,
+      subclassKey: selectedSubclass,
+      weapon_mastery_choices: masteryChoices
+    };
+    onConfirm(rollResult.total + (rollResult.racialBonus || 0), choices);
   };
 
   const handleAsiChange = (newChoices, newPoints) => {
@@ -205,137 +206,154 @@ const LevelUpModal = ({ character, onConfirm }) => {
     setAsiPoints(newPoints);
   };
 
-  const handleConfirmAll = () => {
-    const choices = {
-      asi: isAbilityIncrease ? asiChoices : null,
-      subclassKey: isSubclassChoice ? selectedSubclass : null,
-    };
-
-    // total OHNE racialBonus → Engine addiert selbst
-    const hpGain = rollResult.total;
-
-    onConfirm(hpGain, choices, rollResult);
-  };
-
-  const renderHpStep = () => (
-    <div className="hp-roll-section">
-      <h3>Neue Trefferpunkte</h3>
-      <p>Dein Wurf: {hpRollFormula}</p>
-
-      <div className="dice-roll-area">
-        <div ref={diceContainerRef} id="dice-box" />
-
-        {rollResult && (
-          <span className="dice-result">
-            {rollResult.die} + Mod {rollResult.bonus}
-            {rollResult.racialBonus ? ` + Rassenbonus ${rollResult.racialBonus}` : ""}
-            = {rollResult.total + (rollResult.racialBonus || 0)}
-          </span>
-        )}
-      </div>
-
-      {rollResult === null ? (
-        <button onClick={handleRoll} disabled={isRolling} className="roll-button">
-          {isRolling ? 'Würfelt…' : 'Würfeln!'}
-        </button>
-      ) : (
-        <button onClick={handleHpConfirm} className="confirm-button">Weiter</button>
-      )}
-    </div>
-  );
-
-  const renderAsiStep = () => (
-    <div className="asi-section">
-      <AbilityScoreImprovement
-        finalAbilities={finalAbilities}
-        points={asiPoints}
-        choices={asiChoices}
-        onChange={handleAsiChange}
-      />
-      <button 
-        onClick={() => setStep(getNextStep('asi'))}
-        disabled={asiPoints > 0}
-        className="confirm-button"
-      >
-        {asiPoints > 0 ? `Noch ${asiPoints} Punkte` : "Weiter"}
-      </button>
-    </div>
-  );
-
-  const renderSubclassStep = () => (
-    <div className="subclass-section">
-      <SubclassSelection 
-        classKey={character.class.key}
-        onSelect={setSelectedSubclass}
-        selectedKey={selectedSubclass}
-      />
-      <button 
-        onClick={() => setStep(getNextStep('subclass'))}
-        disabled={!selectedSubclass}
-        className="confirm-button"
-      >
-        {!selectedSubclass ? "Wähle einen Archetyp" : "Weiter"}
-      </button>
-    </div>
-  );
-
-  const renderSummaryStep = () => (
-    <div className="summary-section">
-      <h3>Zusammenfassung</h3>
-      <p>Neue Stufe: {newLevel}</p>
-
-      {rollResult && (
-        <p>
-          HP-Zuwachs: {rollResult.die} + Mod {rollResult.bonus}
-          {rollResult.racialBonus ? ` + Rassenbonus ${rollResult.racialBonus}` : ""}
-          = {rollResult.total + (rollResult.racialBonus || 0)}  
-          <br />
-        </p>
-      )}
-
-      {isAbilityIncrease && asiChoices && (
-        <div>
-          <p>Attributserhöhungen:</p>
-          <ul>
-            {Object.keys(asiChoices).map(key => 
-              asiChoices[key] > 0 && <li key={key}>{key.toUpperCase()}: +{asiChoices[key]}</li>
+  // HP-Wurf-Ansicht
+  if (step === 0) {
+    return (
+      <div className="modal-backdrop">
+        <div className="levelup-modal">
+          <h2>Stufenaufstieg!</h2>
+          <p className="levelup-subtitle">{character.name} steigt auf Stufe {newLevel} auf!</p>
+          
+          <div className="hp-roll-section">
+            <h4>1. Trefferpunkte auswürfeln</h4>
+            <div id="dice-box" ref={diceBoxRef} style={{ width: '100%', height: '150px' }}></div>
+            
+            {!rollResult ? (
+              <button onClick={handleRollHP} className="roll-button">
+                Würfeln ({hpRollFormula}{racialHpBonus > 0 ? ` + ${racialHpBonus}` : ''})
+              </button>
+            ) : (
+              <div className="hp-result">
+                {/* Diese Zeile (rollResult.dice.join) ist die Absturzursache.
+                  Sie funktioniert jetzt, da 'dice' in beiden Fällen von handleRollHP gesetzt wird.
+                */}
+                <p>Gewürfelt: {rollResult.dice.join(' + ')}</p>
+                <p>Modifikator: {rollResult.bonus}</p>
+                {racialHpBonus > 0 && <p>Rassenbonus (Hügelzwerg): {racialHpBonus}</p>}
+                <p className="hp-total">Gesamt-Zuwachs: {rollResult.total + racialHpBonus}</p>
+                <button onClick={handleConfirmHP} className="confirm-button">Weiter</button>
+              </div>
             )}
-          </ul>
+          </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {isSubclassChoice && selectedSubclass && (
-        <p>
-          Neuer Archetyp: {
-            allClassData
-              .find(c => c.key === character.class.key)
-              ?.subclasses.find(sc => sc.key === selectedSubclass)
-              ?.name
-          }
-        </p>
-      )}
+  // Auswahl-Ansicht (ASI, Subklasse, Meisterschaften)
+  if (step === 1) {
+    return (
+      <div className="modal-backdrop">
+        <div className="levelup-modal" style={{ maxWidth: '700px' }}>
+          <h2>Stufe {newLevel}: Entscheidungen</h2>
+          
+          {isAbilityIncrease && (
+            <div className="levelup-section">
+              <AbilityScoreImprovement
+                finalAbilities={finalAbilities}
+                points={asiPoints}
+                choices={asiChoices}
+                onChange={handleAsiChange}
+              />
+            </div>
+          )}
+          
+          {isSubclassChoice && (
+            <div className="levelup-section">
+              <SubclassSelection
+                classKey={character.class.key}
+                selectedKey={selectedSubclass}
+                onSelect={setSelectedSubclass}
+              />
+            </div>
+          )}
 
-      <button onClick={handleConfirmAll} className="confirm-button final-confirm">
-        Aufstieg bestätigen
-      </button>
-    </div>
-  );
+          {isMasteryIncrease && (
+            <div className="levelup-section">
+              <h4>Waffenmeisterschaft (Wähle {newMasteryCount})</h4>
+              <p>Du hast eine neue Waffenmeisterschaft gelernt. Wähle deine Auswahl:</p>
+              
+              <WeaponMasterySelection
+                character={{ 
+                  ...character, 
+                  level: newLevel, 
+                  weapon_mastery_choices: masteryChoices 
+                }}
+                updateCharacter={(updates) => setMasteryChoices(updates.weapon_mastery_choices)}
+              />
+            </div>
+          )}
+
+          <button onClick={handleConfirmChoices} className="confirm-button">Zusammenfassung</button>
+        </div>
+      </div>
+    );
+  }
+
+  // Zusammenfassungs-Ansicht
+  if (step === 2) {
+    return (
+      <div className="modal-backdrop">
+        <div className="levelup-modal">
+          <h2>Zusammenfassung (Stufe {newLevel})</h2>
+          
+          {rollResult && (
+            // Diese Zeile (Zeile 201 in deiner Fehlermeldung) ist jetzt sicher.
+            <p>
+              Neue Trefferpunkte: +{rollResult.dice.join(' + ')} (Wurf) + {rollResult.bonus} (KON)
+              {rollResult.racialBonus ? ` + ${rollResult.racialBonus} (Rasse)` : ""}
+              = <strong>{rollResult.total + (rollResult.racialBonus || 0)} TP</strong>
+            </p>
+          )}
+
+          {isAbilityIncrease && (
+            <div>
+              <p>Attributserhöhungen:</p>
+              <ul>
+                {Object.keys(asiChoices).map(key => 
+                  asiChoices[key] > 0 && <li key={key}>{key.toUpperCase()}: +{asiChoices[key]}</li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {isSubclassChoice && selectedSubclass && (
+            <p>
+              Neuer Archetyp: {
+                allClassData
+                  .find(c => c.key === character.class.key)
+                  ?.subclasses.find(sc => sc.key === selectedSubclass)
+                  ?.name
+              }
+            </p>
+          )}
+
+          {isMasteryIncrease && (
+            <div>
+              <p>Waffenmeisterschaften ({masteryChoices.length}/{newMasteryCount}):</p>
+              <ul>
+                {masteryChoices
+                  .filter(m => !(character.weapon_mastery_choices || []).includes(m))
+                  .map(key => (
+                    <li key={key}>{key} (Neu)</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <button onClick={handleConfirmAll} className="confirm-button final-confirm">
+            Aufstieg bestätigen
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal-backdrop">
       <div className="levelup-modal">
-        <h2>Stufenaufstieg!</h2>
-        <p className="levelup-subtitle">
-          {character.name} steigt auf Stufe {newLevel} auf!
-        </p>
-
-        {step === 'hp' && renderHpStep()}
-        {step === 'asi' && renderAsiStep()}
-        {step === 'subclass' && renderSubclassStep()}
-        {step === 'summary' && renderSummaryStep()}
+        <p>Ein Fehler ist aufgetreten.</p>
       </div>
     </div>
   );
 };
-
-export default LevelUpModal;
