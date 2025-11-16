@@ -1,8 +1,7 @@
-// src/components/character_creation/AncestrySelection.js
+// src/components/character_creation/AncestrySelection.jsx
 import React from 'react';
-import './PanelDetails.css'; // Behalten für .details-divider, .traits-list
-// import './RaceSelection.css'; // <-- ENTFERNT
-import './AncestrySelection.css'; // <-- ENTHÄLT JETZT ALLE STILE
+import './PanelDetails.css'; 
+import './AncestrySelection.css'; 
 
 export const AncestrySelection = ({ ancestries, selectedAncestry, onAncestrySelect }) => {
 

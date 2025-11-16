@@ -1,4 +1,4 @@
-// src/components/character_creation/SubraceSelection.js
+// src/components/character_creation/SubraceSelection.jsx
 import React from 'react';
 import './SubraceSelection.css';
 import './PanelDetails.css';

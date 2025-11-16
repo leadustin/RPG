@@ -5,7 +5,7 @@ import './SkillSelection.css';
 
 // +++ NEU: Tooltip-Komponenten importieren +++
 import Tooltip from '../tooltip/Tooltip'; // Der generische Wrapper
-import { WeaponMasteryTooltip } from '../tooltip/WeaponMasteryTooltip'; // Unser neuer Inhalt
+import { WeaponMasteryTooltip } from '../tooltip/WeaponMasteryTooltip';
 
 // +++ NEU: Die Detail-Daten importieren +++
 import masteryDetails from '../../data/weaponMasteryDetails.json';

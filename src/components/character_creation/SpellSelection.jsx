@@ -110,15 +110,14 @@ export const SpellSelection = ({
      if (spellType === 'prepare') return character.spells_prepared || [];
      return [];
   }
-
-  // === GEÄNDERT: Nimmt die aktuelle Anzahl entgegen ===
+  
   const getLvl1Title = (count) => {
     if (spellType === 'spellbook') return `Zauberbuch ${count}/${level1Spells}`;
     if (spellType === 'known') return `Bekannte Zauber ${count}/${level1Spells}`;
     if (spellType === 'prepare') return `Vorbereitete Zauber ${count}/${level1Spells}`;
     return "Zauber Stufe 1";
   }
-  // === ENDE ÄNDERUNG ===
+
 
   // --- RENDER-LOGIK ---
   if (isCollapsible) {

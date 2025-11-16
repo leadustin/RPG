@@ -1,9 +1,9 @@
-// src/components/character_creation/CreationSidebar.js
+// src/components/character_creation/CreationSidebar.jsx
 import React from 'react';
 import './CreationSidebar.css';
-import { useTranslation } from "react-i18next"; // +++ NEU
+import { useTranslation } from "react-i18next"; 
 
-// Übersetzungsobjekt und Steps-Array wurden nach CharacterCreationScreen.js verschoben
+// Übersetzungsobjekt und Steps-Array wurden nach CharacterCreationScreen.jsx verschoben
 
 export const CreationSidebar = ({ 
   currentStep, 

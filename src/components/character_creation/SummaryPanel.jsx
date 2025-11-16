@@ -1,8 +1,8 @@
 // src/components/character_creation/SummaryPanel.jsx
-import React, { useState } from 'react'; // *** GEÄNDERT: useState importiert ***
+import React, { useState } from 'react';
 import './SummaryPanel.css';
 import './PanelDetails.css'; 
-import Tooltip from '../tooltip/Tooltip'; // Der "Wrapper"-Tooltip
+import Tooltip from '../tooltip/Tooltip';
 import {
   getAbilityModifier,
   getProficiencyBonus,

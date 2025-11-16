@@ -2,7 +2,7 @@
 import React, { useMemo } from 'react';
 import { SKILL_NAMES_DE } from '../../engine/characterEngine';
 import './PanelDetails.css';
-import './SkillSelection.css'; // Stil wiederverwenden
+import './SkillSelection.css';
 
 // +++ NEU: Tooltip-Komponenten importieren +++
 import Tooltip from '../tooltip/Tooltip';

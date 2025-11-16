@@ -1,10 +1,10 @@
-// src/components/character_creation/RaceSelection.js
+// src/components/character_creation/RaceSelection.jsx
 import React, { useState, useEffect } from 'react';
 import './RaceSelection.css';
 import './PanelDetails.css';
 import allRaceData from '../../data/races.json';
 import './CreationSidebar.css'; 
-import { useTranslation } from "react-i18next"; // +++ NEU
+import { useTranslation } from "react-i18next";
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
@@ -76,7 +76,6 @@ export const RaceSelection = ({ character, updateCharacter }) => {
             delete newFloating[key];
           }
         }
-        // Setze die neue Zuweisung
         newFloating[abiKey] = index;
       }
       

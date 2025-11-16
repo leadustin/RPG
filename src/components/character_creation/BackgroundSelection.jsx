@@ -1,5 +1,4 @@
-// src/components/character_creation/BackgroundSelection.js
-import React from "react";
+// src/components/character_creation/BackgroundSelection.jsx
 import "./BackgroundSelection.css";
 import "./PanelDetails.css";
 import allBackgroundData from "../../data/backgrounds.json";

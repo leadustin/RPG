@@ -5,7 +5,7 @@ import './SkillSelection.css';
 
 // +++ GEÄNDERT: FightingStyleTooltip importiert +++
 import Tooltip from '../tooltip/Tooltip';
-import { FightingStyleTooltip } from '../tooltip/FightingStyleTooltip'; // NEU
+import { FightingStyleTooltip } from '../tooltip/FightingStyleTooltip';
 import fightingStylesData from '../../data/fightingStyles.json';
 // +++ ENDE +++
 

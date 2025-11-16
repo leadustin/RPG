@@ -1,4 +1,4 @@
-// src/components/character_creation/SelectionPanel.js
+// src/components/character_creation/SelectionPanel.jsx
 import React from "react";
 import "./SelectionPanel.css";
 import { RaceSelection } from "./RaceSelection";

@@ -13,7 +13,7 @@ import { SpellSelection } from './SpellSelection';
 import { ExpertiseSelection } from './ExpertiseSelection';
 import { RangerFeatureSelection } from './RangerFeatureSelection';
 import { ToolInstrumentSelection } from './ToolInstrumentSelection';
-import { WeaponMasterySelection } from './WeaponMasterySelection'; // NEU
+import { WeaponMasterySelection } from './WeaponMasterySelection';
 // +++ IMPORTS ENDE +++
 
 

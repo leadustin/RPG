@@ -1,4 +1,4 @@
-// src/components/character_creation/RangerFeatureSelection.js
+// src/components/character_creation/RangerFeatureSelection.jsx
 import React from 'react';
 import './PanelDetails.css';
 

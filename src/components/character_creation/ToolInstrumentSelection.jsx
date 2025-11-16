@@ -1,11 +1,8 @@
 // src/components/character_creation/ToolInstrumentSelection.jsx
 import React from 'react';
 import './PanelDetails.css';
-import './SkillSelection.css'; // Stil wiederverwenden
+import './SkillSelection.css';
 
-// +++
-// +++ VITE-ERSATZ für require.context +++
-// +++
 
 // 1. Lade alle Bildmodule aus dem 'proficiencies'-Ordner
 const proficiencyIconModules = import.meta.glob(

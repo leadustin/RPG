@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "./CharacterCreationScreen.css";
 import { CreationSidebar } from "./CreationSidebar";
 import { SelectionPanel } from "./SelectionPanel";
-import { useTranslation } from "react-i18next"; // +++ NEU
+import { useTranslation } from "react-i18next";
 
 import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";

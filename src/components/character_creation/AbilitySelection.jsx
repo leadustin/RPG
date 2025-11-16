@@ -90,7 +90,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
         assetPath: "/assets/dice-box/", 
         theme: "default",
         themeColor: "#999999",
-        offscreen: false, // Auf false setzen, damit Canvas sichtbar ist
+        offscreen: false, // Auf false setzen, damit Canvas sichtbar
         scale: 11,
         enableShadows: true,
         delay: 10,

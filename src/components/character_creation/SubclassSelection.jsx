@@ -1,7 +1,7 @@
 // src/components/character_creation/SubclassSelection.jsx
 import React from 'react';
-import './PanelDetails.css'; // Wiederverwendung der Stile
-import './SkillSelection.css'; // Wiederverwendung für das Grid-Layout
+import './PanelDetails.css';
+import './SkillSelection.css';
 import Tooltip from '../tooltip/Tooltip'; 
 // Importiere deine angepasste Tooltip-Komponente
 import { SubclassTooltip } from '../tooltip/SubclassTooltip';

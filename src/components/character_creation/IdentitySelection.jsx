@@ -1,7 +1,7 @@
-// src/components/character_creation/IdentitySelection.js
+// src/components/character_creation/IdentitySelection.jsx
 
 import React from 'react';
-import { useTranslation } from 'react-i18next'; // Importieren
+import { useTranslation } from 'react-i18next';
 import './PanelDetails.css';
 import './IdentitySelection.css';
 

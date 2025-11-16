@@ -2,12 +2,8 @@
 import React from 'react';
 import './SkillSelection.css';
 import { SKILL_NAMES_DE } from '../../engine/characterEngine';
-
-// +++ NEU: Tooltip-Komponenten importieren +++
-import Tooltip from '../tooltip/Tooltip'; // Der generische Wrapper
-import { SkillTooltip } from '../tooltip/SkillTooltip'; // Die neue Inhaltskomponente
-
-// +++ NEU: Die Skill-Detail-Daten importieren +++
+import Tooltip from '../tooltip/Tooltip';
+import { SkillTooltip } from '../tooltip/SkillTooltip';
 import skillDetails from '../../data/skillDetails.json';
 
 // +++ 
