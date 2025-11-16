@@ -41,6 +41,35 @@
     "deleteAutosave": "Autosave löschen",
     "options": "Optionen"
   },
+
+  "characterCreation": {
+    "generationMethod": "Generierungsmethode",
+    "pointBuy": "Point Buy",
+    "standardArray": "Standard Array",
+    "rollMethodWithDice": "Würfeln",
+    "details": "Details",
+    "remainingPoints": "Verbleibende Punkte",
+    "rolling": "Würfeln...",
+    "loadingDice": "Lade Würfel...",
+    "rollAgain": "Werte erneut würfeln",
+    "rolledValues": "Gewürfelte Werte",
+    "clickToRoll": "Klicke auf \"Würfeln\"",
+    "valuesPresetFor": "Werte voreingestellt für",
+    "swapIfNeeded": "Tausche sie bei Bedarf.",
+    "attributeBonuses": "Attributsboni (Herkunft)",
+    "chooseAttributeBonuses": "Wähle deine Attributsboni (PHB 2024)",
+    "strengthsFocused": "Stärken (+2 / +1)",
+    "balanced": "Ausgeglichen (+1 / +1 / +1)",
+    "plus2Bonus": "+2 Bonus",
+    "plus1Bonus": "+1 Bonus",
+    "plus1BonusA": "+1 Bonus (A)",
+    "plus1BonusB": "+1 Bonus (B)",
+    "plus1BonusC": "+1 Bonus (C)",
+    "choose": "Wähle...",
+    "attributes": "Attribute",
+    "base": "Basis",
+    "bonus": "Bonus"
+  },
   
   "location": {
     "elfenwacht": {

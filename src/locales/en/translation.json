@@ -1,55 +1,82 @@
 {
-  "abilities": {
-    "str": "Strength",
-    "dex": "Dexterity",
-    "con": "Constitution",
-    "int": "Intelligence",
-    "wis": "Wisdom",
-    "cha": "Charisma",
-    "str_short": "STR",
-    "dex_short": "DEX",
-    "con_short": "CON",
-    "int_short": "INT",
-    "wis_short": "WIS",
-    "cha_short": "CHA"
-  },
-  
-  "creation": {
-    "title": "Character Creation",
-    "finalize": "Finalize Character",
-    "step_race": "Race",
-    "step_subrace": "Subrace",
-    "step_ancestry": "Ancestry",
-    "step_class": "Class",
-    "step_background": "Background",
-    "step_abilities": "Abilities",
-    "step_skills": "Skills",
-    "step_name": "Name",
-    "summary_race": "Race",
-    "summary_class": "Class",
-    "summary_background": "Background",
-    "summary_abilities": "Abilities",
-    "summary_skills": "Skills"
-  },
-
-  "startScreen": {
-    "title": "My RPG",
-    "continue": "Continue",
-    "newGame": "New Game",
-    "loadGame": "Load Game",
-    "saveGame": "Save Game",
-    "deleteAutosave": "Delete Autosave",
-    "options": "Options"
-  },
-
-  "location": {
-    "elfenwacht": {
-      "name": "Elvenwatch",
-      "description": "An old elven watchtower, surrounded by a dense forest."
+    "abilities": {
+        "str": "Strength",
+        "dex": "Dexterity",
+        "con": "Constitution",
+        "int": "Intelligence",
+        "wis": "Wisdom",
+        "cha": "Charisma",
+        "str_short": "STR",
+        "dex_short": "DEX",
+        "con_short": "CON",
+        "int_short": "INT",
+        "wis_short": "WIS",
+        "cha_short": "CHA"
     },
-    "goblinhoehle": {
-      "name": "Goblin Cave",
-      "description": "A damp, foul-smelling cave inhabited by wild goblins."
+    "creation": {
+        "title": "Character Creation",
+        "finalize": "Finalize Character",
+        "step_race": "Race",
+        "step_subrace": "Subrace",
+        "step_ancestry": "Ancestry",
+        "step_class": "Class",
+        "step_background": "Background",
+        "step_abilities": "Abilities",
+        "step_skills": "Skills",
+        "step_name": "Name",
+        "summary_race": "Race",
+        "summary_class": "Class",
+        "summary_background": "Background",
+        "summary_abilities": "Abilities",
+        "summary_skills": "Skills"
+    },
+    "startScreen": {
+        "title": "My RPG",
+        "continue": "Continue",
+        "newGame": "New Game",
+        "loadGame": "Load Game",
+        "saveGame": "Save Game",
+        "deleteAutosave": "Delete Autosave",
+        "options": "Options"
+    },
+
+    "characterCreation": {
+    "generationMethod": "Generation Method",
+    "pointBuy": "Point Buy",
+    "standardArray": "Standard Array",
+    "rollMethodWithDice": "Roll Dice",
+    "details": "Details",
+    "remainingPoints": "Remaining Points",
+    "rolling": "Rolling...",
+    "loadingDice": "Loading Dice...",
+    "rollAgain": "Roll Values Again",
+    "rolledValues": "Rolled Values",
+    "clickToRoll": "Click \"Roll\"",
+    "valuesPresetFor": "Values preset for",
+    "swapIfNeeded": "Swap if needed.",
+    "attributeBonuses": "Attribute Bonuses (Origin)",
+    "chooseAttributeBonuses": "Choose your attribute bonuses (PHB 2024).",
+    "strengthsFocused": "Strengths (+2 / +1)",
+    "balanced": "Balanced (+1 / +1 / +1)",
+    "plus2Bonus": "+2 Bonus",
+    "plus1Bonus": "+1 Bonus",
+    "plus1BonusA": "+1 Bonus (A)",
+    "plus1BonusB": "+1 Bonus (B)",
+    "plus1BonusC": "+1 Bonus (C)",
+    "choose": "Choose...",
+    "attributes": "Attributes",
+    "base": "Base",
+    "bonus": "Bonus"
+  },
+
+    "location": {
+        "elfenwacht": {
+            "name": "Elvenwatch",
+            "description": "An old elven watchtower, surrounded by a dense forest."
+        },
+        "goblinhoehle": {
+            "name": "Goblin Cave",
+            "description": "A damp, foul-smelling cave inhabited by wild goblins."
+        }
     }
-  }
 }

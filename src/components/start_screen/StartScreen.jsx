@@ -1,7 +1,7 @@
 // src/components/start_screen/StartScreen.jsx
 import React from "react";
 import "./StartScreen.css";
-import { useTranslation } from "react-i18next"; // 1. Importieren
+import { useTranslation } from "react-i18next";
 
 export const StartScreen = ({
   onNewGame,

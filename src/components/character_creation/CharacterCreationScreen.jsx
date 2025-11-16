@@ -3,12 +3,10 @@ import React, { useState } from "react";
 import "./CharacterCreationScreen.css";
 import { CreationSidebar } from "./CreationSidebar";
 import { SelectionPanel } from "./SelectionPanel";
-
 import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";
 import allBackgroundData from "../../data/backgrounds.json";
 
-// --- NEU: Schritte und Übersetzungen hier definieren ---
 const STEPS = ['Class', 'Background', 'Race', 'Abilities', 'Identity', 'Zusammenfassung'];
 
 const stepTranslations = {
