@@ -1,12 +1,12 @@
 /* src/components/level_up/LevelUpScreen.css */
 
-/* Haupt-Wrapper (ersetzt .modal-backdrop) */
+/* Haupt-Wrapper */
 .levelup-screen {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: #0c0c0c;
   display: flex;
   z-index: 1000;
@@ -50,9 +50,9 @@
   color: #d4af37;
 }
 
-/* Schritt-Navigation */
+/* Schritt-Navigation (Bleibt für diese Variante) */
 .levelup-steps {
-  margin-top: auto; /* Schiebt die Schritte nach unten */
+  margin-top: auto; 
   padding-top: 20px;
   border-top: 1px solid #444;
 }
@@ -87,14 +87,14 @@
   padding: 30px;
   overflow-y: auto;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; <-- ENTFERNT */
   align-items: flex-start;
 }
 
-/* Container für den Inhalt (ersetzt .levelup-modal) */
+/* Container für den Inhalt */
 .levelup-container {
   width: 100%;
-  max-width: 700px; /* Breite der Inhaltsspalte */
+  /* max-width: 700px; <-- ENTFERNT */
 }
 
 .levelup-section {
@@ -113,6 +113,7 @@
   padding-bottom: 10px;
 }
 
+/* choice-block bleibt wie im Original, da Schritte getrennt sind */
 .choice-block {
   margin-top: 20px;
   padding-top: 20px;
@@ -171,7 +172,7 @@
 }
 
 
-/* ASI Sektion (Styles aus LevelUpModal.css) */
+/* ASI Sektion (Stile bleiben gleich) */
 .asi-selection h4, .subclass-selection h4 {
   color: #d4af37;
   margin-bottom: 10px;
@@ -219,9 +220,9 @@
   color: #4CAF50;
 }
 
-/* Subklassen Sektion (Styles aus LevelUpModal.css) */
+/* Subklassen Sektion (Stile bleiben gleich) */
 .subclass-selection {
-  max-height: 300px; /* Etwas mehr Platz im Vollbild-Modus */
+  max-height: 500px; /* Mehr Platz im Vollbild-Modus */
   overflow-y: auto;
   padding-right: 8px;
   padding-top: 5px;
@@ -261,7 +262,7 @@
   margin-bottom: 0;
 }
 
-/* Summary Sektion (Styles aus LevelUpModal.css) */
+/* Summary Sektion (Stile bleiben gleich) */
 .summary-section ul {
   list-style-type: none;
   padding-left: 10px;
@@ -277,9 +278,9 @@
   text-align: left;
 }
 
-/* Weapon Mastery Anpassungen für diesen Screen */
+/* Weapon Mastery Anpassungen (Stile bleiben gleich) */
 .levelup-screen .weapon-mastery-selection {
-  max-height: 250px;
+  max-height: 400px;
   overflow-y: auto;
   padding: 5px 10px 5px 5px;
   background-color: rgba(0, 0, 0, 0.2);

@@ -17,9 +17,6 @@ const getRacialHpBonus = (character) => {
 };
 
 // +++ WIEDERHERGESTELLTE HILFSFUNKTION +++
-/**
- * Verarbeitet Würfelergebnisse für eine Formel.
- */
 const rollDiceFormula = (formula, results) => {
   let bonus = 0;
   if (formula.includes('+')) {
@@ -98,7 +95,9 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
 
 export const LevelUpScreen = ({ character, onConfirm }) => {
   const { newLevel } = character.pendingLevelUp;
-  const [step, setStep] = useState(0); // 0: HP, 1: Choices, 2: Summary
+  
+  // Bedeutung der Schritte: 0=HP, 1=ASI, 2=Subclass, 3=Mastery, 4=Summary
+  const [step, setStep] = useState(0); 
   const [rollResult, setRollResult] = useState(null);
   const [asiPoints, setAsiPoints] = useState(2);
   const [asiChoices, setAsiChoices] = useState({});
@@ -128,9 +127,8 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
   }, [character]);
 
   useEffect(() => {
-    // 1. Initialisiere DiceBox nur im HP-Schritt
+    // 1. Initialisiere DiceBox nur im HP-Schritt (step 0)
     if (step === 0 && diceContainerRef.current && !diceInstanceRef.current) {
-      // KORREKTUR: Verwende CSS-Selektor "#dice-box", KEIN DOM-Element!
       new DiceBox("#dice-box", {
         assetPath: "/assets/dice-box/",
         theme: "default",
@@ -146,7 +144,7 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       }
       diceInstanceRef.current = null;
     }
-  }, [step]);
+  }, [step]); // Abhängig von 'step'
 
   const handleRollHP = async () => {
     if (diceInstanceRef.current) {
@@ -155,15 +153,10 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       setRollResult({ ...formulaResult, racialBonus: racialHpBonus });
     } else {
       console.warn("DiceBox nicht initialisiert. Nutze Fallback-Wurf.");
+      // ... (Fallback-Logik) ...
       const fallbackRoll = Math.floor(Math.random() * parseInt(hpRollFormula.split('d')[1] || 8)) + 1;
-      
       let bonus = 0;
-      if (hpRollFormula.includes('+')) {
-        bonus = parseInt(hpRollFormula.split('+')[1] || 0);
-      } else if (hpRollFormula.includes('-')) {
-        bonus = -parseInt(hpRollFormula.split('-')[1] || 0);
-      }
-
+      if (hpRollFormula.includes('+')) bonus = parseInt(hpRollFormula.split('+')[1] || 0);
       setRollResult({ 
         total: fallbackRoll + bonus, 
         dice: [fallbackRoll],
@@ -173,28 +166,46 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     }
   };
 
-  const handleConfirmHP = () => {
-    if (!isAbilityIncrease && !isSubclassChoice && !isMasteryIncrease) {
-      setStep(2); 
+  // --- NEUE STEP-LOGIK ---
+
+  const navigateToNextStep = (currentStep) => {
+    if (currentStep < 1 && isAbilityIncrease) {
+      setStep(1); // Gehe zu ASI
+    } else if (currentStep < 2 && isSubclassChoice) {
+      setStep(2); // Gehe zu Subclass
+    } else if (currentStep < 3 && isMasteryIncrease) {
+      setStep(3); // Gehe zu Mastery
     } else {
-      setStep(1);
+      setStep(4); // Gehe zur Zusammenfassung
     }
   };
 
-  const handleConfirmChoices = () => {
+  const handleConfirmHP = () => {
+    navigateToNextStep(0);
+  };
+  
+  const handleConfirmASI = () => {
     if (isAbilityIncrease && asiPoints > 0) {
       alert("Bitte verteile alle Attributspunkte.");
       return;
     }
+    navigateToNextStep(1);
+  };
+  
+  const handleConfirmSubclass = () => {
     if (isSubclassChoice && !selectedSubclass) {
       alert("Bitte wähle einen Archetyp.");
       return;
     }
-    if (isMasteryIncrease && masteryChoices.length < newMasteryCount) {
+    navigateToNextStep(2);
+  };
+
+  const handleConfirmMastery = () => {
+     if (isMasteryIncrease && masteryChoices.length < newMasteryCount) {
        alert(`Bitte wähle deine ${newMasteryCount}. Waffenmeisterschaft aus.`);
        return;
     }
-    setStep(2);
+    navigateToNextStep(3);
   };
 
   const handleConfirmAll = () => {
@@ -210,6 +221,12 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     setAsiChoices(newChoices);
     setAsiPoints(newPoints);
   };
+  
+  // Logik für die Sidebar-Anzeige
+  const showChoicesStep = isAbilityIncrease || isSubclassChoice || isMasteryIncrease;
+  const isChoiceStepActive = (step === 1 || step === 2 || step === 3);
+  const isChoiceStepComplete = step > 3;
+
 
   return (
     <div className="levelup-screen">
@@ -232,10 +249,13 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           <div className={`step-item ${step === 0 ? 'active' : step > 0 ? 'complete' : ''}`}>
              Trefferpunkte
           </div>
-          <div className={`step-item ${step === 1 ? 'active' : step > 1 ? 'complete' : ''} ${!isAbilityIncrease && !isSubclassChoice && !isMasteryIncrease ? 'hidden' : ''}`}>
-             Klassen-Wahl
-          </div>
-          <div className={`step-item ${step === 2 ? 'active' : ''}`}>
+          {/* Zeigt "Klassen-Wahl" an, wenn es überhaupt Wahlen gibt */}
+          {showChoicesStep && (
+            <div className={`step-item ${isChoiceStepActive ? 'active' : isChoiceStepComplete ? 'complete' : ''}`}>
+               Klassen-Wahl
+            </div>
+          )}
+          <div className={`step-item ${step === 4 ? 'active' : ''}`}>
              Zusammenfassung
           </div>
         </div>
@@ -249,11 +269,10 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           {step === 0 && (
             <div className="levelup-section hp-roll-section">
               <h3>1. Trefferpunkte auswürfeln</h3>
-              {/* WICHTIG: ID "dice-box" für DiceBox-Selektor */}
               <div 
                 ref={diceContainerRef} 
                 id="dice-box" 
-                style={{ width: '100%', height: '200px' }}
+                style={{ width: '100%', height: '300px' }} // Größer für Fokus
               ></div>
               
               {!rollResult ? (
@@ -272,36 +291,44 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
             </div>
           )}
           
-          {/* Schritt 1: Auswahlen */}
-          {step === 1 && (
+          {/* Schritt 1: ASI */}
+          {step === 1 && isAbilityIncrease && (
             <div className="levelup-section choices-section">
-              <h3>2. Entscheidungen für Stufe {newLevel}</h3>
-              
-              {isAbilityIncrease && (
-                <div className="choice-block">
-                  <AbilityScoreImprovement
-                    finalAbilities={finalAbilities}
-                    points={asiPoints}
-                    choices={asiChoices}
-                    onChange={handleAsiChange}
-                  />
-                </div>
-              )}
-              
-              {isSubclassChoice && (
-                <div className="choice-block">
-                  <SubclassSelection
-                    classKey={character.class.key}
-                    selectedKey={selectedSubclass}
-                    onSelect={setSelectedSubclass}
-                  />
-                </div>
-              )}
+              <h3>2. Attributswerte</h3>
+              <div className="choice-block">
+                <AbilityScoreImprovement
+                  finalAbilities={finalAbilities}
+                  points={asiPoints}
+                  choices={asiChoices}
+                  onChange={handleAsiChange}
+                />
+              </div>
+              <button onClick={handleConfirmASI} className="confirm-button">Weiter</button>
+            </div>
+          )}
 
-              {isMasteryIncrease && (
-                <div className="choice-block">
+          {/* Schritt 2: Subclass */}
+          {step === 2 && isSubclassChoice && (
+             <div className="levelup-section choices-section">
+              <h3>{isAbilityIncrease ? '3.' : '2.'} Archetyp</h3>
+              <div className="choice-block">
+                <SubclassSelection
+                  classKey={character.class.key}
+                  selectedKey={selectedSubclass}
+                  onSelect={setSelectedSubclass}
+                />
+              </div>
+              <button onClick={handleConfirmSubclass} className="confirm-button">Weiter</button>
+            </div>
+          )}
+          
+          {/* Schritt 3: Mastery */}
+          {step === 3 && isMasteryIncrease && (
+             <div className="levelup-section choices-section">
+              <h3>Waffenmeisterschaft</h3>
+               <div className="choice-block">
                   <h4>Waffenmeisterschaft (Wähle {newMasteryCount})</h4>
-                  <p>Du hast eine neue Waffenmeisterschaft gelernt. Wähle deine Auswahl:</p>
+                  <p>Du hast eine neue Waffenmeisterschaft gelernt.</p>
                   
                   <WeaponMasterySelection
                     character={{ 
@@ -312,14 +339,13 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
                     updateCharacter={(updates) => setMasteryChoices(updates.weapon_mastery_choices)}
                   />
                 </div>
-              )}
-
-              <button onClick={handleConfirmChoices} className="confirm-button">Zusammenfassung</button>
+              <button onClick={handleConfirmMastery} className="confirm-button">Weiter</button>
             </div>
           )}
 
-          {/* Schritt 2: Zusammenfassung */}
-          {step === 2 && (
+
+          {/* Schritt 4: Zusammenfassung */}
+          {step === 4 && (
             <div className="levelup-section summary-section">
               <h3>Zusammenfassung (Stufe {newLevel})</h3>
               
