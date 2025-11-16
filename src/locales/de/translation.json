@@ -42,6 +42,18 @@
     "options": "Optionen"
   },
 
+  "startScreen.options": {
+    "options": "Optionen"
+  },
+
+  "optionsMenu": {
+  "title": "Optionen",
+  "languageSelection": "Sprache auswählen",
+  "languageDe": "Deutsch",
+  "languageEn": "Englisch",
+  "close": "Schließen"
+},
+
   "characterCreation": {
     "generationMethod": "Generierungsmethode",
     "pointBuy": "Point Buy",
@@ -69,6 +81,10 @@
     "attributes": "Attribute",
     "base": "Basis",
     "bonus": "Bonus"
+  },
+
+  "classSelection": {
+    "classCharacteristics": "Klassenmerkmale (Stufe 1)"
   },
   
   "location": {

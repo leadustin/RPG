@@ -1,43 +1,47 @@
+// src/components/game_view/OptionsMenu.jsx
 import React from 'react';
-import './OptionsMenu.css'; //
+import { useTranslation } from 'react-i18next';
+import './OptionsMenu.css'; 
 
 /**
- * A modal menu for game options like saving and loading.
+ * A modal menu for game options, specifically for language selection.
  * @param {object} props - Component properties.
- * @param {Function} props.onSave - Function to call when the save button is clicked.
- * @param {Function} props.onLoad - Function to call when the load button is clicked.
  * @param {Function} props.onClose - Function to call to close the menu.
  */
-const OptionsMenu = ({ onSave, onLoad, onClose }) => {
+const OptionsMenu = ({ onClose }) => {
+  const { t, i18n } = useTranslation(); 
 
-  // --- NEUE HANDLER START ---
-  // Dieser Handler schließt das Options-Modal (onClose)
-  // und öffnet dann das Save-Modal (onSave).
-  const handleSaveClick = () => {
-    onClose();
-    onSave();
+  const handleLanguageChange = (lng) => {
+    i18n.changeLanguage(lng);
+    // Optional: Logeintrag oder Rückmeldung hinzufügen
   };
-
-  // Dieser Handler schließt das Options-Modal (onClose)
-  // und öffnet dann das Load-Modal (onLoad).
-  const handleLoadClick = () => {
-    onClose();
-    onLoad();
-  };
-  // --- NEUE HANDLER ENDE ---
-
 
   // The outer div handles closing the menu when clicking the background.
   // The inner div stops that click from propagating, so clicking the menu itself doesn't close it.
   return (
     <div className="options-menu-overlay" onClick={onClose}>
       <div className="options-menu" onClick={(e) => e.stopPropagation()}>
-        <h2>Optionen</h2>
+        <h2>{t("optionsMenu.title")}</h2>
         
-        {/* Buttons verwenden jetzt die neuen Handler */}
-        <button onClick={handleSaveClick}>Spiel speichern</button>
-        <button onClick={handleLoadClick}>Spiel laden</button>
-        <button onClick={onClose}>Schließen</button>
+        {/* --- SPRACHAUSWAHL --- */}
+        <div className="language-selector-section">
+          <h3>{t("optionsMenu.languageSelection")}</h3>
+          <button 
+            onClick={() => handleLanguageChange('de')} 
+            disabled={i18n.language.startsWith('de')}
+          >
+            {t("optionsMenu.languageDe")}
+          </button>
+          <button 
+            onClick={() => handleLanguageChange('en')}
+            disabled={i18n.language.startsWith('en')}
+          >
+            {t("optionsMenu.languageEn")}
+          </button>
+        </div>
+        {/* --- ENDE SPRACHAUSWAHL --- */}
+
+        <button onClick={onClose}>{t("optionsMenu.close")}</button>
       </div>
     </div>
   );
