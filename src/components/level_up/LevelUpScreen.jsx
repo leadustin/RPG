@@ -133,7 +133,7 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
         assetPath: "/assets/dice-box/",
         theme: "default",
         offscreen: true,
-        scale: 10,
+        scale: 12,
       }).init().then((dice) => {
         diceInstanceRef.current = dice;
       });
