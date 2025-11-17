@@ -95,9 +95,7 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
 
 export const LevelUpScreen = ({ character, onConfirm }) => {
   const { newLevel } = character.pendingLevelUp;
-  
-  // Bedeutung der Schritte: 0=HP, 1=ASI, 2=Subclass, 3=Mastery, 4=Summary
-  const [step, setStep] = useState(0); 
+  // KEIN 'step' state
   const [rollResult, setRollResult] = useState(null);
   const [asiPoints, setAsiPoints] = useState(2);
   const [asiChoices, setAsiChoices] = useState({});
@@ -126,26 +124,26 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     return final;
   }, [character]);
 
+  // Initialisiere DiceBox beim Mounten
   useEffect(() => {
-    // 1. Initialisiere DiceBox nur im HP-Schritt (step 0)
-    if (step === 0 && diceContainerRef.current && !diceInstanceRef.current) {
+    if (diceContainerRef.current && !diceInstanceRef.current) {
       new DiceBox("#dice-box", {
         assetPath: "/assets/dice-box/",
         theme: "default",
         offscreen: true,
-        scale: 20,
       }).init().then((dice) => {
         diceInstanceRef.current = dice;
       });
-    } 
-    // 2. Bereinige beim Verlassen des HP-Schritts
-    else if (step !== 0 && diceInstanceRef.current) {
-      if (diceContainerRef.current) {
-        diceContainerRef.current.innerHTML = ''; // Canvas leeren
+    }
+    
+    // Cleanup beim Unmounten
+    return () => {
+      if (diceInstanceRef.current && diceContainerRef.current) {
+        diceContainerRef.current.innerHTML = '';
       }
       diceInstanceRef.current = null;
     }
-  }, [step]); // Abhängig von 'step'
+  }, []); // Leeres Array sorgt für Ausführung nur bei Mount/Unmount
 
   const handleRollHP = async () => {
     if (diceInstanceRef.current) {
@@ -154,7 +152,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       setRollResult({ ...formulaResult, racialBonus: racialHpBonus });
     } else {
       console.warn("DiceBox nicht initialisiert. Nutze Fallback-Wurf.");
-      // ... (Fallback-Logik) ...
       const fallbackRoll = Math.floor(Math.random() * parseInt(hpRollFormula.split('d')[1] || 8)) + 1;
       let bonus = 0;
       if (hpRollFormula.includes('+')) bonus = parseInt(hpRollFormula.split('+')[1] || 0);
@@ -165,48 +162,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
         racialBonus: racialHpBonus 
       });
     }
-  };
-
-  // --- NEUE STEP-LOGIK ---
-
-  const navigateToNextStep = (currentStep) => {
-    if (currentStep < 1 && isAbilityIncrease) {
-      setStep(1); // Gehe zu ASI
-    } else if (currentStep < 2 && isSubclassChoice) {
-      setStep(2); // Gehe zu Subclass
-    } else if (currentStep < 3 && isMasteryIncrease) {
-      setStep(3); // Gehe zu Mastery
-    } else {
-      setStep(4); // Gehe zur Zusammenfassung
-    }
-  };
-
-  const handleConfirmHP = () => {
-    navigateToNextStep(0);
-  };
-  
-  const handleConfirmASI = () => {
-    if (isAbilityIncrease && asiPoints > 0) {
-      alert("Bitte verteile alle Attributspunkte.");
-      return;
-    }
-    navigateToNextStep(1);
-  };
-  
-  const handleConfirmSubclass = () => {
-    if (isSubclassChoice && !selectedSubclass) {
-      alert("Bitte wähle einen Archetyp.");
-      return;
-    }
-    navigateToNextStep(2);
-  };
-
-  const handleConfirmMastery = () => {
-     if (isMasteryIncrease && masteryChoices.length < newMasteryCount) {
-       alert(`Bitte wähle deine ${newMasteryCount}. Waffenmeisterschaft aus.`);
-       return;
-    }
-    navigateToNextStep(3);
   };
 
   const handleConfirmAll = () => {
@@ -222,12 +177,14 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     setAsiChoices(newChoices);
     setAsiPoints(newPoints);
   };
-  
-  // Logik für die Sidebar-Anzeige
-  const showChoicesStep = isAbilityIncrease || isSubclassChoice || isMasteryIncrease;
-  const isChoiceStepActive = (step === 1 || step === 2 || step === 3);
-  const isChoiceStepComplete = step > 3;
 
+  // --- VALIDIERUNGS-LOGIK ---
+  const hpDone = !!rollResult;
+  const asiDone = !isAbilityIncrease || (isAbilityIncrease && asiPoints === 0);
+  const subclassDone = !isSubclassChoice || (isSubclassChoice && !!selectedSubclass);
+  const masteryDone = !isMasteryIncrease || (isMasteryIncrease && masteryChoices.length >= newMasteryCount);
+  
+  const allChoicesValid = hpDone && asiDone && subclassDone && masteryDone;
 
   return (
     <div className="levelup-screen">
@@ -246,160 +203,108 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           <p>Rüstungsklasse: {character.stats.ac}</p>
         </div>
         
+        {/* --- NEUE CHECKLISTE --- */}
         <div className="levelup-steps">
-          <div className={`step-item ${step === 0 ? 'active' : step > 0 ? 'complete' : ''}`}>
-             Trefferpunkte
+          <h4>Aktions-Checkliste</h4>
+          <div className={`step-item ${hpDone ? 'complete' : 'active'}`}>
+             Trefferpunkte würfeln
           </div>
-          {/* Zeigt "Klassen-Wahl" an, wenn es überhaupt Wahlen gibt */}
-          {showChoicesStep && (
-            <div className={`step-item ${isChoiceStepActive ? 'active' : isChoiceStepComplete ? 'complete' : ''}`}>
-               Klassen-Wahl
+          {isAbilityIncrease && (
+            <div className={`step-item ${asiDone ? 'complete' : 'active'}`}>
+               Attribute verteilen
             </div>
           )}
-          <div className={`step-item ${step === 4 ? 'active' : ''}`}>
-             Zusammenfassung
-          </div>
+          {isSubclassChoice && (
+             <div className={`step-item ${subclassDone ? 'complete' : 'active'}`}>
+               Archetyp wählen
+            </div>
+          )}
+           {isMasteryIncrease && (
+             <div className={`step-item ${masteryDone ? 'complete' : 'active'}`}>
+               Waffenmeisterschaft
+            </div>
+          )}
         </div>
       </div>
 
       {/* Rechte Spalte (Aktionen) */}
       <div className="levelup-main-panel">
-        <div className="levelup-container">
-          
-          {/* Schritt 0: HP-Wurf */}
-          {step === 0 && (
-            <div className="levelup-section hp-roll-section">
-              <h3>1. Trefferpunkte auswürfeln</h3>
-              <div 
-                ref={diceContainerRef} 
-                id="dice-box" 
-                style={{ width: '100%', height: '300px' }} // Größer für Fokus
-              ></div>
-              
-              {!rollResult ? (
-                <button onClick={handleRollHP} className="roll-button">
-                  Würfeln ({hpRollFormula}{racialHpBonus > 0 ? ` + ${racialHpBonus}` : ''})
-                </button>
-              ) : (
-                <div className="hp-result">
-                  <p>Gewürfelt: {rollResult.dice.join(' + ')}</p>
-                  <p>Modifikator: {rollResult.bonus}</p>
-                  {racialHpBonus > 0 && <p>Rassenbonus (Hügelzwerg): {racialHpBonus}</p>}
-                  <p className="hp-total">Gesamt-Zuwachs: {rollResult.total + racialHpBonus}</p>
-                  <button onClick={handleConfirmHP} className="confirm-button">Weiter</button>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {/* Schritt 1: ASI */}
-          {step === 1 && isAbilityIncrease && (
-            <div className="levelup-section choices-section">
-              <h3>2. Attributswerte</h3>
-              <div className="choice-block">
-                <AbilityScoreImprovement
-                  finalAbilities={finalAbilities}
-                  points={asiPoints}
-                  choices={asiChoices}
-                  onChange={handleAsiChange}
-                />
-              </div>
-              <button onClick={handleConfirmASI} className="confirm-button">Weiter</button>
-            </div>
-          )}
+        
+        {/* --- NEUES CHARSHEET-LAYOUT --- */}
+        <div className="charsheet-layout">
 
-          {/* Schritt 2: Subclass */}
-          {step === 2 && isSubclassChoice && (
-             <div className="levelup-section choices-section">
-              <h3>{isAbilityIncrease ? '3.' : '2.'} Archetyp</h3>
-              <div className="choice-block">
-                <SubclassSelection
-                  classKey={character.class.key}
-                  selectedKey={selectedSubclass}
-                  onSelect={setSelectedSubclass}
-                />
-              </div>
-              <button onClick={handleConfirmSubclass} className="confirm-button">Weiter</button>
-            </div>
-          )}
-          
-          {/* Schritt 3: Mastery */}
-          {step === 3 && isMasteryIncrease && (
-             <div className="levelup-section choices-section">
-              <h3>Waffenmeisterschaft</h3>
-               <div className="choice-block">
-                  <h4>Waffenmeisterschaft (Wähle {newMasteryCount})</h4>
-                  <p>Du hast eine neue Waffenmeisterschaft gelernt.</p>
-                  
-                  <WeaponMasterySelection
-                    character={{ 
-                      ...character, 
-                      level: newLevel, 
-                      weapon_mastery_choices: masteryChoices 
-                    }}
-                    updateCharacter={(updates) => setMasteryChoices(updates.weapon_mastery_choices)}
-                  />
-                </div>
-              <button onClick={handleConfirmMastery} className="confirm-button">Weiter</button>
-            </div>
-          )}
-
-
-          {/* Schritt 4: Zusammenfassung */}
-          {step === 4 && (
-            <div className="levelup-section summary-section">
-              <h3>Zusammenfassung (Stufe {newLevel})</h3>
-              
-              {rollResult && (
-                <p>
-                  Neue Trefferpunkte: +{rollResult.dice.join(' + ')} (Wurf) + {rollResult.bonus} (KON)
-                  {rollResult.racialBonus ? ` + ${rollResult.racialBonus} (Rasse)` : ""}
-                  = <strong>{rollResult.total + (rollResult.racialBonus || 0)} TP</strong>
-                </p>
-              )}
-
-              {isAbilityIncrease && Object.values(asiChoices).some(v => v > 0) && (
-                <div>
-                  <p>Attributserhöhungen:</p>
-                  <ul>
-                    {Object.keys(asiChoices).map(key => 
-                      asiChoices[key] > 0 && <li key={key}>{key.toUpperCase()}: +{asiChoices[key]}</li>
-                    )}
-                  </ul>
-                </div>
-              )}
-
-              {isSubclassChoice && selectedSubclass && (
-                <p>
-                  Neuer Archetyp: {
-                    allClassData
-                      .find(c => c.key === character.class.key)
-                      ?.subclasses.find(sc => sc.key === selectedSubclass)
-                      ?.name
-                  }
-                </p>
-              )}
-
-              {isMasteryIncrease && masteryChoices.length > (character.weapon_mastery_choices?.length || 0) && (
-                <div>
-                  <p>Neue Waffenmeisterschaften:</p>
-                  <ul>
-                    {masteryChoices
-                      .filter(m => !(character.weapon_mastery_choices || []).includes(m))
-                      .map(key => (
-                        <li key={key}>{key} (Neu)</li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-
-              <button onClick={handleConfirmAll} className="confirm-button final-confirm">
-                Aufstieg bestätigen
+          {/* HP-SEKTION */}
+          <div className={`charsheet-section hp-section ${!hpDone ? 'action-required' : ''}`}>
+            <h3>Trefferpunkte (Stufe {newLevel})</h3>
+            <div 
+              ref={diceContainerRef} 
+              id="dice-box" 
+              style={{ width: '100%', height: '200px', display: hpDone ? 'none' : 'block' }}
+            ></div>
+            
+            {!rollResult ? (
+              <button onClick={handleRollHP} className="roll-button">
+                Würfeln ({hpRollFormula}{racialHpBonus > 0 ? ` + ${racialHpBonus}` : ''})
               </button>
+            ) : (
+              <div className="hp-result">
+                <p>Gewürfelt: {rollResult.dice.join(' + ')} + {rollResult.bonus} (KON) {racialHpBonus > 0 ? `+ ${racialHpBonus} (Rasse)` : ''}</p>
+                <p className="hp-total">Gesamt-Zuwachs: {rollResult.total + racialHpBonus}</p>
+              </div>
+            )}
+          </div>
+          
+          {/* ASI-SEKTION */}
+          {isAbilityIncrease && (
+            <div className={`charsheet-section asi-section ${!asiDone ? 'action-required' : ''}`}>
+              <AbilityScoreImprovement
+                finalAbilities={finalAbilities}
+                points={asiPoints}
+                choices={asiChoices}
+                onChange={handleAsiChange}
+              />
+            </div>
+          )}
+
+          {/* SUBCLASS-SEKTION */}
+          {isSubclassChoice && (
+            <div className={`charsheet-section subclass-section ${!subclassDone ? 'action-required' : ''}`}>
+              <SubclassSelection
+                classKey={character.class.key}
+                selectedKey={selectedSubclass}
+                onSelect={setSelectedSubclass}
+              />
+            </div>
+          )}
+
+          {/* MASTERY-SEKTION */}
+          {isMasteryIncrease && (
+            <div className={`charsheet-section mastery-section ${!masteryDone ? 'action-required' : ''}`}>
+              <h4>Waffenmeisterschaft (Wähle {newMasteryCount})</h4>
+              <WeaponMasterySelection
+                character={{ 
+                  ...character, 
+                  level: newLevel, 
+                  weapon_mastery_choices: masteryChoices 
+                }}
+                updateCharacter={(updates) => setMasteryChoices(updates.weapon_mastery_choices)}
+              />
             </div>
           )}
 
         </div>
+        
+        {/* FOOTER-BUTTON */}
+        <div className="levelup-footer">
+          <button 
+            onClick={handleConfirmAll} 
+            className="confirm-button final-confirm"
+            disabled={!allChoicesValid}
+          >
+            Aufstieg bestätigen
+          </button>
+        </div>
+
       </div>
     </div>
   );
