@@ -199,7 +199,15 @@
     "choose": "Wähle...",
     "attributes": "Attribut",
     "base": "Basis",
-    "bonus": "Bonus"
+    "bonus": "Bonus",
+    "skillConflict": "Fertigkeitskonflikt",
+    "skillConflictInfo": "Deine Hintergrund-Fertigkeiten (z.B. Religion) überschneiden sich mit deiner Klassenwahl. Bitte korrigiere die markierten Einträge.",
+    "alreadyChosen": "bereits gewählt",
+    "classSkills": "Klassenfertigkeiten (Korrektur)",
+    "classSkillsInfo": "Bearbeite hier deine Fertigkeitswahl für deine Klasse.",
+    "classSkillChoice": "Fertigkeitswahl",
+    "skillConflictShort": "KONFLIKT"
+    
   },
   "classSelection": {
     "classCharacteristics": "Klassenmerkmale (Stufe 1)",

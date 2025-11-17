@@ -367,3 +367,26 @@ NEUE CSS-REGELN FÜR 2024-BONI
   color: var(--theme-input-text-color);
   border-radius: 4px;
 }
+
+.ability-conflict-warning {
+  color: var(--theme-warning-text-color, #ff9800);
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-left: 8px;
+}
+
+.panel-select.conflict-warning {
+  border: 1px solid var(--theme-warning-text-color, #ff9800);
+  box-shadow: 0 0 5px var(--theme-warning-text-color, #ff9800);
+}
+
+/* Optional: Stil für deaktivierte Optionen, damit klar ist, warum sie nicht wählbar sind */
+.panel-select option:disabled {
+  color: #777;
+  font-style: italic;
+}
+
+.class-skill-select {
+  max-width: 90%; /* Verhindert Überlaufen auf kleinen Bildschirmen */
+  margin-left: auto;
+}

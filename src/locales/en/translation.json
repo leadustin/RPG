@@ -199,7 +199,15 @@
     "choose": "Choose...",
     "attributes": "Attribute",
     "base": "Base",
-    "bonus": "Bonus"
+    "bonus": "Bonus",
+    "skillConflict": "Skill Conflict",
+    "skillConflictInfo": "Your Background skills (e.g., Religion) overlap with your Class choices. Please correct the highlighted entries.",
+    "alreadyChosen": "already chosen",
+    "classSkills": "Class Skills (Correction)",
+    "classSkillsInfo": "Edit your class skill choices here.",
+    "classSkillChoice": "Skill Choice",
+    "skillConflictShort": "CONFLICT"
+    
   },
   "classSelection": {
     "classCharacteristics": "Class Characteristics (Level 1)",

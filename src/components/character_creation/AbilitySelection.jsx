@@ -1,12 +1,12 @@
 // src/components/character_creation/AbilitySelection.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import DiceBox from "@3d-dice/dice-box";
 import './AbilitySelection.css';
 import './PanelDetails.css';
 import { getRacialAbilityBonus } from '../../engine/characterEngine';
 
-// +++ NEUER IMPORT: Wir benötigen die Liste aller Fertigkeiten +++
+// +++ IMPORT BLEIBT WICHTIG +++
 import allSkillDetails from '../../data/skillDetails.json';
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
@@ -81,6 +81,10 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
   const diceBoxRef = useRef(null);
   const [isRolling, setIsRolling] = useState(false);
   const [diceBoxReady, setDiceBoxReady] = useState(false);
+  
+  // +++ STATE FÜR SICHTBARKEIT DER BOX (Löst das "Misclick"-Problem) +++
+  const [skillsToEdit, setSkillsToEdit] = useState([]); // HIER IST DIE KORREKTE DEKLARATION
+
 
   // Effekt zum Initialisieren von DiceBox (mit v1.1.0 API)
   useEffect(() => {
@@ -352,87 +356,168 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     setIsRolling(false); 
   };
   
-  // +++ START: NEUE LOGIK FÜR FERTIGKEITSKONFLIKTE (Skill Overlap) +++
+  // +++ START: FERTIGKEITS-KONFLIKT-LOGIK (V10 - "Misclick"-sicher) +++
 
-  // 1. Alle verfügbaren Fertigkeitsnamen aus den JSON-Daten holen
-  const allSkillNames = Object.keys(allSkillDetails).map(key => allSkillDetails[key].name);
+  // 1. Erstelle eine Map von "Fertigkeitsname" -> "fertigkeitsKey"
+  const skillNameToKeyMap = useMemo(() => {
+    const map = {};
+    for (const key in allSkillDetails) {
+      map[allSkillDetails[key].name.trim()] = key;
+    }
+    return map;
+  }, []); // Nur einmal erstellen
 
-  // 2. Aktuelle Fertigkeiten aus Charakter-Status holen
-  // Feste Fertigkeiten vom Hintergrund
-  const backgroundSkills = character.background.skill_proficiencies || [];
-  // Gewählte Fertigkeiten von der Klasse
-  const classSkillChoices = character.skill_proficiencies_choice || [];
-
-  // 3. Konflikte finden (Fertigkeiten, die in BEIDEN Listen sind)
-  const conflictingSkills = classSkillChoices.filter(classSkill =>
-    backgroundSkills.includes(classSkill)
+  // 2. Hole die FERTIGKEITS-KEYS vom Hintergrund (z.B. ["insight", "religion"])
+  const backgroundSkills_Keys = useMemo(() =>
+    (character.background.skill_proficiencies || [])
+      .map(name => skillNameToKeyMap[name.trim()])
+      .filter(Boolean),
+    [character.background.skill_proficiencies, skillNameToKeyMap]
   );
 
-  // 4. Ein Set aller aktuell gewählten Fertigkeiten (Klasse + Hintergrund)
-  //    um die Dropdown-Optionen zu filtern
-  const allCurrentProficiencies = new Set([
-    ...backgroundSkills,
-    ...classSkillChoices
-  ]);
+  // 3. Hole die FERTIGKEITS-KEYS der aktuellen Klassenwahl (z.B. ["religion", "history"])
+  const classSkillChoices_Keys = useMemo(() =>
+    (character.skill_proficiencies_choice || []).map(s => s ? s.trim() : null).filter(Boolean),
+    [character.skill_proficiencies_choice]
+  );
+  
+  // 4. Hole alle FERTIGKEITS-KEYS, die von der Klasse ERLAUBT sind
+  const allowedClassSkill_Keys = useMemo(() => {
+    const from = character.class.proficiencies?.skills?.from;
+    if (!from) return [];
+    if (from === "any") {
+      return Object.keys(allSkillDetails); // Barde kann alles wählen
+    }
+    // Wandle die erlaubten Namen (z.B. "Geschichte") in Keys (z.B. "history") um
+    return from.map(name => skillNameToKeyMap[name.trim()]).filter(Boolean);
+  }, [character.class, skillNameToKeyMap]);
 
-  // 5. Handler, um einen Konflikt aufzulösen
-  const handleConflictChange = (skillToReplace, newSkill) => {
-    // Erstelle ein neues Array der Klassenfertigkeiten,
-    // indem die Konflikt-Fertigkeit durch die neue Wahl ersetzt wird.
-    const newClassChoices = classSkillChoices.map(skill =>
-      skill === skillToReplace ? newSkill : skill
-    );
-    // Aktualisiere den Charakter-Status
+  // 5. Finde die AKTUELLEN KONFLIKT-KEYS
+  const currentConflicts = useMemo(() =>
+    classSkillChoices_Keys.filter(classKey =>
+      classKey && backgroundSkills_Keys.includes(classKey)
+    ),
+    [classSkillChoices_Keys, backgroundSkills_Keys]
+  );
+  
+  // 6. TRIGGER-Effekt:
+  //    Wenn sich Klasse oder Hintergrund ändern, wird die Box zurückgesetzt.
+  useEffect(() => {
+      // Berechne die Konflikte für die NEUE Kombination
+      const newClassSkills = character.skill_proficiencies_choice || [];
+      const newBgSkills = (character.background.skill_proficiencies || [])
+                           .map(name => skillNameToKeyMap[name.trim()])
+                           .filter(Boolean);
+                           
+      const newConflicts = newClassSkills.filter(classKey => 
+          classKey && newBgSkills.includes(classKey)
+      );
+      
+      // Setze den Editor-State auf die neuen Konflikte
+      // (Anforderung: "nur pro Fehler ein Dropdown")
+      setSkillsToEdit(newConflicts);
+      
+  // Dieser Effekt wird NUR ausgeführt, wenn sich Klasse oder Hintergrund ändern.
+  }, [character.class.key, character.background.key]); // Abhängigkeiten korrigiert
+
+
+  // 7. Handler: Wird aufgerufen, wenn ein Dropdown geändert wird
+  //    (Aktualisiert den Charakter UND den lokalen State, damit die Box sichtbar bleibt)
+  const handleConflictChange = (keyToReplace, newKey) => {
+    // 1. Aktualisiere den globalen Charakter-Status
+    //    (Finde den Index des zu ersetzenden Skills im *Original*-Array)
+    const indexToReplace = classSkillChoices_Keys.findIndex(key => key === keyToReplace);
+    if (indexToReplace === -1) return; // Sollte nie passieren
+
+    const newClassChoices = [...classSkillChoices_Keys];
+    newClassChoices[indexToReplace] = newKey;
+    
     updateCharacter({ skill_proficiencies_choice: newClassChoices });
+
+    // 2. Aktualisiere den LOKALEN State, damit die Box sichtbar bleibt
+    //    (Ersetze den alten Skill-Key durch den neuen)
+    setSkillsToEdit(prevSkills => 
+      prevSkills.map(key => (key === keyToReplace ? newKey : key))
+    );
   };
 
-  // 6. Render-Funktion für die Konflikt-Box
+
+  // 8. Render-Funktion für den "Klassenfertigkeiten-Editor"
   const renderConflictResolver = () => {
-    // Wenn keine Konflikte da sind, zeige nichts an
-    if (conflictingSkills.length === 0) {
-      return null;
+    // (Anforderung: Box bleibt sichtbar, da sie auf `skillsToEdit` basiert)
+    if (skillsToEdit.length === 0) {
+      return null; 
     }
 
-    // Optionen für die Dropdowns:
-    // Alle Fertigkeiten MINUS die, die schon (durch Klasse ODER Hintergrund) gewählt sind
-    // ABER: Die aktuelle Konflikt-Fertigkeit muss in der Liste bleiben,
-    // damit der Tausch zurückgesetzt werden kann (falls der Benutzer sich umentscheidet).
-    const availableReplacementOptions = allSkillNames.filter(
-      name => !allCurrentProficiencies.has(name)
-    );
+    const hasRealConflict = currentConflicts.length > 0;
 
     return (
       <div className="ability-box">
-        <h3>{t("characterCreation.skillConflict")}</h3>
+        {/* Titel ändert sich je nach Konfliktstatus */}
+        <h3>{hasRealConflict ? t("characterCreation.skillConflict") : t("characterCreation.classSkills")}</h3>
         <p className="bonus-description">
-          {t("characterCreation.skillConflictInfo")}
+          {hasRealConflict ? t("characterCreation.skillConflictInfo") : t("characterCreation.classSkillsInfo")}
         </p>
 
-        {conflictingSkills.map(conflictSkill => {
-          // Finde die aktuelle Auswahl für diesen Konflikt-Slot
-          // (Es ist die Fertigkeit selbst, da sie ja den Konflikt *ist*)
-          const currentValue = classSkillChoices.find(s => s === conflictSkill);
+        {/* (Anforderung: "nur pro Fehler ein Dropdown") */}
+        {/* Wir iterieren über den STATE `skillsToEdit` */}
+        {skillsToEdit.map((skillKeyInDropdown, index) => { // 'index' als key hinzugefügt für Stabilität
+          
+          const currentSkillName = allSkillDetails[skillKeyInDropdown]?.name || skillKeyInDropdown;
+          
+          // Prüfe, ob der *aktuell im Dropdown gewählte* Skill ein *echter* Konflikt ist
+          const isConflict = backgroundSkills_Keys.includes(skillKeyInDropdown);
+          
+          // (Anforderung: "die nur die jeweilig gültigen Einträge anzeigen")
+          const options = allowedClassSkill_Keys.map(optionKey => {
+            const optionName = allSkillDetails[optionKey]?.name || optionKey;
+            
+            // Die aktuell ausgewählte Option darf NIE deaktiviert sein
+            if (optionKey === skillKeyInDropdown) {
+              return { key: optionKey, name: optionName, disabled: false };
+            }
+            
+            // (Anforderung: "Einblick scheidet aus" (weil Hintergrund))
+            const takenByBackground = backgroundSkills_Keys.includes(optionKey);
+
+            // (Anforderung: "bereits bei der Klassenwahl Einblick und Religion")
+            // Prüfe, ob die Option von einem *anderen* (nicht-konfliktierenden) Klassenslot belegt ist.
+            // ODER von einem ANDEREN Slot, der gerade bearbeitet wird
+            
+            // Finde alle Keys, die in den Klassen-Slots sind, ABER NICHT der aktuelle Dropdown-Key
+            const nonConflictingClassChoices = classSkillChoices_Keys.filter(
+              k => k !== skillKeyInDropdown
+            );
+            
+            const takenByOtherClassSlot = nonConflictingClassChoices.includes(optionKey);
+
+            const isDisabled = takenByBackground || takenByOtherClassSlot;
+
+            return { 
+              key: optionKey, 
+              name: optionName, 
+              disabled: isDisabled
+            };
+          });
 
           return (
-            <div key={conflictSkill} className="bonus-select-wrap">
+            <div key={index} className="bonus-select-wrap"> {/* Key auf index geändert */}
               <label>
-                {/* z.B. "Ersetze Religion" */}
-                {t("characterCreation.replaceSkill", { skillName: conflictSkill })}
+                {t("characterCreation.classSkillChoice")} (Korrektur)
+                {isConflict && (
+                  <span className="ability-conflict-warning"> ({t("characterCreation.skillConflictShort")})</span>
+                )}
               </label>
               <select
-                value={currentValue}
-                onChange={(e) => handleConflictChange(conflictSkill, e.target.value)}
-                className="panel-select"
+                value={skillKeyInDropdown} // Der Wert ist der Key im State
+                onChange={(e) => handleConflictChange(skillKeyInDropdown, e.target.value)}
+                // +++ HIER IST DIE ÄNDERUNG FÜR DIE BREITE +++
+                className={`panel-select class-skill-select ${isConflict ? 'conflict-warning' : ''}`}
               >
-                {/* Die erste Option ist die aktuelle (konfliktierende) Auswahl */}
-                <option value={currentValue} disabled>
-                  {currentValue} ({t("characterCreation.fromBackground")})
-                </option>
-
-                {/* Alle anderen verfügbaren Fertigkeiten auflisten */}
-                {availableReplacementOptions.map(optionName => (
-                  <option key={optionName} value={optionName}>
-                    {optionName}
+                {options.map(opt => (
+                  <option key={opt.key} value={opt.key} disabled={opt.disabled}>
+                    {opt.name}
+                    {opt.disabled && ` (${t("characterCreation.alreadyChosen")})`}
                   </option>
                 ))}
               </select>
@@ -442,7 +527,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
       </div>
     );
   };
-  // +++ ENDE: NEUE LOGIK FÜR FERTIGKEITSKONFLIKTE +++
+  // +++ ENDE: FERTIGKEITS-EDITOR-LOGIK +++
 
 
   // --- RETURN-BLOCK ---
