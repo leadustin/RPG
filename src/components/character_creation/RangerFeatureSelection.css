@@ -1,0 +1,38 @@
+/* src/components/character_creation/RangerFeatureSelection.css */
+
+.feature-block-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px; /* Abstand zwischen den Boxen */
+}
+
+.feature-block {
+  flex: 1; /* Beide Blöcke teilen sich den Platz gleichmäßig */
+  
+  /* --- Styling, um die "Box" aus dem Bild nachzubilden --- */
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px; /* Abgerundete Ecken */
+  padding: 15px; /* Innenabstand für die Box */
+  /* --- --- */
+
+  display: flex;
+  flex-direction: column; /* Inhalt (h3, p, select) untereinander */
+}
+
+.feature-block h3 {
+  margin-top: 0;
+}
+
+.feature-block .panel-details-description {
+  margin-top: 4px;
+  margin-bottom: 10px;
+  /* Dies sorgt dafür, dass die Boxen die gleiche Höhe haben, 
+     auch wenn der Text unterschiedlich lang ist */
+  flex-grow: 1; 
+}
+
+.feature-block .panel-select {
+  width: 100%;
+}

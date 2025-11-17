@@ -166,9 +166,21 @@ export const ClassSelection = ({ character, updateCharacter }) => {
         <ul className="features-list">
           {selectedClass.features
             .filter(feature => feature.level === 1)
+            // +++ NEU: Filtere Ranger-spezifische Features aus +++
+            .filter(feature => {
+              // Wenn Ranger UND das Feature ist "Bevorzugter Feind" oder "Natürlicher Entdecker"
+              // dann zeige es NICHT hier (wird in RangerFeatureSelection angezeigt)
+              if (classKey === 'ranger' && (
+                feature.name === 'Bevorzugter Feind' || 
+                feature.name === 'Natürlicher Entdecker'
+              )) {
+                return false;
+              }
+              return true;
+            })
+            // +++ ENDE NEU +++
             .map(feature => (
               <li key={feature.name}>
-                 {/* HINWEIS: feature.name & feature.description kommen aus JSON */}
                 <strong>{feature.name}:</strong> {feature.description}
               </li>
             ))

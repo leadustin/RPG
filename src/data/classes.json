@@ -157,6 +157,38 @@
   "description": "Ein inspirierender Magier, dessen Macht von Musik, Worten und Geschichten herrührt. Seine Magie entspringt der schöpferischen Energie des Multiversums.",
   "hit_die": 8,
   "saving_throws": ["dexterity", "charisma"],
+  "spellcasting": {
+    "type": "FULL",
+    "casting_ability": "cha",
+    "cantrip_progression": [
+      2, 2, 2, 
+      3, 3, 3, 3, 3, 3, 
+      4, 4, 4, 4, 4, 4, 4, 
+      5, 5, 5, 5
+    ],
+    "spell_slots_by_level": [
+      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
+      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 1, 0],
+      [4, 3, 3, 3, 2, 1, 1, 1, 0],
+      [4, 3, 3, 3, 3, 1, 1, 1, 1],
+      [4, 3, 3, 3, 3, 2, 1, 1, 1],
+      [4, 3, 3, 3, 3, 2, 2, 1, 1],
+      [4, 3, 3, 3, 3, 2, 2, 2, 1]
+    ]
+  },
   "proficiencies": {
     "armor": ["Leichte Rüstung"],
     "weapons": ["Einfache Waffen", "Handarmbrüste", "Langschwerter", "Rapier", "Kurzschwerter"],
@@ -282,6 +314,38 @@
   "description": "Ein Kleriker ist ein Priester, der göttliche Magie ausübt, um die Macht seiner Gottheit in die Welt zu tragen.",
   "hit_die": 8,
   "saving_throws": ["wisdom", "charisma"],
+  "spellcasting": {
+    "type": "FULL",
+    "casting_ability": "wis",
+    "cantrip_progression": [
+      3, 3, 3, 
+      4, 4, 4, 4, 4, 4, 
+      5, 5, 5, 5, 5, 5, 5, 
+      6, 6, 6, 6
+    ],
+    "spell_slots_by_level": [
+      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
+      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 1, 0],
+      [4, 3, 3, 3, 2, 1, 1, 1, 0],
+      [4, 3, 3, 3, 3, 1, 1, 1, 1],
+      [4, 3, 3, 3, 3, 2, 1, 1, 1],
+      [4, 3, 3, 3, 3, 2, 2, 1, 1],
+      [4, 3, 3, 3, 3, 2, 2, 2, 1]
+    ]
+  },
   "proficiencies": {
     "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
     "weapons": ["Einfache Waffen"],
@@ -849,9 +913,15 @@
       "from": ["Akrobatik", "Athletik", "Geschichte", "Einblick", "Religion", "Heimlichkeit"]
     }
   },
+  "martial_arts_progression": [
+    { "level": 1, "dice": "1W4" },
+    { "level": 5, "dice": "1W6" },
+    { "level": 11, "dice": "1W8" },
+    { "level": 17, "dice": "1W10" }
+  ],
   "features": [
     { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung oder Schild trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Weisheitsmodifikator." },
-    { "level": 1, "name": "Kampfkunst", "description": "Du kannst Geschicklichkeit anstelle von Stärke für Angriffe mit unbewaffneten Schlägen und Mönchswaffen verwenden. Du kannst W4 als Schadenswürfel nutzen. Wenn du angreifst, kannst du einen unbewaffneten Schlag als Bonusaktion ausführen." },
+    { "level": 1, "name": "Kampfkunst", "description": "Du kannst Geschicklichkeit anstelle von Stärke für Angriffe mit unbewaffneten Schlägen und Mönchswaffen verwenden. Dein Schadenswürfel für diese Angriffe skaliert mit deinem Level (beginnend mit 1W4). Wenn du angreifst, kannst du einen unbewaffneten Schlag als Bonusaktion ausführen." },
     { "level": 2, "name": "Ki", "description": "Du hast Ki-Punkte (gleich deinem Mönch-Level), die du ausgeben kannst, um Fähigkeiten wie 'Hagel der Schläge', 'Geduldige Verteidigung' und 'Schritt des Windes' zu nutzen." },
     { "level": 2, "name": "Ungepanzerte Bewegung", "description": "Deine Bewegungsrate erhöht sich um 3 Meter, solange du keine Rüstung oder Schild trägst (steigt mit den Stufen)." },
     { "level": 3, "name": "Mönchstradition", "description": "Du wählst eine Tradition, die deinen mönchischen Weg formt." },
@@ -997,6 +1067,35 @@
   "description": "Ein heiliger Krieger, gebunden an einen Eid, der als Leuchtfeuer der Hoffnung in einer von Dunkelheit geplagten Welt dient.",
   "hit_die": 10,
   "saving_throws": ["wisdom", "charisma"],
+  "spellcasting": {
+    "type": "HALF",
+    "casting_ability": "cha",
+    "cantrip_progression": [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ],
+    "spell_slots_by_level": [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [2, 0, 0, 0, 0, 0, 0, 0, 0],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0],
+      [4, 2, 0, 0, 0, 0, 0, 0, 0],
+      [4, 2, 0, 0, 0, 0, 0, 0, 0],
+      [4, 3, 0, 0, 0, 0, 0, 0, 0],
+      [4, 3, 0, 0, 0, 0, 0, 0, 0],
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0]
+    ]
+  },
   "proficiencies": {
     "armor": ["Alle Rüstungen", "Schilde"],
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
@@ -1150,6 +1249,35 @@
   "description": "Ein Krieger der Wildnis, der Feinde mit geschärften Sinnen, tödlichen Waffen und einer tiefen Verbindung zur Natur jagt.",
   "hit_die": 10,
   "saving_throws": ["strength", "dexterity"],
+  "spellcasting": {
+    "type": "HALF",
+    "casting_ability": "wis",
+    "cantrip_progression": [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ],
+    "spell_slots_by_level": [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [2, 0, 0, 0, 0, 0, 0, 0, 0],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0],
+      [4, 2, 0, 0, 0, 0, 0, 0, 0],
+      [4, 2, 0, 0, 0, 0, 0, 0, 0],
+      [4, 3, 0, 0, 0, 0, 0, 0, 0],
+      [4, 3, 0, 0, 0, 0, 0, 0, 0],
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0]
+    ]
+  },
   "proficiencies": {
     "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
@@ -1163,8 +1291,24 @@
   "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
 },
   "features": [
-    { "level": 1, "name": "Bevorzugter Feind", "description": "Du wählst eine Art von Kreatur als deinen bevorzugten Feind. Du hast Vorteil bei Würfen, um sie aufzuspüren, und beim Sammeln von Informationen über sie." },
-    { "level": 1, "name": "Natürlicher Entdecker", "description": "Du wählst ein bevorzugtes Gelände. In diesem Gelände erhältst du Vorteile (z.B. verdoppelter Übungsbonus bei INT/WIS-Würfen, Spurenlesen)." },
+    { 
+      "level": 1, 
+      "name": "Bevorzugter Feind", 
+      "description": "Du wählst eine Art von Kreatur als deinen bevorzugten Feind. Du hast Vorteil bei Würfen, um sie aufzuspüren, und beim Sammeln von Informationen über sie.",
+      "choices": {
+        "choose": 1,
+        "from": ["Aberrationen", "Bestien", "Himmlische", "Konstrukte", "Drachen", "Elementare", "Feen", "Unholde", "Riesen", "Monstrositäten", "Schlicke", "Pflanzen", "Untote"]
+      }
+    },
+    { 
+      "level": 1, 
+      "name": "Natürlicher Entdecker", 
+      "description": "Du wählst ein bevorzugtes Gelände. In diesem Gelände erhältst du Vorteile (z.B. verdoppelter Übungsbonus bei INT/WIS-Würfen, Spurenlesen).",
+      "choices": {
+        "choose": 1,
+        "from": ["Arktis", "Küste", "Wüste", "Wald", "Grasland", "Gebirge", "Sumpf", "Unterreich"]
+      }
+    },
     { "level": 2, "name": "Kampfstil", "description": "Du wählst einen besonderen Kampfstil als Spezialität (z.B. Bogenschießen, Verteidigung, Duellieren, Zwei-Waffen-Kampf)." },
     { "level": 2, "name": "Zauber wirken", "description": "Du kannst Waldläuferzauber wirken. (Weisheit ist dein Zauberattribut)." },
     { "level": 3, "name": "Archetyp des Waldläufers", "description": "Du wählst einen Archetyp, der deinen Weg als Waldläufer prägt." },
@@ -1302,13 +1446,25 @@
       "from": ["Akrobatik", "Athletik", "Täuschung", "Einblick", "Einschüchtern", "Nachforschungen", "Wahrnehmung", "Darbietung", "Überzeugen", "Fingerfertigkeit", "Heimlichkeit"]
     }
   },
+  "sneak_attack_progression": [
+    { "level": 1, "dice": "1W6" }, { "level": 2, "dice": "1W6" },
+    { "level": 3, "dice": "2W6" }, { "level": 4, "dice": "2W6" },
+    { "level": 5, "dice": "3W6" }, { "level": 6, "dice": "3W6" },
+    { "level": 7, "dice": "4W6" }, { "level": 8, "dice": "4W6" },
+    { "level": 9, "dice": "5W6" }, { "level": 10, "dice": "5W6" },
+    { "level": 11, "dice": "6W6" }, { "level": 12, "dice": "6W6" },
+    { "level": 13, "dice": "7W6" }, { "level": 14, "dice": "7W6" },
+    { "level": 15, "dice": "8W6" }, { "level": 16, "dice": "8W6" },
+    { "level": 17, "dice": "9W6" }, { "level": 18, "dice": "9W6" },
+    { "level": 19, "dice": "10W6" }, { "level": 20, "dice": "10W6" }
+  ],
   "weapon_mastery": {
   "level_1_count": 2,
   "available_weapons": ["Rapier", "Krummsäbel", "Kurzschwert", "Handaxt", "Wurfspeer"]
 },
   "features": [
     { "level": 1, "name": "Expertise", "description": "Wähle zwei Fertigkeiten (oder eine Fertigkeit und Diebeswerkzeug). Dein Übungsbonus wird für diese verdoppelt." },
-    { "level": 1, "name": "Hinterhältiger Angriff (1W6)", "description": "Einmal pro Zug verursachst du 1W6 zusätzlichen Schaden, wenn du Vorteil hast oder ein Verbündeter nahe beim Ziel ist." },
+    { "level": 1, "name": "Hinterhältiger Angriff", "description": "Einmal pro Zug verursachst du zusätzlichen Schaden, wenn du Vorteil hast oder ein Verbündeter nahe beim Ziel ist. Der Schaden skaliert mit deinem Schurken-Level." },
     { "level": 1, "name": "Diebesjargon", "description": "Du kennst eine geheime Mischung aus Dialekt, Jargon und Codes zur Übermittlung geheimer Botschaften." },
     { "level": 2, "name": "Listige Aktion", "description": "Du kannst eine Bonusaktion verwenden, um Spurt-, Rückzugs- oder Verstecken-Aktion auszuführen." },
     { "level": 3, "name": "Schurken-Archetyp", "description": "Du wählst einen Archetyp, der deine schurkischen Talente prägt." },
@@ -1460,6 +1616,38 @@
   "description": "Ein Zauberwirker, der seine Magie aus einer angeborenen Gabe oder einer übernatürlichen Blutlinie schöpft.",
   "hit_die": 6,
   "saving_throws": ["constitution", "charisma"],
+  "spellcasting": {
+    "type": "FULL",
+    "casting_ability": "cha",
+    "cantrip_progression": [
+      4, 4, 4, 
+      5, 5, 5, 5, 5, 5, 
+      6, 6, 6, 6, 6, 6, 6, 
+      7, 7, 7, 7
+    ],
+    "spell_slots_by_level": [
+      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
+      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 1, 0],
+      [4, 3, 3, 3, 2, 1, 1, 1, 0],
+      [4, 3, 3, 3, 3, 1, 1, 1, 1],
+      [4, 3, 3, 3, 3, 2, 1, 1, 1],
+      [4, 3, 3, 3, 3, 2, 2, 1, 1],
+      [4, 3, 3, 3, 3, 2, 2, 2, 1]
+    ]
+  },
   "proficiencies": {
     "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
     "skills": {
@@ -1578,6 +1766,11 @@
   "description": "Ein Zauberwirker, der seine Macht durch einen Pakt mit einem außerweltlichen Wesen erlangt hat.",
   "hit_die": 8,
   "saving_throws": ["wisdom", "charisma"],
+  "spellcasting": {
+    "type": "PACT",
+    "casting_ability": "cha",
+    "cantrip_progression": [ 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ]
+  },
   "proficiencies": {
     "armor": ["Leichte Rüstung"],
     "weapons": ["Einfache Waffen"],
@@ -1586,17 +1779,36 @@
       "from": ["Arkanum", "Täuschung", "Geschichte", "Einschüchtern", "Nachforschungen", "Naturkunde", "Religion"]
     }
   },
+  "pact_magic_progression": [
+    { "level": 1, "slots": 1, "slot_level": 1, "invocations_known": 0 },
+    { "level": 2, "slots": 2, "slot_level": 1, "invocations_known": 2 },
+    { "level": 3, "slots": 2, "slot_level": 2, "invocations_known": 2 },
+    { "level": 4, "slots": 2, "slot_level": 2, "invocations_known": 2 },
+    { "level": 5, "slots": 2, "slot_level": 3, "invocations_known": 3 },
+    { "level": 6, "slots": 2, "slot_level": 3, "invocations_known": 3 },
+    { "level": 7, "slots": 2, "slot_level": 4, "invocations_known": 4 },
+    { "level": 8, "slots": 2, "slot_level": 4, "invocations_known": 4 },
+    { "level": 9, "slots": 2, "slot_level": 5, "invocations_known": 5 },
+    { "level": 10, "slots": 2, "slot_level": 5, "invocations_known": 5 },
+    { "level": 11, "slots": 3, "slot_level": 5, "invocations_known": 5 },
+    { "level": 12, "slots": 3, "slot_level": 5, "invocations_known": 6 },
+    { "level": 13, "slots": 3, "slot_level": 5, "invocations_known": 6 },
+    { "level": 14, "slots": 3, "slot_level": 5, "invocations_known": 6 },
+    { "level": 15, "slots": 3, "slot_level": 5, "invocations_known": 7 },
+    { "level": 16, "slots": 3, "slot_level": 5, "invocations_known": 7 },
+    { "level": 17, "slots": 4, "slot_level": 5, "invocations_known": 7 },
+    { "level": 18, "slots": 4, "slot_level": 5, "invocations_known": 8 },
+    { "level": 19, "slots": 4, "slot_level": 5, "invocations_known": 8 },
+    { "level": 20, "slots": 4, "slot_level": 5, "invocations_known": 8 }
+  ],
   "features": [
     { "level": 1, "name": "Außerweltlicher Schutzpatron", "description": "Du schließt einen Pakt mit einem mächtigen Wesen." },
     { "level": 1, "name": "Paktmagie", "description": "Deine Zauberplätze sind begrenzt, regenerieren sich aber nach einer kurzen Rast und skalieren in ihrer Stufe." },
-    { "level": 2, "name": "Mystische Anrufungen", "description": "Du lernst mystische Anrufungen, magische Fragmente, die dir dauerhafte magische Fähigkeiten verleihen (z.B. 'Quälender Strahl')." },
+    { "level": 2, "name": "Mystische Anrufungen", "description": "Du lernst mystische Anrufungen, magische Fragmente, die dir dauerhafte magische Fähigkeiten verleihen. Die Anzahl, die du kennst, steigt mit deinem Level." },
     { "level": 3, "name": "Pakt-Segen", "description": "Du wählst einen Segen: 'Pakt der Kette' (Vertrauter), 'Pakt der Klinge' (Waffe), 'Pakt des Wälzers' (Zauber) oder 'Pakt des Talismans' (Schutz)." },
     { "level": 4, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
-    { "level": 5, "name": "Mystische Anrufung (weitere)", "description": "Du lernst eine weitere Mystische Anrufung." },
     { "level": 6, "name": "Merkmal des Schutzpatrons", "description": "Du erhältst eine besondere Fähigkeit, die dein Schutzpatron dir gewährt." },
-    { "level": 7, "name": "Mystische Anrufung (weitere)", "description": "Du lernst eine weitere Mystische Anrufung." },
     { "level": 8, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
-    { "level": 9, "name": "Mystische Anrufung (weitere)", "description": "Du lernst eine weitere Mystische Anrufung." },
     { "level": 10, "name": "Merkmal des Schutzpatrons", "description": "Du erhältst eine besondere Fähigkeit, die dein Schutzpatron dir gewährt." },
     { "level": 11, "name": "Mystisches Arkanum (Grad 6)", "description": "Du kannst einmal pro langer Rast einen mächtigen Zauber des 6. Grades wirken." },
     { "level": 12, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
@@ -1605,7 +1817,6 @@
     { "level": 15, "name": "Mystisches Arkanum (Grad 8)", "description": "Du kannst einmal pro langer Rast einen mächtigen Zauber des 8. Grades wirken." },
     { "level": 16, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
     { "level": 17, "name": "Mystisches Arkanum (Grad 9)", "description": "Du kannst einmal pro langer Rast einen mächtigen Zauber des 9. Grades wirken." },
-    { "level": 18, "name": "Mystische Anrufung (weitere)", "description": "Du lernst eine weitere Mystische Anrufung." },
     { "level": 19, "name": "Fähigkeitspunkte / Merkmal", "description": "Du kannst zwei Attributspunkte verteilen oder ein besonderes Merkmal (Feat) wählen." },
     { "level": 20, "name": "Ältester Meister", "description": "Als Aktion kannst du deine Hexenmeister-Zauberplätze von deinem Schutzpatron zurückfordern (1x pro langer Rast)." }
   ],
