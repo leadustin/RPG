@@ -168,10 +168,14 @@
   },
   "optionsMenu": {
     "title": "Optionen",
-    "languageSelection": "Sprache auswählen",
+    "languageSelection": "Sprachauswahl",
     "languageDe": "Deutsch",
     "languageEn": "Englisch",
-    "close": "Schließen"
+    "close": "Schließen",
+    "gameManagement": "Spielverwaltung",
+    "saveGame": "Spiel speichern",
+    "loadGame": "Spiel laden"
+    
   },
   "characterCreation": {
     "generationMethod": "Generierungsmethode",

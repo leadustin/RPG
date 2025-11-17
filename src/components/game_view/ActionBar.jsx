@@ -211,7 +211,8 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
                 <OptionsMenu 
                     onSave={onSaveGame} 
                     onLoad={onLoadGame} 
-                    onClose={handleCloseOptions} 
+                    onClose={handleCloseOptions}
+                    showSaveLoadControls={true}
                 />
             )}
         </>

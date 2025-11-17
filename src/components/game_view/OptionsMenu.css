@@ -1,3 +1,4 @@
+/* src/components/game_view/OptionsMenu.css */
 /* --- OptionsMenu.css --- */
 /* Angepasst, um dem Stil von ActionBar.css zu entsprechen */
 
@@ -43,12 +44,25 @@
   gap: 1rem;
   min-width: 300px;
   text-align: center;
+  
+  /* NEU: Sorgt dafür, dass Buttons standardmäßig die Breite füllen */
+  align-items: stretch;
 }
 
 .options-menu h2 {
   margin-top: 0;
   color: #fff; /* Heller als der Standardtext */
   font-family: 'Cinzel', serif;
+}
+
+/* NEU: Sektionen-Styling, um Buttons darin zu stapeln */
+.options-menu .language-selector-section,
+.options-menu .gamemenu-section {
+  display: flex;
+  flex-direction: column;
+  /* Fügt Abstand zwischen H3 und den Buttons, UND zwischen den Buttons selbst hinzu */
+  gap: 0.75rem; 
+  align-items: stretch; /* Buttons füllen die Breite der Sektion */
 }
 
 /* * Button-Stile angepasst an .hotbar-tab
@@ -66,6 +80,9 @@
   /* Schriftart-Anpassungen */
   font-family: 'Cinzel', serif;
   text-shadow: 1px 1px 2px #000;
+  
+  /* NEU: Margin entfernt, da wir jetzt 'gap' verwenden */
+  /* margin: 0; */ 
 }
 
 /* Hover-Stil angepasst an .hotbar-tab:hover */
