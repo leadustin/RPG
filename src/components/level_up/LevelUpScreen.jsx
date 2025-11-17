@@ -256,13 +256,25 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
         <p className="levelup-subtitle">{character.name} steigt auf Stufe {newLevel} auf!</p>
         
         <div className="levelup-summary-preview">
-          <h4>Charakterübersicht</h4>
-          <p>Klasse: {character.class.name}</p>
-          <p>Trefferpunkte: {character.stats.hp} / {character.stats.maxHp}
-             {rollResult && ` (+${rollResult.total + (rollResult.racialBonus || 0)})`}
-          </p>
-          <p>Rüstungsklasse: {character.stats.ac}</p>
-        </div>
+  <h4>Charakterübersicht</h4>
+  <p>Klasse: {character.class.name}</p>
+  <p>Trefferpunkte: {character.stats.hp} / {character.stats.maxHp}
+     {rollResult && ` (+${rollResult.total + (rollResult.racialBonus || 0)})`}
+  </p>
+  {/* Diese Zeile ist korrekt. Der Wert fehlt, weil character.stats.ac leer übergeben wird. */}
+  <p>Rüstungsklasse: {character.stats.ac || '?'}</p> 
+  
+  {/* --- NEUES ATTRIBUTS-GRID --- */}
+  <div className="ability-grid-preview">
+    {finalAbilities && Object.keys(finalAbilities).map((key) => (
+      <div key={key} className="ability-preview-item">
+        <span className="ability-preview-label">{key.toUpperCase()}</span>
+        <span className="ability-preview-value">{finalAbilities[key]}</span>
+      </div>
+    ))}
+  </div>
+  {/* --- ENDE NEUER TEIL --- */}
+</div>
         
         {/* Die alte Sidebar-Navigation (wird für diese Variante wiederverwendet) */}
          <div className="levelup-steps">

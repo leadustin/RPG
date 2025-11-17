@@ -185,7 +185,7 @@
     "rollAgain": "Roll Values Again",
     "rolledValues": "Rolled Values",
     "clickToRoll": "Click \"Roll\"",
-    "valuesPresetFor": "Values preset for {{class}}",
+    "valuesPresetFor": "Values preset for",
     "swapIfNeeded": "Swap if needed.",
     "attributeBonuses": "Attribute Bonuses (Origin)",
     "chooseAttributeBonuses": "Choose your attribute bonuses (PHB 2024).",
@@ -203,7 +203,7 @@
   },
   "classSelection": {
     "classCharacteristics": "Class Characteristics (Level 1)",
-    "classIconAlt": "{{className}} Icon"
+    "classIconAlt": "Icon"
   },
   "location": {
     "elfenwacht": {

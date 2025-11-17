@@ -185,7 +185,7 @@
     "rollAgain": "Werte erneut würfeln",
     "rolledValues": "Gewürfelte Werte",
     "clickToRoll": "Klicke auf \"Würfeln\"",
-    "valuesPresetFor": "Werte voreingestellt für {{class}}",
+    "valuesPresetFor": "Werte voreingestellt für",
     "swapIfNeeded": "Tausche sie bei Bedarf.",
     "attributeBonuses": "Attributsboni (Herkunft)",
     "chooseAttributeBonuses": "Wähle deine Attributsboni (PHB 2024).",
@@ -203,7 +203,7 @@
   },
   "classSelection": {
     "classCharacteristics": "Klassenmerkmale (Stufe 1)",
-    "classIconAlt": "{{className}} Icon"
+    "classIconAlt": "Icon"
   },
   "location": {
     "elfenwacht": {

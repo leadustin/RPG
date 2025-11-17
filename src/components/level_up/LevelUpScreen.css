@@ -46,6 +46,37 @@
   color: #d4af37;
 }
 
+.ability-grid-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 Spalten für 6 Attribute */
+  gap: 8px;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #444; /* Trennlinie zu HP/AC */
+}
+
+.ability-preview-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.3);
+  border-radius: 4px;
+  padding: 5px 0;
+}
+
+.ability-preview-label {
+  font-size: 0.8em;
+  color: #aaa;
+  font-weight: bold;
+}
+
+.ability-preview-value {
+  font-size: 1.2em;
+  color: #f0e6d2;
+  font-weight: bold;
+}
+
 /* Schritt-Navigation (wieder da) */
 .levelup-steps {
   margin-top: auto; 
