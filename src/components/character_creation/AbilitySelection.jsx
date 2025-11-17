@@ -1,10 +1,13 @@
-// src/components/AbilitySelection.jsx
+// src/components/character_creation/AbilitySelection.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from "react-i18next";
 import DiceBox from "@3d-dice/dice-box";
 import './AbilitySelection.css';
 import './PanelDetails.css';
 import { getRacialAbilityBonus } from '../../engine/characterEngine';
+
+// +++ NEUER IMPORT: Wir benötigen die Liste aller Fertigkeiten +++
+import allSkillDetails from '../../data/skillDetails.json';
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 const POINT_COST = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
@@ -348,6 +351,99 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     setScoresToAssign(newRolls);
     setIsRolling(false); 
   };
+  
+  // +++ START: NEUE LOGIK FÜR FERTIGKEITSKONFLIKTE (Skill Overlap) +++
+
+  // 1. Alle verfügbaren Fertigkeitsnamen aus den JSON-Daten holen
+  const allSkillNames = Object.keys(allSkillDetails).map(key => allSkillDetails[key].name);
+
+  // 2. Aktuelle Fertigkeiten aus Charakter-Status holen
+  // Feste Fertigkeiten vom Hintergrund
+  const backgroundSkills = character.background.skill_proficiencies || [];
+  // Gewählte Fertigkeiten von der Klasse
+  const classSkillChoices = character.skill_proficiencies_choice || [];
+
+  // 3. Konflikte finden (Fertigkeiten, die in BEIDEN Listen sind)
+  const conflictingSkills = classSkillChoices.filter(classSkill =>
+    backgroundSkills.includes(classSkill)
+  );
+
+  // 4. Ein Set aller aktuell gewählten Fertigkeiten (Klasse + Hintergrund)
+  //    um die Dropdown-Optionen zu filtern
+  const allCurrentProficiencies = new Set([
+    ...backgroundSkills,
+    ...classSkillChoices
+  ]);
+
+  // 5. Handler, um einen Konflikt aufzulösen
+  const handleConflictChange = (skillToReplace, newSkill) => {
+    // Erstelle ein neues Array der Klassenfertigkeiten,
+    // indem die Konflikt-Fertigkeit durch die neue Wahl ersetzt wird.
+    const newClassChoices = classSkillChoices.map(skill =>
+      skill === skillToReplace ? newSkill : skill
+    );
+    // Aktualisiere den Charakter-Status
+    updateCharacter({ skill_proficiencies_choice: newClassChoices });
+  };
+
+  // 6. Render-Funktion für die Konflikt-Box
+  const renderConflictResolver = () => {
+    // Wenn keine Konflikte da sind, zeige nichts an
+    if (conflictingSkills.length === 0) {
+      return null;
+    }
+
+    // Optionen für die Dropdowns:
+    // Alle Fertigkeiten MINUS die, die schon (durch Klasse ODER Hintergrund) gewählt sind
+    // ABER: Die aktuelle Konflikt-Fertigkeit muss in der Liste bleiben,
+    // damit der Tausch zurückgesetzt werden kann (falls der Benutzer sich umentscheidet).
+    const availableReplacementOptions = allSkillNames.filter(
+      name => !allCurrentProficiencies.has(name)
+    );
+
+    return (
+      <div className="ability-box">
+        <h3>{t("characterCreation.skillConflict")}</h3>
+        <p className="bonus-description">
+          {t("characterCreation.skillConflictInfo")}
+        </p>
+
+        {conflictingSkills.map(conflictSkill => {
+          // Finde die aktuelle Auswahl für diesen Konflikt-Slot
+          // (Es ist die Fertigkeit selbst, da sie ja den Konflikt *ist*)
+          const currentValue = classSkillChoices.find(s => s === conflictSkill);
+
+          return (
+            <div key={conflictSkill} className="bonus-select-wrap">
+              <label>
+                {/* z.B. "Ersetze Religion" */}
+                {t("characterCreation.replaceSkill", { skillName: conflictSkill })}
+              </label>
+              <select
+                value={currentValue}
+                onChange={(e) => handleConflictChange(conflictSkill, e.target.value)}
+                className="panel-select"
+              >
+                {/* Die erste Option ist die aktuelle (konfliktierende) Auswahl */}
+                <option value={currentValue} disabled>
+                  {currentValue} ({t("characterCreation.fromBackground")})
+                </option>
+
+                {/* Alle anderen verfügbaren Fertigkeiten auflisten */}
+                {availableReplacementOptions.map(optionName => (
+                  <option key={optionName} value={optionName}>
+                    {optionName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+  // +++ ENDE: NEUE LOGIK FÜR FERTIGKEITSKONFLIKTE +++
+
 
   // --- RETURN-BLOCK ---
   return (
@@ -570,6 +666,10 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
               })}
             </ul>
           </div>
+
+          {/* +++ HIER WIRD DIE NEUE UI EINGEFÜGT +++ */}
+          {renderConflictResolver()}
+          
         </div>
 
       </div>
