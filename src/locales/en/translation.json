@@ -96,8 +96,8 @@
     "le": "Lawful Evil",
     "ne": "Neutral Evil",
     "ce": "Chaotic Evil"
-    },
-    "languages": {
+  },
+  "languages": {
     "common": "Common",
     "elfish": "Elvish",
     "gnomish": "Gnomish",
@@ -163,9 +163,6 @@
     "deleteAutosave": "Delete Autosave",
     "options": "Options"
   },
-  "startScreen.options": {
-    "options": "Options"
-  },
   "optionsMenu": {
     "title": "Options",
     "languageSelection": "Language Selection",
@@ -175,7 +172,6 @@
     "gameManagement": "Game Management",
     "saveGame": "Save Game",
     "loadGame": "Load Game"
-    
   },
   "characterCreation": {
     "generationMethod": "Generation Method",
@@ -211,7 +207,6 @@
     "classSkillsInfo": "Edit your class skill choices here.",
     "classSkillChoice": "Skill Choice",
     "skillConflictShort": "CONFLICT"
-    
   },
   "classSelection": {
     "classCharacteristics": "Class Characteristics (Level 1)",
@@ -226,5 +221,36 @@
       "name": "Goblin Cave",
       "description": "A damp, foul-smelling cave inhabited by wild goblins."
     }
+  },
+  "eventLog": {
+    "logTypes": {
+      "general": "General",
+      "combat": "Combat",
+      "xp": "XP",
+      "level": "Level Up",
+      "item": "Item",
+      "dialog": "Dialog"
+    },
+    "fontSizes": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    },
+    "toggleButtonTitle": "Show Event Log (draggable)",
+    "toggleButtonLabel": "Log",
+    "headerTitle": "Event Log",
+    "settingsButtonTitle": "Settings",
+    "hideButtonTitle": "Hide Log",
+    "settings": {
+      "searchLabel": "Search:",
+      "searchPlaceholder": "Search for text...",
+      "opacityLabel": "Opacity: {{percent}}%",
+      "fontSizeLabel": "Font Size:",
+      "maxEntriesLabel": "Max Entries:",
+      "showTimestampsLabel": "Show Timestamps",
+      "filterLabel": "Filters:"
+    },
+    "emptyLogSearch": "No entries found.",
+    "emptyLogNoFilter": "No matching log entries."
   }
 }

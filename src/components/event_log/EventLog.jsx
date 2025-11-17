@@ -3,24 +3,10 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next'; // Importieren
 import './EventLog.css';
 
-const LOG_TYPES = {
-  general: 'Allgemein',
-  combat: 'Kampf',
-  xp: 'EP',
-  level: 'Level Up',
-  item: 'Gegenstand',
-  dialog: 'Dialog',
-};
-
-const FONT_SIZES = {
-  small: { label: 'Klein', value: '0.75em' },
-  medium: { label: 'Mittel', value: '0.9em' },
-  large: { label: 'Groß', value: '1.1em' },
-};
-
-// LocalStorage Helpers
+// LocalStorage Helpers (unverändert)
 const loadFromStorage = (key, defaultValue) => {
   try {
     const item = localStorage.getItem(key);
@@ -40,10 +26,30 @@ const saveToStorage = (key, value) => {
 };
 
 export const EventLog = ({ entries = [] }) => {
+  // i18n-Hook initialisieren
+  const { t } = useTranslation();
+
+  // Dynamische Konstanten basierend auf der Sprache (mit "eventLog."-Präfix)
+  const LOG_TYPES = useMemo(() => ({
+    general: t('eventLog.logTypes.general'),
+    combat: t('eventLog.logTypes.combat'),
+    xp: t('eventLog.logTypes.xp'),
+    level: t('eventLog.logTypes.level'),
+    item: t('eventLog.logTypes.item'),
+    dialog: t('eventLog.logTypes.dialog'),
+  }), [t]);
+
+  const FONT_SIZES = useMemo(() => ({
+    small: { label: t('eventLog.fontSizes.small'), value: '0.75em' },
+    medium: { label: t('eventLog.fontSizes.medium'), value: '0.9em' },
+    large: { label: t('eventLog.fontSizes.large'), value: '1.1em' },
+  }), [t]);
+
   // Einstellungen aus localStorage laden
   const [activeFilters, setActiveFilters] = useState(
     () => new Set(loadFromStorage('eventLog_filters', Object.keys(LOG_TYPES)))
   );
+  // ... (Restlicher State bleibt unverändert) ...
   const [isHovered, setIsHovered] = useState(false);
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(() => loadFromStorage('eventLog_visible', true));
@@ -68,7 +74,7 @@ export const EventLog = ({ entries = [] }) => {
   const toggleDragStart = useRef({ x: 0, y: 0 });
   const listRef = useRef(null);
 
-  // Filter-Handler mit localStorage
+  // Filter-Handler mit localStorage (unverändert)
   const handleFilterChange = (type) => {
     setActiveFilters((prevFilters) => {
       const newFilters = new Set(prevFilters);
@@ -82,52 +88,29 @@ export const EventLog = ({ entries = [] }) => {
     });
   };
 
-  // Einstellungen in localStorage speichern
-  useEffect(() => {
-    saveToStorage('eventLog_visible', isVisible);
-  }, [isVisible]);
-
-  useEffect(() => {
-    saveToStorage('eventLog_fontSize', fontSize);
-  }, [fontSize]);
-
-  useEffect(() => {
-    saveToStorage('eventLog_opacity', opacity);
-  }, [opacity]);
-
-  useEffect(() => {
-    saveToStorage('eventLog_showTimestamps', showTimestamps);
-  }, [showTimestamps]);
-
-  useEffect(() => {
-    saveToStorage('eventLog_maxEntries', maxEntries);
-  }, [maxEntries]);
-
-  useEffect(() => {
-    saveToStorage('eventLog_position', position);
-  }, [position]);
-
-  useEffect(() => {
-    saveToStorage('eventLog_size', size);
-  }, [size]);
-
-  useEffect(() => {
-    saveToStorage('eventLog_toggleButtonPosition', toggleButtonPosition);
-  }, [toggleButtonPosition]);
-
-  // Neue Einträge zählen
+  // ... (Alle useEffects zum Speichern in localStorage bleiben unverändert) ...
+  useEffect(() => { saveToStorage('eventLog_visible', isVisible); }, [isVisible]);
+  useEffect(() => { saveToStorage('eventLog_fontSize', fontSize); }, [fontSize]);
+  useEffect(() => { saveToStorage('eventLog_opacity', opacity); }, [opacity]);
+  useEffect(() => { saveToStorage('eventLog_showTimestamps', showTimestamps); }, [showTimestamps]);
+  useEffect(() => { saveToStorage('eventLog_maxEntries', maxEntries); }, [maxEntries]);
+  useEffect(() => { saveToStorage('eventLog_position', position); }, [position]);
+  useEffect(() => { saveToStorage('eventLog_size', size); }, [size]);
+  useEffect(() => { saveToStorage('eventLog_toggleButtonPosition', toggleButtonPosition); }, [toggleButtonPosition]);
+  
+  // Neue Einträge zählen (unverändert)
   const newEntriesCount = useMemo(() => {
     return isVisible ? 0 : Math.max(0, entries.length - lastSeenCount);
   }, [entries.length, lastSeenCount, isVisible]);
 
-  // Beim Öffnen des Logs die Zählung zurücksetzen
+  // Beim Öffnen des Logs die Zählung zurücksetzen (unverändert)
   useEffect(() => {
     if (isVisible) {
       setLastSeenCount(entries.length);
     }
   }, [isVisible, entries.length]);
 
-  // Gefilterte Einträge (mit Suche, Limit und Filter)
+  // Gefilterte Einträge (unverändert)
   const filteredEntries = useMemo(() => {
     let filtered = entries
       .filter((entry) => activeFilters.has(entry.type))
@@ -136,7 +119,6 @@ export const EventLog = ({ entries = [] }) => {
         return entry.message.toLowerCase().includes(searchText.toLowerCase());
       });
     
-    // Limitierung auf maxEntries
     if (filtered.length > maxEntries) {
       filtered = filtered.slice(filtered.length - maxEntries);
     }
@@ -144,13 +126,14 @@ export const EventLog = ({ entries = [] }) => {
     return filtered.reverse();
   }, [entries, activeFilters, searchText, maxEntries]);
 
+  // useEffect für Scroll (unverändert)
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = 0; 
     }
   }, [entries]);
 
-  // Toggle Button Drag Handler
+  // Toggle Button Drag Handler (unverändert)
   const handleToggleMouseDown = (e) => {
     e.preventDefault();
     setIsDraggingToggle(true);
@@ -162,6 +145,7 @@ export const EventLog = ({ entries = [] }) => {
     };
   };
 
+  // useEffect für Drag-Logik (unverändert)
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (isDraggingToggle) {
@@ -174,11 +158,9 @@ export const EventLog = ({ entries = [] }) => {
 
     const handleMouseUp = (e) => {
       if (isDraggingToggle) {
-        // Prüfen ob es ein Drag war oder nur ein Click
         const deltaX = Math.abs(e.clientX - toggleDragStart.current.startX);
         const deltaY = Math.abs(e.clientY - toggleDragStart.current.startY);
         
-        // Wenn weniger als 5px bewegt wurde, als Click behandeln
         if (deltaX < 5 && deltaY < 5) {
           setIsVisible(true);
         }
@@ -198,35 +180,37 @@ export const EventLog = ({ entries = [] }) => {
     };
   }, [isDraggingToggle]);
 
+
   return (
     <>
-      {/* Toggle Button wenn Log ausgeblendet */}
+      {/* Toggle Button wenn Log ausgeblendet (mit i18n) */}
       {!isVisible && (
         <button
           className="event-log-toggle-btn"
           style={{
             left: `${toggleButtonPosition.x}px`,
-            top: `${toggleButtonPosition.t}px`,
+            top: `${toggleButtonPosition.y}px`,
             cursor: isDraggingToggle ? 'grabbing' : 'grab'
           }}
           onMouseDown={handleToggleMouseDown}
           onClick={(e) => {
-            // Nur öffnen wenn nicht gedraggt wurde
             if (!isDraggingToggle) {
               setIsVisible(true);
             }
           }}
-          title="Ereignis-Log einblenden (ziehbar)"
+          title={t('eventLog.toggleButtonTitle')} // i18n
         >
-          📋 Log
+          📋 {t('eventLog.toggleButtonLabel')} {/* i18n */}
           {newEntriesCount > 0 && (
             <span className="new-entries-badge">{newEntriesCount}</span>
           )}
         </button>
       )}
 
+      {/* Rnd-Container (mit i18n) */}
       {isVisible && (
         <Rnd
+          // ... (props unverändert) ...
           className={clsx('event-log-rnd-container', { 'is-hovered': isHovered })}
           position={position}
           size={size}
@@ -241,14 +225,9 @@ export const EventLog = ({ entries = [] }) => {
             right: { cursor: 'ew-resize' },
             bottomRight: { cursor: 'nwse-resize' },
           }}
-          onDragStop={(e, d) => {
-            setPosition({ x: d.x, y: d.y });
-          }}
+          onDragStop={(e, d) => { setPosition({ x: d.x, y: d.y }); }}
           onResizeStop={(e, direction, ref, delta, position) => {
-            setSize({
-              width: ref.offsetWidth,
-              height: ref.offsetHeight,
-            });
+            setSize({ width: ref.offsetWidth, height: ref.offsetHeight, });
             setPosition(position);
           }}
           onMouseEnter={() => setIsHovered(true)}
@@ -257,19 +236,19 @@ export const EventLog = ({ entries = [] }) => {
         >
           <div className="event-log-header event-log-drag-handle">
             <div className="header-content">
-              <h4>Ereignis-Log</h4>
+              <h4>{t('eventLog.headerTitle')}</h4> {/* i18n */}
               <div className="header-buttons">
                 <button
                   className="filter-toggle-btn"
                   onClick={() => setIsFilterExpanded(!isFilterExpanded)}
-                  title="Einstellungen"
+                  title={t('eventLog.settingsButtonTitle')} // i18n
                 >
                   {isFilterExpanded ? '▼' : '▶'}
                 </button>
                 <button
                   className="hide-log-btn"
                   onClick={() => setIsVisible(false)}
-                  title="Log ausblenden"
+                  title={t('eventLog.hideButtonTitle')} // i18n
                 >
                   ✕
                 </button>
@@ -277,16 +256,16 @@ export const EventLog = ({ entries = [] }) => {
             </div>
           </div>
 
-          {/* Collapsible Settings & Filter */}
+          {/* Collapsible Settings & Filter (mit i18n) */}
           {isFilterExpanded && (
             <div className="event-log-settings-filters">
               {/* Suche */}
               <div className="settings-row">
-                <label className="setting-label">Suche:</label>
+                <label className="setting-label">{t('eventLog.settings.searchLabel')}</label> {/* i18n */}
                 <input
                   type="text"
                   className="search-input"
-                  placeholder="Nach Text suchen..."
+                  placeholder={t('eventLog.settings.searchPlaceholder')} // i18n
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                 />
@@ -295,7 +274,8 @@ export const EventLog = ({ entries = [] }) => {
               {/* Transparenz */}
               <div className="settings-row">
                 <label className="setting-label">
-                  Transparenz: {Math.round(opacity * 100)}%
+                  {/* i18n (mit Interpolation) */}
+                  {t('eventLog.settings.opacityLabel', { percent: Math.round(opacity * 100) })}
                 </label>
                 <input
                   type="range"
@@ -310,8 +290,9 @@ export const EventLog = ({ entries = [] }) => {
 
               {/* Textgröße */}
               <div className="settings-row">
-                <label className="setting-label">Textgröße:</label>
+                <label className="setting-label">{t('eventLog.settings.fontSizeLabel')}</label> {/* i18n */}
                 <div className="font-size-buttons">
+                  {/* Nutzt jetzt FONT_SIZES useMemo */}
                   {Object.entries(FONT_SIZES).map(([key, { label }]) => (
                     <button
                       key={key}
@@ -326,7 +307,7 @@ export const EventLog = ({ entries = [] }) => {
 
               {/* Max. Einträge */}
               <div className="settings-row">
-                <label className="setting-label">Max. Einträge:</label>
+                <label className="setting-label">{t('eventLog.settings.maxEntriesLabel')}</label> {/* i18n */}
                 <input
                   type="number"
                   className="max-entries-input"
@@ -346,14 +327,15 @@ export const EventLog = ({ entries = [] }) => {
                     checked={showTimestamps}
                     onChange={(e) => setShowTimestamps(e.target.checked)}
                   />
-                  Zeitstempel anzeigen
+                  {t('eventLog.settings.showTimestampsLabel')} {/* i18n */}
                 </label>
               </div>
 
               {/* Filter */}
               <div className="filter-section">
-                <label className="setting-label">Filter:</label>
+                <label className="setting-label">{t('eventLog.settings.filterLabel')}</label> {/* i18n */}
                 <div className="event-log-filters">
+                  {/* Nutzt jetzt LOG_TYPES useMemo */}
                   {Object.entries(LOG_TYPES).map(([key, label]) => (
                     <label key={key} title={label}>
                       <input
@@ -372,7 +354,8 @@ export const EventLog = ({ entries = [] }) => {
           <ul 
             className="event-log-list" 
             ref={listRef}
-            style={{ fontSize: FONT_SIZES[fontSize].value }}
+            style={{ fontSize: FONT_SIZES[fontSize]?.value || '0.9em' }} // Fallback
+            // ... (Event-Handler unverändert) ...
             onMouseDown={(e) => e.stopPropagation()}
             onMouseUp={(e) => e.stopPropagation()}
             onMouseMove={(e) => e.stopPropagation()}
@@ -405,7 +388,8 @@ export const EventLog = ({ entries = [] }) => {
               ))
             ) : (
               <li className="log-empty">
-                {searchText ? 'Keine Einträge gefunden.' : 'Keine passenden Log-Einträge.'}
+                {/* i18n */}
+                {searchText ? t('eventLog.emptyLogSearch') : t('eventLog.emptyLogNoFilter')}
               </li>
             )}
           </ul>

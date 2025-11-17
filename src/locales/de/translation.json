@@ -110,7 +110,7 @@
   },
   "tools": {
     "categories": {
-      "gameSet": "Spieleset",
+      "gameSet": "Spielset",
       "artisan": "Handwerkerwerkzeug"
     },
     "card": "Spielkartenset",
@@ -163,9 +163,6 @@
     "deleteAutosave": "Autosave löschen",
     "options": "Optionen"
   },
-  "startScreen.options": {
-    "options": "Optionen"
-  },
   "optionsMenu": {
     "title": "Optionen",
     "languageSelection": "Sprachauswahl",
@@ -175,7 +172,6 @@
     "gameManagement": "Spielverwaltung",
     "saveGame": "Spiel speichern",
     "loadGame": "Spiel laden"
-    
   },
   "characterCreation": {
     "generationMethod": "Generierungsmethode",
@@ -211,7 +207,6 @@
     "classSkillsInfo": "Bearbeite hier deine Fertigkeitswahl für deine Klasse.",
     "classSkillChoice": "Fertigkeitswahl",
     "skillConflictShort": "KONFLIKT"
-    
   },
   "classSelection": {
     "classCharacteristics": "Klassenmerkmale (Stufe 1)",
@@ -223,8 +218,39 @@
       "description": "Ein alter Wachturm der Elfen, umgeben von einem dichten Wald."
     },
     "goblinhoehle": {
-      "name": "Goblinhoehle",
+      "name": "Goblinhöhle",
       "description": "Eine feuchte, übelriechende Höhle, die von wilden Goblins bewohnt wird."
     }
+  },
+  "eventLog": {
+    "logTypes": {
+      "general": "Allgemein",
+      "combat": "Kampf",
+      "xp": "EP",
+      "level": "Level Up",
+      "item": "Gegenstand",
+      "dialog": "Dialog"
+    },
+    "fontSizes": {
+      "small": "Klein",
+      "medium": "Mittel",
+      "large": "Groß"
+    },
+    "toggleButtonTitle": "Ereignis-Log einblenden (ziehbar)",
+    "toggleButtonLabel": "Log",
+    "headerTitle": "Ereignis-Log",
+    "settingsButtonTitle": "Einstellungen",
+    "hideButtonTitle": "Log ausblenden",
+    "settings": {
+      "searchLabel": "Suche:",
+      "searchPlaceholder": "Nach Text suchen...",
+      "opacityLabel": "Transparenz: {{percent}}%",
+      "fontSizeLabel": "Textgröße:",
+      "maxEntriesLabel": "Max. Einträge:",
+      "showTimestampsLabel": "Zeitstempel anzeigen",
+      "filterLabel": "Filter:"
+    },
+    "emptyLogSearch": "Keine Einträge gefunden.",
+    "emptyLogNoFilter": "Keine passenden Log-Einträge."
   }
 }
