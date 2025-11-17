@@ -511,6 +511,38 @@
   "description": "Ein Priester der Alten Weise, der seine Macht aus der Natur selbst schöpft und die Gestalt wilder Tiere annehmen kann.",
   "hit_die": 8,
   "saving_throws": ["intelligence", "wisdom"],
+  "spellcasting": {
+    "type": "FULL",
+    "casting_ability": "wis",
+    "cantrip_progression": [
+      2, 2, 2, 
+      3, 3, 3, 3, 3, 3, 
+      4, 4, 4, 4, 4, 4, 4, 
+      5, 5, 5, 5
+    ],
+    "spell_slots_by_level": [
+      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
+      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 0, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 0, 0],
+      [4, 3, 3, 3, 2, 1, 1, 1, 0],
+      [4, 3, 3, 3, 2, 1, 1, 1, 0],
+      [4, 3, 3, 3, 3, 1, 1, 1, 1],
+      [4, 3, 3, 3, 3, 2, 1, 1, 1],
+      [4, 3, 3, 3, 3, 2, 2, 1, 1],
+      [4, 3, 3, 3, 3, 2, 2, 2, 1]
+    ]
+  },
   "proficiencies": {
     "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde (nicht aus Metall)"],
     "weapons": ["Keulen", "Dolche", "Wurfspeere", "Streitkolben", "Kampfstäbe", "Krummsäbel", "Sicheln", "Schleudern"],
@@ -973,6 +1005,10 @@
       "from": ["Athletik", "Einblick", "Einschüchtern", "Medizin", "Überzeugen", "Religion"]
     }
   },
+  "weapon_mastery": {
+  "level_1_count": 2,
+  "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
+},
   "features": [
     { "level": 1, "name": "Göttliches Gespür", "description": "Du kannst deine Aktion verwenden, um die Anwesenheit von starkem Bösen oder Gutem sowie von Himmlischen, Unholden oder Untoten zu spüren." },
     { "level": 1, "name": "Handauflegen", "description": "Du hast einen Vorrat an Heilkraft (Paladin-Level x 5), den du verwenden kannst, um Trefferpunkte wiederherzustellen oder Krankheiten/Gift zu heilen." },
@@ -1122,6 +1158,10 @@
       "from": ["Tierkunde", "Athletik", "Wahrnehmung", "Nachforschungen", "Naturkunde", "Einblick", "Heimlichkeit", "Überlebenskunst"]
     }
   },
+  "weapon_mastery": {
+  "level_1_count": 2,
+  "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
+},
   "features": [
     { "level": 1, "name": "Bevorzugter Feind", "description": "Du wählst eine Art von Kreatur als deinen bevorzugten Feind. Du hast Vorteil bei Würfen, um sie aufzuspüren, und beim Sammeln von Informationen über sie." },
     { "level": 1, "name": "Natürlicher Entdecker", "description": "Du wählst ein bevorzugtes Gelände. In diesem Gelände erhältst du Vorteile (z.B. verdoppelter Übungsbonus bei INT/WIS-Würfen, Spurenlesen)." },
@@ -1262,6 +1302,10 @@
       "from": ["Akrobatik", "Athletik", "Täuschung", "Einblick", "Einschüchtern", "Nachforschungen", "Wahrnehmung", "Darbietung", "Überzeugen", "Fingerfertigkeit", "Heimlichkeit"]
     }
   },
+  "weapon_mastery": {
+  "level_1_count": 2,
+  "available_weapons": ["Rapier", "Krummsäbel", "Kurzschwert", "Handaxt", "Wurfspeer"]
+},
   "features": [
     { "level": 1, "name": "Expertise", "description": "Wähle zwei Fertigkeiten (oder eine Fertigkeit und Diebeswerkzeug). Dein Übungsbonus wird für diese verdoppelt." },
     { "level": 1, "name": "Hinterhältiger Angriff (1W6)", "description": "Einmal pro Zug verursachst du 1W6 zusätzlichen Schaden, wenn du Vorteil hast oder ein Verbündeter nahe beim Ziel ist." },
