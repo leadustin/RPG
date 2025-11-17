@@ -1,7 +1,7 @@
 // src/components/event_log/EventLog.jsx
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Rnd } from 'react-rnd'; // <-- HIER: Import ist jetzt wieder aktiv!
+import { Rnd } from 'react-rnd';
 import clsx from 'clsx';
 import './EventLog.css';
 
