@@ -1,30 +1,33 @@
 [
   {
-  "key": "human",
-  "name": "Mensch",
-  "description": "Menschen sind die anpassungsfähigsten und ehrgeizigsten unter den Völkern, die stets bestrebt sind, ihre Spuren in der Welt zu hinterlassen.",
-  "ability_bonuses": {
-    "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
-    "bonuses": {}
+    "key": "human",
+    "name": "Mensch",
+    "description": "Menschen sind die anpassungsfähigsten und ehrgeizigsten unter den Völkern, die stets bestrebt sind, ihre Spuren in der Welt zu hinterlassen.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
+    "size": "Mittel",
+    "speed": 9,
+    "portraits": 4,
+    "physical_props": {
+      "age": { "min": 18, "max": 100, "default": 25, "step": 1 },
+      "height": { "min": 1.60, "max": 1.95, "default": 1.75, "step": 0.01 },
+      "weight": { "min": 50, "max": 110, "default": 75, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Eine zusätzliche Sprache deiner Wahl"],
+    "traits": [
+      {
+        "name": "Einfallsreich",
+        "description": "Du erhältst eine Heroische Inspiration, wenn du eine lange Rast abschließt."
+      },
+      {
+        "name": "Vielseitige Natur",
+        "description": "Du erhältst eine zusätzliche Fertigkeit deiner Wahl und ein Talent (Feat) deiner Wahl."
+      }
+    ]
   },
-  "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
-  "size": "Mittel",
-  "speed": 9,
-  "portraits": 4, 
-  "physical_props": {
-    "age": { "min": 18, "max": 100, "default": 25, "step": 1 },
-    "height": { "min": 1.60, "max": 1.95, "default": 1.75, "step": 0.01 },
-    "weight": { "min": 50, "max": 110, "default": 75, "step": 1 }
-  },
-  "languages": ["Gemeinsprache", "Eine zusätzliche Sprache deiner Wahl"],
-  "traits": [
-  {
-    "name": "Vielseitige Natur",
-    "description": "Du erhältst eine zusätzliche Fertigkeit deiner Wahl und ein Talent (Feat) deiner Wahl. Dieses Merkmal repräsentiert die außergewöhnliche Anpassungsfähigkeit der Menschen."
-  }
-]
-  
-},
   {
     "key": "elf",
     "name": "Elf",
@@ -103,10 +106,6 @@
             "description": "Deine Dunkelsicht hat einen Radius von 36 Metern."
           },
           {
-            "name": "Sonnenlicht-Empfindlichkeit",
-            "description": "Du hast Nachteil bei Angriffs- und Wahrnehmungswürfen, die auf Sicht basieren, wenn du, das Ziel deines Angriffs oder das, was du wahrzunehmen versuchst, in direktem Sonnenlicht steht."
-          },
-          {
             "name": "Drow-Magie",
             "description": "Du kennst den Zaubertrick 'Tanzende Lichter'. Ab Stufe 3 kannst du 'Feenfeuer' und ab Stufe 5 'Dunkelheit' einmal pro langer Rast wirken."
           },
@@ -128,7 +127,7 @@
     },
     "age": "Zwerge gelten mit etwa 50 Jahren als jung und können bis zu 350 Jahre alt werden.",
     "size": "Mittel",
-    "speed": 7.5,
+    "speed": 9,
     "portraits": 4,
     "physical_props": {
       "age": { "min": 50, "max": 350, "default": 100, "step": 1 },
@@ -139,45 +138,27 @@
     "traits": [
       {
         "name": "Dunkelsicht",
-        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+        "description": "Du kannst bei Dämmerlicht innerhalb von 36 Metern wie bei hellem Licht sehen."
       },
       {
-        "name": "Zwergen-Zähigkeit",
+        "name": "Zwergen-Zähigkeit (Gift)",
         "description": "Du hast Vorteil bei Rettungswürfen gegen Gift und Resistenz gegen Giftschaden."
       },
       {
         "name": "Stein-Gespür",
-        "description": "Du verdoppelst deinen Übungsbonus für Intelligenz (Geschichte)-Würfe in Bezug auf Steinmetzarbeiten."
-      }
-    ],
-    "subraces": [
-      {
-        "key": "hill-dwarf",
-        "name": "Hügelzwerg",
-        "traits": [
-          {
-            "name": "Waffenübung der Zwerge",
-            "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer."
-          },
-          {
-            "name": "Zwergen-Zähigkeit (HP)",
-            "description": "Dein Trefferpunkte-Maximum erhöht sich pro Stufe um 1."
-          }
-        ]
+        "description": "Als Bonusaktion kannst du für 10 Minuten Erschütterungssinn (Tremorsense) bis zu 9m auf Stein wahrnehmen. Du kannst dies (Übungsbonus) oft pro langer Rast nutzen."
       },
       {
-        "key": "mountain-dwarf",
-        "name": "Bergzwerg",
-        "traits": [
-          {
-            "name": "Waffenübung der Zwerge",
-            "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer."
-          },
-          {
-            "name": "Rüstungsübung der Zwerge",
-            "description": "Du bist geübt im Umgang mit leichten und mittelschweren Rüstungen."
-          }
-        ]
+        "name": "Waffenübung der Zwerge",
+        "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer."
+      },
+      {
+        "name": "Zwergen-Zähigkeit (HP)",
+        "description": "Dein Trefferpunkte-Maximum erhöht sich pro Stufe um 1."
+      },
+      {
+        "name": "Rüstungsübung der Zwerge",
+        "description": "Du bist geübt im Umgang mit leichten und mittelschweren Rüstungen."
       }
     ]
   },
@@ -191,7 +172,7 @@
     },
     "age": "Ein Halbling erreicht mit 20 Jahren das Erwachsenenalter und lebt meist bis zur Mitte seines zweiten Jahrhunderts (ca. 150 Jahre).",
     "size": "Klein",
-    "speed": 7.5,
+    "speed": 9,
     "portraits": 4,
     "physical_props": {
       "age": { "min": 20, "max": 150, "default": 30, "step": 1 },
@@ -211,18 +192,10 @@
       {
         "name": "Flink",
         "description": "Du kannst dich durch den Raum größerer Kreaturen bewegen."
-      }
-    ],
-    "subraces": [
+      },
       {
-        "key": "lightfoot-halfling",
-        "name": "Leichtfuß-Halbling",
-        "traits": [
-          {
-            "name": "Von Natur aus heimlich",
-            "description": "Du kannst versuchen, dich zu verstecken, auch wenn du nur von einer Kreatur verdeckt wirst."
-          }
-        ]
+        "name": "Von Natur aus heimlich",
+        "description": "Du kannst versuchen, dich zu verstecken, auch wenn du nur von einer Kreatur verdeckt wirst."
       }
     ]
   },
@@ -246,8 +219,16 @@
     "languages": ["Gemeinsprache", "Drakonisch"],
     "traits": [
       {
+        "name": "Dunkelsicht",
+        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+      },
+      {
         "name": "Odemwaffe",
-        "description": "Deine Abstammung bestimmt deine Odemwaffe und Schadensresistenz."
+        "description": "Deine Abstammung bestimmt deine Odemwaffe und Schadensresistenz. Der Schaden skaliert (1W10 auf St. 1, 2W10 auf St. 5, etc.). Der SG ist 8 + KON-Mod + Übungsbonus."
+      },
+      {
+        "name": "Drakonischer Flug",
+        "description": "Ab Stufe 5 kannst du als Bonusaktion spektrale Flügel für 10 Min. manifestieren, die dir Flugbewegungsrate gewähren."
       }
     ],
     "ancestries": [
@@ -323,7 +304,7 @@
     },
     "age": "Gnome werden mit etwa 40 Jahren erwachsen und können 350 bis 500 Jahre alt werden.",
     "size": "Klein",
-    "speed": 7.5,
+    "speed": 9,
     "portraits": 4,
     "physical_props": {
       "age": { "min": 40, "max": 450, "default": 100, "step": 1 },
@@ -347,59 +328,99 @@
         "name": "Felsengnom",
         "traits": [
           {
-            "name": "Wissen des Tüftlers",
-            "description": "Dein Übungsbonus wird bei Würfen auf die Geschichte von magischen/alchemistischen Objekten verdoppelt."
+            "name": "Magische Bastelei",
+            "description": "Du kennst die Zaubertricks 'Reparieren' (Mending) und 'Magiertrick' (Prestidigitation)."
           }
         ]
       }
     ]
   },
   {
-    "key": "half-elf",
-    "name": "Halbelf",
-    "description": "Halbelfen vereinen die Neugier und den Ehrgeiz der Menschen mit der Anmut und den geschärften Sinnen der Elfen.",
+    "key": "tiefling",
+    "name": "Tiefling",
+    "description": "Gezeichnet durch einen infernalischen Pakt in ihrer Ahnenreihe, wandeln Tieflinge als Außenseiter mit übernatürlicher Ausstrahlung durch die Welt.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Halbelfen werden mit etwa 20 Jahren erwachsen und leben oft länger als 180 Jahre.",
-    "size": "Mittel",
+    "age": "Tieflinge werden im gleichen Tempo erwachsen wie Menschen, leben aber einige Jahre länger (bis ca. 110 Jahre).",
+    "size": "Mittel oder Klein (wählbar)",
     "speed": 9,
     "portraits": 4,
     "physical_props": {
-      "age": { "min": 20, "max": 180, "default": 28, "step": 1 },
+      "age": { "min": 18, "max": 120, "default": 25, "step": 1 },
       "height": { "min": 1.50, "max": 1.90, "default": 1.70, "step": 0.01 },
       "weight": { "min": 50, "max": 110, "default": 70, "step": 1 }
     },
-    "languages": [
-      "Gemeinsprache",
-      "Elfisch",
-      "Eine zusätzliche Sprache deiner Wahl"
-    ],
+    "languages": ["Gemeinsprache", "Infernalisch"],
     "traits": [
       {
         "name": "Dunkelsicht",
         "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
       },
       {
-        "name": "Feen-Abstammung",
-        "description": "Du hast Vorteil bei Rettungswürfen gegen Bezauberung."
+        "name": "Andereweltliche Erscheinung",
+        "description": "Du kennst den Zaubertrick 'Thaumaturgie'."
       },
       {
-        "name": "Fertigkeits-Vielseitigkeit",
-        "description": "Du erhältst Übung in zwei Fertigkeiten deiner Wahl."
+        "name": "Teuflisches Erbe",
+        "description": "Du wählst eine deiner teuflischen Erbschaften (Infernal, Abyssal oder Chthonic), die dir Resistenzen und Zauber verleiht."
+      }
+    ],
+    "legacies": [
+      {
+        "key": "infernal",
+        "name": "Infernal (Feuer)",
+        "traits": [
+          {
+            "name": "Höllische Resistenz",
+            "description": "Du hast Resistenz gegen Feuerschaden."
+          },
+          {
+            "name": "Infernalische Magie",
+            "description": "Du kennst 'Feuerstrahl'. Ab St. 3: 'Höllischer Tadel'. Ab St. 5: 'Dunkelheit' (1x pro langer Rast)."
+          }
+        ]
+      },
+      {
+        "key": "abyssal",
+        "name": "Abyssal (Gift)",
+        "traits": [
+          {
+            "name": "Abyssale Resistenz",
+            "description": "Du hast Resistenz gegen Giftschaden."
+          },
+          {
+            "name": "Abyssale Magie",
+            "description": "Du kennst 'Giftstrahl'. Ab St. 3: 'Krankheitsstrahl'. Ab St. 5: 'Person festhalten' (1x pro langer Rast)."
+          }
+        ]
+      },
+      {
+        "key": "chthonic",
+        "name": "Chthonic (Nekrotisch)",
+        "traits": [
+          {
+            "name": "Chthonische Resistenz",
+            "description": "Du hast Resistenz gegen Nekrotischen Schaden."
+          },
+          {
+            "name": "Chthonische Magie",
+            "description": "Du kennst 'Kältekuss'. Ab St. 3: 'Scheinleben'. Ab St. 5: 'Schwächestrahl' (1x pro langer Rast)."
+          }
+        ]
       }
     ]
   },
   {
-    "key": "half-orc",
-    "name": "Halbork",
-    "description": "Halborks sind ein Volk von beeindruckender Stärke und emotionaler Intensität, das die besten (und manchmal auch die wildesten) Eigenschaften seiner beiden Erblinien in sich vereint.",
+    "key": "orc",
+    "name": "Ork",
+    "description": "Orks sind ein Volk von beeindruckender Stärke und emotionaler Intensität, das die wildesten Eigenschaften seiner Erblinie in sich vereint.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Halborks werden mit etwa 14 Jahren erwachsen und leben selten länger als 75 Jahre.",
+    "age": "Orks werden mit etwa 14 Jahren erwachsen und leben selten länger als 75 Jahre.",
     "size": "Mittel",
     "speed": 9,
     "portraits": 4,
@@ -429,31 +450,68 @@
     ]
   },
   {
-    "key": "tiefling",
-    "name": "Tiefling",
-    "description": "Gezeichnet durch einen infernalischen Pakt in ihrer Ahnenreihe, wandeln Tieflinge als Außenseiter mit übernatürlicher Ausstrahlung durch die Welt.",
+    "key": "aasimar",
+    "name": "Aasimar",
+    "description": "Aasimar sind Humanoide mit einer himmlischen Erbschaft, die sie mit übernatürlicher Anmut und Macht erfüllt.",
     "ability_bonuses": {
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Tieflinge werden im gleichen Tempo erwachsen wie Menschen, leben aber einige Jahre länger (bis ca. 110 Jahre).",
+    "age": "Aasimar werden im gleichen Tempo erwachsen wie Menschen, leben aber etwas länger.",
     "size": "Mittel",
     "speed": 9,
-    "portraits": 4,
+    "portraits": 0,
     "physical_props": {
       "age": { "min": 18, "max": 120, "default": 25, "step": 1 },
-      "height": { "min": 1.50, "max": 1.90, "default": 1.70, "step": 0.01 },
-      "weight": { "min": 50, "max": 110, "default": 70, "step": 1 }
+      "height": { "min": 1.60, "max": 1.95, "default": 1.75, "step": 0.01 },
+      "weight": { "min": 50, "max": 110, "default": 75, "step": 1 }
     },
-    "languages": ["Gemeinsprache", "Infernalisch"],
+    "languages": ["Gemeinsprache", "Himmlisch"],
     "traits": [
       {
         "name": "Dunkelsicht",
         "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
       },
       {
-        "name": "Höllische Resistenz",
-        "description": "Du hast Resistenz gegen Feuerschaden."
+        "name": "Himmlische Resistenz",
+        "description": "Du hast Resistenz gegen Nekrotischen Schaden und gleißenden (Radiant) Schaden."
+      },
+      {
+        "name": "Himmlische Offenbarung",
+        "description": "Ab Stufe 3 kannst du als Bonusaktion eine Transformation (1 Min.) entfesseln. Du wählst bei der Aktivierung eine Form: Nekrotischer Schleier (Schaden/Furcht), Innere Glut (Gleißender Schaden) oder Himmlische Flügel (Flugbewegungsrate)."
+      }
+    ]
+  },
+  {
+    "key": "goliath",
+    "name": "Goliath",
+    "description": "Goliaths sind ein stämmiges und wettbewerbsorientiertes Volk, das in den rauen Bergen zuhause ist und Stärke über alles schätzt.",
+    "ability_bonuses": {
+      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "bonuses": {}
+    },
+    "age": "Goliaths haben eine ähnliche Lebensspanne wie Menschen, werden aber etwas schneller erwachsen.",
+    "size": "Mittel",
+    "speed": 9,
+    "portraits": 0,
+    "physical_props": {
+      "age": { "min": 16, "max": 90, "default": 22, "step": 1 },
+      "height": { "min": 2.10, "max": 2.40, "default": 2.20, "step": 0.01 },
+      "weight": { "min": 120, "max": 180, "default": 140, "step": 1 }
+    },
+    "languages": ["Gemeinsprache", "Riesisch"],
+    "traits": [
+      {
+        "name": "Mächtiger Körperbau",
+        "description": "Du hast Vorteil bei Rettungswürfen, um den 'Gepackt' (Grappled) Zustand zu beenden. Du zählst für deine Tragekapazität als eine Größenkategorie größer."
+      },
+      {
+        "name": "Gebirgsbewohner",
+        "description": "Du bist an große Höhen gewöhnt und hast Resistenz gegen Kälteschaden."
+      },
+      {
+        "name": "Steinerne Ausdauer",
+        "description": "Wenn du Schaden nimmst, kannst du deine Reaktion verwenden, um den Schaden um 1W12 + deinen KON-Modifikator zu reduzieren (1x pro kurzer oder langer Rast)."
       }
     ]
   }
