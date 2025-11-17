@@ -102,8 +102,10 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
   const [asiPoints, setAsiPoints] = useState(2);
   const [asiChoices, setAsiChoices] = useState({});
   const [selectedSubclass, setSelectedSubclass] = useState(null);
-  
   const [masteryChoices, setMasteryChoices] = useState(character.weapon_mastery_choices || []);
+  
+  // --- NEUER STATE FÜR ERZÄHLER ---
+  const [narratorText, setNarratorText] = useState("");
 
   const diceContainerRef = useRef(null);
   const diceInstanceRef = useRef(null);
@@ -146,6 +148,30 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     }
   }, [step]); // Abhängig von 'step'
 
+  // --- USEEFFECT FÜR ERZÄHLER-TEXT ---
+  useEffect(() => {
+    switch(step) {
+      case 0:
+        setNarratorText(`Du fühlst dich stärker, ${character.name}. Die Strapazen haben dich gestählt. Stelle fest, wie viel zäher du geworden bist.`);
+        break;
+      case 1:
+        setNarratorText("Dein Körper und Geist entwickeln sich. Wo wirst du deinen Fokus schärfen?");
+        break;
+      case 2:
+        setNarratorText("Mit deiner neuen Kraft musst du dich nun spezialisieren. Wähle den Pfad, dem du folgen wirst.");
+        break;
+      case 3:
+        setNarratorText("Deine Fähigkeiten mit der Waffe sind gewachsen. Wähle eine neue Meisterschaft.");
+        break;
+      case 4:
+        setNarratorText("Deine Entscheidungen sind getroffen. Sieh dir die Zusammenfassung an und bestätige deinen Aufstieg.");
+        break;
+      default:
+        setNarratorText("");
+    }
+  }, [step, character.name]);
+
+
   const handleRollHP = async () => {
     if (diceInstanceRef.current) {
       const results = await diceInstanceRef.current.roll(hpRollFormula);
@@ -166,7 +192,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
   };
 
   // --- LOGIK ZUM SCHRITTWEISEN VORRÜCKEN ---
-
   const navigateToNextStep = (currentStep) => {
     if (currentStep < 1 && isAbilityIncrease) {
       setStep(1); // Gehe zu ASI
@@ -221,39 +246,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     setAsiPoints(newPoints);
   };
   
-  // Definition des Pfades
-  const pathSteps = useMemo(() => {
-    const steps = [];
-    steps.push({ key: 0, label: 'Trefferpunkte' });
-    if (isAbilityIncrease) steps.push({ key: 1, label: 'Attribute' });
-    if (isSubclassChoice) steps.push({ key: 2, label: 'Archetyp' });
-    if (isMasteryIncrease) steps.push({ key: 3, label: 'Meisterschaft' });
-    steps.push({ key: 4, label: 'Zusammenfassung' });
-    return steps;
-  }, [isAbilityIncrease, isSubclassChoice, isMasteryIncrease]);
-
-
-  // Hilfsfunktion zum Rendern des Pfades
-  const renderLevelUpPath = () => {
-    return (
-      <div className="levelup-path">
-        {pathSteps.map((pathStep, index) => (
-          <React.Fragment key={pathStep.key}>
-            <div 
-              className={`path-node ${step === pathStep.key ? 'active' : step > pathStep.key ? 'complete' : ''}`}
-              onClick={() => {
-                 // Erlaube Klick zurück, aber nicht vor
-                 if (pathStep.key < step && pathStep.key < 4) setStep(pathStep.key)
-              }}
-            >
-              {pathStep.label}
-            </div>
-            {index < pathSteps.length - 1 && <div className="path-connector"></div>}
-          </React.Fragment>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <div className="levelup-screen">
@@ -272,23 +264,46 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           <p>Rüstungsklasse: {character.stats.ac}</p>
         </div>
         
-        {/* Die alte Sidebar-Navigation wird nicht benötigt, da wir den Pfad oben haben */}
-        <div className="levelup-steps" style={{display: 'none'}}></div> 
+        {/* Die alte Sidebar-Navigation (wird für diese Variante wiederverwendet) */}
+         <div className="levelup-steps">
+          <div className={`step-item ${step === 0 ? 'active' : step > 0 ? 'complete' : ''}`}>
+             Trefferpunkte
+          </div>
+          {isAbilityIncrease && (
+            <div className={`step-item ${step === 1 ? 'active' : step > 1 ? 'complete' : ''}`}>
+               Attribute
+            </div>
+          )}
+          {isSubclassChoice && (
+            <div className={`step-item ${step === 2 ? 'active' : step > 2 ? 'complete' : ''}`}>
+               Archetyp
+            </div>
+          )}
+           {isMasteryIncrease && (
+            <div className={`step-item ${step === 3 ? 'active' : step > 3 ? 'complete' : ''}`}>
+               Meisterschaft
+            </div>
+          )}
+          <div className={`step-item ${step === 4 ? 'active' : ''}`}>
+             Zusammenfassung
+          </div>
+        </div>
       </div>
 
       {/* Rechte Spalte (Aktionen) */}
       <div className="levelup-main-panel">
         
-        {/* --- NEUER FORTSCHRITTSPFAD --- */}
-        {renderLevelUpPath()}
-
+        {/* --- NEUE ERZÄHLER-BOX --- */}
+        <div className="narrator-box">
+          <p>{narratorText}</p>
+        </div>
+        
         {/* --- CONTAINER FÜR DEN AKTIVEN SCHRITT --- */}
         <div className="levelup-container">
           
           {/* Schritt 0: HP-Wurf */}
           {step === 0 && (
             <div className="levelup-section hp-roll-section">
-              <h3>1. Trefferpunkte auswürfeln</h3>
               <div 
                 ref={diceContainerRef} 
                 id="dice-box" 
@@ -314,7 +329,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           {/* Schritt 1: ASI */}
           {step === 1 && isAbilityIncrease && (
             <div className="levelup-section choices-section">
-              <h3>Attribute verbessern</h3>
               <div className="choice-block">
                 <AbilityScoreImprovement
                   finalAbilities={finalAbilities}
@@ -330,7 +344,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           {/* Schritt 2: Subclass */}
           {step === 2 && isSubclassChoice && (
              <div className="levelup-section choices-section">
-              <h3>Archetyp wählen</h3>
               <div className="choice-block">
                 <SubclassSelection
                   classKey={character.class.key}
@@ -345,11 +358,9 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           {/* Schritt 3: Mastery */}
           {step === 3 && isMasteryIncrease && (
              <div className="levelup-section choices-section">
-              <h3>Waffenmeisterschaft</h3>
                <div className="choice-block">
                   <h4>Waffenmeisterschaft (Wähle {newMasteryCount})</h4>
                   <p>Du hast eine neue Waffenmeisterschaft gelernt.</p>
-                  
                   <WeaponMasterySelection
                     character={{ 
                       ...character, 
@@ -367,7 +378,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           {/* Schritt 4: Zusammenfassung */}
           {step === 4 && (
             <div className="levelup-section summary-section">
-              <h3>Zusammenfassung (Stufe {newLevel})</h3>
               
               {rollResult && (
                 <p>

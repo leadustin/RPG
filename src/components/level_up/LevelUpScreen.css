@@ -46,9 +46,31 @@
   color: #d4af37;
 }
 
-/* Schritt-Navigation (wird ausgeblendet) */
+/* Schritt-Navigation (wieder da) */
 .levelup-steps {
-  display: none;
+  margin-top: auto; 
+  padding-top: 20px;
+  border-top: 1px solid #444;
+}
+.step-item {
+  padding: 10px 15px;
+  margin: 8px 0;
+  border-radius: 5px;
+  background: #2a2a2a;
+  color: #888;
+  font-weight: bold;
+  border-left: 3px solid #555;
+}
+.step-item.active {
+  background: #3e4e40;
+  color: #9fcc93;
+  border-left: 3px solid #4CAF50;
+}
+.step-item.complete {
+  background: #333;
+  color: #777;
+  border-left: 3px solid #444;
+  text-decoration: line-through;
 }
 
 
@@ -58,60 +80,38 @@
   padding: 30px;
   overflow-y: auto;
   display: flex;
-  flex-direction: column; /* Wichtig für Pfad oben */
-  align-items: center;   /* Zentriert den Container */
+  flex-direction: column; /* Wichtig für Erzähler-Box */
+  align-items: center;
 }
 
-/* Container für den Inhalt (wieder zentriert, aber breiter) */
+/* Container für den Inhalt (zentriert, breiter) */
 .levelup-container {
   width: 100%;
   max-width: 900px; /* Breiter als das alte Modal */
-  margin-top: 20px;
 }
 
 
-/* --- NEUER FORTSCHRITTSPFAD --- */
-.levelup-path {
+/* --- NEUE ERZÄHLER-BOX --- */
+.narrator-box {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  max-width: 900px; /* Synchron zur Breite des .levelup-container */
+  padding: 25px;
   margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #444;
+  background-color: #1e1e1e;
+  border: 1px solid #555;
+  border-left: 3px solid #d4af37;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
-.path-node {
-  padding: 10px 20px;
-  border: 2px solid #555;
-  background: #2a2a2a;
-  color: #888;
-  border-radius: 20px;
-  font-weight: bold;
-  transition: all 0.3s;
+.narrator-box p {
+  font-size: 1.25em;
+  font-style: italic;
+  color: #ddd;
+  text-align: center;
+  margin: 0;
+  line-height: 1.6;
 }
-.path-node.active {
-  background: #3e4e40;
-  color: #9fcc93;
-  border-color: #4CAF50;
-  box-shadow: 0 0 10px #4CAF50;
-}
-.path-node.complete {
-  background: #333;
-  color: #777;
-  border-color: #444;
-  text-decoration: line-through;
-  cursor: pointer;
-}
-.path-node.complete:hover {
-  background: #444;
-  color: #999;
-}
-.path-connector {
-  width: 50px;
-  height: 2px;
-  background-color: #555;
-}
-/* --- ENDE FORTSCHRITTSPFAD --- */
+/* --- ENDE ERZÄHLER-BOX --- */
 
 
 .levelup-section {
@@ -123,14 +123,14 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.levelup-section h3 {
+.levelup-section h3, .levelup-section h4 {
   color: #d4af37;
   margin-top: 0;
   border-bottom: 1px solid #555;
   padding-bottom: 10px;
 }
 
-/* choice-block bleibt wie im Original */
+/* Blöcke innerhalb der Sektion */
 .choice-block {
   margin-top: 20px;
   padding-top: 20px;
