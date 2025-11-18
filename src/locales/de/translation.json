@@ -58,11 +58,16 @@
       "portrait": "Portrait"
     },
     "race": {
-      "abilityBoost": "Attributs-Boost",
+      "abilityBoost": "Attributserhöhung",
       "traits": "Merkmale",
+      "subraces": "Unterrasse",
+      "giantAncestry": "Riesen",
+      "ancestries": "Drakonische Abstammung",
+      "lineages": "Abstammungslinie",
+      "legacies": "Infernalisches Vermächtnis",
+      "breathWeapon": "Odemwaffe",
       "damageResistance": "Schadensresistenz",
-      "damageResistanceDesc": "Du hast Resistenz gegen {{type}}.",
-      "breathWeapon": "Odemwaffe"
+      "damageResistanceDesc": "Resistenz gegen {{type}}-Schaden"
     },
     "background": {
       "skillsAndTools": "Fertigkeiten & Werkzeuge",

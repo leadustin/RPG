@@ -128,6 +128,27 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
       setCurrentStep(STEPS[currentStepIndex - 1]);
     }
   };
+  
+  // Eine einfache Validierungsfunktion
+const isStepValid = (step, char) => {
+  switch (step) {
+    case 'Class':
+      return !!char.class; // Klasse muss gewählt sein
+    case 'Race':
+      // Z.B. wenn Subrassen existieren, muss eine gewählt sein
+      const needsSubrace = char.race?.subraces && char.race.subraces.length > 0;
+      if (needsSubrace && !char.subrace) return false;
+      return !!char.race;
+    case 'Abilities':
+      // Prüfen, ob alle Punkte verteilt sind (Beispiel-Logik)
+      // return char.pointsRemaining === 0; 
+      return true; 
+    case 'Identity':
+      return !!char.name && char.name.trim() !== "";
+    default:
+      return true;
+  }
+};
 
   const handleNextStep = () => {
     // Wenn der "Weiter"-Button auf dem letzten Schritt geklickt wird

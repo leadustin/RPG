@@ -58,11 +58,16 @@
       "portrait": "Portrait"
     },
     "race": {
-      "abilityBoost": "Ability Boost",
+      "abilityBoost": "Ability Score Increase",
       "traits": "Traits",
+      "subraces": "Subrace",
+      "ancestries": "Draconic Ancestry",
+      "giantAncestry": "Giant Ancestry", 
+      "lineages": "Lineage",
+      "legacies": "Infernal Legacy",
+      "breathWeapon": "Breath Weapon",
       "damageResistance": "Damage Resistance",
-      "damageResistanceDesc": "You have resistance to {{type}} damage.",
-      "breathWeapon": "Breath Weapon"
+      "damageResistanceDesc": "Resistance to {{type}} damage"
     },
     "background": {
       "skillsAndTools": "Skills & Tools",
