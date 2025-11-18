@@ -1,13 +1,10 @@
 // src/components/character_creation/AbilitySelection.jsx
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from "react-i18next";
 import DiceBox from "@3d-dice/dice-box";
 import './AbilitySelection.css';
 import './PanelDetails.css';
 import { getRacialAbilityBonus } from '../../engine/characterEngine';
-
-// +++ IMPORT BLEIBT WICHTIG +++
-import allSkillDetails from '../../data/skillDetails.json';
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 const POINT_COST = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
@@ -38,7 +35,7 @@ const CLASS_STANDARD_ARRAY_ASSIGNMENTS = {
   warlock:   { str: 8,  dex: 13, con: 14, int: 12, wis: 10, cha: 15 },
   bard:      { str: 8,  dex: 14, con: 13, int: 10, wis: 12, cha: 15 },
 
-  // Fallback (falls Klasse nicht gefunden wird, z.B. "default")
+  // Fallback
   default:   { str: 15, dex: 14, con: 13, int: 12, wis: 10, cha: 8 },
 };
 
@@ -66,43 +63,34 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
   const [generationMethod, setGenerationMethod] = useState('pointBuy');
   const [scoresToAssign, setScoresToAssign] = useState([]);
 
-  // --- NEUER STATE FÜR 2024-REGELN ---
-  const [bonusMode, setBonusMode] = useState('plus2plus1'); // 'plus2plus1' ODER 'plus1plus1plus1'
-  // State für +2/+1
+  // --- STATE FÜR 2024-REGELN (BONI) ---
+  const [bonusMode, setBonusMode] = useState('plus2plus1');
   const [plus2Ability, setPlus2Ability] = useState('');
   const [plus1Ability, setPlus1Ability] = useState('');
-  // State für +1/+1/+1
   const [triPlus1A, setTriPlus1A] = useState('');
   const [triPlus1B, setTriPlus1B] = useState('');
   const [triPlus1C, setTriPlus1C] = useState('');
-  // --- ENDE NEUER STATE ---
 
-  // useRef für die DiceBox-Instanz und useState für den Ladezustand
+  // DiceBox Refs & State
   const diceBoxRef = useRef(null);
   const [isRolling, setIsRolling] = useState(false);
   const [diceBoxReady, setDiceBoxReady] = useState(false);
-  
-  // +++ STATE FÜR SICHTBARKEIT DER BOX (Löst das "Misclick"-Problem) +++
-  const [skillsToEdit, setSkillsToEdit] = useState([]); // HIER IST DIE KORREKTE DEKLARATION
 
-
-  // Effekt zum Initialisieren von DiceBox (mit v1.1.0 API)
+  // DiceBox Initialisierung
   useEffect(() => {
     if (generationMethod === 'roll' && !diceBoxRef.current) {
       console.log("Initializing DiceBox for AbilitySelection...");
       
-      // FIX: Verwende die neue v1.1.0 API mit Config-Objekt
       const db = new DiceBox({ 
         id: "ability-dice-box",
         assetPath: "/assets/dice-box/", 
         theme: "default",
         themeColor: "#999999",
-        offscreen: false, // Auf false setzen, damit Canvas sichtbar
+        offscreen: false,
         scale: 11,
         enableShadows: true,
         delay: 10,
         mass: 2,
-        // Zusätzliche Styling-Optionen
         container: "#ability-dice-box"
       });
 
@@ -115,20 +103,14 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
       });
     }
 
-    // CLEANUP-Funktion
     return () => {
       if (diceBoxRef.current) {
-        console.log("Cleaning up DiceBox instance...");
-        
         try {
           if (typeof diceBoxRef.current.clear === 'function') {
             diceBoxRef.current.clear();
           }
-          // Entferne das Canvas-Element manuell
           const canvas = document.querySelector('#ability-dice-box canvas');
-          if (canvas) {
-            canvas.remove();
-          }
+          if (canvas) canvas.remove();
         } catch (err) {
           console.warn("Fehler beim Cleanup:", err);
         }
@@ -138,7 +120,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     };
   }, [generationMethod]);
 
-  // Effekt für Point Buy
+  // Point Buy Berechnung
   useEffect(() => {
     if (generationMethod === 'pointBuy') {
       const spentPoints = ABILITIES.reduce((total, abi) => total + POINT_COST[scores[abi]], 0);
@@ -151,8 +133,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scores, generationMethod]); 
 
-  // --- NEUER EFFEKT FÜR 2024-BONI ---
-  // Aktualisiert das ability_bonus_assignments-Objekt, wenn sich die Boni-Auswahl ändert
+  // 2024 Boni Aktualisierung
   useEffect(() => {
     const newBonusAssignments = {};
 
@@ -166,14 +147,11 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
       if (triPlus1C) newBonusAssignments[triPlus1C] = (newBonusAssignments[triPlus1C] || 0) + 1;
     }
 
-    // Rufe updateCharacter nur auf, wenn sich die Zuweisungen tatsächlich ändern
-    // (um unnötige Re-Render zu vermeiden)
     if (JSON.stringify(character.ability_bonus_assignments) !== JSON.stringify(newBonusAssignments)) {
       updateCharacter({ ability_bonus_assignments: newBonusAssignments });
     }
   }, [bonusMode, plus2Ability, plus1Ability, triPlus1A, triPlus1B, triPlus1C, updateCharacter, character.ability_bonus_assignments]);
 
-  // Setzt die Boni zurück, wenn der Modus wechselt
   const handleBonusModeChange = (mode) => {
     setBonusMode(mode);
     setPlus2Ability('');
@@ -183,7 +161,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     setTriPlus1C('');
   };
 
-  // Handler für Point Buy
   const handleScoreChange = (ability, delta) => {
     const currentScore = scores[ability];
     const newScore = currentScore + delta;
@@ -194,7 +171,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     }
   };
   
-  // Handler für den Wechsel der Generierungsmethode
   const handleMethodChange = (method) => {
     setGenerationMethod(method);
     setScores(BASE_SCORES); 
@@ -213,7 +189,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     }
   };
 
-  // Handler für Zuweisung (Modus: 'roll')
   const handleAssignScore = (ability, selectedValueStr) => {
     const selectedValue = Number(selectedValueStr);
     const currentScore = scores[ability]; 
@@ -232,7 +207,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     });
   };
   
-  // Handler für Tauschen (Modus: 'standardArray')
   const handleSwapScore = (ability, selectedValueStr) => {
     const selectedValue = Number(selectedValueStr);
     const currentScore = scores[ability]; 
@@ -245,7 +219,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     }));
   };
   
-  // Handler für Dropdown-Optionen
   const getDropdownOptions = (ability) => {
     if (generationMethod === 'roll') {
         const currentScore = scores[ability];
@@ -259,7 +232,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     return [];
   };
 
-  // Überarbeiteter handleRoll-Handler mit korrigierter DiceBox-Logik
   const handleRoll = async () => {
     if (isRolling || !diceBoxReady || !diceBoxRef.current) return;
     
@@ -268,37 +240,26 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     setScoresToAssign([]);  
     const newRolls = [];
 
-    // Hilfsfunktion für einen einzelnen Wurf
     const performSingleRoll = async () => {
-      const notation = '4d6'; // Würfle einfach 4d6, wir berechnen selbst
+      const notation = '4d6';
       try {
-        // Warte auf das Roll-Ergebnis mit einem Promise-Wrapper
         const rollResult = await new Promise((resolve, reject) => {
-          // Timeout als Fallback
           const timeout = setTimeout(() => {
-            console.warn("Roll-Timeout nach 5 Sekunden");
+            console.warn("Roll-Timeout");
             reject(new Error('timeout'));
           }, 5000);
 
-          // Setze den onRollComplete Handler
           const originalHandler = diceBoxRef.current.onRollComplete;
           diceBoxRef.current.onRollComplete = (results) => {
             clearTimeout(timeout);
-            // Stelle den originalen Handler wieder her
             diceBoxRef.current.onRollComplete = originalHandler;
             resolve(results);
           };
 
-          // Starte den Wurf
           diceBoxRef.current.roll(notation);
         });
         
-        // --- MANUELLE "KEEP HIGHEST 3" LOGIK ---
         let allRolls = [];
-        
-        console.log("Raw rollResult:", rollResult); // Debug-Log
-        
-        // Extrahiere die Würfelwerte aus dem Ergebnis
         if (Array.isArray(rollResult) && rollResult.length > 0) {
           const firstRoll = rollResult[0];
           if (firstRoll.rolls && Array.isArray(firstRoll.rolls)) {
@@ -308,234 +269,35 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
           allRolls = rollResult.rolls.map(r => r.value);
         }
         
-        // Fallback: Wenn wir keine Würfel extrahieren konnten
-        if (allRolls.length !== 4) {
-          console.warn("❌ Konnte keine 4 Würfel extrahieren. Verwende Fallback.");
-          return roll4d6DropLowest();
-        }
+        if (allRolls.length !== 4) return roll4d6DropLowest();
         
-        // Sortiere die Würfel und nimm die höchsten 3
         const sortedRolls = [...allRolls].sort((a, b) => b - a);
         const keptRolls = sortedRolls.slice(0, 3);
-        const droppedRoll = sortedRolls[3];
         const total = keptRolls.reduce((sum, val) => sum + val, 0);
         
-        // Detailliertes Logging - zeige Würfel in Original-Reihenfolge
-        console.log(`🎲 DiceBox Wurf (4d6, keep highest 3):`);
-        console.log(`   Gewürfelt: [${allRolls.join(', ')}]`);
-        console.log(`   Behalten: [${keptRolls.join(', ')}] (sortiert)`);
-        console.log(`   Verworfen: ${droppedRoll}`);
-        console.log(`   ➡️ Summe: ${total}`);
-        
-        // Validierung: 4d6kh3 muss zwischen 3 und 18 liegen
-        if (total < 3 || total > 18) {
-          console.warn(`❌ Berechneter Wert ${total} ist ungültig. Verwende Fallback.`);
-          return roll4d6DropLowest();
-        }
+        if (total < 3 || total > 18) return roll4d6DropLowest();
         
         return total;
 
       } catch (err) {
-        console.error("❌ DiceBox.roll() ist fehlgeschlagen, verwende Fallback:", err);
         return roll4d6DropLowest();
       }
     };
 
-    // Führe 6-mal die robuste Würfelfunktion aus
     for (let i = 0; i < 6; i++) { 
-      console.log(`\n--- Wurf ${i + 1} von 6 ---`);
       newRolls.push(await performSingleRoll());
-      // Kurze Pause zwischen den Würfen für bessere Animation
       await new Promise(resolve => setTimeout(resolve, 500));
     }
-    
-    console.log(`\n✅ Alle Würfe abgeschlossen (in Wurfreihenfolge): [${newRolls.join(', ')}]`);
-    
     
     setScoresToAssign(newRolls);
     setIsRolling(false); 
   };
-  
-  // +++ START: FERTIGKEITS-KONFLIKT-LOGIK (V10 - "Misclick"-sicher) +++
 
-  // 1. Erstelle eine Map von "Fertigkeitsname" -> "fertigkeitsKey"
-  const skillNameToKeyMap = useMemo(() => {
-    const map = {};
-    for (const key in allSkillDetails) {
-      map[allSkillDetails[key].name.trim()] = key;
-    }
-    return map;
-  }, []); // Nur einmal erstellen
-
-  // 2. Hole die FERTIGKEITS-KEYS vom Hintergrund (z.B. ["insight", "religion"])
-  const backgroundSkills_Keys = useMemo(() =>
-    (character.background.skill_proficiencies || [])
-      .map(name => skillNameToKeyMap[name.trim()])
-      .filter(Boolean),
-    [character.background.skill_proficiencies, skillNameToKeyMap]
-  );
-
-  // 3. Hole die FERTIGKEITS-KEYS der aktuellen Klassenwahl (z.B. ["religion", "history"])
-  const classSkillChoices_Keys = useMemo(() =>
-    (character.skill_proficiencies_choice || []).map(s => s ? s.trim() : null).filter(Boolean),
-    [character.skill_proficiencies_choice]
-  );
-  
-  // 4. Hole alle FERTIGKEITS-KEYS, die von der Klasse ERLAUBT sind
-  const allowedClassSkill_Keys = useMemo(() => {
-    const from = character.class.proficiencies?.skills?.from;
-    if (!from) return [];
-    if (from === "any") {
-      return Object.keys(allSkillDetails); // Barde kann alles wählen
-    }
-    // Wandle die erlaubten Namen (z.B. "Geschichte") in Keys (z.B. "history") um
-    return from.map(name => skillNameToKeyMap[name.trim()]).filter(Boolean);
-  }, [character.class, skillNameToKeyMap]);
-
-  // 5. Finde die AKTUELLEN KONFLIKT-KEYS
-  const currentConflicts = useMemo(() =>
-    classSkillChoices_Keys.filter(classKey =>
-      classKey && backgroundSkills_Keys.includes(classKey)
-    ),
-    [classSkillChoices_Keys, backgroundSkills_Keys]
-  );
-  
-  // 6. TRIGGER-Effekt:
-  //    Wenn sich Klasse oder Hintergrund ändern, wird die Box zurückgesetzt.
-  useEffect(() => {
-      // Berechne die Konflikte für die NEUE Kombination
-      const newClassSkills = character.skill_proficiencies_choice || [];
-      const newBgSkills = (character.background.skill_proficiencies || [])
-                           .map(name => skillNameToKeyMap[name.trim()])
-                           .filter(Boolean);
-                           
-      const newConflicts = newClassSkills.filter(classKey => 
-          classKey && newBgSkills.includes(classKey)
-      );
-      
-      // Setze den Editor-State auf die neuen Konflikte
-      // (Anforderung: "nur pro Fehler ein Dropdown")
-      setSkillsToEdit(newConflicts);
-      
-  // Dieser Effekt wird NUR ausgeführt, wenn sich Klasse oder Hintergrund ändern.
-  }, [character.class.key, character.background.key]); // Abhängigkeiten korrigiert
-
-
-  // 7. Handler: Wird aufgerufen, wenn ein Dropdown geändert wird
-  //    (Aktualisiert den Charakter UND den lokalen State, damit die Box sichtbar bleibt)
-  const handleConflictChange = (keyToReplace, newKey) => {
-    // 1. Aktualisiere den globalen Charakter-Status
-    //    (Finde den Index des zu ersetzenden Skills im *Original*-Array)
-    const indexToReplace = classSkillChoices_Keys.findIndex(key => key === keyToReplace);
-    if (indexToReplace === -1) return; // Sollte nie passieren
-
-    const newClassChoices = [...classSkillChoices_Keys];
-    newClassChoices[indexToReplace] = newKey;
-    
-    updateCharacter({ skill_proficiencies_choice: newClassChoices });
-
-    // 2. Aktualisiere den LOKALEN State, damit die Box sichtbar bleibt
-    //    (Ersetze den alten Skill-Key durch den neuen)
-    setSkillsToEdit(prevSkills => 
-      prevSkills.map(key => (key === keyToReplace ? newKey : key))
-    );
-  };
-
-
-  // 8. Render-Funktion für den "Klassenfertigkeiten-Editor"
-  const renderConflictResolver = () => {
-    // (Anforderung: Box bleibt sichtbar, da sie auf `skillsToEdit` basiert)
-    if (skillsToEdit.length === 0) {
-      return null; 
-    }
-
-    const hasRealConflict = currentConflicts.length > 0;
-
-    return (
-      <div className="ability-box">
-        {/* Titel ändert sich je nach Konfliktstatus */}
-        <h3>{hasRealConflict ? t("characterCreation.skillConflict") : t("characterCreation.classSkills")}</h3>
-        <p className="bonus-description">
-          {hasRealConflict ? t("characterCreation.skillConflictInfo") : t("characterCreation.classSkillsInfo")}
-        </p>
-
-        {/* (Anforderung: "nur pro Fehler ein Dropdown") */}
-        {/* Wir iterieren über den STATE `skillsToEdit` */}
-        {skillsToEdit.map((skillKeyInDropdown, index) => { // 'index' als key hinzugefügt für Stabilität
-          
-          const currentSkillName = allSkillDetails[skillKeyInDropdown]?.name || skillKeyInDropdown;
-          
-          // Prüfe, ob der *aktuell im Dropdown gewählte* Skill ein *echter* Konflikt ist
-          const isConflict = backgroundSkills_Keys.includes(skillKeyInDropdown);
-          
-          // (Anforderung: "die nur die jeweilig gültigen Einträge anzeigen")
-          const options = allowedClassSkill_Keys.map(optionKey => {
-            const optionName = allSkillDetails[optionKey]?.name || optionKey;
-            
-            // Die aktuell ausgewählte Option darf NIE deaktiviert sein
-            if (optionKey === skillKeyInDropdown) {
-              return { key: optionKey, name: optionName, disabled: false };
-            }
-            
-            // (Anforderung: "Einblick scheidet aus" (weil Hintergrund))
-            const takenByBackground = backgroundSkills_Keys.includes(optionKey);
-
-            // (Anforderung: "bereits bei der Klassenwahl Einblick und Religion")
-            // Prüfe, ob die Option von einem *anderen* (nicht-konfliktierenden) Klassenslot belegt ist.
-            // ODER von einem ANDEREN Slot, der gerade bearbeitet wird
-            
-            // Finde alle Keys, die in den Klassen-Slots sind, ABER NICHT der aktuelle Dropdown-Key
-            const nonConflictingClassChoices = classSkillChoices_Keys.filter(
-              k => k !== skillKeyInDropdown
-            );
-            
-            const takenByOtherClassSlot = nonConflictingClassChoices.includes(optionKey);
-
-            const isDisabled = takenByBackground || takenByOtherClassSlot;
-
-            return { 
-              key: optionKey, 
-              name: optionName, 
-              disabled: isDisabled
-            };
-          });
-
-          return (
-            <div key={index} className="bonus-select-wrap"> {/* Key auf index geändert */}
-              <label>
-                {t("characterCreation.classSkillChoice")} (Korrektur)
-                {isConflict && (
-                  <span className="ability-conflict-warning"> ({t("characterCreation.skillConflictShort")})</span>
-                )}
-              </label>
-              <select
-                value={skillKeyInDropdown} // Der Wert ist der Key im State
-                onChange={(e) => handleConflictChange(skillKeyInDropdown, e.target.value)}
-                // +++ HIER IST DIE ÄNDERUNG FÜR DIE BREITE +++
-                className={`panel-select class-skill-select ${isConflict ? 'conflict-warning' : ''}`}
-              >
-                {options.map(opt => (
-                  <option key={opt.key} value={opt.key} disabled={opt.disabled}>
-                    {opt.name}
-                    {opt.disabled && ` (${t("characterCreation.alreadyChosen")})`}
-                  </option>
-                ))}
-              </select>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-  // +++ ENDE: FERTIGKEITS-EDITOR-LOGIK +++
-
-
-  // --- RETURN-BLOCK ---
   return (
     <div className="ability-selection-container">
       <div className="ability-panel-layout">
         
-        {/* === LINKE SPALTE: Steuerung === */}
+        {/* === LINKE SPALTE === */}
         <div className="ability-column-left">
           
           <div className="ability-box">
@@ -564,14 +326,12 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
 
           <div className="ability-box">
             <h3>{t("characterCreation.details")}</h3>
-            {/* A: Point Buy UI */}
             {generationMethod === 'pointBuy' && (
               <div className="points-display">
                 {t("characterCreation.remainingPoints")}: <span>{points}</span>
               </div>
             )}
 
-            {/* B: Roll UI */}
             {generationMethod === 'roll' && (
               <div className="assignment-info">
                   <div 
@@ -603,7 +363,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
               </div>
             )}
             
-            {/* C: Standard Array Info */}
             {generationMethod === 'standardArray' && (
               <div className="assignment-info">
                  <div className="scores-to-assign">
@@ -615,7 +374,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
             )}
           </div>
 
-          {/* === NEUER BLOCK FÜR 2024-BONI === */}
+          {/* === BONUS BLOCK === */}
           <div className="ability-box">
             <h3>{t("characterCreation.attributeBonuses")}</h3>
             <p className="bonus-description">
@@ -636,7 +395,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
               </button>
             </div>
 
-            {/* --- Bonus-Auswahl-Dropdowns --- */}
             <div className="bonus-selection-dropdowns">
               {bonusMode === 'plus2plus1' && (
                 <>
@@ -693,11 +451,10 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
                 </>
               )}
             </div>
-            {/* --- ENDE Bonus-Auswahl --- */}
           </div>
         </div>
         
-        {/* === RECHTE SPALTE: Attributliste === */}
+        {/* === RECHTE SPALTE === */}
         <div className="ability-column-right">
           <div className="ability-box">
             <h3>{t("characterCreation.attributes")}</h3>
@@ -710,7 +467,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
                   <li key={abi} className="ability-item">
                     <strong>{abi.toUpperCase()}</strong>
                     
-                    {/* === Point Buy Steuerung === */}
                     {generationMethod === 'pointBuy' && (
                       <div className="ability-controls">
                         <button onClick={() => handleScoreChange(abi, -1)} disabled={scores[abi] <= 8}>-</button>
@@ -719,7 +475,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
                       </div>
                     )}
                     
-                    {/* === Standard Array / Roll Steuerung (Kombiniert) === */}
                     {(generationMethod === 'standardArray' || generationMethod === 'roll') && (
                       <div className="ability-controls-select">
                           <select 
@@ -751,10 +506,6 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
               })}
             </ul>
           </div>
-
-          {/* +++ HIER WIRD DIE NEUE UI EINGEFÜGT +++ */}
-          {renderConflictResolver()}
-          
         </div>
 
       </div>

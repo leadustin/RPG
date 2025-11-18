@@ -69,7 +69,7 @@
 .background-list-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   /* Scrollen wird von .background-column-left übernommen */
 }
 

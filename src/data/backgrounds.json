@@ -2,244 +2,403 @@
   {
     "key": "acolyte",
     "name": "Akolyth",
-    "description": "Du hast dein Leben im Dienst eines Tempels einer bestimmten Gottheit oder eines Pantheons verbracht. Du agierst als Vermittler zwischen dem Reich der Götter und der Welt der Sterblichen.",
-    "skill_proficiencies": ["Einblick", "Religion"],
-    "tool_proficiencies": [],
-    "languages": ["Zwei Sprachen deiner Wahl"],
-    "equipment": [
-      "Ein heiliges Symbol (ein Geschenk, das du bei Eintritt in den Orden erhalten hast)",
-      "Ein Gebetsbuch oder ein Gebetsrad",
-      "5 Weihrauchstäbchen",
-      "Priestergewänder",
-      "Eine Gürteltasche mit 15 GM"
-    ],
+    "description": "Du hast dich dem Dienst in einem Tempel gewidmet, sei es in einer Stadt oder einem verborgenen heiligen Hain. Dort hast du Riten zu Ehren eines Gottes vollzogen. Du hast unter einem Priester gedient und Religion studiert.",
+    "ability_scores": ["Intelligenz", "Weisheit", "Charisma"],
+    "feat": "Magie-Eingeweihter (Kleriker)",
+    "skill_proficiencies": ["Motiv erkennen", "Religion"],
+    "tool_proficiencies": ["Kalligraphen-Werkzeug"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Kalligraphen-Werkzeug",
+        "Buch (Gebete)",
+        "Heiliges Symbol",
+        "Pergament (10 Blatt)",
+        "Robe",
+        "8 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Schutz der Gläubigen",
-      "description": "Als Akolyth genießt du den Respekt derer, die deine Religion teilen. Du und deine Abenteurergefährten können kostenlose Heilung und Pflege in einem Tempel, Schrein oder einer anderen etablierten Präsenz deines Glaubens erwarten. Diejenigen, die deinen Glauben teilen, werden dich (aber nur dich) auf einem bescheidenen Lebensstil unterbringen."
+      "name": "Magie-Eingeweihter (Kleriker)",
+      "description": "Du erhältst das Talent 'Magie-Eingeweihter (Kleriker)'. Wähle zwei Kleriker-Zaubertricks und einen Stufe-1-Zauber."
     }
   },
   {
     "key": "charlatan",
     "name": "Scharlatan",
     "description": "Du warst schon immer jemand mit einem Händchen dafür, Leute um den Finger zu wickeln. Du konzentrierst dich auf die Geheimnisse anderer und spielst sie zu deinem Vorteil aus.",
+    "ability_scores": ["Geschicklichkeit", "Konstitution", "Charisma"],
+    "feat": "Geübt",
     "skill_proficiencies": ["Täuschung", "Fingerfertigkeit"],
-    "tool_proficiencies": ["Verkleidungssatz", "Fälschersatz"],
+    "tool_proficiencies": ["Fälschersatz"],
     "languages": [],
-    "equipment": [
-      "Ein Satz edler Kleidung",
-      "Ein Verkleidungssatz",
-      "Werkzeuge deiner Wahl für einen Schwindel (z.B. gezinkte Würfel oder ein Kartenspiel)",
-      "Eine Gürteltasche mit 15 GM"
-    ],
+    "equipment": {
+      "option_a": [
+        "Fälschersatz",
+        "Ein Kostüm",
+        "Edle Kleidung",
+        "15 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Falsche Identität",
-      "description": "Du hast eine zweite Identität erschaffen, die Dokumente, etablierte Bekanntschaften und Verkleidungen umfasst. Zusätzlich kannst du Dokumente fälschen, solange du ein Beispiel des Dokuments oder der Handschrift gesehen hast, die du zu kopieren versuchst."
+      "name": "Geübt",
+      "description": "Du erhältst das Talent 'Geübt'. Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
     }
   },
   {
     "key": "criminal",
     "name": "Krimineller",
     "description": "Du bist ein erfahrener Krimineller mit einer Geschichte von Verbrechen. Du hast in einer Welt von Dieben, Schmugglern und Mördern gelebt, was dir bestimmte Fähigkeiten und Kontakte eingebracht hat.",
-    "skill_proficiencies": ["Täuschung", "Heimlichkeit"],
-    "tool_proficiencies": ["Ein Typ Spieleset", "Diebeswerkzeug"],
+    "ability_scores": ["Geschicklichkeit", "Konstitution", "Intelligenz"],
+    "feat": "Wachsam",
+    "skill_proficiencies": ["Fingerfertigkeit", "Heimlichkeit"],
+    "tool_proficiencies": ["Diebeswerkzeug"],
     "languages": [],
-    "equipment": [
-      "Ein Brecheisen",
-      "Ein Satz dunkler, gewöhnlicher Kleidung mit Kapuze",
-      "Eine Gürteltasche mit 15 GM"
-    ],
+    "equipment": {
+      "option_a": [
+        "2 Dolche",
+        "Diebeswerkzeug",
+        "Ein Brecheisen",
+        "2 Gürteltaschen",
+        "Reisekleidung",
+        "16 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Krimineller Kontakt",
-      "description": "Du hast einen zuverlässigen und vertrauenswürdigen Kontakt, der als dein Verbindungsmann in einem Netzwerk von anderen Kriminellen agiert. Du weißt, wie du Nachrichten an deinen Kontakt senden und von ihm erhalten kannst, selbst über große Entfernungen."
+      "name": "Wachsam",
+      "description": "Du erhältst das Talent 'Wachsam' (Alert). Du erhältst einen Bonus auf deine Initiative und kannst zu Beginn eines Kampfes deinen Initiativewert mit dem eines willigen Verbündeten tauschen."
+    }
+  },
+  {
+    "key": "merchant",
+    "name": "Händler",
+    "description": "Du bist ein erfahrener Händler, der weite Strecken zurücklegt, um Waren zu kaufen und zu verkaufen. Du verstehst die Kunst der Überzeugung und weißt, wie man sich auf Reisen orientiert. [synthesized based on traits]",
+    "ability_scores": ["Konstitution", "Intelligenz", "Charisma"],
+    "feat": "Glückspilz",
+    "skill_proficiencies": ["Umgang mit Tieren", "Überreden"],
+    "tool_proficiencies": ["Navigationswerkzeuge"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Navigationswerkzeuge",
+        "2 Gürteltaschen",
+        "Reisekleidung",
+        "22 GM"
+      ],
+      "option_b": "50 GM"
+    },
+    "feature": {
+      "name": "Glückspilz",
+      "description": "Du erhältst das Talent 'Glückspilz' (Lucky). Du hast drei Glückspunkte, die du ausgeben kannst, um Wurf- oder SG-Ergebnisse zu beeinflussen. [synthesized based on feat name]"
     }
   },
   {
     "key": "entertainer",
     "name": "Unterhalter",
     "description": "Du lebst, um das Publikum zu begeistern. Du weißt, wie man die Menge unterhält, sie zum Lachen oder Weinen bringt und ihre Stimmungen beeinflusst.",
+    "ability_scores": ["Stärke", "Geschicklichkeit", "Charisma"],
+    "feat": "Musiker",
     "skill_proficiencies": ["Akrobatik", "Auftreten"],
-    "tool_proficiencies": ["Verkleidungssatz", "Ein Musikinstrument deiner Wahl"],
+    "tool_proficiencies": ["Ein Musikinstrument deiner Wahl"],
     "languages": [],
-    "equipment": [
-      "Ein Musikinstrument deiner Wahl",
-      "Das Andenken eines Verehrers (z.B. ein Liebesbrief oder eine Haarsträhne)",
-      "Ein Kostüm",
-      "Eine Gürteltasche mit 15 GM"
-    ],
+    "equipment": {
+      "option_a": [
+        "Musikinstrument (wie oben gewählt)",
+        "2 Kostüme",
+        "Spiegel",
+        "Parfüm",
+        "Reisekleidung",
+        "11 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Aufgrund großer Nachfrage",
-      "description": "Du findest immer einen Ort zum Auftreten und erhältst dort kostenlose Unterkunft und Verpflegung von bescheidenem oder komfortablem Standard, solange du jeden Abend auftrittst. Dein Auftritt macht dich zudem zu einer lokalen Berühmtheit."
+      "name": "Musiker",
+      "description": "Du erhältst das Talent 'Musiker' (Musician). Du erlangst Übung in einem weiteren Musikinstrument deiner Wahl und kannst dieses als Waffe einsetzen."
     }
   },
   {
-    "key": "folk_hero",
-    "name": "Volksheld",
-    "description": "Du kommst aus einfachen Verhältnissen, aber dein Schicksal hat dich zu mehr berufen. Das einfache Volk liebt dich für deine Taten und sieht dich als einen von ihnen.",
-    "skill_proficiencies": ["Umgang mit Tieren", "Überlebenskunst"],
-    "tool_proficiencies": ["Ein Handwerkerwerkzeug deiner Wahl", "Landfahrzeuge"],
+    "key": "guard",
+    "name": "Wache",
+    "description": "Du hast in der örtlichen Stadtwache oder der Leibwache eines Adligen gedient. Dein Dienst hat dich gelehrt, wachsam zu sein, potenzielle Gefahren schnell zu erkennen und die Ordnung aufrechtzuerhalten.",
+    "ability_scores": ["Stärke", "Intelligenz", "Weisheit"],
+    "feat": "Wachsam",
+    "skill_proficiencies": ["Athletik", "Wahrnehmung"],
+    "tool_proficiencies": ["Ein Spielset deiner Wahl"],
     "languages": [],
-    "equipment": [
-      "Ein Satz Handwerkerwerkzeuge deiner Wahl",
-      "Eine Schaufel",
-      "Ein Eisentopf",
-      "Ein Satz gewöhnlicher Kleidung",
-      "Eine Gürteltasche mit 10 GM"
-    ],
+    "equipment": {
+      "option_a": [
+        "Speer",
+        "Leichte Armbrust",
+        "20 Bolzen",
+        "Spielset (wie oben gewählt)",
+        "Kapuzenlaterne",
+        "Handschellen",
+        "Köcher",
+        "Reisekleidung",
+        "12 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Ländliche Gastfreundschaft",
-      "description": "Da du aus den Reihen des einfachen Volkes stammst, fügst du dich leicht unter ihnen ein. Du kannst bei einfachen Leuten einen Platz finden, um dich zu verstecken, auszuruhen oder zu erholen. Sie werden dich vor dem Gesetz beschützen, aber nicht ihr Leben für dich riskieren."
+      "name": "Wachsam",
+      "description": "Du erhältst das Talent 'Wachsam' (Alert). Du erhältst einen Bonus auf deine Initiative und kannst zu Beginn eines Kampfes deinen Initiativewert mit dem eines willigen Verbündeten tauschen."
     }
   },
   {
-    "key": "guild_artisan",
-    "name": "Gildenkünstler",
-    "description": "Du bist Mitglied einer Handwerkergilde und verfügst über besondere Fähigkeiten in einem bestimmten Handwerk. Dein Leben war geprägt von harter Arbeit und den Regeln deiner Gilde.",
-    "skill_proficiencies": ["Einblick", "Überreden"],
-    "tool_proficiencies": ["Ein Handwerkerwerkzeug deiner Wahl"],
-    "languages": ["Eine Sprache deiner Wahl"],
-    "equipment": [
-      "Ein Satz Handwerkerwerkzeuge deiner Wahl",
-      "Ein Empfehlungsschreiben deiner Gilde",
-      "Ein Satz Reisekleidung",
-      "Eine Gürteltasche mit 15 GM"
-    ],
+    "key": "farmer",
+    "name": "Bauer",
+    "description": "Du hast dein Leben der harten Arbeit auf dem Land gewidmet. Dein Alltag ist geprägt von den Jahreszeiten, der Pflege von Tieren und dem Bau einfacher Strukturen, was dir Stärke, Ausdauer und eine tiefe Verbundenheit zur Natur verliehen hat.",
+    "ability_scores": ["Stärke", "Konstitution", "Weisheit"],
+    "feat": "Zäh",
+    "skill_proficiencies": ["Umgang mit Tieren", "Naturkunde"],
+    "tool_proficiencies": ["Zimmermannswerkzeug"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Sichel",
+        "Zimmermannswerkzeug",
+        "Heilset",
+        "Eisentopf",
+        "Schaufel",
+        "Reisekleidung",
+        "30 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Gildenmitgliedschaft",
-      "description": "Als Mitglied einer Gilde können dir deine Gildenkollegen Unterkunft und Verpflegung bieten. Das Gildenhaus ist ein guter Ort, um Gönner, Verbündete oder Informationen zu finden."
+      "name": "Zäh",
+      "description": "Du erhältst das Talent 'Zäh' (Tough). Dein Trefferpunkte-Maximum erhöht sich um 2 und steigt bei jedem Stufenaufstieg um weitere 2."
+    }
+  },
+  {
+    "key": "artisan",
+    "name": "Handwerker",
+    "description": "Du hast eine Ausbildung in einem Handwerk oder einer Kunst absolviert und widmest dein Leben der Schaffung von Objekten oder Meisterwerken. Deine Ausbildung hat dir ein tiefes Verständnis für Materialien und Konstruktion vermittelt.",
+    "ability_scores": ["Stärke", "Geschicklichkeit", "Intelligenz"],
+    "feat": "Handwerker",
+    "skill_proficiencies": ["Nachforschungen", "Überreden"],
+    "tool_proficiencies": ["Eine Art Handwerkerwerkzeug deiner Wahl"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Handwerkerwerkzeug (wie oben gewählt)",
+        "2 Gürteltaschen",
+        "Reisekleidung",
+        "32 GM"
+      ],
+      "option_b": "50 GM"
+    },
+    "feature": {
+      "name": "Handwerker",
+      "description": "Du erhältst das Talent 'Handwerker' (Crafter). Du erlangst zusätzliche Übung in einem Handwerkerwerkzeug deiner Wahl und kannst nicht-magische, einfache Gegenstände in kürzerer Zeit herstellen."
+    }
+  },
+  {
+    "key": "guide",
+    "name": "Führer",
+    "description": "Du hast dein Leben der Erkundung und dem Navigieren durch gefährliche Gebiete gewidmet. Du kennst die Wildnis und hast gelernt, leise und unauffällig zu reisen.",
+    "ability_scores": ["Geschicklichkeit", "Konstitution", "Weisheit"],
+    "feat": "Magie-Eingeweihter (Druide)",
+    "skill_proficiencies": ["Heimlichkeit", "Überlebenskunst"],
+    "tool_proficiencies": ["Kartografenwerkzeug"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Kurzbogen",
+        "20 Pfeile",
+        "Kartografenwerkzeug",
+        "Schlafsack",
+        "Köcher",
+        "Zelt",
+        "Reisekleidung",
+        "3 GM"
+      ],
+      "option_b": "50 GM"
+    },
+    "feature": {
+      "name": "Magie-Eingeweihter (Druide)",
+      "description": "Du erhältst das Talent 'Magie-Eingeweihter (Druide)'. Du kennst zwei Druiden-Zaubertricks deiner Wahl und einen Zauber der 1. Stufe der Druiden-Zauberliste, den du einmal pro langer Rast wirken kannst."
     }
   },
   {
     "key": "hermit",
     "name": "Einsiedler",
     "description": "Du hast einen Teil deines Lebens in Abgeschiedenheit verbracht, sei es in einem Kloster, als Einsiedler in der Wildnis oder in einem Versteck. Diese Zeit hat dir eine besondere Einsicht oder Entdeckung beschert.",
+    "ability_scores": ["Konstitution", "Weisheit", "Charisma"],
+    "feat": "Heiler",
     "skill_proficiencies": ["Medizin", "Religion"],
     "tool_proficiencies": ["Kräuterkunde-Ausrüstung"],
-    "languages": ["Eine Sprache deiner Wahl"],
-    "equipment": [
-      "Eine Schriftrollen-Hülle voller Notizen",
-      "Eine Winterdecke",
-      "Ein Satz gewöhnlicher Kleidung",
-      "Eine Kräuterkunde-Ausrüstung",
-      "Eine Gürteltasche mit 5 GM"
-    ],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Kampfstab",
+        "Kräuterkunde-Ausrüstung",
+        "Schlafsack",
+        "Buch (Philosophie)",
+        "Lampe",
+        "Öl (3 Flaschen)",
+        "Reisekleidung",
+        "16 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Entdeckung",
-      "description": "Deine Zeit in der Abgeschiedenheit hat dir Zugang zu einer einzigartigen und mächtigen Entdeckung verschafft. Dies könnte eine große Wahrheit über den Kosmos, die Götter, mächtige Wesen oder die Kräfte der Natur sein."
+      "name": "Heiler",
+      "description": "Du erhältst das Talent 'Heiler' (Healer). Du bist geübt im Umgang mit dem Heilset und kannst damit Kreaturen heilen, die sich nicht im Kampf befinden."
     }
   },
   {
     "key": "noble",
     "name": "Adliger",
     "description": "Du entstammst einer adligen Familie und bist mit Reichtum, Macht und Privilegien aufgewachsen. Dein Name und dein Ansehen öffnen dir viele Türen.",
+    "ability_scores": ["Stärke", "Intelligenz", "Charisma"],
+    "feat": "Geübt",
     "skill_proficiencies": ["Geschichte", "Überreden"],
-    "tool_proficiencies": ["Ein Spieleset deiner Wahl"],
-    "languages": ["Eine Sprache deiner Wahl"],
-    "equipment": [
-      "Ein Satz edler Kleidung",
-      "Ein Siegelring",
-      "Eine Abstammungsurkunde",
-      "Eine Geldbörse mit 25 GM"
-    ],
+    "tool_proficiencies": ["Ein Spielset deiner Wahl"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Spielset (wie oben gewählt)",
+        "Edle Kleidung",
+        "Parfüm",
+        "29 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Position des Privilegs",
-      "description": "Dank deiner adligen Geburt sind die Leute geneigt, das Beste von dir zu denken. Du bist in der High Society willkommen und kannst bei Bedarf eine Audienz bei einem lokalen Adligen erhalten."
+      "name": "Geübt",
+      "description": "Du erhältst das Talent 'Geübt' (Skilled). Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
     }
   },
   {
-    "key": "outlander",
-    "name": "Ausgestoßener",
-    "description": "Du bist in der Wildnis aufgewachsen, fernab der Zivilisation. Du bist ein Überlebenskünstler, der sich in der rauen Natur ebenso zu Hause fühlt wie andere in den Städten.",
-    "skill_proficiencies": ["Athletik", "Überlebenskunst"],
-    "tool_proficiencies": ["Ein Musikinstrument deiner Wahl"],
-    "languages": ["Eine Sprache deiner Wahl"],
-    "equipment": [
-      "Ein Stab",
-      "Eine Jagdfalle",
-      "Eine Trophäe von einem getöteten Tier",
-      "Ein Satz Reisekleidung",
-      "Eine Gürteltasche mit 10 GM"
-    ],
+    "key": "wayfarer",
+    "name": "Wanderer",
+    "description": "Du bist ständig unterwegs und verdienst deinen Lebensunterhalt durch das Erkennen von Möglichkeiten. Deine Reisen haben dich gelehrt, verborgen zu bleiben und Gefahren durch Glück zu vermeiden. [synthesized based on traits]",
+    "ability_scores": ["Geschicklichkeit", "Weisheit", "Charisma"],
+    "feat": "Glückspilz",
+    "skill_proficiencies": ["Motiv erkennen", "Heimlichkeit"],
+    "tool_proficiencies": ["Diebeswerkzeug"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "2 Dolche",
+        "Diebeswerkzeug",
+        "Spielset (beliebig)",
+        "Schlafsack",
+        "2 Gürteltaschen",
+        "Reisekleidung",
+        "16 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Wanderer",
-      "description": "Du hast ein ausgezeichnetes Gedächtnis für Karten und Geographie. Außerdem kannst du täglich Nahrung und frisches Wasser für dich und bis zu fünf andere Personen finden, sofern das Land dies hergibt."
+      "name": "Glückspilz",
+      "description": "Du erhältst das Talent 'Glückspilz' (Lucky). Du hast drei Glückspunkte, die du ausgeben kannst, um Wurf- oder SG-Ergebnisse zu beeinflussen. [synthesized based on feat name]"
     }
   },
   {
     "key": "sage",
     "name": "Weiser",
     "description": "Du hast Jahre damit verbracht, die Überlieferungen der Welt zu studieren. Du hast unzählige Stunden in Bibliotheken verbracht, Manuskripte gelesen und den größten Experten zugehört.",
+    "ability_scores": ["Konstitution", "Intelligenz", "Weisheit"],
+    "feat": "Magie-Eingeweihter (Magier)",
     "skill_proficiencies": ["Arkanum", "Geschichte"],
-    "tool_proficiencies": [],
-    "languages": ["Zwei Sprachen deiner Wahl"],
-    "equipment": [
-      "Eine Flasche schwarzer Tinte",
-      "Eine Feder",
-      "Ein kleines Messer",
-      "Ein Brief von einem toten Kollegen, der eine Frage stellt, die du noch nicht beantworten konntest",
-      "Ein Satz gewöhnlicher Kleidung",
-      "Eine Gürteltasche mit 10 GM"
-    ],
+    "tool_proficiencies": ["Kalligraphen-Werkzeug"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Kampfstab",
+        "Kalligraphen-Werkzeug",
+        "Buch (Geschichte)",
+        "Pergament (8 Blatt)",
+        "Robe",
+        "8 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Forscher",
-      "description": "Wenn du versuchst, Informationen zu einem Thema zu finden, weißt du oft, wo du diese Informationen finden kannst – sei es in einer Bibliothek, bei einem anderen Weisen oder an einem anderen Ort des Wissens."
+      "name": "Magie-Eingeweihter (Magier)",
+      "description": "Du erhältst das Talent 'Magie-Eingeweihter (Magier)'. Du kennst zwei Magier-Zaubertricks deiner Wahl und einen Zauber der 1. Stufe der Magier-Zauberliste, den du einmal pro langer Rast wirken kannst."
+    }
+  },
+  {
+    "key": "scribe",
+    "name": "Schreiber",
+    "description": "Du hast dein Leben der Aufzeichnung und Archivierung von Wissen gewidmet. [synthesized based on traits] Deine Arbeit erfordert Detailgenauigkeit und die Fähigkeit, selbst kleine Hinweise zu erkennen.",
+    "ability_scores": ["Geschicklichkeit", "Intelligenz", "Weisheit"],
+    "feat": "Geübt",
+    "skill_proficiencies": ["Nachforschungen", "Wahrnehmung"],
+    "tool_proficiencies": ["Kalligraphen-Werkzeug"],
+    "languages": [],
+    "equipment": {
+      "option_a": [
+        "Kalligraphen-Werkzeug",
+        "Edle Kleidung",
+        "Lampe",
+        "Öl (3 Flaschen)",
+        "Pergament (12 Blatt)",
+        "23 GM"
+      ],
+      "option_b": "50 GM"
+    },
+    "feature": {
+      "name": "Geübt",
+      "description": "Du erhältst das Talent 'Geübt' (Skilled). Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
     }
   },
   {
     "key": "sailor",
     "name": "Seemann",
     "description": "Du hast auf einem Seeschiff gelebt und gearbeitet. Die salzige Luft, der Wind in den Segeln und die Kameradschaft der Crew sind dir vertrauter als der feste Boden unter den Füßen.",
-    "skill_proficiencies": ["Athletik", "Wahrnehmung"],
-    "tool_proficiencies": ["Navigationswerkzeuge", "Wasserfahrzeuge"],
+    "ability_scores": ["Stärke", "Geschicklichkeit", "Weisheit"],
+    "feat": "Tavernenkämpfer",
+    "skill_proficiencies": ["Akrobatik", "Wahrnehmung"],
+    "tool_proficiencies": ["Navigationswerkzeuge"],
     "languages": [],
-    "equipment": [
-      "Ein Belegnagel (als Keule)",
-      "15 Meter Seidenseil",
-      "Ein Glücksbringer (z.B. eine Hasenpfote)",
-      "Ein Satz gewöhnlicher Kleidung",
-      "Eine Gürteltasche mit 10 GM"
-    ],
+    "equipment": {
+      "option_a": [
+        "Dolch",
+        "Navigationswerkzeuge",
+        "Seil",
+        "Reisekleidung",
+        "20 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Schiffspassage",
-      "description": "Wenn nötig, kannst du eine kostenlose Passage auf einem Segelschiff für dich und deine Gefährten sichern. Da du einen Gefallen einholst, kannst du dir jedoch keiner schnellen Abfahrt oder eines genauen Ziels sicher sein."
+      "name": "Tavernenkämpfer",
+      "description": "Du erhältst das Talent 'Tavernenkämpfer' (Tavern Brawler). Du bist geübt im Umgang mit improvisierten Waffen und kannst improvisierte Waffen als tödliche Waffen einsetzen."
     }
   },
   {
     "key": "soldier",
     "name": "Soldat",
     "description": "Krieg war dein Leben, solange du dich erinnern kannst. Du wurdest als Jugendlicher ausgebildet, hast in einer Armee gedient und die grundlegenden Überlebensfähigkeiten auf dem Schlachtfeld erlernt.",
+    "ability_scores": ["Stärke", "Geschicklichkeit", "Konstitution"],
+    "feat": "Wilder Angreifer",
     "skill_proficiencies": ["Athletik", "Einschüchtern"],
-    "tool_proficiencies": ["Ein Typ Spieleset", "Landfahrzeuge"],
+    "tool_proficiencies": ["Ein Spielset deiner Wahl"],
     "languages": [],
-    "equipment": [
-      "Ein Abzeichen deines Ranges",
-      "Eine Trophäe von einem gefallenen Feind",
-      "Ein Satz Knochenwürfel oder ein Kartenspiel",
-      "Ein Satz gewöhnlicher Kleidung",
-      "Eine Gürteltasche mit 10 GM"
-    ],
+    "equipment": {
+      "option_a": [
+        "Speer",
+        "Kurzbogen",
+        "20 Pfeile",
+        "Spielset (wie oben gewählt)",
+        "Heilset",
+        "Köcher",
+        "Reisekleidung",
+        "14 GM"
+      ],
+      "option_b": "50 GM"
+    },
     "feature": {
-      "name": "Militärischer Rang",
-      "description": "Soldaten, die deiner ehemaligen Militärorganisation treu sind, erkennen deine Autorität und deinen Einfluss an und gehorchen dir, wenn sie einen niedrigeren Rang haben. Du kannst deinen Rang nutzen, um Zugang zu freundlichen Militärlagern und Festungen zu erhalten."
-    }
-  },
-  {
-    "key": "urchin",
-    "name": "Straßenkind",
-    "description": "Du bist auf den Straßen einer Stadt aufgewachsen. Du musstest allein überleben, betteln und stehlen. Du kennst die Schattenseiten der Stadt wie deine Westentasche.",
-    "skill_proficiencies": ["Fingerfertigkeit", "Heimlichkeit"],
-    "tool_proficiencies": ["Verkleidungssatz", "Diebeswerkzeug"],
-    "languages": [],
-    "equipment": [
-      "Ein kleines Messer",
-      "Eine Karte der Stadt, in der du aufgewachsen bist",
-      "Eine Hausmaus",
-      "Ein Andenken an deine Eltern",
-      "Ein Satz gewöhnlicher Kleidung",
-      "Eine Gürteltasche mit 10 GM"
-    ],
-    "feature": {
-      "name": "Geheimnisse der Stadt",
-      "description": "Du kennst die geheimen Muster und den Fluss von Städten. Außerhalb des Kampfes kannst du und deine Gefährten zwischen zwei Orten in der Stadt doppelt so schnell reisen wie normal."
+      "name": "Wilder Angreifer",
+      "description": "Du erhältst das Talent 'Wilder Angreifer' (Savage Attacker). Einmal pro Zug kannst du den Schaden eines Nahkampfangriffs neu würfeln."
     }
   }
 ]
