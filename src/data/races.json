@@ -7,7 +7,7 @@
       "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
       "bonuses": {}
     },
-    "age": "Menschen erreichen die Volljährigkeit in ihren späten Teenagerjahren und leben selten länger als ein Jahrhundert.",
+    "age": "Menschen erreichen im späten Jugendalter die Volljährigkeit und leben nur selten länger als ein Jahrhundert.",
     "size": "Mittel",
     "speed": 9,
     "portraits": 4,
