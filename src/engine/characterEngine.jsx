@@ -50,7 +50,8 @@ export const calculateInitialHP = (character) => {
   const conModifier = getAbilityModifier(finalCon);
   let hp = character.class.hit_die + conModifier;
 
-  if (character.subrace?.key === "hill-dwarf") {
+  // KORREKTUR (D&D 2024): Alle Zwerge erhalten +1 HP pro Stufe (also +1 auf Stufe 1)
+  if (character.race.key === "dwarf") {
     hp += 1;
   }
   return hp;
@@ -528,7 +529,8 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
 
   let finalHpGain = hpRollResult;
 
-  if (character.subrace?.key === "hill-dwarf") {
+  // KORREKTUR (D&D 2024): Alle Zwerge erhalten +1 HP pro Stufe
+  if (character.race.key === "dwarf") {
     finalHpGain += 1;
   }
 

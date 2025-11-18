@@ -11,8 +11,9 @@ import { WeaponMasterySelection } from '../character_creation/WeaponMasterySelec
 import '../character_creation/SkillSelection.css'; 
 import '../character_creation/PanelDetails.css'; 
 
+// KORREKTUR (D&D 2024): Alle Zwerge erhalten +1 HP pro Stufe
 const getRacialHpBonus = (character) => {
-  if (character.subrace?.key === 'hill-dwarf') return 1;
+  if (character.race.key === 'dwarf') return 1;
   return 0;
 };
 
@@ -330,7 +331,8 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
                 <div className="hp-result">
                   <p>Gewürfelt: {rollResult.dice.join(' + ')}</p>
                   <p>Modifikator: {rollResult.bonus}</p>
-                  {racialHpBonus > 0 && <p>Rassenbonus (Hügelzwerg): {racialHpBonus}</p>}
+                  {/* KORREKTUR (D&D 2024): Text angepasst */}
+                  {racialHpBonus > 0 && <p>Rassenbonus (Zwerg): {racialHpBonus}</p>}
                   <p className="hp-total">Gesamt-Zuwachs: {rollResult.total + racialHpBonus}</p>
                   <button onClick={handleConfirmHP} className="confirm-button">Weiter</button>
                 </div>
@@ -394,7 +396,8 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
               {rollResult && (
                 <p>
                   Neue Trefferpunkte: +{rollResult.dice.join(' + ')} (Wurf) + {rollResult.bonus} (KON)
-                  {rollResult.racialBonus ? ` + ${rollResult.racialBonus} (Rasse)` : ""}
+                  {/* KORREKTUR (D&D 2024): Text angepasst */}
+                  {rollResult.racialBonus ? ` + ${rollResult.racialBonus} (Zwerg)` : ""}
                   = <strong>{rollResult.total + (rollResult.racialBonus || 0)} TP</strong>
                 </p>
               )}
