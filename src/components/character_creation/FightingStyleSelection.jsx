@@ -44,7 +44,6 @@ export const FightingStyleSelection = ({ character, updateCharacter }) => {
 
   return (
     <div className="fighting-style-selection">
-      <div className="details-divider"></div>
       <h3>Kampfstil wählen</h3>
       <div className="skill-grid">
         

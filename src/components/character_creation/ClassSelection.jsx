@@ -225,7 +225,6 @@ export const ClassSelection = ({ character, updateCharacter }) => {
         {/* HINWEIS: Dieser Block ist (korrekterweise) vor Expertise */}
         {skillChoiceData && (
           <>
-            {/* <div className="details-divider"></div> <-- Entfernt für kompaktes Layout */}
             <SkillSelection 
               options={skillOptions}
               maxChoices={skillChoiceData.choose}
