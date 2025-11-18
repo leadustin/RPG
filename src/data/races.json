@@ -2,12 +2,12 @@
   {
     "key": "human",
     "name": "Mensch",
-    "description": "Menschen sind die anpassungsfähigsten und ehrgeizigsten unter den Völkern, die stets bestrebt sind, ihre Spuren in der Welt zu hinterlassen.",
+    "description": "Menschen sind vielseitig, ehrgeizig und passen sich nahezu jeder Umgebung und Kultur an.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Menschen erreichen im späten Jugendalter die Volljährigkeit und leben nur selten länger als ein Jahrhundert.",
+    "age": "Menschen werden im späten Jugendalter erwachsen und erreichen selten ein Alter von mehr als hundert Jahren.",
     "size": "Mittel",
     "speed": 9,
     "portraits": 4,
@@ -20,23 +20,24 @@
     "traits": [
       {
         "name": "Einfallsreich",
-        "description": "Du erhältst eine Heroische Inspiration, wenn du eine lange Rast abschließt."
+        "description": "Am Ende einer langen Rast erhältst du Heroische Inspiration."
       },
       {
         "name": "Vielseitige Natur",
-        "description": "Du erhältst eine zusätzliche Fertigkeit deiner Wahl und ein Talent (Feat) deiner Wahl."
+        "description": "Du erhältst eine Fertigkeit deiner Wahl sowie ein Talent deiner Wahl."
       }
     ]
   },
+
   {
     "key": "elf",
     "name": "Elf",
-    "description": "Elfen sind ein magisches Volk von überirdischer Anmut, das eine tiefe Verbindung zur Natur und zur Magie besitzt.",
+    "description": "Elfen sind anmutige, langlebige Wesen mit einer natürlichen Verbindung zur Magie.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Obwohl Elfen mit etwa 100 Jahren als erwachsen gelten, können sie über 750 Jahre alt werden.",
+    "age": "Elfen werden erst im hohen Alter erwachsen und können viele Jahrhunderte alt werden.",
     "size": "Mittel",
     "speed": 9,
     "portraits": 4,
@@ -49,19 +50,19 @@
     "traits": [
       {
         "name": "Dunkelsicht",
-        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+        "description": "Du kannst bei schwachem Licht bis zu 18 m weit klar sehen."
       },
       {
         "name": "Geschärfte Sinne",
-        "description": "Du bist geübt in der Fertigkeit Wahrnehmung."
+        "description": "Du bist in Wahrnehmung geübt."
       },
       {
         "name": "Feen-Abstammung",
-        "description": "Du hast Vorteil bei Rettungswürfen gegen Bezauberung."
+        "description": "Du hast Vorteil auf Rettungswürfe gegen Bezauberung."
       },
       {
         "name": "Trance",
-        "description": "Du musst nicht schlafen und benötigst nur 4 Stunden für eine lange Rast."
+        "description": "Du schläfst nicht und findest in vier Stunden Meditation die Erholung einer langen Rast."
       }
     ],
     "subraces": [
@@ -70,12 +71,8 @@
         "name": "Hochelf",
         "traits": [
           {
-            "name": "Waffenübung der Elfen",
-            "description": "Du bist geübt im Umgang mit Langschwert, Kurzschwert, Kurzbogen und Langbogen."
-          },
-          {
-            "name": "Zaubertrick",
-            "description": "Du kennst einen Zaubertrick deiner Wahl aus der Zauberliste des Magiers."
+            "name": "Arkaner Funke",
+            "description": "Du lernst einen arkanen Zaubertrick deiner Wahl."
           }
         ]
       },
@@ -84,48 +81,41 @@
         "name": "Waldelf",
         "traits": [
           {
-            "name": "Waffenübung der Elfen",
-            "description": "Du bist geübt im Umgang mit Langschwert, Kurzschwert, Kurzbogen und Langbogen."
-          },
-          {
-            "name": "Flink",
-            "description": "Deine Bewegungsrate ist auf 10,5 Meter erhöht."
+            "name": "Geschmeidige Schritte",
+            "description": "Deine Bewegungsrate beträgt 10,5 m."
           },
           {
             "name": "Maske der Wildnis",
-            "description": "Du kannst versuchen, dich zu verstecken, selbst wenn du nur leicht von Laub, starkem Regen, fallendem Schnee, Nebel oder anderen natürlichen Phänomenen verdeckt bist."
+            "description": "Du kannst versuchen, dich zu verstecken, selbst wenn du nur leicht von natürlicher Umgebung verdeckt bist."
           }
         ]
       },
       {
         "key": "drow",
-        "name": "Drow (Dunkelelf)",
+        "name": "Drow",
         "traits": [
           {
             "name": "Überlegene Dunkelsicht",
-            "description": "Deine Dunkelsicht hat einen Radius von 36 Metern."
+            "description": "Du besitzt Dunkelsicht mit einem Radius von 36 m."
           },
           {
             "name": "Drow-Magie",
-            "description": "Du kennst den Zaubertrick 'Tanzende Lichter'. Ab Stufe 3 kannst du 'Feenfeuer' und ab Stufe 5 'Dunkelheit' einmal pro langer Rast wirken."
-          },
-          {
-            "name": "Waffenübung der Drow",
-            "description": "Du bist geübt im Umgang mit Rapier, Kurzschwert und Handarmbrust."
+            "description": "Du lernst 'Tanzende Lichter'. Auf Stufe 3 kannst du einmal pro langer Rast 'Feenfeuer' wirken, auf Stufe 5 'Dunkelheit'."
           }
         ]
       }
     ]
   },
+
   {
     "key": "dwarf",
     "name": "Zwerg",
-    "description": "Zwerge sind ein standhaftes Volk, bekannt für ihre Zähigkeit, ihre Handwerkskunst und ihre tiefe Verbundenheit zu den Bergen.",
+    "description": "Zwerge sind widerstandsfähige, traditionsbewusste Handwerker mit tiefem Bezug zu Stein und Metall.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Zwerge gelten mit etwa 50 Jahren als jung und können bis zu 350 Jahre alt werden.",
+    "age": "Zwerge werden erst spät erwachsen und können mehrere Jahrhunderte alt werden.",
     "size": "Mittel",
     "speed": 9,
     "portraits": 4,
@@ -138,39 +128,32 @@
     "traits": [
       {
         "name": "Dunkelsicht",
-        "description": "Du kannst bei Dämmerlicht innerhalb von 36 Metern wie bei hellem Licht sehen."
+        "description": "Du kannst bei schwachem Licht bis zu 18 m weit klar sehen."
       },
       {
-        "name": "Zwergen-Zähigkeit (Gift)",
-        "description": "Du hast Vorteil bei Rettungswürfen gegen Gift und Resistenz gegen Giftschaden."
+        "name": "Zähigkeit (Gift)",
+        "description": "Du hast Vorteil auf Rettungswürfe gegen Gift und Resistenz gegen Giftschaden."
       },
       {
-        "name": "Stein-Gespür",
-        "description": "Als Bonusaktion kannst du für 10 Minuten Erschütterungssinn (Tremorsense) bis zu 9m auf Stein wahrnehmen. Du kannst dies (Übungsbonus) oft pro langer Rast nutzen."
-      },
-      {
-        "name": "Waffenübung der Zwerge",
-        "description": "Du bist geübt im Umgang mit Streitaxt, Handbeil, leichter Hammer und Kriegshammer."
-      },
-      {
-        "name": "Zwergen-Zähigkeit (HP)",
+        "name": "Zwergen-Zähigkeit",
         "description": "Dein Trefferpunkte-Maximum erhöht sich pro Stufe um 1."
       },
       {
-        "name": "Rüstungsübung der Zwerge",
-        "description": "Du bist geübt im Umgang mit leichten und mittelschweren Rüstungen."
+        "name": "Steinsinn",
+        "description": "Du erhältst Vorteil auf Würfe, um die Eigenschaften von Steinwerken, Gesteinsarten oder steinernen Konstruktionen zu erkennen."
       }
     ]
   },
+
   {
     "key": "halfling",
     "name": "Halbling",
-    "description": "Halblinge sind ein fröhliches und gutmütiges Volk, das die Annehmlichkeiten von Heim und Herd schätzt.",
+    "description": "Halblinge sind fröhliche, anpassungsfähige Personen, die in Gemeinschaft und Alltagssicherheit aufblühen.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Ein Halbling erreicht mit 20 Jahren das Erwachsenenalter und lebt meist bis zur Mitte seines zweiten Jahrhunderts (ca. 150 Jahre).",
+    "age": "Halblinge wachsen rasch heran und leben bis zu anderthalb Jahrhunderten.",
     "size": "Klein",
     "speed": 9,
     "portraits": 4,
@@ -183,31 +166,28 @@
     "traits": [
       {
         "name": "Glückspilz",
-        "description": "Wenn du bei einem Wurf eine 1 würfelst, kannst du den Würfel erneut werfen."
+        "description": "Wenn du eine 1 würfelst, kannst du den Wurf einmal wiederholen."
       },
       {
         "name": "Mutig",
-        "description": "Du hast Vorteil bei Rettungswürfen gegen Verängstigung."
+        "description": "Du hast Vorteil auf Rettungswürfe gegen Verängstigung."
       },
       {
         "name": "Flink",
-        "description": "Du kannst dich durch den Raum größerer Kreaturen bewegen."
-      },
-      {
-        "name": "Von Natur aus heimlich",
-        "description": "Du kannst versuchen, dich zu verstecken, auch wenn du nur von einer Kreatur verdeckt wirst."
+        "description": "Du kannst dich durch den Raum größerer Kreaturen hindurch bewegen."
       }
     ]
   },
+
   {
     "key": "dragonborn",
     "name": "Drachenblütiger",
-    "description": "Drachenblütige sind stolze, ehrbare Krieger, die von den Drachen abstammen und deren Stärke und Arroganz teilen.",
+    "description": "Drachenblütige tragen die Macht alter Drachen in sich und verfügen über beeindruckende physische Präsenz.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Junge Drachenblütige wachsen schnell heran und gelten mit 15 Jahren als erwachsen. Sie werden etwa 80 Jahre alt.",
+    "age": "Drachenblütige reifen schnell heran und leben selten länger als acht Jahrzehnte.",
     "size": "Mittel",
     "speed": 9,
     "portraits": 4,
@@ -219,90 +199,37 @@
     "languages": ["Gemeinsprache", "Drakonisch"],
     "traits": [
       {
-        "name": "Dunkelsicht",
-        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
-      },
-      {
         "name": "Odemwaffe",
-        "description": "Deine Abstammung bestimmt deine Odemwaffe und Schadensresistenz. Der Schaden skaliert (1W10 auf St. 1, 2W10 auf St. 5, etc.). Der SG ist 8 + KON-Mod + Übungsbonus."
+        "description": "Du besitzt eine Odemwaffe abhängig von deiner Abstammung. Der Schaden steigt mit deiner Stufe (1W10, 2W10, 3W10 usw.)."
       },
       {
-        "name": "Drakonischer Flug",
-        "description": "Ab Stufe 5 kannst du als Bonusaktion spektrale Flügel für 10 Min. manifestieren, die dir Flugbewegungsrate gewähren."
+        "name": "Drachenflug",
+        "description": "Ab Stufe 5 kannst du einmal pro langer Rast spektrale Flügel manifestieren und 10 Minuten lang fliegen."
       }
     ],
     "ancestries": [
-      {
-        "key": "black",
-        "name": "Schwarz",
-        "damage_type": "Säure",
-        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
-      },
-      {
-        "key": "blue",
-        "name": "Blau",
-        "damage_type": "Blitz",
-        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
-      },
-      {
-        "key": "brass",
-        "name": "Messing",
-        "damage_type": "Feuer",
-        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
-      },
-      {
-        "key": "bronze",
-        "name": "Bronze",
-        "damage_type": "Blitz",
-        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
-      },
-      {
-        "key": "copper",
-        "name": "Kupfer",
-        "damage_type": "Säure",
-        "breath_weapon": "5-mal 30-Fuß-Linie (GES-Rettungswurf)"
-      },
-      {
-        "key": "gold",
-        "name": "Gold",
-        "damage_type": "Feuer",
-        "breath_weapon": "15-Fuß-Kegel (GES-Rettungswurf)"
-      },
-      {
-        "key": "green",
-        "name": "Grün",
-        "damage_type": "Gift",
-        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
-      },
-      {
-        "key": "red",
-        "name": "Rot",
-        "damage_type": "Feuer",
-        "breath_weapon": "15-Fuß-Kegel (GES-Rettungswurf)"
-      },
-      {
-        "key": "silver",
-        "name": "Silber",
-        "damage_type": "Kälte",
-        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
-      },
-      {
-        "key": "white",
-        "name": "Weiß",
-        "damage_type": "Kälte",
-        "breath_weapon": "15-Fuß-Kegel (KON-Rettungswurf)"
-      }
+      { "key": "black", "name": "Schwarz", "damage_type": "Säure", "shape": "Linie" },
+      { "key": "blue", "name": "Blau", "damage_type": "Blitz", "shape": "Linie" },
+      { "key": "brass", "name": "Messing", "damage_type": "Feuer", "shape": "Linie" },
+      { "key": "bronze", "name": "Bronze", "damage_type": "Blitz", "shape": "Linie" },
+      { "key": "copper", "name": "Kupfer", "damage_type": "Säure", "shape": "Linie" },
+      { "key": "gold", "name": "Gold", "damage_type": "Feuer", "shape": "Kegel" },
+      { "key": "green", "name": "Grün", "damage_type": "Gift", "shape": "Kegel" },
+      { "key": "red", "name": "Rot", "damage_type": "Feuer", "shape": "Kegel" },
+      { "key": "silver", "name": "Silber", "damage_type": "Kälte", "shape": "Kegel" },
+      { "key": "white", "name": "Weiß", "damage_type": "Kälte", "shape": "Kegel" }
     ]
   },
+
   {
     "key": "gnome",
     "name": "Gnom",
-    "description": "Gnome sind ein kleines, enthusiastisches Volk von Erfindern, Alchemisten und Illusionisten, die vor Energie sprühen.",
+    "description": "Gnome sind kreative, energiegeladene Erfinder, die für ihre Neugier und magische Begabung bekannt sind.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Gnome werden mit etwa 40 Jahren erwachsen und können 350 bis 500 Jahre alt werden.",
+    "age": "Gnome werden spät erwachsen, leben aber viele Jahrhunderte.",
     "size": "Klein",
     "speed": 9,
     "portraits": 4,
@@ -315,11 +242,11 @@
     "traits": [
       {
         "name": "Dunkelsicht",
-        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+        "description": "Du kannst bei schwachem Licht bis zu 18 m weit klar sehen."
       },
       {
         "name": "Gnomische List",
-        "description": "Du hast Vorteil bei Intelligenz-, Weisheits- und Charisma-Rettungswürfen gegen Magie."
+        "description": "Du hast Vorteil auf Intelligenz-, Weisheits- und Charisma-Rettungswürfe gegen Magie."
       }
     ],
     "subraces": [
@@ -328,22 +255,23 @@
         "name": "Felsengnom",
         "traits": [
           {
-            "name": "Magische Bastelei",
-            "description": "Du kennst die Zaubertricks 'Reparieren' (Mending) und 'Magiertrick' (Prestidigitation)."
+            "name": "Kunstvolle Bastelei",
+            "description": "Du kannst kleine magisch-mechanische Geräte erschaffen. Du erhältst ein Werkzeug deiner Wahl und kannst einfache Apparate herstellen."
           }
         ]
       }
     ]
   },
+
   {
     "key": "tiefling",
     "name": "Tiefling",
-    "description": "Gezeichnet durch einen infernalischen Pakt in ihrer Ahnenreihe, wandeln Tieflinge als Außenseiter mit übernatürlicher Ausstrahlung durch die Welt.",
+    "description": "Tieflinge tragen infernalisches Erbe in sich, das ihnen besondere Kräfte und eine markante Erscheinung verleiht.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Tieflinge werden im gleichen Tempo erwachsen wie Menschen, leben aber einige Jahre länger (bis ca. 110 Jahre).",
+    "age": "Tieflinge leben ähnlich wie Menschen, erreichen jedoch leicht ein höheres Alter.",
     "size": "Mittel oder Klein (wählbar)",
     "speed": 9,
     "portraits": 4,
@@ -356,71 +284,54 @@
     "traits": [
       {
         "name": "Dunkelsicht",
-        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+        "description": "Du kannst bei schwachem Licht bis zu 18 m weit klar sehen."
       },
       {
-        "name": "Andereweltliche Erscheinung",
-        "description": "Du kennst den Zaubertrick 'Thaumaturgie'."
+        "name": "Andereweltliche Ausstrahlung",
+        "description": "Du kannst den Zaubertrick Thaumaturgie wirken."
       },
       {
-        "name": "Teuflisches Erbe",
-        "description": "Du wählst eine deiner teuflischen Erbschaften (Infernal, Abyssal oder Chthonic), die dir Resistenzen und Zauber verleiht."
+        "name": "Erwählte Erbschaft",
+        "description": "Wähle eine infernale, abyssale oder chthonische Linie, die dir Zauber und Resistenz verleiht."
       }
     ],
     "legacies": [
       {
         "key": "infernal",
-        "name": "Infernal (Feuer)",
+        "name": "Infernal",
         "traits": [
-          {
-            "name": "Höllische Resistenz",
-            "description": "Du hast Resistenz gegen Feuerschaden."
-          },
-          {
-            "name": "Infernalische Magie",
-            "description": "Du kennst 'Feuerstrahl'. Ab St. 3: 'Höllischer Tadel'. Ab St. 5: 'Dunkelheit' (1x pro langer Rast)."
-          }
+          { "name": "Resistenz", "description": "Resistenz gegen Feuerschaden." },
+          { "name": "Magie", "description": "Du erhältst feuerbasierte Zauber abhängig von deiner Stufe." }
         ]
       },
       {
         "key": "abyssal",
-        "name": "Abyssal (Gift)",
+        "name": "Abyssal",
         "traits": [
-          {
-            "name": "Abyssale Resistenz",
-            "description": "Du hast Resistenz gegen Giftschaden."
-          },
-          {
-            "name": "Abyssale Magie",
-            "description": "Du kennst 'Giftstrahl'. Ab St. 3: 'Krankheitsstrahl'. Ab St. 5: 'Person festhalten' (1x pro langer Rast)."
-          }
+          { "name": "Resistenz", "description": "Resistenz gegen Giftschaden." },
+          { "name": "Magie", "description": "Du erhältst giftbasierte Zauber abhängig von deiner Stufe." }
         ]
       },
       {
         "key": "chthonic",
-        "name": "Chthonic (Nekrotisch)",
+        "name": "Chthonic",
         "traits": [
-          {
-            "name": "Chthonische Resistenz",
-            "description": "Du hast Resistenz gegen Nekrotischen Schaden."
-          },
-          {
-            "name": "Chthonische Magie",
-            "description": "Du kennst 'Kältekuss'. Ab St. 3: 'Scheinleben'. Ab St. 5: 'Schwächestrahl' (1x pro langer Rast)."
-          }
+          { "name": "Resistenz", "description": "Resistenz gegen nekrotischen Schaden." },
+          { "name": "Magie", "description": "Du erhältst nekrotisch-magische Zauber abhängig von deiner Stufe." }
         ]
       }
     ]
   },
+
   {
     "key": "orc",
     "name": "Ork",
-    "description": "Orks sind ein Volk von beeindruckender Stärke und emotionaler Intensität, das die wildesten Eigenschaften seiner Erblinie in sich vereint.",
+    "description": "Orks sind entschlossene, körperlich mächtige Humanoide mit starkem Instinkt und unerschütterlichem Willen.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Orks werden mit etwa 14 Jahren erwachsen und leben selten länger als 75 Jahre.",
+    "age": "Orks werden sehr früh erwachsen und leben kürzer als die meisten anderen Völker.",
     "size": "Mittel",
     "speed": 9,
     "portraits": 4,
@@ -433,64 +344,32 @@
     "traits": [
       {
         "name": "Dunkelsicht",
-        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
+        "description": "Du kannst bei schwachem Licht bis zu 18 m weit klar sehen."
       },
       {
         "name": "Bedrohlich",
-        "description": "Du bist geübt in der Fertigkeit Einschüchtern."
+        "description": "Du bist in Einschüchtern geübt."
       },
       {
-        "name": "Unbarmherzige Ausdauer",
-        "description": "Wenn du auf 0 TP fällst, fällst du stattdessen auf 1 TP (einmal pro langer Rast)."
+        "name": "Unbändige Ausdauer",
+        "description": "Einmal pro langer Rast kannst du anstelle von 0 TP auf 1 TP fallen."
       },
       {
         "name": "Wilde Angriffe",
-        "description": "Bei einem kritischen Treffer kannst du einen zusätzlichen Waffenschadenswürfel werfen."
+        "description": "Bei einem kritischen Treffer würfelst du einen zusätzlichen Schadenswürfel."
       }
     ]
   },
-  {
-    "key": "aasimar",
-    "name": "Aasimar",
-    "description": "Aasimar sind Humanoide mit einer himmlischen Erbschaft, die sie mit übernatürlicher Anmut und Macht erfüllt.",
-    "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
-      "bonuses": {}
-    },
-    "age": "Aasimar werden im gleichen Tempo erwachsen wie Menschen, leben aber etwas länger.",
-    "size": "Mittel",
-    "speed": 9,
-    "portraits": 0,
-    "physical_props": {
-      "age": { "min": 18, "max": 120, "default": 25, "step": 1 },
-      "height": { "min": 1.60, "max": 1.95, "default": 1.75, "step": 0.01 },
-      "weight": { "min": 50, "max": 110, "default": 75, "step": 1 }
-    },
-    "languages": ["Gemeinsprache", "Himmlisch"],
-    "traits": [
-      {
-        "name": "Dunkelsicht",
-        "description": "Du kannst bei Dämmerlicht innerhalb von 18 Metern wie bei hellem Licht sehen."
-      },
-      {
-        "name": "Himmlische Resistenz",
-        "description": "Du hast Resistenz gegen Nekrotischen Schaden und gleißenden (Radiant) Schaden."
-      },
-      {
-        "name": "Himmlische Offenbarung",
-        "description": "Ab Stufe 3 kannst du als Bonusaktion eine Transformation (1 Min.) entfesseln. Du wählst bei der Aktivierung eine Form: Nekrotischer Schleier (Schaden/Furcht), Innere Glut (Gleißender Schaden) oder Himmlische Flügel (Flugbewegungsrate)."
-      }
-    ]
-  },
+
   {
     "key": "goliath",
     "name": "Goliath",
-    "description": "Goliaths sind ein stämmiges und wettbewerbsorientiertes Volk, das in den rauen Bergen zuhause ist und Stärke über alles schätzt.",
+    "description": "Goliaths sind mächtige Bergriesen-Nachfahren, die für Stärke, Ausdauer und Wettbewerbsgeist stehen.",
     "ability_bonuses": {
-      "text": "Du kannst einen Attributswert um +2 und einen anderen um +1 erhöhen ODER drei verschiedene Attribute um +1 erhöhen.",
+      "text": "Erhöhe ein Attribut um +2 und ein weiteres um +1 oder drei verschiedene Werte um +1.",
       "bonuses": {}
     },
-    "age": "Goliaths haben eine ähnliche Lebensspanne wie Menschen, werden aber etwas schneller erwachsen.",
+    "age": "Goliaths werden schnell erwachsen und haben eine ähnliche Lebensdauer wie Menschen.",
     "size": "Mittel",
     "speed": 9,
     "portraits": 0,
@@ -503,15 +382,55 @@
     "traits": [
       {
         "name": "Mächtiger Körperbau",
-        "description": "Du hast Vorteil bei Rettungswürfen, um den 'Gepackt' (Grappled) Zustand zu beenden. Du zählst für deine Tragekapazität als eine Größenkategorie größer."
+        "description": "Du zählst als eine Größenkategorie größer, wenn es um Tragen, Schieben oder Ziehen geht."
       },
       {
-        "name": "Gebirgsbewohner",
-        "description": "Du bist an große Höhen gewöhnt und hast Resistenz gegen Kälteschaden."
+        "name": "Zähigkeit der Berge",
+        "description": "Du hast Resistenz gegen Kälteschaden."
+      }
+    ],
+    "ancestries": [
+      {
+        "key": "cloud",
+        "name": "Wolkenriese",
+        "traits": [
+          { "name": "Wolken-Sprung", "description": "Einmal pro langer Rast kannst du dich teleportieren, wenn du springst." }
+        ]
       },
       {
-        "name": "Steinerne Ausdauer",
-        "description": "Wenn du Schaden nimmst, kannst du deine Reaktion verwenden, um den Schaden um 1W12 + deinen KON-Modifikator zu reduzieren (1x pro kurzer oder langer Rast)."
+        "key": "fire",
+        "name": "Feuerriese",
+        "traits": [
+          { "name": "Flammenhieb", "description": "Einmal pro langer Rast fügen deine Angriffe Feuerschaden zu." }
+        ]
+      },
+      {
+        "key": "frost",
+        "name": "Frost-Riese",
+        "traits": [
+          { "name": "Eisgriff", "description": "Einmal pro langer Rast kannst du einen Gegner verlangsamen." }
+        ]
+      },
+      {
+        "key": "hill",
+        "name": "Hügelriese",
+        "traits": [
+          { "name": "Unerschütterliche Masse", "description": "Einmal pro langer Rast reduzierst du erlittenen Schaden." }
+        ]
+      },
+      {
+        "key": "stone",
+        "name": "Steinriese",
+        "traits": [
+          { "name": "Steinschritt", "description": "Einmal pro langer Rast ignorierst du schwieriges Gelände aus Stein." }
+        ]
+      },
+      {
+        "key": "storm",
+        "name": "Sturmriese",
+        "traits": [
+          { "name": "Donnerstoß", "description": "Einmal pro langer Rast kannst du in einem kleinen Radius Donnerschaden verursachen." }
+        ]
       }
     ]
   }
