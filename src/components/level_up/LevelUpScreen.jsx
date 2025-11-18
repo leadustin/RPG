@@ -239,7 +239,7 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       subclassKey: selectedSubclass,
       weapon_mastery_choices: masteryChoices
     };
-    onConfirm(rollResult.total + (rollResult.racialBonus || 0), choices);
+    onConfirm(rollResult.total, choices);
   };
 
   const handleAsiChange = (newChoices, newPoints) => {
