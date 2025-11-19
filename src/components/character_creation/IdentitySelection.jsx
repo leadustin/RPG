@@ -1,20 +1,21 @@
 // src/components/character_creation/IdentitySelection.jsx
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './PanelDetails.css';
 import './IdentitySelection.css';
 
+// Statische Schlüssel für Gesinnungen
 const ALIGNMENT_KEYS = ["lg", "ng", "cg", "ln", "n", "cn", "le", "ne", "ce"];
 
-// Diese Liste brauchst du weiterhin für das Dropdown der *wählbaren* Sprachen
+// Alle verfügbaren Sprachen als Keys für die Dropdown-Liste
 const AVAILABLE_LANGUAGE_KEYS = [
   "common", "dwarvish", "elvish", "giant", "gnomish", "goblin", 
   "halfling", "orc", "abyssal", "celestial", "draconic", 
-  "deep_speech", "infernal", "primordial", "sylvan", "undercommon"
+  "deep_speech", "infernal", "primordial", "sylvan", "undercommon",
+  "druidic", "thieves_cant"
 ];
 
-// Definiere den Key, der in der JSON für "Wahl" steht
+// Dieser Key in der races.json signalisiert eine freie Wahl
 const CHOICE_KEY = "choice"; 
 
 const getPortraitModule = (raceKey, gender, portraitIndex) => {
@@ -36,14 +37,14 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
   const heightConfig = physicalProps.height || { min: 1.60, max: 1.95, default: 1.75, step: 0.01 };
   const weightConfig = physicalProps.weight || { min: 60, max: 110, default: 75, step: 1 };
 
-  // --- VEREINFACHTE LOGIK ---
-  // Wir gehen davon aus, dass race.languages jetzt Keys enthält (z.B. ["common", "choice"])
+  // --- SPRACHEN LOGIK ---
+  // Wir gehen davon aus, dass race.languages Keys enthält (z.B. ["common", "choice"])
   const raceLanguageKeys = selectedRace?.languages || [];
   
-  // 1. Filtere den Platzhalter-Key heraus
+  // 1. Filtere den Platzhalter-Key ("choice") heraus für die Anzeige der festen Sprachen
   const fixedLanguageKeys = raceLanguageKeys.filter(key => key !== CHOICE_KEY);
   
-  // 2. Prüfe auf Wahlmöglichkeit
+  // 2. Prüfe, ob der Charakter eine freie Wahl hat
   const hasLanguageChoice = raceLanguageKeys.includes(CHOICE_KEY);
 
   React.useEffect(() => {
@@ -72,6 +73,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
       <div className="summary-panel-layout">
         {/* --- LINKE SPALTE (Inputs & Slider) --- */}
         <div className="summary-column-left">
+          {/* Box 1: Allgemeines */}
           <div className="summary-box">
             <h3>{t('creation.identity.general')}</h3>
             <div className="identity-grid-two-columns">
@@ -94,6 +96,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
             </div>
           </div>
 
+          {/* Box 2: Details */}
           <div className="summary-box">
             <h3>{t('creation.identity.details')}</h3>
             <div className="details-sliders">
@@ -129,6 +132,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
 
         {/* --- RECHTE SPALTE (Portrait & Sprachen) --- */}
         <div className="summary-column-right">
+          {/* Box 3: Portrait */}
           <div className="summary-box">
             <h3>{t('creation.identity.portrait')}</h3>
             <ul className="portrait-grid">
@@ -143,22 +147,24 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
             </ul>
           </div>
 
-          {/* --- SPRACHEN --- */}
+          {/* +++ Box 4: Sprachen (Dies fehlte in deinem Upload) +++ */}
           <div className="summary-box">
             <h3>{t('creation.identity.languages')}</h3>
             <div className="languages-container">
               
+              {/* Anzeige der festen Sprachen */}
               <div className="fixed-languages">
                 <label>{t('creation.identity.knownLanguages')}</label>
                 <div className="tags-list">
                   {fixedLanguageKeys.map((langKey, index) => (
                     <span key={index} className="language-tag fixed">
-                      {t(`languages.${langKey}`)}
+                      {t(`languages.${langKey}`, { defaultValue: langKey })}
                     </span>
                   ))}
                 </div>
               </div>
 
+              {/* Auswahl für zusätzliche Sprache (falls zutreffend) */}
               {hasLanguageChoice && (
                 <div className="language-choice input-group" style={{ marginTop: '10px' }}>
                   <label htmlFor="language-select">{t('creation.identity.chooseLanguage')}</label>
@@ -170,6 +176,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
                   >
                     <option value="" disabled>{t('common.choose')}</option>
                     {AVAILABLE_LANGUAGE_KEYS
+                      // Filtere Sprachen heraus, die der Charakter schon fix kann
                       .filter(langKey => !fixedLanguageKeys.includes(langKey))
                       .map(langKey => (
                         <option key={langKey} value={langKey}>
@@ -181,6 +188,8 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
               )}
             </div>
           </div>
+          {/* +++ ENDE Box 4 +++ */}
+
         </div>
       </div>
     </div>
