@@ -5,30 +5,30 @@ import "./BackgroundSelection.css";
 import "./PanelDetails.css";
 import backgroundDataRaw from "../../data/backgrounds.json";
 
-// Konvertiere das JSON-Objekt in ein Array für die Liste
-const allBackgrounds = Object.values(backgroundDataRaw);
+// Konvertiere das JSON-Objekt in ein Array für die Liste (Filtert leere Einträge)
+const allBackgrounds = Array.isArray(backgroundDataRaw) 
+  ? backgroundDataRaw 
+  : Object.values(backgroundDataRaw);
 
 export const BackgroundSelection = ({ character, updateCharacter }) => {
   const { t } = useTranslation();
   const selectedBackground = character.background;
 
-  // Lokaler State für die Attributsverteilung (nur UI-State, bevor gespeichert wird)
-  const [asiMode, setAsiMode] = useState('focus'); // 'focus' (+2/+1) oder 'balanced' (+1/+1/+1)
+  // Lokaler State
+  const [asiMode, setAsiMode] = useState('focus'); 
   const [selectedAsi, setSelectedAsi] = useState({
-    primary: "",   // für +2
-    secondary: "", // für +1 (bei Focus)
-    first: "",     // für +1 (bei Balanced)
-    second: "",    // für +1 (bei Balanced)
-    third: ""      // für +1 (bei Balanced)
+    primary: "",   
+    secondary: "", 
+    first: "",     
+    second: "",    
+    third: ""      
   });
 
-  // Lokaler State für Ausrüstungswahl ('a' oder 'b')
   const [equipChoice, setEquipChoice] = useState('a');
 
-  // Beim Wechsel des Hintergrunds: Reset der lokalen Auswahl & Speichern des Defaults
+  // Beim Wechsel des Hintergrunds: Reset
   useEffect(() => {
     if (selectedBackground?.source === "PHB2024") {
-      // Default Attribute setzen (die ersten verfügbaren)
       const allowed = selectedBackground.ability_scores || [];
       if (allowed.length >= 3) {
         setSelectedAsi({
@@ -44,7 +44,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
     }
   }, [selectedBackground?.key]);
 
-  // Speichert die Attributsboni im Charakter-Objekt, wenn sich die Auswahl ändert
+  // Speichern im Charakter
   useEffect(() => {
     if (!selectedBackground || selectedBackground.source !== "PHB2024") return;
 
@@ -59,8 +59,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
       if (selectedAsi.third) bonuses[selectedAsi.third] = (bonuses[selectedAsi.third] || 0) + 1;
     }
 
-    // Update des Charakters
-    // Wir speichern auch die Equip-Choice und die Boni
     updateCharacter({ 
       background_options: {
         asiMode,
@@ -73,7 +71,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
 
 
   if (!selectedBackground) {
-    // Wähle automatisch den ersten Hintergrund, falls keiner gewählt ist
     if (allBackgrounds.length > 0) {
         setTimeout(() => updateCharacter({ background: allBackgrounds[0] }), 0);
     }
@@ -82,7 +79,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
 
   const allowedAttributes = selectedBackground.ability_scores || [];
 
-  // Hilfsfunktion zum Rendern der Attributs-Dropdowns
   const renderAsiSelect = (key, excludeKeys = []) => (
     <select 
       className="panel-select"
@@ -90,7 +86,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
       onChange={(e) => setSelectedAsi({ ...selectedAsi, [key]: e.target.value })}
     >
       {allowedAttributes.map(attr => {
-        // Deaktiviere bereits gewählte Attribute (außer es ist das aktuelle Feld)
         const isDisabled = excludeKeys.map(k => selectedAsi[k]).includes(attr) && selectedAsi[key] !== attr;
         return (
           <option key={attr} value={attr} disabled={isDisabled}>
@@ -114,21 +109,20 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                 className={`background-button ${selectedBackground.key === bg.key ? "selected" : ""}`}
                 onClick={() => updateCharacter({ background: bg })}
               >
+                {/* 2024 Badge hier entfernt */}
                 <span className="bg-name">{bg.name}</span>
-                {bg.source === "PHB2024" && <span className="bg-badge">2024</span>}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* --- RECHTE SPALTE (Details & Auswahl) --- */}
+      {/* --- RECHTE SPALTE (Details) --- */}
       <div className="background-column-right">
         <div className="background-box">
           <h2 className="panel-details-header">{selectedBackground.name}</h2>
           <p className="panel-details-description">{t(selectedBackground.description)}</p>
 
-          {/* PHB 2024 Logik */}
           {selectedBackground.source === "PHB2024" ? (
             <div className="phb2024-options">
               
@@ -172,7 +166,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
               
               <div className="details-divider"></div>
 
-              {/* 2. PROFICIENCIES (Fest) */}
+              {/* 2. FERTIGKEITEN (Fest) */}
               <div className="features-grid">
                   <div className="feature-item">
                       <strong>{t('background.proficientSkills')}</strong>
@@ -195,26 +189,23 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                   <h4>{t('background.feature', { name: t(`feats.${selectedBackground.feat}`, selectedBackground.feat) })}</h4>
                   <div className="feat-card">
                       <strong>{t(`feats.${selectedBackground.feat}`)}</strong>
-                      {/* Hier könnte später eine Beschreibung des Feats stehen */}
                       <p className="small-text">Gewährt durch Hintergrund.</p>
                   </div>
               </div>
 
               <div className="details-divider"></div>
 
-              {/* 4. EQUIPMENT */}
+              {/* 4. AUSRÜSTUNG (Klickbare Boxen statt Radio-Buttons) */}
               <div className="option-section">
                   <h4>Ausrüstung</h4>
                   <div className="equipment-options">
                       {selectedBackground.equipment_options?.map(option => (
-                          <label key={option.id} className={`equipment-option ${equipChoice === option.id ? 'selected' : ''}`}>
-                              <input 
-                                type="radio" 
-                                name="equipChoice" 
-                                value={option.id} 
-                                checked={equipChoice === option.id} 
-                                onChange={() => setEquipChoice(option.id)} 
-                              />
+                          <div 
+                            key={option.id} 
+                            className={`equipment-option clickable-box ${equipChoice === option.id ? 'selected' : ''}`}
+                            onClick={() => setEquipChoice(option.id)}
+                          >
+                              {/* Hidden input für Logik entfernt, DIV übernimmt Klick */}
                               <div className="equip-content">
                                   <span className="equip-label">{option.id === 'a' ? "Paket A: Ausrüstung" : "Paket B: Gold"}</span>
                                   <ul className="equip-list-preview">
@@ -223,7 +214,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                                       ))}
                                   </ul>
                               </div>
-                          </label>
+                          </div>
                       ))}
                   </div>
               </div>
@@ -232,7 +223,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
           ) : (
             // FALLBACK FÜR ALTE DATENSTRUKTUR
             <div>
-                <p>Dieser Hintergrund nutzt veraltete Daten.</p>
+                <p>Daten werden geladen...</p>
             </div>
           )}
         </div>
