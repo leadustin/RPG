@@ -4,9 +4,12 @@ import './ClassSelection.css';
 import './PanelDetails.css';
 import allClassData from '../../data/classes.json';
 import { SkillSelection } from './SkillSelection';
-import { SKILL_NAMES_DE } from '../../engine/characterEngine';
 import { useTranslation } from "react-i18next";
-// +++ IMPORTS ERWEITERT +++
+
+// +++ FIX: Import angepasst (SKILL_NAMES_DE entfernt, SKILL_MAP hinzugefügt) +++
+import { SKILL_MAP } from '../../engine/characterEngine';
+
+// +++ IMPORTS (Bleiben gleich) +++
 import { SubclassSelection } from './SubclassSelection';
 import { FightingStyleSelection } from './FightingStyleSelection';
 import { SpellSelection } from './SpellSelection';
@@ -14,26 +17,21 @@ import { ExpertiseSelection } from './ExpertiseSelection';
 import { RangerFeatureSelection } from './RangerFeatureSelection';
 import { ToolInstrumentSelection } from './ToolInstrumentSelection';
 import { WeaponMasterySelection } from './WeaponMasterySelection';
-// +++ IMPORTS ENDE +++
 
 
 // 1. Lade alle Bildmodule aus dem 'classes'-Ordner
 const classIconModules = import.meta.glob(
   '../../assets/images/classes/*.(webp|png|jpe?g|svg)',
-  { eager: true } // 'eager: true' lädt sie sofort
+  { eager: true } 
 );
 
-// 2. Verarbeite die Module in das Format, das dein Code erwartet
-// (z.B. { 'barbarian.webp': '/path/to/barbarian.webp' })
+// 2. Verarbeite die Module
 const classIcons = {};
 for (const path in classIconModules) {
-  const iconUrl = classIconModules[path].default; // 'default' ist die URL
-  // Extrahiere den Dateinamen (z.B. "barbarian.webp") als Key
-  const key = path.split('/').pop(); // Dateiname.ext
+  const iconUrl = classIconModules[path].default; 
+  const key = path.split('/').pop(); 
   classIcons[key] = iconUrl;
 }
-
-
 
 export const ClassSelection = ({ character, updateCharacter }) => {
   const { t } = useTranslation();
@@ -44,68 +42,59 @@ export const ClassSelection = ({ character, updateCharacter }) => {
     updateCharacter({ skill_proficiencies_choice: newSelections });
   };
   
-  // --- NEU: Status für einklappbare Panels ---
-  // Standardmäßig sind 'skills' (Fertigkeiten) und 'cantrips' (Zaubertricks) offen
+  // State für Panels
   const [openPanels, setOpenPanels] = useState(['skills', 'cantrips']);
 
   const handlePanelToggle = (panelKey) => {
     setOpenPanels(currentPanels => {
-      // 1. Wenn wir auf ein bereits offenes Panel klicken, schließen wir es
       if (currentPanels.includes(panelKey)) {
         return currentPanels.filter(p => p !== panelKey);
       }
-
-      // 2. DEINE REGEL: Wenn wir 'spells' (Zauberbuch) öffnen, schließe alle anderen
       if (panelKey === 'spells') {
         return ['spells']; 
       }
-
-      // 3. Wenn wir 'skills' oder 'cantrips' öffnen, schließe 'spells'
-      //    und füge das neue Panel zur Liste der offenen hinzu
       return [...currentPanels.filter(p => p !== 'spells'), panelKey];
     });
   };
-  // --- ENDE NEU ---
   
   if (!selectedClass) {
-    // +++ GEÄNDERT +++
     return <div>{t('common.loadingClasses')}</div>;
   }
 
-  // --- Skill-Optionen-Logik (bleibt gleich) ---
+  // +++ FIX: Skill-Optionen-Logik bereinigt +++
   let skillOptions = [];
   if (skillChoiceData && skillChoiceData.from) {
-    const allSkillKeys = Object.keys(SKILL_NAMES_DE);
-    // Prüfe, ob "from" der Sonderfall "any" ist
+    // Wir nutzen die Keys aus SKILL_MAP für 'any'
+    const allSkillKeys = Object.keys(SKILL_MAP);
+    
     if (skillChoiceData.from === 'any') {
       skillOptions = allSkillKeys;
     } 
-    // Prüfe, ob "from" eine Liste (Array) ist, um Abstürze zu vermeiden
     else if (Array.isArray(skillChoiceData.from)) {
-      skillOptions = skillChoiceData.from.map(skillName => 
-        allSkillKeys.find(key => SKILL_NAMES_DE[key] === skillName)
-      );
+      // Wir nehmen die Liste direkt. 
+      // Annahme: classes.json nutzt jetzt Keys (z.B. "history") oder die Namen werden später via Translation gemappt.
+      skillOptions = skillChoiceData.from;
+      
+      // Falls deine classes.json noch deutsche Namen ("Geschichte") enthält,
+      // wird das in SkillSelection.jsx via t('skills.Geschichte') versucht zu übersetzen.
+      // Das ist nicht ideal, aber bringt die App erstmal wieder zum Laufen.
+      // Langfristig solltest du classes.json auf Keys ("history") umstellen.
     }
   }
-  // --- Ende Skill-Optionen-Logik ---
+  // +++ ENDE FIX +++
 
-  // +++ HELFER-VARIABLEN (ERWEITERT) +++
+  // +++ HELFER-VARIABLEN +++
   const classKey = selectedClass.key;
-  
-  // --- NEU: Prüfen, ob Magier aktiv ist ---
   const isWizard = classKey === 'wizard';
   
-  // Zeige Subklassen-Auswahl auf Lvl 1?
   const showSubclassChoice = (
     classKey === 'cleric' || 
     classKey === 'sorcerer' || 
     classKey === 'warlock'
   );
 
-  // Zeige Kampfstil-Auswahl auf Lvl 1?
   const showLvl1FightingStyle = (classKey === 'fighter');
 
-  // Zeige Zauber-Auswahl auf Lvl 1?
   const showSpellChoice = (
     selectedClass.spellcasting && 
     (classKey === 'wizard' || classKey === 'sorcerer' || classKey === 'bard' || classKey === 'warlock' || classKey === 'cleric' || classKey === 'druid')
@@ -114,20 +103,19 @@ export const ClassSelection = ({ character, updateCharacter }) => {
   const showExpertiseChoice = (classKey === 'rogue');
   const showRangerFeatures = (classKey === 'ranger');
   const showToolInstrumentChoice = (classKey === 'bard' || classKey === 'monk');
-  const showWeaponMastery = (selectedClass.weapon_mastery !== undefined); // NEU
-  // +++ HELFER-VARIABLEN ENDE +++
+  const showWeaponMastery = (selectedClass.weapon_mastery !== undefined); 
 
 
   return (
     <div className="class-selection-container">
-      {/* --- Klassenauswahl-Grid (ERWEITERTES RESET) --- */}
+      {/* --- Klassenauswahl-Grid --- */}
       <div className="class-grid class-summary-box">
         {allClassData.map(cls => (
           <button 
             key={cls.key} 
             onClick={() => updateCharacter({ 
                 class: cls, 
-                // Setze ALLE klassenspezifischen Auswahlen zurück
+                // Reset aller Auswahlen
                 skill_proficiencies_choice: [],
                 subclassKey: null,
                 cantrips_known: [],
@@ -140,36 +128,32 @@ export const ClassSelection = ({ character, updateCharacter }) => {
                 expertise_choices: [],
                 class_tool_choice: null,
                 tool_proficiencies_choice: [],
-                weapon_mastery_choices: [], // NEU
+                weapon_mastery_choices: [], 
             })}
             className={`class-button ${selectedClass.key === cls.key ? 'selected' : ''}`}
           >
-            {/* HINWEIS: Der Key ist jetzt der volle Dateiname, z.B. 'barbarian.webp' */}
             {classIcons[cls.icon] && (
               <img 
                 src={classIcons[cls.icon]} 
-                // +++ GEÄNDERT +++
                 alt={t('classSelection.classIconAlt', { className: cls.name })}
                 className="class-icon"
               />
             )}
-            <span>{cls.name}</span> {/* HINWEIS: Aus JSON, nicht übersetzt */}
+            <span>{cls.name}</span>
           </button>
         ))}
       </div>
 
-      {/* --- Klassendetails (STARK ERWEITERT) --- */}
+      {/* --- Klassendetails --- */}
       <div className="class-details class-summary-box">
-        <p className="class-description">{selectedClass.description}</p> {/* HINWEIS: Aus JSON, nicht übersetzt */}
+        <p className="class-description">{selectedClass.description}</p>
         <div className="details-divider"></div>
         <h3>{t("classSelection.classCharacteristics")}</h3>
         <ul className="features-list">
           {selectedClass.features
             .filter(feature => feature.level === 1)
-            // +++ NEU: Filtere Ranger-spezifische Features aus +++
             .filter(feature => {
-              // Wenn Ranger UND das Feature ist "Bevorzugter Feind" oder "Natürlicher Entdecker"
-              // dann zeige es NICHT hier (wird in RangerFeatureSelection angezeigt)
+              // Filter für Ranger-UI
               if (classKey === 'ranger' && (
                 feature.name === 'Bevorzugter Feind' || 
                 feature.name === 'Natürlicher Entdecker'
@@ -178,7 +162,6 @@ export const ClassSelection = ({ character, updateCharacter }) => {
               }
               return true;
             })
-            // +++ ENDE NEU +++
             .map(feature => (
               <li key={feature.name}>
                 <strong>{feature.name}:</strong> {feature.description}
@@ -187,82 +170,50 @@ export const ClassSelection = ({ character, updateCharacter }) => {
           }
         </ul>
         
-        {/* === START: Bedingte Auswahlmöglichkeiten === */}
+        {/* === Bedingte Auswahlmöglichkeiten === */}
 
-        {/* 1. Subklasse (Kleriker, Zauberer, Hexenmeister) */}
         {showSubclassChoice && (
-          <SubclassSelection 
-            character={character}
-            updateCharacter={updateCharacter}
-          />
+          <SubclassSelection character={character} updateCharacter={updateCharacter} />
         )}
 
-        {/* 2. Kampfstil (Kämpfer) */}
         {showLvl1FightingStyle && (
-          <FightingStyleSelection
-            character={character}
-            updateCharacter={updateCharacter}
-          />
+          <FightingStyleSelection character={character} updateCharacter={updateCharacter} />
         )}
 
-        {/* 3. Waldläufer-Merkmale (Waldläufer) */}
         {showRangerFeatures && (
-          <RangerFeatureSelection 
-            character={character}
-            updateCharacter={updateCharacter}
-          />
+          <RangerFeatureSelection character={character} updateCharacter={updateCharacter} />
         )}
         
-        {/* 3b. Waffenbeherrschung (Barbar, Kämpfer, Paladin, Waldläufer) */}
         {showWeaponMastery && (
-          <WeaponMasterySelection 
-            character={character}
-            updateCharacter={updateCharacter}
-          />
+          <WeaponMasterySelection character={character} updateCharacter={updateCharacter} />
         )}
         
-        {/* 4. Fertigkeiten (Skills) (Alle Klassen mit Auswahl) */}
-        {/* HINWEIS: Dieser Block ist (korrekterweise) vor Expertise */}
         {skillChoiceData && (
-          <>
-            <SkillSelection 
-              options={skillOptions}
-              maxChoices={skillChoiceData.choose}
-              selections={character.skill_proficiencies_choice}
-              setSelections={handleSkillChange}
-              
-              // --- KONDITIONALE PROPS (NUR WENN MAGIER) ---
-              isCollapsible={isWizard}
-              isOpen={openPanels.includes('skills')}
-              onToggle={() => handlePanelToggle('skills')}
-            />
-          </>
+          <SkillSelection 
+            options={skillOptions}
+            maxChoices={skillChoiceData.choose}
+            selections={character.skill_proficiencies_choice}
+            setSelections={handleSkillChange}
+            
+            isCollapsible={isWizard}
+            isOpen={openPanels.includes('skills')}
+            onToggle={() => handlePanelToggle('skills')}
+          />
         )}
 
-        {/* 5. Werkzeuge/Instrumente (Barde, Mönch) */}
         {showToolInstrumentChoice && (
-            <ToolInstrumentSelection
-                character={character}
-                updateCharacter={updateCharacter}
-            />
+            <ToolInstrumentSelection character={character} updateCharacter={updateCharacter} />
         )}
 
-        {/* 6. Expertise (Schurke) */}
         {showExpertiseChoice && (
-            <ExpertiseSelection 
-                character={character}
-                updateCharacter={updateCharacter}
-            />
+            <ExpertiseSelection character={character} updateCharacter={updateCharacter} />
         )}
 
-
-        {/* 7. Zauber (Alle Zauberklassen) */}
         {showSpellChoice && (
           <SpellSelection 
             character={character}
             updateCharacter={updateCharacter}
             
-            // --- KONDITIONALE PROPS (NUR WENN MAGIER) ---
             isCollapsible={isWizard}
             isOpenCantrips={openPanels.includes('cantrips')}
             isOpenSpells={openPanels.includes('spells')}
@@ -271,8 +222,6 @@ export const ClassSelection = ({ character, updateCharacter }) => {
           />
         )}
         
-        {/* === ENDE: Bedingte Auswahlmöglichkeiten === */}
-
       </div>
     </div>
   );

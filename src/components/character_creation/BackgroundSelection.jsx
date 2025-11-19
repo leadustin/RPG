@@ -173,7 +173,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                 </div>
               </div>
               
-              <div className="details-divider"></div>
 
               {/* 2. FERTIGKEITEN (Fest) */}
               <div className="features-grid">
@@ -191,7 +190,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                   </div>
               </div>
 
-              <div className="details-divider"></div>
+              <div className="details-divider"></div>B
 
               {/* 3. FEAT (Fest) */}
               <div className="option-section">
@@ -202,7 +201,7 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                   </div>
               </div>
 
-              <div className="details-divider"></div>
+              <div className="details-divider"></div>C
 
               {/* 4. AUSRÜSTUNG (Klickbare Boxen statt Radio-Buttons) */}
               <div className="option-section">

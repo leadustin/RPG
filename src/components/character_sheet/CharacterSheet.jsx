@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react"; // useRef entfernt
+// src/components/character_sheet/CharacterSheet.jsx
+import React, { useState, useEffect, useMemo } from "react"; 
 import { useDrop } from "react-dnd";
+import { useTranslation } from "react-i18next"; // +++ NEU +++
 import "./CharacterSheet.css";
 import Tooltip from "../tooltip/Tooltip";
 import {
@@ -11,7 +13,7 @@ import {
   getRacialAbilityBonus,
   calculateSkillBonus,
   SKILL_MAP,
-  SKILL_NAMES_DE,
+  // SKILL_NAMES_DE, // <-- ENTFERNT
   SKILL_DESCRIPTIONS_DE,
 } from "../../engine/characterEngine";
 import { LEVEL_XP_TABLE } from "../../utils/helpers";
@@ -24,10 +26,8 @@ import allClassData from "../../data/classes.json";
 
 // --- HILFS-KONSTANTEN ---
 const ATTRIBUTE_ORDER = ["str", "dex", "con", "int", "wis", "cha"];
-const ATTRIBUTE_NAMES_DE = {
-  str: "Stärke", dex: "Geschicklichkeit", con: "Konstitution",
-  int: "Intelligenz", wis: "Weisheit", cha: "Charisma",
-};
+
+// Helper um Skills nach Attribut zu gruppieren
 const SKILLS_BY_ATTRIBUTE = { str: [], dex: [], con: [], int: [], wis: [], cha: [] };
 for (const [skillKey, attrKey] of Object.entries(SKILL_MAP)) {
   if (SKILLS_BY_ATTRIBUTE[attrKey]) {
@@ -42,6 +42,7 @@ const CharacterSheet = ({
   handleUnequipItem,
   handleToggleTwoHanded,
 }) => {
+  const { t } = useTranslation(); // +++ NEU +++
   const [activeTab, setActiveTab] = useState("Inventory");
   const [activeStatTab, setActiveStatTab] = useState("Stats");
   const [activePortrait, setActivePortrait] = useState("");
@@ -186,7 +187,6 @@ const CharacterSheet = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  // useDrop ohne ungenutzte Variablen
   const [, drop] = useDrop(
     () => ({
       accept: [
@@ -209,6 +209,8 @@ const CharacterSheet = ({
       return "";
     }
     try {
+      // Vite-Weg wäre besser, aber wir lassen require erstmal, 
+      // falls es in dieser Datei noch funktioniert (oder du passt es an wie in SummaryPanel)
       return require(`../../assets/images/classes/${character.class.icon}`);
     } catch (e) {
       console.error("Class icon not found:", character.class.icon);
@@ -464,7 +466,8 @@ const CharacterSheet = ({
                         return (
                           <Tooltip 
                             key={key} 
-                            text={ABILITY_DESCRIPTIONS_DE[key]}
+                            // Nutze falls verfügbar Übersetzung, sonst Fallback
+                            text={ABILITY_DESCRIPTIONS_DE[key] || t(`abilities.descriptions.${key}`)}
                           >
                             <div className="stat-block">
                               <span className="stat-value">
@@ -504,17 +507,15 @@ const CharacterSheet = ({
                     return (
                       <div className="skill-group" key={attrKey}>
                         <div className="skill-group-header">
-                          {ATTRIBUTE_NAMES_DE[attrKey]} (
-                          {modifier >= 0 ? "+" : ""}
-                          {modifier})
+                          {/* +++ FIX: t() statt ATTRIBUTE_NAMES_DE +++ */}
+                          {t(`abilities.${attrKey}`)} ({modifier >= 0 ? "+" : ""}{modifier})
                         </div>
 
                         {skills.map((skillKey) => {
                           const bonus = calculateSkillBonus(character, skillKey);
-                          const name = SKILL_NAMES_DE[skillKey] || skillKey;
-                          const description =
-                            SKILL_DESCRIPTIONS_DE[skillKey] ||
-                            "Keine Beschreibung verfügbar.";
+                          // +++ FIX: t() statt SKILL_NAMES_DE +++
+                          const name = t(`skills.${skillKey}`, skillKey);
+                          const description = SKILL_DESCRIPTIONS_DE[skillKey] || "Keine Beschreibung verfügbar.";
                           
                           return (
                             <Tooltip key={skillKey} text={description}>

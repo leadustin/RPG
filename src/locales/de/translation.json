@@ -274,5 +274,27 @@
     },
     "emptyLogSearch": "Keine Einträge gefunden.",
     "emptyLogNoFilter": "Keine passenden Log-Einträge."
-  }
+  },
+  
+  "skills": {
+    "acrobatics": "Akrobatik",
+    "animal_handling": "Tierkunde",
+    "arcana": "Arkanum",
+    "athletics": "Athletik",
+    "deception": "Täuschung",
+    "history": "Geschichte",
+    "insight": "Einblick",
+    "intimidation": "Einschüchtern",
+    "investigation": "Nachforschungen",
+    "medicine": "Medizin",
+    "nature": "Naturkunde",
+    "perception": "Wahrnehmung",
+    "performance": "Darbietung",
+    "persuasion": "Überzeugen",
+    "religion": "Religion",
+    "sleight_of_hand": "Fingerfertigkeit",
+    "stealth": "Heimlichkeit",
+    "survival": "Überlebenskunst"
+  },
+  "skills.title": "Fertigkeiten"
 }

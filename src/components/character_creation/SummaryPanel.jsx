@@ -1,304 +1,321 @@
 // src/components/character_creation/SummaryPanel.jsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './SummaryPanel.css';
 import './PanelDetails.css'; 
 import Tooltip from '../tooltip/Tooltip';
-// KORREKTUR: getModifier statt getAbilityModifier importieren
 import {
-  getModifier, 
+  getAbilityModifier,
   getProficiencyBonus,
   calculateInitialHP,
   calculateAC,
-  getRacialAbilityBonus,
   calculateSkillBonus,
   isProficientInSkill,
-  SKILL_MAP,
-  SKILL_NAMES_DE,
-  ABILITY_DESCRIPTIONS_DE, 
-  SKILL_DESCRIPTIONS_DE,   
-  COMBAT_STATS_DESCRIPTIONS_DE 
-} from '../../utils/helpers';
+  SKILL_MAP
+} from '../../engine/characterEngine';
 
-import { getItemById } from '../../utils/itemLoader';
 import allSpells from "../../data/spells.json";
 import allClassData from "../../data/classes.json";
 
 // +++ VITE-ERSATZ für Bilder +++
 const portraitModules = import.meta.glob(
-  '../../assets/images/portraits/human/male/*.webp',
-  { eager: true }
+  '../../assets/images/portraits/**/*.webp',
+  { eager: true, import: 'default' }
 );
-const racePortraits = {};
-for (const path in portraitModules) {
-  const iconUrl = portraitModules[path].default; 
-  const key = path.split('/').pop(); 
-  racePortraits[key] = iconUrl;
-}
+
+const getPortraitPath = (raceKey, gender, portraitIndex = 1) => {
+    if (!raceKey) return null;
+    const genderStr = gender === 'male' ? 'male' : 'female';
+    const path = `../../assets/images/portraits/${raceKey}/${genderStr}/${portraitIndex}.webp`;
+    return portraitModules[path] || null;
+};
 // +++ ENDE VITE-ERSATZ +++
 
 // --- Helfer-Komponenten ---
+
 const StatDisplay = ({ statKey, label, value, modifier }) => {
-  const description = ABILITY_DESCRIPTIONS_DE?.[statKey] || "";
-  return (
-    <Tooltip text={description}>
+    return (
       <li> 
         <div className="stat-display">
           <span className="stat-label">{label}</span>
-          <span className="stat-value">{value}</span>
-          <span className="stat-modifier">
-            {modifier >= 0 ? `+${modifier}` : modifier}
+          <span className="stat-value">
+             {value} <span className="stat-modifier">({modifier >= 0 ? `+${modifier}` : modifier})</span>
           </span>
         </div>
       </li>
-    </Tooltip>
-  );
+    );
 };
 
-const SkillDisplay = ({ skillKey, character }) => {
-  const bonus = calculateSkillBonus(character, skillKey);
-  const proficient = isProficientInSkill(character, skillKey);
-  const ability = SKILL_MAP && SKILL_MAP[skillKey] ? SKILL_MAP[skillKey].toUpperCase() : "?";
-  const name = SKILL_NAMES_DE?.[skillKey] || skillKey;
-  const isExpertise = character.expertise_choices?.includes(skillKey);
-  const description = SKILL_DESCRIPTIONS_DE?.[skillKey] || "";
-
+const CombatStatDisplay = ({ label, value }) => {
   return (
-    <Tooltip text={description}>
-      <li key={skillKey} className="skill-item">
-        <div className="skill-info">
-          <span className={`proficiency-dot ${proficient ? 'proficient' : ''}`}></span>
-          <span>{name} {isExpertise ? "(E)" : ""} <span className="skill-ability">({ability})</span></span>
-        </div>
-        <span className="skill-bonus">{bonus >= 0 ? `+${bonus}` : bonus}</span>
-      </li>
-    </Tooltip>
-  );
-};
-
-const CombatStatDisplay = ({ statKey, label, value }) => {
-  const description = COMBAT_STATS_DESCRIPTIONS_DE?.[statKey] || "";
-  return (
-    <Tooltip text={description}>
       <li>
         <div className="stat-box">
           <div className="stat-value">{value}</div>
           <div className="stat-label">{label}</div>
         </div>
       </li>
-    </Tooltip>
   );
 };
 
-export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
+export const SummaryPanel = ({ character }) => {
+  const { t } = useTranslation();
   const [isSkillsOpen, setIsSkillsOpen] = useState(true);
   
-  if (!character) return <div className="summary-panel-layout">Charakter wird geladen...</div>;
+  if (!character) {
+    return <div className="summary-panel-layout">Charakter wird geladen...</div>;
+  }
 
   const { abilities, race, class: charClass, background } = character;
   const level = 1;
 
-  // Stats calculation
+  // --- BERECHNUNGEN (PHB 2024: Boni aus Hintergrund) ---
+  const bgBonuses = character.background_options?.bonuses || {};
+
   const finalStats = {
-    str: (abilities?.str || 10) + getRacialAbilityBonus(character, "str"),
-    dex: (abilities?.dex || 10) + getRacialAbilityBonus(character, "dex"),
-    con: (abilities?.con || 10) + getRacialAbilityBonus(character, "con"),
-    int: (abilities?.int || 10) + getRacialAbilityBonus(character, "int"),
-    wis: (abilities?.wis || 10) + getRacialAbilityBonus(character, "wis"),
-    cha: (abilities?.cha || 10) + getRacialAbilityBonus(character, "cha"),
+    str: abilities.str + (bgBonuses.str || 0),
+    dex: abilities.dex + (bgBonuses.dex || 0),
+    con: abilities.con + (bgBonuses.con || 0),
+    int: abilities.int + (bgBonuses.int || 0),
+    wis: abilities.wis + (bgBonuses.wis || 0),
+    cha: abilities.cha + (bgBonuses.cha || 0),
   };
   
-  // KORREKTUR: Hier 'getModifier' verwenden
   const modifiers = {
-    str: getModifier(finalStats.str),
-    dex: getModifier(finalStats.dex),
-    con: getModifier(finalStats.con),
-    int: getModifier(finalStats.int),
-    wis: getModifier(finalStats.wis),
-    cha: getModifier(finalStats.cha),
+    str: getAbilityModifier(finalStats.str),
+    dex: getAbilityModifier(finalStats.dex),
+    con: getAbilityModifier(finalStats.con),
+    int: getAbilityModifier(finalStats.int),
+    wis: getAbilityModifier(finalStats.wis),
+    cha: getAbilityModifier(finalStats.cha),
   };
   
-  const hp = calculateInitialHP(character);
+  const hp = calculateInitialHP(character); 
   const ac = calculateAC(character);
   const profBonus = getProficiencyBonus(level);
   
-  const portraitKey = character.race?.portrait_img || "1.webp";
-  const portraitSrc = racePortraits[portraitKey] || "";
+  // --- Portrait ---
+  let portraitSrc = character.portrait;
+  if (!portraitSrc && race) {
+      portraitSrc = getPortraitPath(race.key, character.gender, 1);
+  }
 
-  // Safe Spell Names Helper
-  const getSpellNames = (spellKeys) => {
-    if (!spellKeys || !Array.isArray(spellKeys)) return [];
+  // --- Daten für rechte Spalte ---
+  const getSpellNames = (spellKeys = []) => {
     return spellKeys
       .map((key) => allSpells.find((s) => s.key === key)?.name)
       .filter(Boolean);
   };
-
-  const subclassData = character.subclassKey && allClassData
-      .find((c) => c.key === charClass?.key)
+  
+  const subclassData =
+    character.subclassKey &&
+    allClassData
+      .find((c) => c.key === charClass.key)
       ?.subclasses.find((sc) => sc.key === character.subclassKey);
-
+      
   const cantripNames = getSpellNames(character.cantrips_known);
   
   let level1SpellNames = [];
   let level1SpellLabel = "Zauber (Lvl 1)";
   if (character.spellbook?.length > 0) {
      level1SpellNames = getSpellNames(character.spellbook);
-     level1SpellLabel = "Zauberbuch (Lvl 1)";
+     level1SpellLabel = "Zauberbuch";
   } else if (character.spells_known?.length > 0) {
      level1SpellNames = getSpellNames(character.spells_known);
-     level1SpellLabel = "Bekannte Zauber (Lvl 1)";
+     level1SpellLabel = "Bekannte Zauber";
   } else if (character.spells_prepared?.length > 0) {
      level1SpellNames = getSpellNames(character.spells_prepared);
-     level1SpellLabel = "Vorbereitete Zauber (Lvl 1)";
+     level1SpellLabel = "Vorbereitete Zauber";
   }
+  
+  const showExpertiseThievesTools = character.expertise_choices?.includes("thieves_tools");
 
-  const equipChoiceId = character.background_options?.equipmentOption || 'a';
-  const selectedEquipOption = background?.equipment_options?.find(opt => opt.id === equipChoiceId);
-
-  const finalizeCharacter = () => {
-    if (!selectedEquipOption) {
-        console.warn("Keine Ausrüstungsoption gefunden.");
-        if (onFinish) onFinish(); 
-        return;
-    }
-    let newInventory = [...(character.inventory || [])];
-    let goldToAdd = 0;
-
-    // Safe access to items array
-    const items = selectedEquipOption.items || [];
-    items.forEach(entry => {
-        if (entry.item_id === 'gold') {
-            goldToAdd += entry.quantity;
-        } else {
-            const itemData = getItemById(entry.item_id);
-            for (let i = 0; i < entry.quantity; i++) {
-                newInventory.push({
-                    ...itemData,
-                    instanceId: Math.random().toString(36).substr(2, 9) 
-                });
-            }
-        }
-    });
-
-    const finalCharacter = {
-        ...character,
-        inventory: newInventory,
-        gold: (character.gold || 0) + goldToAdd,
-        isCharacterComplete: true
-    };
-    
-    if (updateCharacter) updateCharacter(finalCharacter);
-    if (onFinish) onFinish();
-  };
-
-  // Determine safe skill list
-  const skillKeys = SKILL_MAP ? Object.keys(SKILL_MAP) : [];
 
   return (
     <div className="summary-panel-layout">
+      
+      {/* --- LINKE SPALTE (STATS & INFO) --- */}
       <div className="summary-column-left">
+        
+        {/* Box 1: Identität */}
         <div className="summary-box">
-          <div className="summary-basics">
-            {portraitSrc && <img src={portraitSrc} alt="Charakterporträt" className="summary-portrait-img" />}
-            <div className="summary-basics-info">
-              <h3>{character.name}</h3>
-              <p>{race?.name} {charClass?.name} {level}</p>
-              {subclassData && <p><strong>{subclassData.name.includes("Domäne") ? "Domäne" : "Unterklasse"}:</strong> {subclassData.name}</p>}
-              <p><strong>Hintergrund:</strong> {background?.name}</p>
+          <div className="summary-header summary-basics-flex">
+            {portraitSrc ? (
+                <img 
+                  src={portraitSrc} 
+                  alt="Charakterporträt" 
+                  className="summary-portrait-img-small" 
+                />
+            ) : (
+                <div className="summary-portrait-img-small" style={{background: '#333'}}>?</div>
+            )}
+            
+            <div className="summary-header-info">
+              <h2>{character.name || t('creation.default_name')}</h2>
+              <h3>
+                {t(`races.${race?.key}.name`, race?.name)} | {charClass?.name} | {background?.name}
+              </h3>
+              <p>Level {level}</p>
+              {subclassData && (
+                  <p style={{fontSize: '0.85em', color: '#aaa', marginTop: '2px'}}>
+                     {subclassData.name}
+                  </p>
+              )}
             </div>
           </div>
         </div>
 
+        {/* Box 2: Kampfwerte */}
         <div className="summary-box">
           <h3>Kampfwerte</h3>
           <ul className="summary-stats-grid">
-            <CombatStatDisplay statKey="ac" label="RK" value={ac} />
-            <CombatStatDisplay statKey="hp" label="TP" value={hp} />
-            <CombatStatDisplay statKey="proficiency" label="ÜB" value={`+${profBonus}`} />
+            <CombatStatDisplay label="Rüstungsklasse" value={ac} />
+            <CombatStatDisplay label="Trefferpunkte" value={hp} />
+            <CombatStatDisplay label="Übungsbonus" value={`+${profBonus}`} />
           </ul>
         </div>
         
+        {/* Box 3: Attribute - FIX: Layout angepasst */}
         <div className="summary-box">
           <h3>Attribute</h3>
+          {/* Hier nutzen wir jetzt die korrekte CSS-Klasse für eine Liste */}
           <ul className="ability-summary-list">
-            {abilities && Object.keys(abilities).map(key => {
+            {Object.keys(abilities).map(key => {
               const statKey = key.toLowerCase();
-              return <StatDisplay key={statKey} statKey={statKey} label={statKey.toUpperCase()} value={finalStats[statKey]} modifier={modifiers[statKey]} />;
+              return (
+                <StatDisplay 
+                  key={statKey}
+                  statKey={statKey}
+                  label={t(`abilities.${statKey}`, statKey.toUpperCase())}
+                  value={finalStats[statKey]}
+                  modifier={modifiers[statKey]}
+                />
+              );
             })}
           </ul>
+          {Object.keys(bgBonuses).length > 0 && (
+             <div style={{textAlign: 'center', fontSize: '0.8em', color: '#888', marginTop: '5px'}}>
+               (Inkl. Boni durch Hintergrund)
+             </div>
+          )}
         </div>
       </div>
 
+      {/* --- RECHTE SPALTE (LISTEN & FEATURES) --- */}
       <div className="summary-column-right">
+
+        {/* Box 4: Klassenauswahl */}
         <div className="summary-box">
-          <h3>Klassen-Auswahl (Lvl 1)</h3>
+          <h3>Klassen-Auswahl</h3>
           <ul className="skill-summary-list features-list">
-            {character.fighting_style && <li className="skill-item"><div className="skill-info"><span><strong>Kampfstil:</strong> {character.fighting_style}</span></div></li>}
-            {character.favored_enemy && <li className="skill-item"><div className="skill-info"><span><strong>Bev. Feind:</strong> {character.favored_enemy}</span></div></li>}
-            {character.natural_explorer && <li className="skill-item"><div className="skill-info"><span><strong>Gelände:</strong> {character.natural_explorer}</span></div></li>}
-            {character.class_tool_choice && <li className="skill-item"><div className="skill-info"><span><strong>Werkzeug:</strong> {character.class_tool_choice}</span></div></li>}
-            {character.tool_proficiencies_choice?.length > 0 && <li className="skill-item"><div className="skill-info"><span><strong>Instrumente:</strong> {character.tool_proficiencies_choice.join(", ")}</span></div></li>}
-            {cantripNames.length > 0 && <li className="skill-item"><div className="skill-info"><span><strong>Zaubertricks:</strong> {cantripNames.join(", ")}</span></div></li>}
-            {level1SpellNames.length > 0 && <li className="skill-item"><div className="skill-info"><span><strong>{level1SpellLabel}:</strong> {level1SpellNames.join(", ")}</span></div></li>}
+            {character.fighting_style && (
+              <li className="skill-item">
+                  <div className="skill-info"><span><strong>Kampfstil:</strong> {t(`fightingStyles.${character.fighting_style}.name`, character.fighting_style)}</span></div>
+              </li>
+            )}
+            {character.favored_enemy && (
+              <li className="skill-item">
+                  <div className="skill-info"><span><strong>Bev. Feind:</strong> {character.favored_enemy}</span></div>
+              </li>
+            )}
+            {character.natural_explorer && (
+              <li className="skill-item">
+                  <div className="skill-info"><span><strong>Gelände:</strong> {character.natural_explorer}</span></div>
+              </li>
+            )}
+            {character.class_tool_choice && (
+               <li className="skill-item">
+                  <div className="skill-info"><span><strong>Werkzeug:</strong> {character.class_tool_choice}</span></div>
+               </li>
+            )}
+            {character.tool_proficiencies_choice?.length > 0 && (
+               <li className="skill-item">
+                  <div className="skill-info">
+                      <span><strong>Instrumente:</strong> {character.tool_proficiencies_choice.join(", ")}</span>
+                  </div>
+               </li>
+            )}
+            {cantripNames.length > 0 && (
+              <li className="skill-item">
+                <div className="skill-info"><span><strong>Zaubertricks:</strong> {cantripNames.join(", ")}</span></div>
+              </li>
+            )}
+            {level1SpellNames.length > 0 && (
+               <li className="skill-item">
+                  <div className="skill-info"><span><strong>{level1SpellLabel}:</strong> {level1SpellNames.join(", ")}</span></div>
+               </li>
+            )}
           </ul>
         </div>
-
+        
+        {/* Box 5: Ausrüstung & Hintergrund */}
         <div className="summary-box">
-          <h3 className={`collapsible-header ${isSkillsOpen ? 'open' : ''}`} onClick={() => setIsSkillsOpen(!isSkillsOpen)}>
-            Fertigkeiten <span className="collapse-icon">{isSkillsOpen ? '▼' : '►'}</span>
+            <h3>Ausrüstung</h3>
+            <ul className="skill-summary-list features-list">
+                <li className="skill-item">
+                    <div className="skill-info">
+                        <span>Paket: <strong>{character.background_options?.equipmentOption?.toUpperCase() || 'A'}</strong> ({background?.name})</span>
+                    </div>
+                </li>
+                {background?.feat && (
+                    <li className="skill-item">
+                        <div className="skill-info">
+                            <span>Bonus Talent: <strong>{t(`feats.${background.feat}`, background.feat)}</strong></span>
+                        </div>
+                    </li>
+                )}
+            </ul>
+        </div>
+
+        {/* Box 6: Fertigkeiten */}
+        <div className="summary-box">
+          <h3 
+            className={`collapsible-header ${isSkillsOpen ? 'open' : ''}`}
+            onClick={() => setIsSkillsOpen(!isSkillsOpen)}
+          >
+            {t('skills.title', 'Fertigkeiten')}
+            <span className="collapse-icon">{isSkillsOpen ? '▼' : '►'}</span>
           </h3>
+          
           {isSkillsOpen && (
             <ul className="skill-summary-list features-list scrollable-list-box">
-              {skillKeys.map(skillKey => <SkillDisplay key={skillKey} skillKey={skillKey} character={character} />)}
-              {character.expertise_choices?.includes("thieves_tools") && (
-                <Tooltip text={"Expertise in Diebeswerkzeug (DEX). Dein Übungsbonus wird verdoppelt."}>
+              {Object.keys(SKILL_MAP).map(skillKey => {
+                 const attrKey = SKILL_MAP[skillKey];
+                 const attrVal = finalStats[attrKey];
+                 const mod = getAbilityModifier(attrVal);
+                 
+                 const isProf = isProficientInSkill(character, skillKey);
+                 const isExpert = character.expertise_choices?.includes(skillKey);
+                 
+                 let bonus = mod;
+                 if (isProf) bonus += profBonus;
+                 if (isExpert) bonus += profBonus;
+                 
+                 return (
+                    <li key={skillKey} className={`skill-item ${isProf ? 'proficient' : ''}`}>
+                        <div className="skill-info">
+                            <span className={`proficiency-dot ${isProf ? 'proficient' : ''}`}></span>
+                            <span>
+                                {t(`skills.${skillKey}`, skillKey)} 
+                                {isExpert && " (E)"} 
+                                <span className="skill-ability"> ({attrKey.toUpperCase()})</span>
+                            </span>
+                        </div>
+                        <span className="skill-bonus">{bonus >= 0 ? `+${bonus}` : bonus}</span>
+                    </li>
+                 );
+              })}
+              
+              {showExpertiseThievesTools && (
                   <li className="skill-item">
                     <div className="skill-info">
                       <span className="proficiency-dot proficient"></span>
                       <span>Diebeswerkzeug (E) <span className="skill-ability">(DEX)</span></span>
                     </div>
                   </li>
-                </Tooltip>
               )}
             </ul>
           )}
         </div>
-
-        <div className="summary-box">
-            <h3>Ausrüstung (Vorschau)</h3>
-            <div className="equipment-preview">
-                {selectedEquipOption ? (
-                    <>
-                        <p><strong>Paket {selectedEquipOption.id.toUpperCase()}: {selectedEquipOption.label}</strong></p>
-                        <ul className="equip-list-summary">
-                            {selectedEquipOption.items && selectedEquipOption.items.length > 0 ? (
-                                selectedEquipOption.items.map((item, i) => {
-                                    const realItem = item.item_id === 'gold' 
-                                        ? { name: "Goldmünzen" } 
-                                        : getItemById(item.item_id);
-                                    
-                                    return (
-                                        <li key={i}>
-                                            {item.quantity}x {realItem ? realItem.name : item.item_id}
-                                        </li>
-                                    );
-                                })
-                            ) : (
-                                <li>Keine Items in diesem Paket.</li>
-                            )}
-                        </ul>
-                    </>
-                ) : (
-                    <p>Keine Ausrüstung gewählt.</p>
-                )}
-            </div>
-        </div>
-
-        <div className="summary-actions" style={{ marginTop: '20px', textAlign: 'center' }}>
-            <button className="finalize-button" onClick={finalizeCharacter}>
-                Abenteuer beginnen
-            </button>
-        </div>
-
       </div>
     </div>
   );

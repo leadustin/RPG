@@ -13,7 +13,6 @@ export const getAbilityModifier = (score) => {
  * Gibt den Übungsbonus für ein gegebenes Level zurück.
  */
 export const getProficiencyBonus = (level) => {
-  // *** 2. KORRIGIERT (D&D 5e geht bis +6) ***
   if (level < 5) return 2;
   if (level < 9) return 3;
   if (level < 13) return 4;
@@ -23,20 +22,19 @@ export const getProficiencyBonus = (level) => {
 
 /**
  * Holt den vom Spieler zugewiesenen Attributsbonus für ein Attribut.
- * Unterstützt sowohl fixe als auch floating Boni.
+ * (PHB 2024 Logik: Boni kommen aus dem Hintergrund und werden in ability_bonus_assignments gespeichert)
  */
 export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
- 
-    // VEREINFACHTE LOGIK FÜR 2024-Regeln
-    if (
-      character.ability_bonus_assignments &&
-      character.ability_bonus_assignments[abilityKey]
-    ) {
-      return character.ability_bonus_assignments[abilityKey];
-    }
- 
-    return 0;
+
+  if (
+    character.ability_bonus_assignments &&
+    character.ability_bonus_assignments[abilityKey]
+  ) {
+    return character.ability_bonus_assignments[abilityKey];
+  }
+
+  return 0;
 };
 
 /**
@@ -50,7 +48,7 @@ export const calculateInitialHP = (character) => {
   const conModifier = getAbilityModifier(finalCon);
   let hp = character.class.hit_die + conModifier;
 
-  // KORREKTUR (D&D 2024): Alle Zwerge erhalten +1 HP pro Stufe (also +1 auf Stufe 1)
+  // Zwerge erhalten +1 HP pro Stufe (also +1 auf Stufe 1)
   if (character.race.key === "dwarf") {
     hp += 1;
   }
@@ -73,31 +71,14 @@ export const calculateAC = (character) => {
   // 2. Ausgerüstete Items
   const equippedArmorData = character.equipment?.armor;
 
-  // Schild-Erkennung
-  let equippedShieldData = null;
+  // Schild-Erkennung (Vereinfacht)
   let shieldBonus = 0;
-
-  if (
-    character.equipment?.["off-hand"] &&
-    character.equipment["off-hand"].type === "shield"
-  ) {
-    equippedShieldData = character.equipment["off-hand"];
-    shieldBonus = equippedShieldData.ac || 2;
-  } else if (
-    character.equipment?.["off-hand"] &&
-    character.equipment["off-hand"].slot === "off-hand"
-  ) {
-    equippedShieldData = character.equipment["off-hand"];
-    shieldBonus = equippedShieldData.ac || 2;
-  } else if (character.equipment?.shield) {
-    equippedShieldData = character.equipment.shield;
-    shieldBonus = equippedShieldData.ac || 2;
-  } else if (
-    character.equipment?.["off-hand"] &&
-    character.equipment["off-hand"].ac > 0
-  ) {
-    equippedShieldData = character.equipment["off-hand"];
-    shieldBonus = equippedShieldData.ac;
+  const offHand = character.equipment?.["off-hand"] || character.equipment?.shield;
+  
+  if (offHand) {
+     if (offHand.type === "shield" || (offHand.ac && offHand.ac > 0)) {
+         shieldBonus = offHand.ac || 2;
+     }
   }
 
   // 3. Fall 1: Charakter trägt eine Rüstung
@@ -112,6 +93,7 @@ export const calculateAC = (character) => {
       armorName.includes("wams") ||
       armorName.includes("elfen-kettenrüstung")
     ) {
+      // Leichte Rüstung: Voller Dex-Bonus
       armorDexBonus = dexModifier;
     } else if (
       armorName.includes("kettenhemd") ||
@@ -119,15 +101,17 @@ export const calculateAC = (character) => {
       armorName.includes("brustplatte") ||
       armorName.includes("halbplatten")
     ) {
+      // Mittelschwere Rüstung: Max +2 Dex
       armorDexBonus = Math.min(dexModifier, 2);
     } else {
+      // Schwere Rüstung: Kein Dex-Bonus
       armorDexBonus = 0;
     }
 
     return baseAC + armorDexBonus + shieldBonus;
   }
 
-  // 4. Fall 2: Charakter trägt KEINE Rüstung
+  // 4. Fall 2: Charakter trägt KEINE Rüstung (Unarmored Defense)
   else {
     let unarmoredAC = 10 + dexModifier;
 
@@ -136,7 +120,8 @@ export const calculateAC = (character) => {
         character.abilities.con + getRacialAbilityBonus(character, "con");
       const conModifier = getAbilityModifier(finalCon);
       unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + conModifier);
-    } else if (character.class.key === "monk" && !equippedShieldData) {
+    } else if (character.class.key === "monk" && shieldBonus === 0) {
+      // Mönch verliert Unarmored Defense, wenn er ein Schild trägt
       const finalWis =
         character.abilities.wis + getRacialAbilityBonus(character, "wis");
       const wisModifier = getAbilityModifier(finalWis);
@@ -169,30 +154,9 @@ export const SKILL_MAP = {
   survival: "wis",
 };
 
-// Deutsche Namen für die Anzeige
-export const SKILL_NAMES_DE = {
-  acrobatics: "Akrobatik",
-  animal_handling: "Tierkunde",
-  arcana: "Arkanum",
-  athletics: "Athletik",
-  deception: "Täuschung",
-  history: "Geschichte",
-  insight: "Einblick",
-  intimidation: "Einschüchtern",
-  investigation: "Nachforschungen",
-  medicine: "Medizin",
-  nature: "Naturkunde",
-  perception: "Wahrnehmung",
-  performance: "Darbietung",
-  persuasion: "Überzeugen",
-  religion: "Religion",
-  sleight_of_hand: "Fingerfertigkeit",
-  stealth: "Heimlichkeit",
-  survival: "Überlebenskunst",
-};
-
 /**
  * Prüft, ob ein Charakter in einer Fertigkeit geübt ist.
+ * Nutzt jetzt nur noch englische Keys (z.B. 'insight').
  */
 export const isProficientInSkill = (character, skillKey) => {
   const {
@@ -201,22 +165,21 @@ export const isProficientInSkill = (character, skillKey) => {
     skill_proficiencies_choice,
   } = character;
 
-  // 1. Übung durch Hintergrund
-  if (
-    background.skill_proficiencies
-      .map((s) => s.toLowerCase())
-      .includes(SKILL_NAMES_DE[skillKey].toLowerCase())
-  ) {
+  // 1. Übung durch Hintergrund (PHB 2024: 'skills' Array mit Keys)
+  if (background?.skills && background.skills.includes(skillKey)) {
     return true;
   }
+
   // 2. Übung durch Volk (z.B. Elfen in Wahrnehmung)
   if (
+    race && race.traits &&
     race.traits.some(
       (trait) => trait.name === "Geschärfte Sinne" && skillKey === "perception"
     )
   ) {
     return true;
   }
+
   // 3. Übung durch die Klassen-Auswahl
   if (
     skill_proficiencies_choice &&
@@ -257,7 +220,7 @@ export const calculateMeleeDamage = (character) => {
   const strModifier = getAbilityModifier(strScore);
 
   // Prüfen, ob eine Waffe in der Haupthand ausgerüstet ist
-  const mainHandWeapon = character.equipment["main-hand"];
+  const mainHandWeapon = character.equipment?.["main-hand"];
 
   if (mainHandWeapon && mainHandWeapon.damage) {
     // Wenn eine Waffe mit Schadenswert vorhanden ist
@@ -284,7 +247,7 @@ export const calculateMeleeDamage = (character) => {
   }
 };
 
-// Deutsche Beschreibungen für die Hauptattribute
+// Deutsche Beschreibungen für die Hauptattribute (Content, kein Legacy-Code)
 export const ABILITY_DESCRIPTIONS_DE = {
   str: "Stärke: Misst die körperliche Kraft. Wichtig für Nahkampfangriffe und Athletik.",
   dex: "Geschicklichkeit: Misst die Agilität, Reflexe und Balance. Wichtig für Rüstungsklasse, Fernkampfangriffe und Akrobatik.",
@@ -362,7 +325,6 @@ const getHpRollFormula = (character) => {
 };
 
 
-// +++ START NEUE HILFSFUNKTION (Hinzugefügt) +++
 /**
  * Findet die korrekte Anzahl an Meisterschaften für die aktuelle Stufe.
  * Liest dynamisch alle 'level_X_count'-Einträge.
@@ -386,7 +348,6 @@ const getMasteryCountForLevel = (masteryData, level) => {
   }
   return currentMax;
 };
-// +++ ENDE NEUE HILFSFUNKTION +++
 
 
 /**
@@ -433,8 +394,6 @@ export const checkForLevelUp = (character) => {
       f.level === nextLevel &&
       f.name.toLowerCase() === "fähigkeitspunkte / merkmal"
     );
-
-    // +++ START: NEUE LOGIK FÜR WAFFENMEISTERSCHAFT (Hinzugefügt) +++
     
     // Finde die aktuelle und die neue Anzahl an Meisterschaften
     const currentMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, level);
@@ -446,7 +405,6 @@ export const checkForLevelUp = (character) => {
     if (isMasteryIncrease) {
         console.log(`Neue Waffenmeisterschaft freigeschaltet auf Stufe ${nextLevel}! (Anzahl: ${newMasteryCount})`);
     }
-    // +++ ENDE: NEUE LOGIK +++
 
 
     // Bereite die Daten für das Modal vor
@@ -455,10 +413,8 @@ export const checkForLevelUp = (character) => {
       pendingLevelUp: {
         newLevel: nextLevel,
         hpRollFormula: getHpRollFormula(character),
-        isAbilityIncrease: isAbilityIncrease, // <-- KORRIGIERTE LOGIK
+        isAbilityIncrease: isAbilityIncrease, 
         isSubclassChoice: isSubclassChoiceLevel && !character.subclassKey, 
-        
-        // +++ NEUE DATEN FÜR DAS MODAL HINZUGEFÜGT +++
         isMasteryIncrease: isMasteryIncrease,
         newMasteryCount: newMasteryCount,
         currentMasteryCount: currentMasteryCount 
@@ -562,7 +518,6 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
 
 /**
  * VERGIBT ERFAHRUNGSPUNKTE (für die ganze Gruppe)
- * (Wiederhergestellt)
  */
 export const grantExperienceToParty = (party, defeatedEnemies) => {
   const totalXp = defeatedEnemies.reduce(
@@ -592,7 +547,6 @@ export const grantExperienceToParty = (party, defeatedEnemies) => {
 
 /**
  * GIBT EINEM CHARAKTER EP
- * (Wiederhergestellt)
  */
 export const grantXpToCharacter = (character, xpAmount) => {
   if (!xpAmount || xpAmount <= 0) {

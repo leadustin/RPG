@@ -1,7 +1,7 @@
 [
   {
     "key": "acolyte",
-    "name": "Akoluth",
+    "name": "Akolyth",
     "source": "PHB2024",
     "description": "backgrounds.acolyte.description",
     "ability_scores": ["int", "wis", "cha"],
