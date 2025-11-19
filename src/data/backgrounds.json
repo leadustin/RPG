@@ -1,9 +1,9 @@
-{
-  "acolyte": {
+[
+  {
     "key": "acolyte",
-    "name": "Acolyte",
+    "name": "Akoluth",
     "source": "PHB2024",
-    "description": "backgrounds.acolyte.description",
+    "description": "Du hast dein Leben dem Dienst in einem Tempel gewidmet. Du handelst als Vermittler zwischen dem Göttlichen und den Sterblichen, vollziehst heilige Riten und bringst Opfer dar.",
     "ability_scores": ["int", "wis", "cha"],
     "feat": "magic_initiate_cleric",
     "skills": ["insight", "religion"],
@@ -30,7 +30,7 @@
       }
     ]
   },
-  "charlatan": {
+  {
     "key": "charlatan",
     "name": "Scharlatan",
     "description": "Du warst schon immer jemand mit einem Händchen dafür, Leute um den Finger zu wickeln. Du konzentrierst dich auf die Geheimnisse anderer und spielst sie zu deinem Vorteil aus.",
@@ -53,7 +53,7 @@
       "description": "Du erhältst das Talent 'Geübt'. Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
     }
   },
-  "criminal": {
+  {
     "key": "criminal",
     "name": "Krimineller",
     "description": "Du bist ein erfahrener Krimineller mit einer Geschichte von Verbrechen. Du hast in einer Welt von Dieben, Schmugglern und Mördern gelebt, was dir bestimmte Fähigkeiten und Kontakte eingebracht hat.",
@@ -78,7 +78,7 @@
       "description": "Du erhältst das Talent 'Wachsam' (Alert). Du erhältst einen Bonus auf deine Initiative und kannst zu Beginn eines Kampfes deinen Initiativewert mit dem eines willigen Verbündeten tauschen."
     }
   },
-  "merchant": {
+  {
     "key": "merchant",
     "name": "Händler",
     "description": "Du bist ein erfahrener Händler, der weite Strecken zurücklegt, um Waren zu kaufen und zu verkaufen. Du verstehst die Kunst der Überzeugung und weißt, wie man sich auf Reisen orientiert.",
@@ -101,7 +101,7 @@
       "description": "Du erhältst das Talent 'Glückspilz' (Lucky). Du hast drei Glückspunkte, die du ausgeben kannst, um Wurf- oder SG-Ergebnisse zu beeinflussen."
     }
   },
-  "entertainer": {
+  {
     "key": "entertainer",
     "name": "Unterhalter",
     "description": "Du lebst, um das Publikum zu begeistern. Du weißt, wie man die Menge unterhält, sie zum Lachen oder Weinen bringt und ihre Stimmungen beeinflusst.",
@@ -126,7 +126,7 @@
       "description": "Du erhältst das Talent 'Musiker' (Musician). Du erlangst Übung in einem weiteren Musikinstrument deiner Wahl und kannst dieses als Waffe einsetzen."
     }
   },
-  "guard": {
+  {
     "key": "guard",
     "name": "Wache",
     "description": "Du hast in der örtlichen Stadtwache oder der Leibwache eines Adligen gedient. Dein Dienst hat dich gelehrt, wachsam zu sein, potenzielle Gefahren schnell zu erkennen und die Ordnung aufrechtzuerhalten.",
@@ -154,7 +154,7 @@
       "description": "Du erhältst das Talent 'Wachsam' (Alert). Du erhältst einen Bonus auf deine Initiative und kannst zu Beginn eines Kampfes deinen Initiativewert mit dem eines willigen Verbündeten tauschen."
     }
   },
-  "farmer": {
+  {
     "key": "farmer",
     "name": "Bauer",
     "description": "Du hast dein Leben der harten Arbeit auf dem Land gewidmet. Dein Alltag ist geprägt von den Jahreszeiten, der Pflege von Tieren und dem Bau einfacher Strukturen, was dir Stärke, Ausdauer und eine tiefe Verbundenheit zur Natur verliehen hat.",
@@ -180,7 +180,7 @@
       "description": "Du erhältst das Talent 'Zäh' (Tough). Dein Trefferpunkte-Maximum erhöht sich um 2 und steigt bei jedem Stufenaufstieg um weitere 2."
     }
   },
-  "artisan": {
+  {
     "key": "artisan",
     "name": "Handwerker",
     "description": "Du hast eine Ausbildung in einem Handwerk oder einer Kunst absolviert und widmest dein Leben der Schaffung von Objekten oder Meisterwerken. Deine Ausbildung hat dir ein tiefes Verständnis für Materialien und Konstruktion vermittelt.",
@@ -203,7 +203,7 @@
       "description": "Du erhältst das Talent 'Handwerker' (Crafter). Du erlangst zusätzliche Übung in einem Handwerkerwerkzeug deiner Wahl und kannst nicht-magische, einfache Gegenstände in kürzerer Zeit herstellen."
     }
   },
-  "guide": {
+  {
     "key": "guide",
     "name": "Führer",
     "description": "Du hast dein Leben der Erkundung und dem Navigieren durch gefährliche Gebiete gewidmet. Du kennst die Wildnis und hast gelernt, leise und unauffällig zu reisen.",
@@ -230,7 +230,7 @@
       "description": "Du erhältst das Talent 'Magie-Eingeweihter (Druide)'. Du kennst zwei Druiden-Zaubertricks deiner Wahl und einen Zauber der 1. Stufe der Druiden-Zauberliste, den du einmal pro langer Rast wirken kannst."
     }
   },
-  "hermit": {
+  {
     "key": "hermit",
     "name": "Einsiedler",
     "description": "Du hast einen Teil deines Lebens in Abgeschiedenheit verbracht, sei es in einem Kloster, als Einsiedler in der Wildnis oder in einem Versteck. Diese Zeit hat dir eine besondere Einsicht oder Entdeckung beschert.",
@@ -257,7 +257,7 @@
       "description": "Du erhältst das Talent 'Heiler' (Healer). Du bist geübt im Umgang mit dem Heilset und kannst damit Kreaturen heilen, die sich nicht im Kampf befinden."
     }
   },
-  "noble": {
+  {
     "key": "noble",
     "name": "Adliger",
     "description": "Du entstammst einer adligen Familie und bist mit Reichtum, Macht und Privilegien aufgewachsen. Dein Name und dein Ansehen öffnen dir viele Türen.",
@@ -280,7 +280,7 @@
       "description": "Du erhältst das Talent 'Geübt' (Skilled). Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
     }
   },
-  "wayfarer": {
+  {
     "key": "wayfarer",
     "name": "Wanderer",
     "description": "Du bist ständig unterwegs und verdienst deinen Lebensunterhalt durch das Erkennen von Möglichkeiten. Deine Reisen haben dich gelehrt, verborgen zu bleiben und Gefahren durch Glück zu vermeiden.",
@@ -306,7 +306,7 @@
       "description": "Du erhältst das Talent 'Glückspilz' (Lucky). Du hast drei Glückspunkte, die du ausgeben kannst, um Wurf- oder SG-Ergebnisse zu beeinflussen."
     }
   },
-  "sage": {
+  {
     "key": "sage",
     "name": "Weiser",
     "description": "Du hast Jahre damit verbracht, die Überlieferungen der Welt zu studieren. Du hast unzählige Stunden in Bibliotheken verbracht, Manuskripte gelesen und den größten Experten zugehört.",
@@ -331,7 +331,7 @@
       "description": "Du erhältst das Talent 'Magie-Eingeweihter (Magier)'. Du kennst zwei Magier-Zaubertricks deiner Wahl und einen Zauber der 1. Stufe der Magier-Zauberliste, den du einmal pro langer Rast wirken kannst."
     }
   },
-  "scribe": {
+  {
     "key": "scribe",
     "name": "Schreiber",
     "description": "Du hast dein Leben der Aufzeichnung und Archivierung von Wissen gewidmet. Deine Arbeit erfordert Detailgenauigkeit und die Fähigkeit, selbst kleine Hinweise zu erkennen.",
@@ -356,7 +356,7 @@
       "description": "Du erhältst das Talent 'Geübt' (Skilled). Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
     }
   },
-  "sailor": {
+  {
     "key": "sailor",
     "name": "Seemann",
     "description": "Du hast auf einem Seeschiff gelebt und gearbeitet. Die salzige Luft, der Wind in den Segeln und die Kameradschaft der Crew sind dir vertrauter als der feste Boden unter den Füßen.",
@@ -380,7 +380,7 @@
       "description": "Du erhältst das Talent 'Tavernenkämpfer' (Tavern Brawler). Du bist geübt im Umgang mit improvisierten Waffen und kannst improvisierte Waffen als tödliche Waffen einsetzen."
     }
   },
-  "soldier": {
+  {
     "key": "soldier",
     "name": "Soldat",
     "description": "Krieg war dein Leben, solange du dich erinnern kannst. Du wurdest als Jugendlicher ausgebildet, hast in einer Armee gedient und die grundlegenden Überlebensfähigkeiten auf dem Schlachtfeld erlernt.",
@@ -407,4 +407,4 @@
       "description": "Du erhältst das Talent 'Wilder Angreifer' (Savage Attacker). Einmal pro Zug kannst du den Schaden eines Nahkampfangriffs neu würfeln."
     }
   }
-}
+]
