@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import './SummaryPanel.css';
 import './PanelDetails.css'; 
 import Tooltip from '../tooltip/Tooltip';
+// KORREKTUR: getModifier statt getAbilityModifier importieren
 import {
-  getAbilityModifier,
+  getModifier, 
   getProficiencyBonus,
   calculateInitialHP,
   calculateAC,
@@ -16,7 +17,7 @@ import {
   ABILITY_DESCRIPTIONS_DE, 
   SKILL_DESCRIPTIONS_DE,   
   COMBAT_STATS_DESCRIPTIONS_DE 
-} from '../../utils/helpers'; // GEÄNDERT: Importiert jetzt aus utils/helpers
+} from '../../utils/helpers';
 
 import { getItemById } from '../../utils/itemLoader';
 import allSpells from "../../data/spells.json";
@@ -105,14 +106,17 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
     wis: (abilities?.wis || 10) + getRacialAbilityBonus(character, "wis"),
     cha: (abilities?.cha || 10) + getRacialAbilityBonus(character, "cha"),
   };
+  
+  // KORREKTUR: Hier 'getModifier' verwenden
   const modifiers = {
-    str: getAbilityModifier(finalStats.str),
-    dex: getAbilityModifier(finalStats.dex),
-    con: getAbilityModifier(finalStats.con),
-    int: getAbilityModifier(finalStats.int),
-    wis: getAbilityModifier(finalStats.wis),
-    cha: getAbilityModifier(finalStats.cha),
+    str: getModifier(finalStats.str),
+    dex: getModifier(finalStats.dex),
+    con: getModifier(finalStats.con),
+    int: getModifier(finalStats.int),
+    wis: getModifier(finalStats.wis),
+    cha: getModifier(finalStats.cha),
   };
+  
   const hp = calculateInitialHP(character);
   const ac = calculateAC(character);
   const profBonus = getProficiencyBonus(level);
