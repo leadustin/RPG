@@ -9,10 +9,16 @@ const ALIGNMENT_KEYS = ["lg", "ng", "cg", "ln", "n", "cn", "le", "ne", "ce"];
 
 // Alle verfügbaren Sprachen als Keys für die Dropdown-Liste
 const AVAILABLE_LANGUAGE_KEYS = [
-  "common", "dwarvish", "elvish", "giant", "gnomish", "goblin", 
-  "halfling", "orc", "abyssal", "celestial", "draconic", 
-  "deep_speech", "infernal", "primordial", "sylvan", "undercommon",
-  "druidic", "thieves_cant"
+  "common", 
+  "common_sign_language",
+  "draconic", 
+  "dwarvish", 
+  "elvish", 
+  "giant", 
+  "gnomish", 
+  "goblin", 
+  "halfling", 
+  "orc"
 ];
 
 // Dieser Key in der races.json signalisiert eine freie Wahl

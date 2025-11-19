@@ -16,7 +16,7 @@
       "height": { "min": 0.60, "max": 2.15, "default": 1.75, "step": 0.01 },
       "weight": { "min": 25, "max": 120, "default": 75, "step": 1 }
     },
-    "languages": ["common", "choice"],
+    "languages": ["common", "choice", "choice"],
     "traits": [
       {
         "name": "Einfallsreich",
