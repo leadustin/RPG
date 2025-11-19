@@ -5,6 +5,9 @@
   display: flex;
   flex-direction: column;
   padding: 20px 10px; /* Etwas weniger horizontales Padding */
+  height: 100%; 
+  box-sizing: border-box;
+  overflow: hidden; /* Verhindert, dass das Panel selbst wächst */
 }
 
 /* Die Liste soll den meisten Platz einnehmen */
@@ -14,6 +17,24 @@
   margin: 0;
   flex-grow: 1; /* WICHTIG: Drückt die Navigation nach unten */
   font-size: 1.25rem; /* Größere Schrift */
+  overflow-y: auto;
+  min-height: 0; /* Flexbox-Trick für Firefox/Chrome, damit Scrollen funktioniert */
+  
+  /* Optional: Schöne Scrollbar wie im SelectionPanel */
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-panel-border-color) #222;
+}
+
+/* Webkit Scrollbar Styles für die Liste */
+.sidebar-panel ul::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-panel ul::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+}
+.sidebar-panel ul::-webkit-scrollbar-thumb {
+  background-color: var(--theme-panel-border-color);
+  border-radius: 3px;
 }
 
 .sidebar-panel li {

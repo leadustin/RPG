@@ -1,5 +1,5 @@
 // src/components/character_creation/CharacterCreationScreen.jsx
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import "./CharacterCreationScreen.css";
 import { CreationSidebar } from "./CreationSidebar";
 import { SelectionPanel } from "./SelectionPanel";
@@ -74,43 +74,43 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     experience: 0
   });
 
-  const updateCharacter = (newValues) => {
-    // Dein alter Code zum Zurücksetzen des Hintergrunds
-    if (
-      newValues.background &&
-      newValues.background.key !== character.background.key
-    ) {
-      newValues.background_choices = { languages: [], tools: [] };
-    }
+  // +++ GEÄNDERT: useCallback und Functional Update Pattern um Loop zu verhindern +++
+  const updateCharacter = useCallback((newValues) => {
+    setCharacter((prevCharacter) => {
+      const updatedValues = { ...newValues };
 
-    // +++ START: NEUE LOGIK FÜR RASSENWECHSEL +++
-    // Wenn sich die Rasse ändert...
-    if (newValues.race && newValues.race.key !== character.race.key) {
-      const newRaceProps = newValues.race.physical_props;
-      if (newRaceProps) {
-        // ... setze Alter, Größe und Gewicht auf die Standardwerte der NEUEN Rasse
-        newValues.age = newRaceProps.age?.default || 25;
-        newValues.height = newRaceProps.height?.default || 1.75;
-        newValues.weight = newRaceProps.weight?.default || 75;
+      // Logik zum Zurücksetzen des Hintergrunds
+      if (
+        updatedValues.background &&
+        updatedValues.background.key !== prevCharacter.background.key
+      ) {
+        updatedValues.background_choices = { languages: [], tools: [] };
       }
-      // Setze auch Subrasse, Portrait etc. zurück
-      newValues.subrace = null; 
-      newValues.ancestry = null;
-      newValues.portrait = null; // Wichtig, damit das useEffect in IdentitySelection greift
-      
-      // WICHTIG: Auch Gender zurücksetzen, damit useEffect das richtige Portrait lädt
-      // (Stellt sicher, dass 'gender' nicht auf 'null' gesetzt wird, falls es nicht in newValues ist)
-      if (!newValues.gender) {
-        newValues.gender = character.gender; // Behalte das aktuelle Gender
-      }
-    }
-    // +++ ENDE: NEUE LOGIK FÜR RASSENWECHSEL +++
 
-    setCharacter((prevCharacter) => ({
-      ...prevCharacter,
-      ...newValues,
-    }));
-  };
+      // Logik für Rassenwechsel
+      if (updatedValues.race && updatedValues.race.key !== prevCharacter.race.key) {
+        const newRaceProps = updatedValues.race.physical_props;
+        if (newRaceProps) {
+          updatedValues.age = newRaceProps.age?.default || 25;
+          updatedValues.height = newRaceProps.height?.default || 1.75;
+          updatedValues.weight = newRaceProps.weight?.default || 75;
+        }
+        updatedValues.subrace = null; 
+        updatedValues.ancestry = null;
+        updatedValues.portrait = null; 
+        
+        if (!updatedValues.gender) {
+          updatedValues.gender = prevCharacter.gender;
+        }
+      }
+
+      return {
+        ...prevCharacter,
+        ...updatedValues,
+      };
+    });
+  }, []); // Keine Abhängigkeiten -> stabile Referenz
+  // +++ ENDE GEÄNDERT +++
 
   // --- NEUE NAVIGATIONS-HANDLER ---
   const currentStepIndex = STEPS.indexOf(currentStep);

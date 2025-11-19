@@ -3,7 +3,7 @@
 .creation-screen-container {
   display: grid;
   grid-template-columns: 250px 1fr;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   
   /* Hintergrund wird jetzt vom body (style.css) übernommen */

@@ -8,7 +8,6 @@ import './IdentitySelection.css';
 const ALIGNMENT_KEYS = ["lg", "ng", "cg", "ln", "n", "cn", "le", "ne", "ce"];
 
 // PHB 2024: Liste der wählbaren Standardsprachen
-// (Seltene Sprachen wie Abyssal/Celestial sind hier ausgeschlossen)
 const AVAILABLE_LANGUAGE_KEYS = [
   "common", 
   "common_sign_language", 
@@ -22,16 +21,23 @@ const AVAILABLE_LANGUAGE_KEYS = [
   "orc"
 ];
 
+// +++ VITE FIX: Bilder vorladen, da 'require' in Vite nicht dynamisch funktioniert +++
+const portraitImages = import.meta.glob('../../assets/images/portraits/**/*.webp', { eager: true, import: 'default' });
+
 const getPortraitModule = (raceKey, gender, portraitIndex) => {
   const genderString = gender === 'male' ? 'male' : 'female';
-  try {
-    // Hinweis: Stellen Sie sicher, dass die Pfade zu Ihren Bildern existieren
-    return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
-  } catch (e) {
-    console.error("Portrait not found:", raceKey, genderString, portraitIndex);
-    return '';
+  // Der Pfad muss exakt so gebaut werden, wie er im Dateisystem liegt
+  const path = `../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`;
+  
+  const imageSrc = portraitImages[path];
+
+  if (!imageSrc) {
+    console.warn("Portrait not found:", path);
+    return null; // Gibt null zurück, damit React kein leeres Bild rendert
   }
+  return imageSrc;
 };
+// +++ ENDE FIX +++
 
 export const IdentitySelection = ({ character, updateCharacter }) => {
   const { t } = useTranslation();
@@ -43,7 +49,6 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
   const weightConfig = physicalProps.weight || { min: 60, max: 110, default: 75, step: 1 };
 
   // --- SPRACHEN LOGIK (PHB 2024 IMPLEMENTIERUNG) ---
-  // Anstatt die Sprachen aus der races.json zu laden, setzen wir die Regeln global.
   
   // 1. Feste Sprache: Immer 'common'
   const fixedLanguageKeys = ["common"];
@@ -65,6 +70,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
         updateCharacter({ gender: 'male' });
     }
 
+    // Initiales Portrait setzen, falls keines gewählt ist
     if (!character.portrait && selectedRace) {
       const defaultPortrait = getPortraitModule(selectedRace.key, currentGender, 1);
       if (defaultPortrait) {
@@ -149,10 +155,19 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
             <h3>{t('creation.identity.portrait')}</h3>
             <ul className="portrait-grid">
               {Array.from({ length: portraitCount }, (_, i) => i + 1).map(index => {
+                // Hier wird jetzt die neue Vite-kompatible Funktion aufgerufen
                 const portraitModule = getPortraitModule(selectedRace.key, character.gender, index);
                 return (
                   <li key={index}>
-                    <img src={portraitModule} alt={`Portrait ${index}`} className={`portrait-image ${character.portrait === portraitModule ? 'selected' : ''}`} onClick={() => updateCharacter({ portrait: portraitModule })} />
+                    {/* Die Prüfung auf portraitModule verhindert den Absturz bei leerem String/null */}
+                    {portraitModule ? (
+                      <img 
+                        src={portraitModule} 
+                        alt={`Portrait ${index}`} 
+                        className={`portrait-image ${character.portrait === portraitModule ? 'selected' : ''}`} 
+                        onClick={() => updateCharacter({ portrait: portraitModule })} 
+                      />
+                    ) : null}
                   </li>
                 );
               })}
@@ -181,9 +196,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
                 {Array.from({ length: choiceCount }).map((_, index) => {
                   const currentVal = character.selectedLanguages?.[index] || '';
                   
-                  // Filtere Optionen: 
-                  // 1. Nicht in den festen Sprachen enthalten (z.B. Common)
-                  // 2. Nicht bereits in einem ANDEREN Auswahlfeld gewählt
+                  // Filtere Optionen
                   const availableOptions = AVAILABLE_LANGUAGE_KEYS.filter(langKey => {
                     const isFixed = fixedLanguageKeys.includes(langKey);
                     
@@ -197,7 +210,7 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
                   return (
                     <div key={index} className="input-group" style={{ marginBottom: '8px' }}>
                       <label htmlFor={`lang-choice-${index}`}>
-                         {t('creation.identity.chooseLanguage')} #{index + 1}
+                          {t('creation.identity.chooseLanguage')} #{index + 1}
                       </label>
                       <select
                         id={`lang-choice-${index}`}

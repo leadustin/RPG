@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import DiceBox from "@3d-dice/dice-box";
 import './AbilitySelection.css';
 import './PanelDetails.css';
-import { getRacialAbilityBonus } from '../../engine/characterEngine';
+// getRacialAbilityBonus wird nicht mehr benötigt für 2024, 
+// da Boni jetzt aus dem Hintergrund kommen.
 
 const ABILITIES = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 const POINT_COST = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
@@ -63,13 +64,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
   const [generationMethod, setGenerationMethod] = useState('pointBuy');
   const [scoresToAssign, setScoresToAssign] = useState([]);
 
-  // --- STATE FÜR 2024-REGELN (BONI) ---
-  const [bonusMode, setBonusMode] = useState('plus2plus1');
-  const [plus2Ability, setPlus2Ability] = useState('');
-  const [plus1Ability, setPlus1Ability] = useState('');
-  const [triPlus1A, setTriPlus1A] = useState('');
-  const [triPlus1B, setTriPlus1B] = useState('');
-  const [triPlus1C, setTriPlus1C] = useState('');
+  // --- STATES FÜR ALTE BONI ENTFERNT ---
 
   // DiceBox Refs & State
   const diceBoxRef = useRef(null);
@@ -133,33 +128,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scores, generationMethod]); 
 
-  // 2024 Boni Aktualisierung
-  useEffect(() => {
-    const newBonusAssignments = {};
-
-    if (bonusMode === 'plus2plus1') {
-      if (plus2Ability) newBonusAssignments[plus2Ability] = 2;
-      if (plus1Ability) newBonusAssignments[plus1Ability] = (newBonusAssignments[plus1Ability] || 0) + 1;
-    } 
-    else if (bonusMode === 'plus1plus1plus1') {
-      if (triPlus1A) newBonusAssignments[triPlus1A] = (newBonusAssignments[triPlus1A] || 0) + 1;
-      if (triPlus1B) newBonusAssignments[triPlus1B] = (newBonusAssignments[triPlus1B] || 0) + 1;
-      if (triPlus1C) newBonusAssignments[triPlus1C] = (newBonusAssignments[triPlus1C] || 0) + 1;
-    }
-
-    if (JSON.stringify(character.ability_bonus_assignments) !== JSON.stringify(newBonusAssignments)) {
-      updateCharacter({ ability_bonus_assignments: newBonusAssignments });
-    }
-  }, [bonusMode, plus2Ability, plus1Ability, triPlus1A, triPlus1B, triPlus1C, updateCharacter, character.ability_bonus_assignments]);
-
-  const handleBonusModeChange = (mode) => {
-    setBonusMode(mode);
-    setPlus2Ability('');
-    setPlus1Ability('');
-    setTriPlus1A('');
-    setTriPlus1B('');
-    setTriPlus1C('');
-  };
+  // --- EFFECT FÜR ALTE BONI ENTFERNT ---
 
   const handleScoreChange = (ability, delta) => {
     const currentScore = scores[ability];
@@ -374,83 +343,22 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
             )}
           </div>
 
-          {/* === BONUS BLOCK === */}
+          {/* === INFO BLOCK STATT BONUS WAHL (PHB 2024) === */}
           <div className="ability-box">
             <h3>{t("characterCreation.attributeBonuses")}</h3>
             <p className="bonus-description">
-              {t("characterCreation.chooseAttributeBonuses")}
+                In PHB 2024 erhalten Sie Attributsboni durch Ihren <strong>Hintergrund</strong>.
             </p>
-            <div className="method-selection">
-              <button
-                onClick={() => handleBonusModeChange('plus2plus1')}
-                className={bonusMode === 'plus2plus1' ? 'active' : ''}
-              >
-                {t("characterCreation.strengthsFocused")}
-              </button>
-              <button
-                onClick={() => handleBonusModeChange('plus1plus1plus1')}
-                className={bonusMode === 'plus1plus1plus1' ? 'active' : ''}
-              >
-                {t("characterCreation.balanced")}
-              </button>
-            </div>
-
-            <div className="bonus-selection-dropdowns">
-              {bonusMode === 'plus2plus1' && (
-                <>
-                  <div className="bonus-select-wrap">
-                    <label>{t("characterCreation.plus2Bonus")}</label>
-                    <select value={plus2Ability} onChange={(e) => setPlus2Ability(e.target.value)}>
-                      <option value="">{t("characterCreation.choose")}</option>
-                      {ABILITIES.map(abi => (
-                        <option key={abi} value={abi} disabled={abi === plus1Ability}>{abi.toUpperCase()}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="bonus-select-wrap">
-                    <label>{t("characterCreation.plus1Bonus")}</label>
-                    <select value={plus1Ability} onChange={(e) => setPlus1Ability(e.target.value)}>
-                      <option value="">{t("characterCreation.choose")}</option>
-                      {ABILITIES.map(abi => (
-                        <option key={abi} value={abi} disabled={abi === plus2Ability}>{abi.toUpperCase()}</option>
-                      ))}
-                    </select>
-                  </div>
-                </>
-              )}
-
-              {bonusMode === 'plus1plus1plus1' && (
-                <>
-                  <div className="bonus-select-wrap">
-                    <label>{t("characterCreation.plus1BonusA")}</label>
-                    <select value={triPlus1A} onChange={(e) => setTriPlus1A(e.target.value)}>
-                      <option value="">{t("characterCreation.choose")}</option>
-                      {ABILITIES.map(abi => (
-                        <option key={abi} value={abi} disabled={abi === triPlus1B || abi === triPlus1C}>{abi.toUpperCase()}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="bonus-select-wrap">
-                    <label>{t("characterCreation.plus1BonusB")}</label>
-                    <select value={triPlus1B} onChange={(e) => setTriPlus1B(e.target.value)}>
-                      <option value="">{t("characterCreation.choose")}</option>
-                      {ABILITIES.map(abi => (
-                        <option key={abi} value={abi} disabled={abi === triPlus1A || abi === triPlus1C}>{abi.toUpperCase()}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="bonus-select-wrap">
-                    <label>{t("characterCreation.plus1BonusC")}</label>
-                    <select value={triPlus1C} onChange={(e) => setTriPlus1C(e.target.value)}>
-                      <option value="">{t("characterCreation.choose")}</option>
-                      {ABILITIES.map(abi => (
-                        <option key={abi} value={abi} disabled={abi === triPlus1A || abi === triPlus1B}>{abi.toUpperCase()}</option>
-                      ))}
-                    </select>
-                  </div>
-                </>
-              )}
-            </div>
+            {character.background ? (
+                <p style={{color: 'var(--color-text-light)', fontSize: '0.9rem', marginTop: '10px'}}>
+                    Aktueller Hintergrund: <strong>{character.background.name}</strong><br/>
+                    (Boni werden rechts automatisch addiert)
+                </p>
+            ) : (
+                <p style={{color: '#ff6b6b', fontSize: '0.9rem', marginTop: '10px'}}>
+                    Bitte wählen Sie zuerst einen Hintergrund.
+                </p>
+            )}
           </div>
         </div>
         
@@ -460,8 +368,10 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
             <h3>{t("characterCreation.attributes")}</h3>
             <ul className="ability-list features-list">
               {ABILITIES.map(abi => {
-                const racialBonus = getRacialAbilityBonus(character, abi);
-                const finalScore = scores[abi] + racialBonus;
+                // ÄNDERUNG für 2024: Boni vom Hintergrund statt Rasse
+                const bgBonuses = character.background_options?.bonuses || {};
+                const bonusVal = bgBonuses[abi] || 0;
+                const finalScore = scores[abi] + bonusVal;
                 
                 return (
                   <li key={abi} className="ability-item">
@@ -496,7 +406,7 @@ export const AbilitySelection = ({ character, updateCharacter }) => {
                     )}
 
                     <div className="ability-modifier">
-                      ({t("characterCreation.bonus")}: {racialBonus > 0 ? `+${racialBonus}` : racialBonus})
+                      ({t("characterCreation.bonus")}: {bonusVal > 0 ? `+${bonusVal}` : bonusVal})
                     </div>
                     <div className="final-score">
                       {finalScore}

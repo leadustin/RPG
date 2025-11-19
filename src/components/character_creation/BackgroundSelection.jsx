@@ -59,15 +59,24 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
       if (selectedAsi.third) bonuses[selectedAsi.third] = (bonuses[selectedAsi.third] || 0) + 1;
     }
 
-    updateCharacter({ 
-      background_options: {
-        asiMode,
-        bonuses,
-        equipmentOption: equipChoice
-      }
-    });
+    // +++ ÄNDERUNG: Check gegen Endlosschleife +++
+    const currentOptions = character.background_options || {};
+    const bonusesChanged = JSON.stringify(currentOptions.bonuses) !== JSON.stringify(bonuses);
+    const modeChanged = currentOptions.asiMode !== asiMode;
+    const equipChanged = currentOptions.equipmentOption !== equipChoice;
 
-  }, [selectedAsi, asiMode, equipChoice, selectedBackground, updateCharacter]);
+    if (bonusesChanged || modeChanged || equipChanged) {
+      updateCharacter({ 
+        background_options: {
+          asiMode,
+          bonuses,
+          equipmentOption: equipChoice
+        }
+      });
+    }
+    // +++ ENDE ÄNDERUNG +++
+
+  }, [selectedAsi, asiMode, equipChoice, selectedBackground, updateCharacter, character.background_options]);
 
 
   if (!selectedBackground) {
