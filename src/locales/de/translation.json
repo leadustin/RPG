@@ -80,7 +80,10 @@
       "feature": "Merkmal: {{name}}",
       "chooseLanguage": "Wähle eine Sprache...",
       "chooseTool": "Wähle ein Werkzeug...",
-      "chooseInstrument": "Wähle ein Instrument..."
+      "chooseInstrument": "Wähle ein Instrument...",
+      "acolyte": {
+      "description": "Du hast dein Leben dem Dienst in einem Tempel gewidmet. Du handelst als Vermittler zwischen dem Göttlichen und den Sterblichen, vollziehst heilige Riten und bringst Opfer dar."
+    }
     },
     "skills": {
       "choose": "Wähle {{count}} Fertigkeiten aus der Liste:"
@@ -274,5 +277,16 @@
     },
     "emptyLogSearch": "Keine Einträge gefunden.",
     "emptyLogNoFilter": "Keine passenden Log-Einträge."
+  },
+  "items": {
+    "calligrapher": "Kalligraphenwerkzeug",
+    "book_prayer": "Gebetbuch",
+    "holy_symbol": "Heiliges Symbol",
+    "parchment": "Pergament (Blatt)",
+    "robe": "Robe",
+    "gold": "Goldmünzen"
+  },
+  "feats": {
+    "magic_initiate_cleric": "Magische Initiative (Kleriker)"
   }
 }

@@ -1,135 +1,205 @@
 /* src/components/character_creation/BackgroundSelection.css */
 
-/* ---
-  LAYOUT-STILE (Eindeutig für BackgroundSelection) 
---- */
-.background-panel-layout {
-  display: grid;
-  grid-template-columns: 0.5fr 2.0fr; /* 1:1.2 Spalten-Verhältnis */
-  gap: 20px;
-  flex-grow: 1; 
-  overflow: hidden; 
-  height: 100%; 
+/* Badge für 2024 Hintergründe in der Liste */
+.bg-badge {
+  background-color: #d4af37; /* Gold */
+  color: #1a1a1a;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-left: auto;
 }
 
-.background-column-left {
+.background-button {
+  display: flex;
+  align-items: center;
+  /* Bestehende Styles der Buttons beibehalten */
+}
+
+/* --- PHB 2024 Options Container --- */
+.phb2024-options {
   display: flex;
   flex-direction: column;
-  gap: 20px; 
-  /* Spalte soll scrollen */
-  overflow-y: auto;
-  height: 100%;
-  padding-right: 5px; 
+  gap: 15px;
 }
 
-.background-column-right {
-  display: flex;  
-  flex-direction: column;
-  gap: 20px; 
-  /* Spalte soll scrollen */
-  overflow-y: auto;
-  height: 100%;
-  padding-right: 5px; 
+.option-section {
+  margin-bottom: 10px;
 }
 
-/* Stil für jede einzelne Box */
-.background-box {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--color-border-light);
-  border-radius: 8px;
+.option-section h4 {
+  margin: 0 0 5px 0;
+  color: #d4af37;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+}
+
+.option-hint {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+/* --- Attribute Radio Buttons --- */
+.radio-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.radio-button {
+  flex: 1;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  font-weight: bold;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.radio-button:hover {
+  background: #3a3a3a;
+  border-color: #666;
+}
+
+.radio-button.active {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #d4af37;
+  color: #d4af37;
+}
+
+.radio-button input {
+  display: none; /* Verstecke den Standard-Radio-Button */
+}
+
+/* --- Attribute Dropdowns --- */
+.asi-dropdowns {
+  background: #222;
   padding: 15px;
-  
+  border-radius: 5px;
+  border: 1px solid #333;
+}
+
+.asi-row {
   display: flex;
-  flex-direction: column;
-  flex-shrink: 0; /* Verhindert, dass Boxen schrumpfen */
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
-/* Header in den Boxen */
-.background-box h3 {
-  margin: 0 0 15px 0;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--color-border-light);
-  color: var(--color-text-light);
-  flex-shrink: 0; 
-}
-
-.background-box h2.panel-details-header {
-   margin: 0 0 15px 0;
-   padding-bottom: 10px;
-   border-bottom: 1px solid var(--color-selection);
-   flex-shrink: 0;
-}
-
-
-/* ---
-  SPEZIFISCHE STILE FÜR BACKGROUNDSELECTION (Inhalt der Boxen)
---- */
-
-/* Wrapper für die Button-Liste in der linken Box */
-.background-list-wrapper {
+.asi-input {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  /* Scrollen wird von .background-column-left übernommen */
 }
 
-/* Wrapper für den Detail-Inhalt in der rechten Box */
-.background-details-content-wrapper {
-  /* Scrollen wird von .background-column-right übernommen */
+.asi-input label {
+  font-size: 0.85rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
+/* --- Features & Skills Grid --- */
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
 
-/* Stile für die Hintergrund-Buttons 
-  (Kopiert von .race-button)
-*/
-.background-button {
-  background-color: var(--theme-button-bg);
-  color: var(--theme-text-color);
-  border: 1px solid var(--theme-panel-border-color);
+.feature-item ul {
+  padding-left: 20px;
+  margin: 5px 0;
+  color: #ddd;
+}
+
+/* --- Feat Card --- */
+.feat-card {
+  background: #252525;
+  border-left: 3px solid #9b59b6; /* Lila für Magie/Talente */
+  padding: 10px 15px;
+  border-radius: 0 5px 5px 0;
+}
+
+.feat-card strong {
+  color: #e0e0e0;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.small-text {
+  font-size: 0.8rem;
+  color: #777;
+  margin: 0;
+}
+
+/* --- Equipment Selection --- */
+.equipment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.equipment-option {
+  display: flex;
+  align-items: flex-start;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  padding: 12px;
   border-radius: 5px;
-  padding: 0.6rem 1.5rem;
-  font-family: var(--theme-font);
-  font-size: 16px;
-  text-shadow: var(--theme-text-shadow);
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
-  text-align: center;
-  box-sizing: border-box; 
-  width: 100%; 
+  transition: all 0.2s;
 }
 
-.background-button:hover {
-  background-color: var(--theme-button-bg-hover);
-  box-shadow: var(--theme-button-glow-hover);
-  border-color: var(--theme-button-glow-hover);
+.equipment-option:hover {
+  background: #333;
 }
 
-.background-button.selected {
-  background-color: var(--theme-button-bg-active);
-  border-color: var(--theme-button-border-active);
-  box-shadow: var(--theme-button-glow-active);
+.equipment-option.selected {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.equipment-option input {
+  margin-top: 5px;
+  margin-right: 12px;
+  accent-color: #d4af37;
+}
+
+.equip-content {
+  flex: 1;
+}
+
+.equip-label {
+  display: block;
   font-weight: bold;
-  color: var(--theme-text-color);
+  color: #ddd;
+  margin-bottom: 5px;
 }
 
+.equip-list-preview {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #aaa;
+  line-height: 1.4;
+}
 
-/* --- Scrollbar-Styling (Kopiert von RaceSelection.css) --- */
-.background-column-left::-webkit-scrollbar,
-.background-column-right::-webkit-scrollbar {
-  width: 8px;
+.equip-list-preview li {
+  display: inline;
 }
-.background-column-left::-webkit-scrollbar-track,
-.background-column-right::-webkit-scrollbar-track {
-  background: #222;
-  border-radius: 4px;
-}
-.background-column-left::-webkit-scrollbar-thumb,
-.background-column-right::-webkit-scrollbar-thumb {
-  background-color: var(--theme-panel-border-color);
-  border-radius: 4px;
-}
-.background-column-left,
-.background-column-right {
-  scrollbar-width: thin;
-  scrollbar-color: var(--theme-panel-border-color) #222;
+
+.equip-list-preview li:not(:last-child)::after {
+  content: ", ";
 }

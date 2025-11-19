@@ -1,29 +1,37 @@
 [
   {
+  "acolyte": {
     "key": "acolyte",
-    "name": "Akolyth",
-    "description": "Du hast dich dem Dienst in einem Tempel gewidmet, sei es in einer Stadt oder einem verborgenen heiligen Hain. Dort hast du Riten zu Ehren eines Gottes vollzogen. Du hast unter einem Priester gedient und Religion studiert.",
-    "ability_scores": ["Intelligenz", "Weisheit", "Charisma"],
-    "feat": "Magie-Eingeweihter (Kleriker)",
-    "skill_proficiencies": ["Motiv erkennen", "Religion"],
-    "tool_proficiencies": ["Kalligraphen-Werkzeug"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Kalligraphen-Werkzeug",
-        "Buch (Gebete)",
-        "Heiliges Symbol",
-        "Pergament (10 Blatt)",
-        "Robe",
-        "8 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Magie-Eingeweihter (Kleriker)",
-      "description": "Du erhältst das Talent 'Magie-Eingeweihter (Kleriker)'. Wähle zwei Kleriker-Zaubertricks und einen Stufe-1-Zauber."
-    }
-  },
+    "name": "Acolyte",
+    "source": "PHB2024",
+    "description": "backgrounds.acolyte.description",
+    "ability_scores": ["int", "wis", "cha"],
+    "feat": "magic_initiate_cleric",
+    "skills": ["insight", "religion"],
+    "tools": ["calligrapher"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard Equipment",
+        "items": [
+          { "item_id": "calligrapher", "quantity": 1 },
+          { "item_id": "book_prayer", "quantity": 1 },
+          { "item_id": "holy_symbol", "quantity": 1 },
+          { "item_id": "parchment", "quantity": 10 },
+          { "item_id": "robe", "quantity": 1 },
+          { "item_id": "gold", "quantity": 8 }
+        ]
+      },
+      {
+        "id": "b",
+        "label": "Starting Gold",
+        "items": [
+          { "item_id": "gold", "quantity": 50 }
+        ]
+      }
+    ]
+  }
+},
   {
     "key": "charlatan",
     "name": "Scharlatan",

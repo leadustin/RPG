@@ -1,251 +1,240 @@
 // src/components/character_creation/BackgroundSelection.jsx
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import "./BackgroundSelection.css";
 import "./PanelDetails.css";
-import allBackgroundData from "../../data/backgrounds.json";
+import backgroundDataRaw from "../../data/backgrounds.json";
 
-// Definieren wir hier die Optionen, um sie wiederverwenden zu können
-const languageOptions = [
-  "Elfisch",
-  "Gnomisch",
-  "Halblingisch",
-  "Infernalisch",
-  "Orkisch",
-  "Zwergisch",
-  "Drakonisch",
-  "Himmlisch",
-];
-const toolOptions = {
-  Spieleset: ["Spielkartenset", "Würfelspielset", "Drachenschachspiel"],
-  Handwerkerwerkzeug: [
-    "Alchemistenwerkzeug",
-    "Brauerwerkzeug",
-    "Kalligraphenwerkzeug",
-    "Schmiedewerkzeug",
-    "Zimmermannswerkzeug",
-    "Kartographenwerkzeug",
-    "Schusterwerkzeug",
-    "Kochgeschirr",
-    "Glasblasewerkzeug",
-    "Juwelierswerkzeug",
-    "Lederwerkzeug",
-    "Maurerwerkzeug",
-    "Malerwerkzeug",
-    "Töpferwerkzeug",
-    "Steinmetzwerkzeug",
-    "Flickwerkzeug",
-    "Weberwerkzeug",
-    "Holzschnitzerwerkzeug"
-  ],
-  Musikinstrument: [
-    "Dudelsack",
-    "Trommel",
-    "Dulcimer",
-    "Flöte",
-    "Laute",
-    "Leier",
-    "Horn",
-    "Panflöte",
-    "Schalmei",
-    "Harfe"
-  ]
-};
+// Konvertiere das JSON-Objekt in ein Array für die Liste
+const allBackgrounds = Object.values(backgroundDataRaw);
 
 export const BackgroundSelection = ({ character, updateCharacter }) => {
+  const { t } = useTranslation();
   const selectedBackground = character.background;
 
+  // Lokaler State für die Attributsverteilung (nur UI-State, bevor gespeichert wird)
+  const [asiMode, setAsiMode] = useState('focus'); // 'focus' (+2/+1) oder 'balanced' (+1/+1/+1)
+  const [selectedAsi, setSelectedAsi] = useState({
+    primary: "",   // für +2
+    secondary: "", // für +1 (bei Focus)
+    first: "",     // für +1 (bei Balanced)
+    second: "",    // für +1 (bei Balanced)
+    third: ""      // für +1 (bei Balanced)
+  });
+
+  // Lokaler State für Ausrüstungswahl ('a' oder 'b')
+  const [equipChoice, setEquipChoice] = useState('a');
+
+  // Beim Wechsel des Hintergrunds: Reset der lokalen Auswahl & Speichern des Defaults
+  useEffect(() => {
+    if (selectedBackground?.source === "PHB2024") {
+      // Default Attribute setzen (die ersten verfügbaren)
+      const allowed = selectedBackground.ability_scores || [];
+      if (allowed.length >= 3) {
+        setSelectedAsi({
+            primary: allowed[0],
+            secondary: allowed[1],
+            first: allowed[0],
+            second: allowed[1],
+            third: allowed[2]
+        });
+      }
+      setEquipChoice('a');
+      setAsiMode('focus');
+    }
+  }, [selectedBackground?.key]);
+
+  // Speichert die Attributsboni im Charakter-Objekt, wenn sich die Auswahl ändert
+  useEffect(() => {
+    if (!selectedBackground || selectedBackground.source !== "PHB2024") return;
+
+    const bonuses = {};
+
+    if (asiMode === 'focus') {
+      if (selectedAsi.primary) bonuses[selectedAsi.primary] = (bonuses[selectedAsi.primary] || 0) + 2;
+      if (selectedAsi.secondary) bonuses[selectedAsi.secondary] = (bonuses[selectedAsi.secondary] || 0) + 1;
+    } else {
+      if (selectedAsi.first) bonuses[selectedAsi.first] = (bonuses[selectedAsi.first] || 0) + 1;
+      if (selectedAsi.second) bonuses[selectedAsi.second] = (bonuses[selectedAsi.second] || 0) + 1;
+      if (selectedAsi.third) bonuses[selectedAsi.third] = (bonuses[selectedAsi.third] || 0) + 1;
+    }
+
+    // Update des Charakters
+    // Wir speichern auch die Equip-Choice und die Boni
+    updateCharacter({ 
+      background_options: {
+        asiMode,
+        bonuses,
+        equipmentOption: equipChoice
+      }
+    });
+
+  }, [selectedAsi, asiMode, equipChoice, selectedBackground, updateCharacter]);
+
+
   if (!selectedBackground) {
-    return <div>Lade Hintergründe...</div>;
+    // Wähle automatisch den ersten Hintergrund, falls keiner gewählt ist
+    if (allBackgrounds.length > 0) {
+        setTimeout(() => updateCharacter({ background: allBackgrounds[0] }), 0);
+    }
+    return <div className="loading-text">{t('common.loadingBackgrounds')}</div>;
   }
 
-  // Handler für die Auswahl in einem Dropdown
-  const handleChoiceChange = (choiceKey, index, value) => {
-    const newChoices = { ...character.background_choices };
-    const currentSelection = newChoices[choiceKey] || [];
-    currentSelection[index] = value;
+  const allowedAttributes = selectedBackground.ability_scores || [];
 
-    updateCharacter({
-      background_choices: { ...newChoices, [choiceKey]: currentSelection },
-    });
-  };
-
-  // Funktion zum Rendern der Auswahl-Dropdowns basierend auf den Texten
-  const renderChoices = () => {
-    const choiceElements = [];
-
-    // Sprachauswahl
-    (selectedBackground.languages || []).forEach((langText) => {
-      let count = 0;
-      if (langText.toLowerCase().includes("zwei")) count = 2;
-      else if (langText.toLowerCase().includes("eine")) count = 1;
-
-      if (count > 0) {
-        choiceElements.push(
-          <div key="language-choice" className="choice-block">
-            <h4>Wähle {count} Sprache(n):</h4>
-            {[...Array(count)].map((_, i) => {
-              const currentLanguageChoices =
-                character.background_choices.languages || [];
-
-              // Logik zur Filterung der Optionen
-              // Schließe Sprachen aus, die in *anderen* Dropdowns für Sprachen gewählt wurden.
-              const availableOptions = languageOptions.filter(
-                (option) =>
-                  !currentLanguageChoices.some(
-                    (selectedLang, selectedIndex) =>
-                      selectedIndex !== i && selectedLang === option
-                  )
-              );
-
-              return (
-                <select
-                  key={i}
-                  className="panel-select"
-                  value={currentLanguageChoices[i] || ""}
-                  onChange={(e) =>
-                    handleChoiceChange("languages", i, e.target.value)
-                  }
-                >
-                  <option value="" disabled>
-                    -- Sprache {i + 1} --
-                  </option>
-                  {availableOptions.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              );
-            })}
-          </div>
+  // Hilfsfunktion zum Rendern der Attributs-Dropdowns
+  const renderAsiSelect = (key, excludeKeys = []) => (
+    <select 
+      className="panel-select"
+      value={selectedAsi[key]} 
+      onChange={(e) => setSelectedAsi({ ...selectedAsi, [key]: e.target.value })}
+    >
+      {allowedAttributes.map(attr => {
+        // Deaktiviere bereits gewählte Attribute (außer es ist das aktuelle Feld)
+        const isDisabled = excludeKeys.map(k => selectedAsi[k]).includes(attr) && selectedAsi[key] !== attr;
+        return (
+          <option key={attr} value={attr} disabled={isDisabled}>
+            {t(`abilities.${attr}`)}
+          </option>
         );
-      }
-    });
-
-    // Werkzeugauswahl
-    (selectedBackground.tool_proficiencies || []).forEach((toolText, index) => {
-      let options = [];
-      let title = "Wähle 1 Werkzeug:";
-      if (toolText.toLowerCase().includes("spieleset")) {
-        options = toolOptions["Spieleset"];
-        title = "Wähle 1 Spieleset:";
-      } else if (toolText.toLowerCase().includes("handwerkerwerkzeug")) {
-        options = toolOptions["Handwerkerwerkzeug"];
-        title = "Wähle 1 Handwerkerwerkzeug:";
-      } else if (toolText.toLowerCase().includes("musikinstrument")) {
-        options = toolOptions["Musikinstrument"];
-        title = "Wähle 1 Musikinstrument:";
-      }
-
-      if (options.length > 0) {
-        // Wir verwenden hier den Tool-Text als eindeutigen Schlüssel, falls mehrere Werkzeugauswahlen existieren
-        const choiceKey = `tool-${index}`;
-        choiceElements.push(
-          <div key={choiceKey} className="choice-block">
-            <h4>{title}</h4>
-            <select
-              className="panel-select"
-              value={character.background_choices.tools?.[index] || ""}
-              onChange={(e) =>
-                handleChoiceChange("tools", index, e.target.value)
-              }
-            >
-              <option value="" disabled>
-                -- Werkzeug wählen --
-              </option>
-              {options.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
-        );
-      }
-    });
-
-    return choiceElements;
-  };
-
-  // Kombinierte Liste von Geübtheiten für die Anzeige
-  const fixedToolProficiencies = (
-    selectedBackground.tool_proficiencies || []
-  ).filter((t) => !t.includes("deiner Wahl") && !t.includes("Ein Typ"));
-  const allToolProficiencies = [
-    ...fixedToolProficiencies,
-    ...(character.background_choices.tools || []),
-  ].filter(Boolean);
-  const allLanguages = [
-    ...(character.background_choices.languages || []),
-  ].filter(Boolean);
+      })}
+    </select>
+  );
 
   return (
     <div className="background-panel-layout">
-      {/* --- LINKE SPALTE (Hintergrund-Liste) --- */}
+      {/* --- LINKE SPALTE (Liste) --- */}
       <div className="background-column-left">
         <div className="background-box">
-          <h3>Hintergründe</h3>
-          
+          <h3>{t('creation.step_background')}</h3>
           <div className="background-list-wrapper">
-            {allBackgroundData.map((bg) => (
+            {allBackgrounds.map((bg) => (
               <button
                 key={bg.key}
-                className={`background-button ${
-                  selectedBackground.key === bg.key ? "selected" : ""
-                }`}
+                className={`background-button ${selectedBackground.key === bg.key ? "selected" : ""}`}
                 onClick={() => updateCharacter({ background: bg })}
               >
-                {bg.name}
+                <span className="bg-name">{bg.name}</span>
+                {bg.source === "PHB2024" && <span className="bg-badge">2024</span>}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* --- RECHTE SPALTE (Details) --- */}
+      {/* --- RECHTE SPALTE (Details & Auswahl) --- */}
       <div className="background-column-right">
         <div className="background-box">
           <h2 className="panel-details-header">{selectedBackground.name}</h2>
-          
-          <div className="background-details-content-wrapper">
-            <p className="panel-details-description">
-              {selectedBackground.description}
-            </p>
+          <p className="panel-details-description">{t(selectedBackground.description)}</p>
 
-            {renderChoices().length > 0 && (
-              <>
-                <div className="details-divider"></div>
-                {renderChoices()}
-              </>
-            )}
+          {/* PHB 2024 Logik */}
+          {selectedBackground.source === "PHB2024" ? (
+            <div className="phb2024-options">
+              
+              {/* 1. ATTRIBUTE */}
+              <div className="option-section">
+                <h4>{t('characterCreation.attributeBonuses')}</h4>
+                <p className="option-hint">{t('characterCreation.chooseAttributeBonuses')}</p>
+                
+                <div className="radio-group">
+                    <label className={`radio-button ${asiMode === 'focus' ? 'active' : ''}`}>
+                        <input type="radio" name="asiMode" checked={asiMode === 'focus'} onChange={() => setAsiMode('focus')} />
+                        {t('characterCreation.strengthsFocused')}
+                    </label>
+                    <label className={`radio-button ${asiMode === 'balanced' ? 'active' : ''}`}>
+                        <input type="radio" name="asiMode" checked={asiMode === 'balanced'} onChange={() => setAsiMode('balanced')} />
+                        {t('characterCreation.balanced')}
+                    </label>
+                </div>
 
-            <div className="details-divider"></div>
+                <div className="asi-dropdowns">
+                    {asiMode === 'focus' ? (
+                        <div className="asi-row">
+                            <div className="asi-input">
+                                <label>{t('characterCreation.plus2Bonus')}</label>
+                                {renderAsiSelect('primary', ['secondary'])}
+                            </div>
+                            <div className="asi-input">
+                                <label>{t('characterCreation.plus1Bonus')}</label>
+                                {renderAsiSelect('secondary', ['primary'])}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="asi-row">
+                             <div className="asi-input"><label>{t('characterCreation.plus1BonusA')}</label>{renderAsiSelect('first', ['second', 'third'])}</div>
+                             <div className="asi-input"><label>{t('characterCreation.plus1BonusB')}</label>{renderAsiSelect('second', ['first', 'third'])}</div>
+                             <div className="asi-input"><label>{t('characterCreation.plus1BonusC')}</label>{renderAsiSelect('third', ['first', 'second'])}</div>
+                        </div>
+                    )}
+                </div>
+              </div>
+              
+              <div className="details-divider"></div>
 
-            <h3>Fertigkeiten & Werkzeuge</h3>
-            <ul className="features-list">
-              <li>
-                <strong>Geübte Fertigkeiten:</strong>{" "}
-                {selectedBackground.skill_proficiencies.join(", ")}
-              </li>
-              {allToolProficiencies.length > 0 && (
-                <li>
-                  <strong>Geübte Werkzeuge:</strong>{" "}
-                  {allToolProficiencies.join(", ")}
-                </li>
-              )}
-              {allLanguages.length > 0 && (
-                <li>
-                  <strong>Sprachen:</strong> {allLanguages.join(", ")}
-                </li>
-              )}
-            </ul>
+              {/* 2. PROFICIENCIES (Fest) */}
+              <div className="features-grid">
+                  <div className="feature-item">
+                      <strong>{t('background.proficientSkills')}</strong>
+                      <ul>
+                        {selectedBackground.skills.map(skill => <li key={skill}>{t(`skills.${skill}`, skill)}</li>)}
+                      </ul>
+                  </div>
+                  <div className="feature-item">
+                      <strong>{t('background.proficientTools')}</strong>
+                      <ul>
+                        {selectedBackground.tools.map(tool => <li key={tool}>{t(`tools.${tool}`, tool)}</li>)}
+                      </ul>
+                  </div>
+              </div>
 
-            <div className="details-divider"></div>
+              <div className="details-divider"></div>
 
-            <h3>Merkmal: {selectedBackground.feature.name}</h3>
-            <p className="panel-details-description">
-              {selectedBackground.feature.description}
-            </p>
-          </div>
+              {/* 3. FEAT (Fest) */}
+              <div className="option-section">
+                  <h4>{t('background.feature', { name: t(`feats.${selectedBackground.feat}`, selectedBackground.feat) })}</h4>
+                  <div className="feat-card">
+                      <strong>{t(`feats.${selectedBackground.feat}`)}</strong>
+                      {/* Hier könnte später eine Beschreibung des Feats stehen */}
+                      <p className="small-text">Gewährt durch Hintergrund.</p>
+                  </div>
+              </div>
+
+              <div className="details-divider"></div>
+
+              {/* 4. EQUIPMENT */}
+              <div className="option-section">
+                  <h4>Ausrüstung</h4>
+                  <div className="equipment-options">
+                      {selectedBackground.equipment_options?.map(option => (
+                          <label key={option.id} className={`equipment-option ${equipChoice === option.id ? 'selected' : ''}`}>
+                              <input 
+                                type="radio" 
+                                name="equipChoice" 
+                                value={option.id} 
+                                checked={equipChoice === option.id} 
+                                onChange={() => setEquipChoice(option.id)} 
+                              />
+                              <div className="equip-content">
+                                  <span className="equip-label">{option.id === 'a' ? "Paket A: Ausrüstung" : "Paket B: Gold"}</span>
+                                  <ul className="equip-list-preview">
+                                      {option.items.map((item, i) => (
+                                          <li key={i}>{item.quantity}x {t(`items.${item.item_id}`, item.item_id)}</li>
+                                      ))}
+                                  </ul>
+                              </div>
+                          </label>
+                      ))}
+                  </div>
+              </div>
+
+            </div>
+          ) : (
+            // FALLBACK FÜR ALTE DATENSTRUKTUR
+            <div>
+                <p>Dieser Hintergrund nutzt veraltete Daten.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
