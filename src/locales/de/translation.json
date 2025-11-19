@@ -55,7 +55,10 @@
       "weight": "Gewicht:",
       "alignment": "Gesinnung",
       "chooseAlignment": "Wähle Gesinnung...",
-      "portrait": "Portrait"
+      "portrait": "Portrait",
+      "languages": "Sprachen",                
+      "knownLanguages": "Bekannte Sprachen",
+      "chooseLanguage": "Sprache wählen"
     },
     "race": {
       "abilityBoost": "Attributserhöhung",
