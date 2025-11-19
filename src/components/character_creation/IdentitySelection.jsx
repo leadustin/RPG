@@ -7,7 +7,8 @@ import './IdentitySelection.css';
 // Statische Schlüssel für Gesinnungen
 const ALIGNMENT_KEYS = ["lg", "ng", "cg", "ln", "n", "cn", "le", "ne", "ce"];
 
-// NUR Standardsprachen sind hier für die Auswahl gelistet (wie besprochen)
+// PHB 2024: Liste der wählbaren Standardsprachen
+// (Seltene Sprachen wie Abyssal/Celestial sind hier ausgeschlossen)
 const AVAILABLE_LANGUAGE_KEYS = [
   "common", 
   "common_sign_language", 
@@ -21,12 +22,10 @@ const AVAILABLE_LANGUAGE_KEYS = [
   "orc"
 ];
 
-// Dieser Key in der races.json signalisiert eine freie Wahl
-const CHOICE_KEY = "choice"; 
-
 const getPortraitModule = (raceKey, gender, portraitIndex) => {
   const genderString = gender === 'male' ? 'male' : 'female';
   try {
+    // Hinweis: Stellen Sie sicher, dass die Pfade zu Ihren Bildern existieren
     return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
   } catch (e) {
     console.error("Portrait not found:", raceKey, genderString, portraitIndex);
@@ -43,18 +42,19 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
   const heightConfig = physicalProps.height || { min: 1.60, max: 1.95, default: 1.75, step: 0.01 };
   const weightConfig = physicalProps.weight || { min: 60, max: 110, default: 75, step: 1 };
 
-  // --- SPRACHEN LOGIK ---
-  const raceLanguageKeys = selectedRace?.languages || [];
+  // --- SPRACHEN LOGIK (PHB 2024 IMPLEMENTIERUNG) ---
+  // Anstatt die Sprachen aus der races.json zu laden, setzen wir die Regeln global.
   
-  // 1. Feste Sprachen (alles außer "choice")
-  const fixedLanguageKeys = raceLanguageKeys.filter(key => key !== CHOICE_KEY);
+  // 1. Feste Sprache: Immer 'common'
+  const fixedLanguageKeys = ["common"];
   
-  // 2. Zähle, wie viele "choice" Einträge vorhanden sind (z.B. 2 für Menschen)
-  const choiceCount = raceLanguageKeys.filter(key => key === CHOICE_KEY).length;
+  // 2. Anzahl der freien Wahlmöglichkeiten: Immer 2 (für alle Rassen)
+  const choiceCount = 2;
 
   // Helper: Aktualisiert eine spezifische Sprachwahl
   const handleLanguageChange = (index, value) => {
     const currentSelections = character.selectedLanguages || {};
+    // Speichert die Wahl unter dem Index (0 oder 1)
     const newSelections = { ...currentSelections, [index]: value };
     updateCharacter({ selectedLanguages: newSelections });
   };
@@ -159,66 +159,63 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
             </ul>
           </div>
 
-          {/* +++ Box 4: Sprachen +++ */}
+          {/* +++ Box 4: Sprachen (PHB 2024 Logic) +++ */}
           <div className="summary-box">
             <h3>{t('creation.identity.languages')}</h3>
             <div className="languages-container">
               
-              {/* Anzeige der festen Sprachen */}
+              {/* Anzeige der festen Sprachen (Common) */}
               <div className="fixed-languages">
                 <label>{t('creation.identity.knownLanguages')}</label>
                 <div className="tags-list">
-                  {fixedLanguageKeys.length > 0 ? fixedLanguageKeys.map((langKey, index) => (
+                  {fixedLanguageKeys.map((langKey, index) => (
                     <span key={index} className="language-tag fixed">
                       {t(`languages.${langKey}`, { defaultValue: langKey })}
                     </span>
-                  )) : <span className="language-tag fixed">-</span>}
+                  ))}
                 </div>
               </div>
 
-              {/* Dynamische Auswahlfelder basierend auf Anzahl "choice" in JSON */}
-              {choiceCount > 0 && (
-                <div className="language-choices" style={{ marginTop: '10px' }}>
-                  {Array.from({ length: choiceCount }).map((_, index) => {
-                    const currentVal = character.selectedLanguages?.[index] || '';
+              {/* Dynamische Auswahlfelder (Immer 2 Stück) */}
+              <div className="language-choices" style={{ marginTop: '10px' }}>
+                {Array.from({ length: choiceCount }).map((_, index) => {
+                  const currentVal = character.selectedLanguages?.[index] || '';
+                  
+                  // Filtere Optionen: 
+                  // 1. Nicht in den festen Sprachen enthalten (z.B. Common)
+                  // 2. Nicht bereits in einem ANDEREN Auswahlfeld gewählt
+                  const availableOptions = AVAILABLE_LANGUAGE_KEYS.filter(langKey => {
+                    const isFixed = fixedLanguageKeys.includes(langKey);
                     
-                    // Filtere Optionen: 
-                    // 1. Nicht in den festen Sprachen enthalten
-                    // 2. Nicht bereits in einem ANDEREN Auswahlfeld gewählt
-                    const availableOptions = AVAILABLE_LANGUAGE_KEYS.filter(langKey => {
-                      const isFixed = fixedLanguageKeys.includes(langKey);
-                      
-                      // Prüfe ob woanders gewählt (aber erlaube es für dieses Feld selbst, falls es schon der Wert ist)
-                      const isSelectedElsewhere = Object.entries(character.selectedLanguages || {}).some(([key, val]) => {
-                         return parseInt(key) !== index && val === langKey;
-                      });
-
-                      return !isFixed && !isSelectedElsewhere;
+                    const isSelectedElsewhere = Object.entries(character.selectedLanguages || {}).some(([key, val]) => {
+                       return parseInt(key) !== index && val === langKey;
                     });
 
-                    return (
-                      <div key={index} className="input-group" style={{ marginBottom: '8px' }}>
-                        <label htmlFor={`lang-choice-${index}`}>
-                           {t('creation.identity.chooseLanguage')} {choiceCount > 1 ? `#${index + 1}` : ''}
-                        </label>
-                        <select
-                          id={`lang-choice-${index}`}
-                          className="identity-select"
-                          value={currentVal}
-                          onChange={(e) => handleLanguageChange(index, e.target.value)}
-                        >
-                          <option value="" disabled>{t('common.choose')}</option>
-                          {availableOptions.map(langKey => (
-                              <option key={langKey} value={langKey}>
-                                {t(`languages.${langKey}`)}
-                              </option>
-                          ))}
-                        </select>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                    return !isFixed && !isSelectedElsewhere;
+                  });
+
+                  return (
+                    <div key={index} className="input-group" style={{ marginBottom: '8px' }}>
+                      <label htmlFor={`lang-choice-${index}`}>
+                         {t('creation.identity.chooseLanguage')} #{index + 1}
+                      </label>
+                      <select
+                        id={`lang-choice-${index}`}
+                        className="identity-select"
+                        value={currentVal}
+                        onChange={(e) => handleLanguageChange(index, e.target.value)}
+                      >
+                        <option value="" disabled>{t('common.choose')}</option>
+                        {availableOptions.map(langKey => (
+                            <option key={langKey} value={langKey}>
+                              {t(`languages.${langKey}`)}
+                            </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
           {/* +++ ENDE Box 4 +++ */}
