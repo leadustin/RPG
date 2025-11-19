@@ -107,14 +107,24 @@
   },
   "languages": {
     "common": "Gemeinsprache",
-    "elfish": "Elfisch",
-    "gnomish": "Gnomisch",
-    "halfling": "Halblingisch",
-    "infernal": "Infernalisch",
-    "orcish": "Orkisch",
     "dwarvish": "Zwergisch",
+    "elvish": "Elfisch",
+    "giant": "Riesisch",
+    "gnomish": "Gnomisch",
+    "goblin": "Goblinisch",
+    "halfling": "Halblingisch",
+    "orc": "Orkisch",
+    "abyssal": "Abyssisch",
+    "celestial": "Himmlisch",
     "draconic": "Drakonisch",
-    "celestial": "Himmlisch"
+    "deep_speech": "Tiefensprache",
+    "infernal": "Infernalisch",
+    "primordial": "Urtümlich",
+    "sylvan": "Sylvanisch",
+    "undercommon": "Untersprache",
+    "druidic": "Druidisch",
+    "thieves_cant": "Diebessprache",
+    "orcish": "Orkisch"
   },
   "tools": {
     "categories": {
