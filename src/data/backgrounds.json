@@ -1,404 +1,404 @@
 [
   {
     "key": "acolyte",
-    "name": "Akolyth",
-    "description": "Du hast dich dem Dienst in einem Tempel gewidmet, sei es in einer Stadt oder einem verborgenen heiligen Hain. Dort hast du Riten zu Ehren eines Gottes vollzogen. Du hast unter einem Priester gedient und Religion studiert.",
-    "ability_scores": ["Intelligenz", "Weisheit", "Charisma"],
-    "feat": "Magie-Eingeweihter (Kleriker)",
-    "skill_proficiencies": ["Motiv erkennen", "Religion"],
-    "tool_proficiencies": ["Kalligraphen-Werkzeug"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Kalligraphen-Werkzeug",
-        "Buch (Gebete)",
-        "Heiliges Symbol",
-        "Pergament (10 Blatt)",
-        "Robe",
-        "8 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Magie-Eingeweihter (Kleriker)",
-      "description": "Du erhältst das Talent 'Magie-Eingeweihter (Kleriker)'. Wähle zwei Kleriker-Zaubertricks und einen Stufe-1-Zauber."
-    }
-  },
-  {
-    "key": "charlatan",
-    "name": "Scharlatan",
-    "description": "Du warst schon immer jemand mit einem Händchen dafür, Leute um den Finger zu wickeln. Du konzentrierst dich auf die Geheimnisse anderer und spielst sie zu deinem Vorteil aus.",
-    "ability_scores": ["Geschicklichkeit", "Konstitution", "Charisma"],
-    "feat": "Geübt",
-    "skill_proficiencies": ["Täuschung", "Fingerfertigkeit"],
-    "tool_proficiencies": ["Fälschersatz"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Fälschersatz",
-        "Ein Kostüm",
-        "Edle Kleidung",
-        "15 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Geübt",
-      "description": "Du erhältst das Talent 'Geübt'. Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
-    }
-  },
-  {
-    "key": "criminal",
-    "name": "Krimineller",
-    "description": "Du bist ein erfahrener Krimineller mit einer Geschichte von Verbrechen. Du hast in einer Welt von Dieben, Schmugglern und Mördern gelebt, was dir bestimmte Fähigkeiten und Kontakte eingebracht hat.",
-    "ability_scores": ["Geschicklichkeit", "Konstitution", "Intelligenz"],
-    "feat": "Wachsam",
-    "skill_proficiencies": ["Fingerfertigkeit", "Heimlichkeit"],
-    "tool_proficiencies": ["Diebeswerkzeug"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "2 Dolche",
-        "Diebeswerkzeug",
-        "Ein Brecheisen",
-        "2 Gürteltaschen",
-        "Reisekleidung",
-        "16 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Wachsam",
-      "description": "Du erhältst das Talent 'Wachsam' (Alert). Du erhältst einen Bonus auf deine Initiative und kannst zu Beginn eines Kampfes deinen Initiativewert mit dem eines willigen Verbündeten tauschen."
-    }
-  },
-  {
-    "key": "merchant",
-    "name": "Händler",
-    "description": "Du bist ein erfahrener Händler, der weite Strecken zurücklegt, um Waren zu kaufen und zu verkaufen. Du verstehst die Kunst der Überzeugung und weißt, wie man sich auf Reisen orientiert. [synthesized based on traits]",
-    "ability_scores": ["Konstitution", "Intelligenz", "Charisma"],
-    "feat": "Glückspilz",
-    "skill_proficiencies": ["Umgang mit Tieren", "Überreden"],
-    "tool_proficiencies": ["Navigationswerkzeuge"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Navigationswerkzeuge",
-        "2 Gürteltaschen",
-        "Reisekleidung",
-        "22 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Glückspilz",
-      "description": "Du erhältst das Talent 'Glückspilz' (Lucky). Du hast drei Glückspunkte, die du ausgeben kannst, um Wurf- oder SG-Ergebnisse zu beeinflussen. [synthesized based on feat name]"
-    }
-  },
-  {
-    "key": "entertainer",
-    "name": "Unterhalter",
-    "description": "Du lebst, um das Publikum zu begeistern. Du weißt, wie man die Menge unterhält, sie zum Lachen oder Weinen bringt und ihre Stimmungen beeinflusst.",
-    "ability_scores": ["Stärke", "Geschicklichkeit", "Charisma"],
-    "feat": "Musiker",
-    "skill_proficiencies": ["Akrobatik", "Auftreten"],
-    "tool_proficiencies": ["Ein Musikinstrument deiner Wahl"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Musikinstrument (wie oben gewählt)",
-        "2 Kostüme",
-        "Spiegel",
-        "Parfüm",
-        "Reisekleidung",
-        "11 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Musiker",
-      "description": "Du erhältst das Talent 'Musiker' (Musician). Du erlangst Übung in einem weiteren Musikinstrument deiner Wahl und kannst dieses als Waffe einsetzen."
-    }
-  },
-  {
-    "key": "guard",
-    "name": "Wache",
-    "description": "Du hast in der örtlichen Stadtwache oder der Leibwache eines Adligen gedient. Dein Dienst hat dich gelehrt, wachsam zu sein, potenzielle Gefahren schnell zu erkennen und die Ordnung aufrechtzuerhalten.",
-    "ability_scores": ["Stärke", "Intelligenz", "Weisheit"],
-    "feat": "Wachsam",
-    "skill_proficiencies": ["Athletik", "Wahrnehmung"],
-    "tool_proficiencies": ["Ein Spielset deiner Wahl"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Speer",
-        "Leichte Armbrust",
-        "20 Bolzen",
-        "Spielset (wie oben gewählt)",
-        "Kapuzenlaterne",
-        "Handschellen",
-        "Köcher",
-        "Reisekleidung",
-        "12 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Wachsam",
-      "description": "Du erhältst das Talent 'Wachsam' (Alert). Du erhältst einen Bonus auf deine Initiative und kannst zu Beginn eines Kampfes deinen Initiativewert mit dem eines willigen Verbündeten tauschen."
-    }
-  },
-  {
-    "key": "farmer",
-    "name": "Bauer",
-    "description": "Du hast dein Leben der harten Arbeit auf dem Land gewidmet. Dein Alltag ist geprägt von den Jahreszeiten, der Pflege von Tieren und dem Bau einfacher Strukturen, was dir Stärke, Ausdauer und eine tiefe Verbundenheit zur Natur verliehen hat.",
-    "ability_scores": ["Stärke", "Konstitution", "Weisheit"],
-    "feat": "Zäh",
-    "skill_proficiencies": ["Umgang mit Tieren", "Naturkunde"],
-    "tool_proficiencies": ["Zimmermannswerkzeug"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Sichel",
-        "Zimmermannswerkzeug",
-        "Heilset",
-        "Eisentopf",
-        "Schaufel",
-        "Reisekleidung",
-        "30 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Zäh",
-      "description": "Du erhältst das Talent 'Zäh' (Tough). Dein Trefferpunkte-Maximum erhöht sich um 2 und steigt bei jedem Stufenaufstieg um weitere 2."
-    }
+    "name": "Akoluth",
+    "source": "PHB2024",
+    "description": "backgrounds.acolyte.description",
+    "ability_scores": ["int", "wis", "cha"],
+    "feat": "magic_initiate_cleric",
+    "skills": ["insight", "religion"],
+    "tools": ["calligrapher"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "calligrapher", "quantity": 1 },
+          { "item_id": "book_prayer", "quantity": 1 },
+          { "item_id": "holy_symbol", "quantity": 1 },
+          { "item_id": "parchment", "quantity": 10 },
+          { "item_id": "robe", "quantity": 1 },
+          { "item_id": "gold", "quantity": 8 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
   },
   {
     "key": "artisan",
     "name": "Handwerker",
-    "description": "Du hast eine Ausbildung in einem Handwerk oder einer Kunst absolviert und widmest dein Leben der Schaffung von Objekten oder Meisterwerken. Deine Ausbildung hat dir ein tiefes Verständnis für Materialien und Konstruktion vermittelt.",
-    "ability_scores": ["Stärke", "Geschicklichkeit", "Intelligenz"],
-    "feat": "Handwerker",
-    "skill_proficiencies": ["Nachforschungen", "Überreden"],
-    "tool_proficiencies": ["Eine Art Handwerkerwerkzeug deiner Wahl"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Handwerkerwerkzeug (wie oben gewählt)",
-        "2 Gürteltaschen",
-        "Reisekleidung",
-        "32 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Handwerker",
-      "description": "Du erhältst das Talent 'Handwerker' (Crafter). Du erlangst zusätzliche Übung in einem Handwerkerwerkzeug deiner Wahl und kannst nicht-magische, einfache Gegenstände in kürzerer Zeit herstellen."
-    }
+    "source": "PHB2024",
+    "description": "backgrounds.artisan.description",
+    "ability_scores": ["str", "dex", "int"],
+    "feat": "crafter",
+    "skills": ["investigation", "persuasion"],
+    "tools": ["artisan_tools_choice"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "artisan_tools_choice", "quantity": 1 },
+          { "item_id": "pouch", "quantity": 2 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 32 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
+  },
+  {
+    "key": "charlatan",
+    "name": "Scharlatan",
+    "source": "PHB2024",
+    "description": "backgrounds.charlatan.description",
+    "ability_scores": ["dex", "con", "cha"],
+    "feat": "skilled",
+    "skills": ["deception", "sleight_of_hand"],
+    "tools": ["forgery_kit"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "forgery_kit", "quantity": 1 },
+          { "item_id": "costume", "quantity": 1 },
+          { "item_id": "fine_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 15 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
+  },
+  {
+    "key": "criminal",
+    "name": "Krimineller",
+    "source": "PHB2024",
+    "description": "backgrounds.criminal.description",
+    "ability_scores": ["dex", "con", "int"],
+    "feat": "alert",
+    "skills": ["sleight_of_hand", "stealth"],
+    "tools": ["thieves_tools"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "dagger", "quantity": 2 },
+          { "item_id": "thieves_tools", "quantity": 1 },
+          { "item_id": "crowbar", "quantity": 1 },
+          { "item_id": "pouch", "quantity": 2 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 16 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
+  },
+  {
+    "key": "entertainer",
+    "name": "Unterhalter",
+    "source": "PHB2024",
+    "description": "backgrounds.entertainer.description",
+    "ability_scores": ["str", "dex", "cha"],
+    "feat": "musician",
+    "skills": ["acrobatics", "performance"],
+    "tools": ["musical_instrument_choice"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "musical_instrument_choice", "quantity": 1 },
+          { "item_id": "costume", "quantity": 2 },
+          { "item_id": "mirror", "quantity": 1 },
+          { "item_id": "perfume", "quantity": 1 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 11 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
+  },
+  {
+    "key": "farmer",
+    "name": "Landwirt",
+    "source": "PHB2024",
+    "description": "backgrounds.farmer.description",
+    "ability_scores": ["str", "con", "wis"],
+    "feat": "tough",
+    "skills": ["animal_handling", "nature"],
+    "tools": ["carpenter"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "carpenter", "quantity": 1 },
+          { "item_id": "sickle", "quantity": 1 },
+          { "item_id": "healers_kit", "quantity": 1 },
+          { "item_id": "iron_pot", "quantity": 1 },
+          { "item_id": "shovel", "quantity": 1 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 30 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
+  },
+  {
+    "key": "guard",
+    "name": "Wache",
+    "source": "PHB2024",
+    "description": "backgrounds.guard.description",
+    "ability_scores": ["str", "int", "wis"],
+    "feat": "alert",
+    "skills": ["athletics", "perception"],
+    "tools": ["gaming_set_choice"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "spear", "quantity": 1 },
+          { "item_id": "light_crossbow", "quantity": 1 },
+          { "item_id": "bolts", "quantity": 20 },
+          { "item_id": "gaming_set_choice", "quantity": 1 },
+          { "item_id": "lantern_hooded", "quantity": 1 },
+          { "item_id": "manacles", "quantity": 1 },
+          { "item_id": "quiver", "quantity": 1 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 12 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
   },
   {
     "key": "guide",
     "name": "Führer",
-    "description": "Du hast dein Leben der Erkundung und dem Navigieren durch gefährliche Gebiete gewidmet. Du kennst die Wildnis und hast gelernt, leise und unauffällig zu reisen.",
-    "ability_scores": ["Geschicklichkeit", "Konstitution", "Weisheit"],
-    "feat": "Magie-Eingeweihter (Druide)",
-    "skill_proficiencies": ["Heimlichkeit", "Überlebenskunst"],
-    "tool_proficiencies": ["Kartografenwerkzeug"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Kurzbogen",
-        "20 Pfeile",
-        "Kartografenwerkzeug",
-        "Schlafsack",
-        "Köcher",
-        "Zelt",
-        "Reisekleidung",
-        "3 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Magie-Eingeweihter (Druide)",
-      "description": "Du erhältst das Talent 'Magie-Eingeweihter (Druide)'. Du kennst zwei Druiden-Zaubertricks deiner Wahl und einen Zauber der 1. Stufe der Druiden-Zauberliste, den du einmal pro langer Rast wirken kannst."
-    }
+    "source": "PHB2024",
+    "description": "backgrounds.guide.description",
+    "ability_scores": ["dex", "con", "wis"],
+    "feat": "magic_initiate_druid",
+    "skills": ["stealth", "survival"],
+    "tools": ["cartographer"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "shortbow", "quantity": 1 },
+          { "item_id": "arrows", "quantity": 20 },
+          { "item_id": "cartographer", "quantity": 1 },
+          { "item_id": "bedroll", "quantity": 1 },
+          { "item_id": "quiver", "quantity": 1 },
+          { "item_id": "tent", "quantity": 1 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 3 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
   },
   {
     "key": "hermit",
     "name": "Einsiedler",
-    "description": "Du hast einen Teil deines Lebens in Abgeschiedenheit verbracht, sei es in einem Kloster, als Einsiedler in der Wildnis oder in einem Versteck. Diese Zeit hat dir eine besondere Einsicht oder Entdeckung beschert.",
-    "ability_scores": ["Konstitution", "Weisheit", "Charisma"],
-    "feat": "Heiler",
-    "skill_proficiencies": ["Medizin", "Religion"],
-    "tool_proficiencies": ["Kräuterkunde-Ausrüstung"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Kampfstab",
-        "Kräuterkunde-Ausrüstung",
-        "Schlafsack",
-        "Buch (Philosophie)",
-        "Lampe",
-        "Öl (3 Flaschen)",
-        "Reisekleidung",
-        "16 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Heiler",
-      "description": "Du erhältst das Talent 'Heiler' (Healer). Du bist geübt im Umgang mit dem Heilset und kannst damit Kreaturen heilen, die sich nicht im Kampf befinden."
-    }
+    "source": "PHB2024",
+    "description": "backgrounds.hermit.description",
+    "ability_scores": ["con", "wis", "cha"],
+    "feat": "healer",
+    "skills": ["medicine", "religion"],
+    "tools": ["herbalism_kit"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "quarterstaff", "quantity": 1 },
+          { "item_id": "herbalism_kit", "quantity": 1 },
+          { "item_id": "bedroll", "quantity": 1 },
+          { "item_id": "book_philosophy", "quantity": 1 },
+          { "item_id": "lamp", "quantity": 1 },
+          { "item_id": "oil", "quantity": 3 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 16 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
+  },
+  {
+    "key": "merchant",
+    "name": "Händler",
+    "source": "PHB2024",
+    "description": "backgrounds.merchant.description",
+    "ability_scores": ["con", "int", "cha"],
+    "feat": "lucky",
+    "skills": ["animal_handling", "persuasion"],
+    "tools": ["navigator"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "navigator", "quantity": 1 },
+          { "item_id": "pouch", "quantity": 2 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 22 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
   },
   {
     "key": "noble",
     "name": "Adliger",
-    "description": "Du entstammst einer adligen Familie und bist mit Reichtum, Macht und Privilegien aufgewachsen. Dein Name und dein Ansehen öffnen dir viele Türen.",
-    "ability_scores": ["Stärke", "Intelligenz", "Charisma"],
-    "feat": "Geübt",
-    "skill_proficiencies": ["Geschichte", "Überreden"],
-    "tool_proficiencies": ["Ein Spielset deiner Wahl"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Spielset (wie oben gewählt)",
-        "Edle Kleidung",
-        "Parfüm",
-        "29 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Geübt",
-      "description": "Du erhältst das Talent 'Geübt' (Skilled). Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
-    }
-  },
-  {
-    "key": "wayfarer",
-    "name": "Wanderer",
-    "description": "Du bist ständig unterwegs und verdienst deinen Lebensunterhalt durch das Erkennen von Möglichkeiten. Deine Reisen haben dich gelehrt, verborgen zu bleiben und Gefahren durch Glück zu vermeiden. [synthesized based on traits]",
-    "ability_scores": ["Geschicklichkeit", "Weisheit", "Charisma"],
-    "feat": "Glückspilz",
-    "skill_proficiencies": ["Motiv erkennen", "Heimlichkeit"],
-    "tool_proficiencies": ["Diebeswerkzeug"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "2 Dolche",
-        "Diebeswerkzeug",
-        "Spielset (beliebig)",
-        "Schlafsack",
-        "2 Gürteltaschen",
-        "Reisekleidung",
-        "16 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Glückspilz",
-      "description": "Du erhältst das Talent 'Glückspilz' (Lucky). Du hast drei Glückspunkte, die du ausgeben kannst, um Wurf- oder SG-Ergebnisse zu beeinflussen. [synthesized based on feat name]"
-    }
+    "source": "PHB2024",
+    "description": "backgrounds.noble.description",
+    "ability_scores": ["str", "int", "cha"],
+    "feat": "skilled",
+    "skills": ["history", "persuasion"],
+    "tools": ["gaming_set_choice"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "gaming_set_choice", "quantity": 1 },
+          { "item_id": "fine_clothes", "quantity": 1 },
+          { "item_id": "perfume", "quantity": 1 },
+          { "item_id": "gold", "quantity": 29 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
   },
   {
     "key": "sage",
-    "name": "Weiser",
-    "description": "Du hast Jahre damit verbracht, die Überlieferungen der Welt zu studieren. Du hast unzählige Stunden in Bibliotheken verbracht, Manuskripte gelesen und den größten Experten zugehört.",
-    "ability_scores": ["Konstitution", "Intelligenz", "Weisheit"],
-    "feat": "Magie-Eingeweihter (Magier)",
-    "skill_proficiencies": ["Arkanum", "Geschichte"],
-    "tool_proficiencies": ["Kalligraphen-Werkzeug"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Kampfstab",
-        "Kalligraphen-Werkzeug",
-        "Buch (Geschichte)",
-        "Pergament (8 Blatt)",
-        "Robe",
-        "8 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Magie-Eingeweihter (Magier)",
-      "description": "Du erhältst das Talent 'Magie-Eingeweihter (Magier)'. Du kennst zwei Magier-Zaubertricks deiner Wahl und einen Zauber der 1. Stufe der Magier-Zauberliste, den du einmal pro langer Rast wirken kannst."
-    }
-  },
-  {
-    "key": "scribe",
-    "name": "Schreiber",
-    "description": "Du hast dein Leben der Aufzeichnung und Archivierung von Wissen gewidmet. [synthesized based on traits] Deine Arbeit erfordert Detailgenauigkeit und die Fähigkeit, selbst kleine Hinweise zu erkennen.",
-    "ability_scores": ["Geschicklichkeit", "Intelligenz", "Weisheit"],
-    "feat": "Geübt",
-    "skill_proficiencies": ["Nachforschungen", "Wahrnehmung"],
-    "tool_proficiencies": ["Kalligraphen-Werkzeug"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Kalligraphen-Werkzeug",
-        "Edle Kleidung",
-        "Lampe",
-        "Öl (3 Flaschen)",
-        "Pergament (12 Blatt)",
-        "23 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Geübt",
-      "description": "Du erhältst das Talent 'Geübt' (Skilled). Du erlangst Übung in drei Fertigkeiten oder Werkzeugen deiner Wahl."
-    }
+    "name": "Gelehrter",
+    "source": "PHB2024",
+    "description": "backgrounds.sage.description",
+    "ability_scores": ["con", "int", "wis"],
+    "feat": "magic_initiate_wizard",
+    "skills": ["arcana", "history"],
+    "tools": ["calligrapher"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "quarterstaff", "quantity": 1 },
+          { "item_id": "calligrapher", "quantity": 1 },
+          { "item_id": "book_history", "quantity": 1 },
+          { "item_id": "parchment", "quantity": 8 },
+          { "item_id": "robe", "quantity": 1 },
+          { "item_id": "gold", "quantity": 8 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
   },
   {
     "key": "sailor",
     "name": "Seemann",
-    "description": "Du hast auf einem Seeschiff gelebt und gearbeitet. Die salzige Luft, der Wind in den Segeln und die Kameradschaft der Crew sind dir vertrauter als der feste Boden unter den Füßen.",
-    "ability_scores": ["Stärke", "Geschicklichkeit", "Weisheit"],
-    "feat": "Tavernenkämpfer",
-    "skill_proficiencies": ["Akrobatik", "Wahrnehmung"],
-    "tool_proficiencies": ["Navigationswerkzeuge"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Dolch",
-        "Navigationswerkzeuge",
-        "Seil",
-        "Reisekleidung",
-        "20 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Tavernenkämpfer",
-      "description": "Du erhältst das Talent 'Tavernenkämpfer' (Tavern Brawler). Du bist geübt im Umgang mit improvisierten Waffen und kannst improvisierte Waffen als tödliche Waffen einsetzen."
-    }
+    "source": "PHB2024",
+    "description": "backgrounds.sailor.description",
+    "ability_scores": ["str", "dex", "wis"],
+    "feat": "tavern_brawler",
+    "skills": ["acrobatics", "perception"],
+    "tools": ["navigator"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "dagger", "quantity": 1 },
+          { "item_id": "navigator", "quantity": 1 },
+          { "item_id": "rope_silk", "quantity": 1 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 20 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
+  },
+  {
+    "key": "scribe",
+    "name": "Schreiber",
+    "source": "PHB2024",
+    "description": "backgrounds.scribe.description",
+    "ability_scores": ["dex", "int", "wis"],
+    "feat": "skilled",
+    "skills": ["investigation", "perception"],
+    "tools": ["calligrapher"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "calligrapher", "quantity": 1 },
+          { "item_id": "fine_clothes", "quantity": 1 },
+          { "item_id": "lamp", "quantity": 1 },
+          { "item_id": "oil", "quantity": 3 },
+          { "item_id": "parchment", "quantity": 12 },
+          { "item_id": "gold", "quantity": 23 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
   },
   {
     "key": "soldier",
     "name": "Soldat",
-    "description": "Krieg war dein Leben, solange du dich erinnern kannst. Du wurdest als Jugendlicher ausgebildet, hast in einer Armee gedient und die grundlegenden Überlebensfähigkeiten auf dem Schlachtfeld erlernt.",
-    "ability_scores": ["Stärke", "Geschicklichkeit", "Konstitution"],
-    "feat": "Wilder Angreifer",
-    "skill_proficiencies": ["Athletik", "Einschüchtern"],
-    "tool_proficiencies": ["Ein Spielset deiner Wahl"],
-    "languages": [],
-    "equipment": {
-      "option_a": [
-        "Speer",
-        "Kurzbogen",
-        "20 Pfeile",
-        "Spielset (wie oben gewählt)",
-        "Heilset",
-        "Köcher",
-        "Reisekleidung",
-        "14 GM"
-      ],
-      "option_b": "50 GM"
-    },
-    "feature": {
-      "name": "Wilder Angreifer",
-      "description": "Du erhältst das Talent 'Wilder Angreifer' (Savage Attacker). Einmal pro Zug kannst du den Schaden eines Nahkampfangriffs neu würfeln."
-    }
+    "source": "PHB2024",
+    "description": "backgrounds.soldier.description",
+    "ability_scores": ["str", "dex", "con"],
+    "feat": "savage_attacker",
+    "skills": ["athletics", "intimidation"],
+    "tools": ["gaming_set_choice"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "spear", "quantity": 1 },
+          { "item_id": "shortbow", "quantity": 1 },
+          { "item_id": "arrows", "quantity": 20 },
+          { "item_id": "gaming_set_choice", "quantity": 1 },
+          { "item_id": "healers_kit", "quantity": 1 },
+          { "item_id": "quiver", "quantity": 1 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 14 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
+  },
+  {
+    "key": "wayfarer",
+    "name": "Wanderer",
+    "source": "PHB2024",
+    "description": "backgrounds.wayfarer.description",
+    "ability_scores": ["dex", "wis", "cha"],
+    "feat": "lucky",
+    "skills": ["insight", "stealth"],
+    "tools": ["thieves_tools"],
+    "equipment_options": [
+      {
+        "id": "a",
+        "label": "Standard",
+        "items": [
+          { "item_id": "dagger", "quantity": 2 },
+          { "item_id": "thieves_tools", "quantity": 1 },
+          { "item_id": "gaming_set_choice", "quantity": 1 },
+          { "item_id": "bedroll", "quantity": 1 },
+          { "item_id": "pouch", "quantity": 2 },
+          { "item_id": "travelers_clothes", "quantity": 1 },
+          { "item_id": "gold", "quantity": 16 }
+        ]
+      },
+      { "id": "b", "label": "Gold", "items": [{ "item_id": "gold", "quantity": 50 }] }
+    ]
   }
 ]

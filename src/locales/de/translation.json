@@ -54,12 +54,20 @@
       "height": "Größe",
       "weight": "Gewicht",
       "alignment": "Gesinnung",
+<<<<<<< HEAD
       "chooseAlignment": "Wähle eine Gesinnung...",
       "portrait": "Portrait",
       "languages": "Sprachen",
       "knownLanguages": "Bekannte Sprachen:",
       "chooseLanguage": "Zusätzliche Sprache wählen:",
       "languageChoicePlaceholder": "Eine zusätzliche Sprache deiner Wahl"
+=======
+      "chooseAlignment": "Wähle Gesinnung...",
+      "portrait": "Portrait",
+      "languages": "Sprachen",                
+      "knownLanguages": "Bekannte Sprachen",
+      "chooseLanguage": "Sprache wählen"
+>>>>>>> fa707c844e2e601c0ff4e3d1a1ec50850a81a82b
     },
     "race": {
       "abilityBoost": "Attributserhöhung",
@@ -81,7 +89,10 @@
       "feature": "Merkmal: {{name}}",
       "chooseLanguage": "Wähle eine Sprache...",
       "chooseTool": "Wähle ein Werkzeug...",
-      "chooseInstrument": "Wähle ein Instrument..."
+      "chooseInstrument": "Wähle ein Instrument...",
+      "acolyte": {
+      "description": "Du hast dein Leben dem Dienst in einem Tempel gewidmet. Du handelst als Vermittler zwischen dem Göttlichen und den Sterblichen, vollziehst heilige Riten und bringst Opfer dar."
+    }
     },
     "skills": {
       "choose": "Wähle {{count}} Fertigkeiten aus der Liste:"
@@ -108,6 +119,7 @@
   },
   "languages": {
     "common": "Gemeinsprache",
+<<<<<<< HEAD
     "dwarvish": "Zwergisch",
     "elvish": "Elfisch",
     "giant": "Riesisch",
@@ -125,6 +137,30 @@
     "undercommon": "Untersprache",
     "druidic": "Druidisch",
     "thieves_cant": "Diebessprache"
+=======
+  "common_sign_language": "Gemeinsprache (Gebärdensprache)",
+  "draconic": "Drachisch",
+  "dwarvish": "Zwergisch",
+  "elvish": "Elfisch",
+  "giant": "Riesisch",
+  "gnomish": "Gnomisch",
+  "goblin": "Goblinoidisch",
+  "halfling": "Halblingisch",
+  "orc": "Orkisch",
+  "abyssal": "Dämonisch",
+  "celestial": "Himmlisch",
+  "deep_speech": "Tiefensprache (Aberrationen)",
+  "druidic": "Druidensprache",
+  "infernal": "Teuflisch",
+  "primordial": "Urtümlich (Elementar)",
+  "sylvan": "Feensprache",
+  "thieves_cant": "Gaunerjargon",
+  "undercommon": "Unterreichsprache",
+  "aquan": "Aquan",
+  "auran": "Auran",
+  "ignan": "Ignan",
+  "terran": "Terran"
+>>>>>>> fa707c844e2e601c0ff4e3d1a1ec50850a81a82b
   },
   "tools": {
     "categories": {
@@ -270,5 +306,64 @@
     },
     "emptyLogSearch": "Keine Einträge gefunden.",
     "emptyLogNoFilter": "Keine passenden Log-Einträge."
+  },
+  "items": {
+    "calligrapher": "Kalligraphenwerkzeug",
+  "book_prayer": "Gebetbuch",
+  "book_history": "Geschichtsbuch",
+  "book_philosophy": "Philosophiebuch",
+  "holy_symbol": "Heiliges Symbol",
+  "parchment": "Pergament (Blatt)",
+  "robe": "Robe",
+  "gold": "Goldmünzen",
+  "artisan_tools_choice": "Handwerkerwerkzeug (Wahl)",
+  "pouch": "Gürteltasche",
+  "travelers_clothes": "Reisekleidung",
+  "fine_clothes": "Edle Kleidung",
+  "costume": "Kostüm",
+  "forgery_kit": "Fälschersatz",
+  "thieves_tools": "Diebeswerkzeug",
+  "dagger": "Dolch",
+  "crowbar": "Brecheisen",
+  "musical_instrument_choice": "Musikinstrument (Wahl)",
+  "mirror": "Stahlspiegel",
+  "perfume": "Parfüm",
+  "carpenter": "Zimmermannswerkzeug",
+  "sickle": "Sichel",
+  "healers_kit": "Heilset",
+  "iron_pot": "Eisentopf",
+  "shovel": "Schaufel",
+  "spear": "Speer",
+  "light_crossbow": "Leichte Armbrust",
+  "bolts": "Armbrustbolzen",
+  "arrows": "Pfeile",
+  "gaming_set_choice": "Spielset (Wahl)",
+  "lantern_hooded": "Kapuzenlaterne",
+  "manacles": "Handschellen",
+  "quiver": "Köcher",
+  "shortbow": "Kurzbogen",
+  "cartographer": "Kartographenwerkzeug",
+  "bedroll": "Schlafsack",
+  "tent": "Zelt (2 Personen)",
+  "quarterstaff": "Kampfstab",
+  "herbalism_kit": "Kräuterkunde-Set",
+  "lamp": "Lampe",
+  "oil": "Öl (Flasche)",
+  "navigator": "Navigationswerkzeug",
+  "rope_silk": "Seil, Seide (15m)"
+  },
+  "feats": {
+    "magic_initiate_cleric": "Magische Initiative (Kleriker)",
+    "magic_initiate_druid": "Magische Initiative (Druide)",
+    "magic_initiate_wizard": "Magische Initiative (Magier)",
+    "crafter": "Handwerker (Crafter)",
+    "skilled": "Geübt (Skilled)",
+    "alert": "Wachsam (Alert)",
+    "musician": "Musiker",
+    "tough": "Zäh (Tough)",
+    "healer": "Heiler",
+    "lucky": "Glückspilz (Lucky)",
+    "tavern_brawler": "Tavernenkämpfer",
+    "savage_attacker": "Wilder Angreifer"
   }
 }

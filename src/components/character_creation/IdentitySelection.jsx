@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // src/components/character_creation/IdentitySelection.jsx
 
 import React from 'react';
@@ -185,4 +186,232 @@ export const IdentitySelection = ({ character, updateCharacter }) => {
       </div>
     </div>
   );
+=======
+// src/components/character_creation/IdentitySelection.jsx
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import './PanelDetails.css';
+import './IdentitySelection.css';
+
+// Statische Schlüssel für Gesinnungen
+const ALIGNMENT_KEYS = ["lg", "ng", "cg", "ln", "n", "cn", "le", "ne", "ce"];
+
+// PHB 2024: Liste der wählbaren Standardsprachen
+// (Seltene Sprachen wie Abyssal/Celestial sind hier ausgeschlossen)
+const AVAILABLE_LANGUAGE_KEYS = [
+  "common", 
+  "common_sign_language", 
+  "draconic", 
+  "dwarvish", 
+  "elvish", 
+  "giant", 
+  "gnomish", 
+  "goblin", 
+  "halfling", 
+  "orc"
+];
+
+const getPortraitModule = (raceKey, gender, portraitIndex) => {
+  const genderString = gender === 'male' ? 'male' : 'female';
+  try {
+    // Hinweis: Stellen Sie sicher, dass die Pfade zu Ihren Bildern existieren
+    return require(`../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`);
+  } catch (e) {
+    console.error("Portrait not found:", raceKey, genderString, portraitIndex);
+    return '';
+  }
+};
+
+export const IdentitySelection = ({ character, updateCharacter }) => {
+  const { t } = useTranslation();
+  const selectedRace = character.race;
+  const physicalProps = selectedRace?.physical_props || {};
+
+  const ageConfig = physicalProps.age || { min: 18, max: 80, default: 25, step: 1 };
+  const heightConfig = physicalProps.height || { min: 1.60, max: 1.95, default: 1.75, step: 0.01 };
+  const weightConfig = physicalProps.weight || { min: 60, max: 110, default: 75, step: 1 };
+
+  // --- SPRACHEN LOGIK (PHB 2024 IMPLEMENTIERUNG) ---
+  // Anstatt die Sprachen aus der races.json zu laden, setzen wir die Regeln global.
+  
+  // 1. Feste Sprache: Immer 'common'
+  const fixedLanguageKeys = ["common"];
+  
+  // 2. Anzahl der freien Wahlmöglichkeiten: Immer 2 (für alle Rassen)
+  const choiceCount = 2;
+
+  // Helper: Aktualisiert eine spezifische Sprachwahl
+  const handleLanguageChange = (index, value) => {
+    const currentSelections = character.selectedLanguages || {};
+    // Speichert die Wahl unter dem Index (0 oder 1)
+    const newSelections = { ...currentSelections, [index]: value };
+    updateCharacter({ selectedLanguages: newSelections });
+  };
+
+  React.useEffect(() => {
+    const currentGender = character.gender || 'male';
+    if (!character.gender) {
+        updateCharacter({ gender: 'male' });
+    }
+
+    if (!character.portrait && selectedRace) {
+      const defaultPortrait = getPortraitModule(selectedRace.key, currentGender, 1);
+      if (defaultPortrait) {
+        updateCharacter({ portrait: defaultPortrait });
+      }
+    }
+  }, [character.portrait, character.gender, selectedRace, updateCharacter]);
+
+  const portraitCount = selectedRace?.portraits || 4;
+  const formatHeight = (value) => value ? `${value.toFixed(2).replace('.', ',')}m` : '';
+  const formatWeight = (value) => value ? `${Math.round(value)}kg` : '';
+
+  return (
+    <div className="identity-selection-wrapper">
+      <h2 className="panel-details-header">{t('creation.identity.title')}</h2>
+      <p className="panel-details-description">{t('creation.identity.description')}</p>
+
+      <div className="summary-panel-layout">
+        {/* --- LINKE SPALTE (Inputs & Slider) --- */}
+        <div className="summary-column-left">
+          {/* Box 1: Allgemeines */}
+          <div className="summary-box">
+            <h3>{t('creation.identity.general')}</h3>
+            <div className="identity-grid-two-columns">
+              <div className="input-group">
+                <label htmlFor="char-name">{t('creation.identity.name')}</label>
+                <input
+                  id="char-name"
+                  type="text"
+                  value={character.name}
+                  onChange={(e) => updateCharacter({ name: e.target.value })}
+                />
+              </div>
+              <div className="input-group">
+                <label>{t('creation.identity.gender')}</label>
+                <div className="gender-buttons">
+                  <button className={character.gender === 'male' ? 'selected' : ''} onClick={() => updateCharacter({ gender: 'male' })}>{t('creation.identity.male')}</button>
+                  <button className={character.gender === 'female' ? 'selected' : ''} onClick={() => updateCharacter({ gender: 'female' })}>{t('creation.identity.female')}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Box 2: Details */}
+          <div className="summary-box">
+            <h3>{t('creation.identity.details')}</h3>
+            <div className="details-sliders">
+              {/* Alter Slider */}
+              <div className="slider-group">
+                <label htmlFor="char-age">{t('creation.identity.age')} <span className="slider-value">{character.age || ageConfig.default}</span></label>
+                <input id="char-age" type="range" className="identity-slider" min={ageConfig.min} max={ageConfig.max} step={ageConfig.step} value={character.age || ageConfig.default} onChange={(e) => updateCharacter({ age: parseFloat(e.target.value) })} />
+                <div className="slider-minmax"><span>{ageConfig.min}</span><span>{ageConfig.max}</span></div>
+              </div>
+              {/* Größe Slider */}
+              <div className="slider-group">
+                <label htmlFor="char-height">{t('creation.identity.height')} <span className="slider-value">{formatHeight(character.height || heightConfig.default)}</span></label>
+                <input id="char-height" type="range" className="identity-slider" min={heightConfig.min} max={heightConfig.max} step={heightConfig.step} value={character.height || heightConfig.default} onChange={(e) => updateCharacter({ height: parseFloat(e.target.value) })} />
+                <div className="slider-minmax"><span>{formatHeight(heightConfig.min)}</span><span>{formatHeight(heightConfig.max)}</span></div>
+              </div>
+              {/* Gewicht Slider */}
+              <div className="slider-group">
+                <label htmlFor="char-weight">{t('creation.identity.weight')} <span className="slider-value">{formatWeight(character.weight || weightConfig.default)}</span></label>
+                <input id="char-weight" type="range" className="identity-slider" min={weightConfig.min} max={weightConfig.max} step={weightConfig.step} value={character.weight || weightConfig.default} onChange={(e) => updateCharacter({ weight: parseFloat(e.target.value) })} />
+                <div className="slider-minmax"><span>{formatWeight(weightConfig.min)}</span><span>{formatWeight(weightConfig.max)}</span></div>
+              </div>
+              {/* Gesinnung */}
+              <div className="input-group" style={{ marginTop: '15px' }}>
+                <label htmlFor="char-alignment">{t('creation.identity.alignment')}</label>
+                <select id="char-alignment" className="identity-select" value={character.alignment || ''} onChange={(e) => updateCharacter({ alignment: e.target.value })}>
+                  <option value="" disabled>{t('creation.identity.chooseAlignment')}</option>
+                  {ALIGNMENT_KEYS.map(key => <option key={key} value={key}>{t(`alignments.${key}`)}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* --- RECHTE SPALTE (Portrait & Sprachen) --- */}
+        <div className="summary-column-right">
+          {/* Box 3: Portrait */}
+          <div className="summary-box">
+            <h3>{t('creation.identity.portrait')}</h3>
+            <ul className="portrait-grid">
+              {Array.from({ length: portraitCount }, (_, i) => i + 1).map(index => {
+                const portraitModule = getPortraitModule(selectedRace.key, character.gender, index);
+                return (
+                  <li key={index}>
+                    <img src={portraitModule} alt={`Portrait ${index}`} className={`portrait-image ${character.portrait === portraitModule ? 'selected' : ''}`} onClick={() => updateCharacter({ portrait: portraitModule })} />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {/* +++ Box 4: Sprachen (PHB 2024 Logic) +++ */}
+          <div className="summary-box">
+            <h3>{t('creation.identity.languages')}</h3>
+            <div className="languages-container">
+              
+              {/* Anzeige der festen Sprachen (Common) */}
+              <div className="fixed-languages">
+                <label>{t('creation.identity.knownLanguages')}</label>
+                <div className="tags-list">
+                  {fixedLanguageKeys.map((langKey, index) => (
+                    <span key={index} className="language-tag fixed">
+                      {t(`languages.${langKey}`, { defaultValue: langKey })}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Dynamische Auswahlfelder (Immer 2 Stück) */}
+              <div className="language-choices" style={{ marginTop: '10px' }}>
+                {Array.from({ length: choiceCount }).map((_, index) => {
+                  const currentVal = character.selectedLanguages?.[index] || '';
+                  
+                  // Filtere Optionen: 
+                  // 1. Nicht in den festen Sprachen enthalten (z.B. Common)
+                  // 2. Nicht bereits in einem ANDEREN Auswahlfeld gewählt
+                  const availableOptions = AVAILABLE_LANGUAGE_KEYS.filter(langKey => {
+                    const isFixed = fixedLanguageKeys.includes(langKey);
+                    
+                    const isSelectedElsewhere = Object.entries(character.selectedLanguages || {}).some(([key, val]) => {
+                       return parseInt(key) !== index && val === langKey;
+                    });
+
+                    return !isFixed && !isSelectedElsewhere;
+                  });
+
+                  return (
+                    <div key={index} className="input-group" style={{ marginBottom: '8px' }}>
+                      <label htmlFor={`lang-choice-${index}`}>
+                         {t('creation.identity.chooseLanguage')} #{index + 1}
+                      </label>
+                      <select
+                        id={`lang-choice-${index}`}
+                        className="identity-select"
+                        value={currentVal}
+                        onChange={(e) => handleLanguageChange(index, e.target.value)}
+                      >
+                        <option value="" disabled>{t('common.choose')}</option>
+                        {availableOptions.map(langKey => (
+                            <option key={langKey} value={langKey}>
+                              {t(`languages.${langKey}`)}
+                            </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          {/* +++ ENDE Box 4 +++ */}
+
+        </div>
+      </div>
+    </div>
+  );
+>>>>>>> fa707c844e2e601c0ff4e3d1a1ec50850a81a82b
 };
