@@ -16,11 +16,9 @@ import {
   ABILITY_DESCRIPTIONS_DE, 
   SKILL_DESCRIPTIONS_DE,   
   COMBAT_STATS_DESCRIPTIONS_DE 
-} from '../../engine/characterEngine';
+} from '../../utils/helpers'; // GEÄNDERT: Importiert jetzt aus utils/helpers
 
-// NEU: Item-Loader importieren
 import { getItemById } from '../../utils/itemLoader';
-
 import allSpells from "../../data/spells.json";
 import allClassData from "../../data/classes.json";
 
@@ -29,7 +27,6 @@ const portraitModules = import.meta.glob(
   '../../assets/images/portraits/human/male/*.webp',
   { eager: true }
 );
-
 const racePortraits = {};
 for (const path in portraitModules) {
   const iconUrl = portraitModules[path].default; 
@@ -39,9 +36,8 @@ for (const path in portraitModules) {
 // +++ ENDE VITE-ERSATZ +++
 
 // --- Helfer-Komponenten ---
-
 const StatDisplay = ({ statKey, label, value, modifier }) => {
-  const description = ABILITY_DESCRIPTIONS_DE[statKey];
+  const description = ABILITY_DESCRIPTIONS_DE?.[statKey] || "";
   return (
     <Tooltip text={description}>
       <li> 
@@ -60,10 +56,10 @@ const StatDisplay = ({ statKey, label, value, modifier }) => {
 const SkillDisplay = ({ skillKey, character }) => {
   const bonus = calculateSkillBonus(character, skillKey);
   const proficient = isProficientInSkill(character, skillKey);
-  const ability = SKILL_MAP[skillKey].toUpperCase();
-  const name = SKILL_NAMES_DE[skillKey];
+  const ability = SKILL_MAP && SKILL_MAP[skillKey] ? SKILL_MAP[skillKey].toUpperCase() : "?";
+  const name = SKILL_NAMES_DE?.[skillKey] || skillKey;
   const isExpertise = character.expertise_choices?.includes(skillKey);
-  const description = SKILL_DESCRIPTIONS_DE[skillKey];
+  const description = SKILL_DESCRIPTIONS_DE?.[skillKey] || "";
 
   return (
     <Tooltip text={description}>
@@ -79,7 +75,7 @@ const SkillDisplay = ({ skillKey, character }) => {
 };
 
 const CombatStatDisplay = ({ statKey, label, value }) => {
-  const description = COMBAT_STATS_DESCRIPTIONS_DE[statKey];
+  const description = COMBAT_STATS_DESCRIPTIONS_DE?.[statKey] || "";
   return (
     <Tooltip text={description}>
       <li>
@@ -92,27 +88,22 @@ const CombatStatDisplay = ({ statKey, label, value }) => {
   );
 };
 
-// --- Hauptkomponente ---
-
 export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
-  
   const [isSkillsOpen, setIsSkillsOpen] = useState(true);
   
-  if (!character) {
-    return <div className="summary-panel-layout">Charakter wird geladen...</div>;
-  }
+  if (!character) return <div className="summary-panel-layout">Charakter wird geladen...</div>;
 
   const { abilities, race, class: charClass, background } = character;
   const level = 1;
 
-  // --- Berechnungen ---
+  // Stats calculation
   const finalStats = {
-    str: abilities.str + getRacialAbilityBonus(character, "str"),
-    dex: abilities.dex + getRacialAbilityBonus(character, "dex"),
-    con: abilities.con + getRacialAbilityBonus(character, "con"),
-    int: abilities.int + getRacialAbilityBonus(character, "int"),
-    wis: abilities.wis + getRacialAbilityBonus(character, "wis"),
-    cha: abilities.cha + getRacialAbilityBonus(character, "cha"),
+    str: (abilities?.str || 10) + getRacialAbilityBonus(character, "str"),
+    dex: (abilities?.dex || 10) + getRacialAbilityBonus(character, "dex"),
+    con: (abilities?.con || 10) + getRacialAbilityBonus(character, "con"),
+    int: (abilities?.int || 10) + getRacialAbilityBonus(character, "int"),
+    wis: (abilities?.wis || 10) + getRacialAbilityBonus(character, "wis"),
+    cha: (abilities?.cha || 10) + getRacialAbilityBonus(character, "cha"),
   };
   const modifiers = {
     str: getAbilityModifier(finalStats.str),
@@ -127,16 +118,22 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
   const profBonus = getProficiencyBonus(level);
   
   const portraitKey = character.race?.portrait_img || "1.webp";
-  const portraitSrc = racePortraits[portraitKey];
+  const portraitSrc = racePortraits[portraitKey] || "";
 
-  // --- Spells & Features ---
-  const getSpellNames = (spellKeys = []) => {
+  // Safe Spell Names Helper
+  const getSpellNames = (spellKeys) => {
+    if (!spellKeys || !Array.isArray(spellKeys)) return [];
     return spellKeys
       .map((key) => allSpells.find((s) => s.key === key)?.name)
       .filter(Boolean);
   };
-  const subclassData = character.subclassKey && allClassData.find((c) => c.key === charClass.key)?.subclasses.find((sc) => sc.key === character.subclassKey);
+
+  const subclassData = character.subclassKey && allClassData
+      .find((c) => c.key === charClass?.key)
+      ?.subclasses.find((sc) => sc.key === character.subclassKey);
+
   const cantripNames = getSpellNames(character.cantrips_known);
+  
   let level1SpellNames = [];
   let level1SpellLabel = "Zauber (Lvl 1)";
   if (character.spellbook?.length > 0) {
@@ -149,71 +146,55 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
      level1SpellNames = getSpellNames(character.spells_prepared);
      level1SpellLabel = "Vorbereitete Zauber (Lvl 1)";
   }
-  const showExpertiseThievesTools = character.expertise_choices?.includes("thieves_tools");
 
-  // +++ NEU: Ausrüstungs-Logik +++
-  
-  // Ermittle das gewählte Paket (Default 'a')
   const equipChoiceId = character.background_options?.equipmentOption || 'a';
   const selectedEquipOption = background?.equipment_options?.find(opt => opt.id === equipChoiceId);
 
-  // Funktion zum Finalisieren des Charakters (Items ins Inventar schreiben)
   const finalizeCharacter = () => {
     if (!selectedEquipOption) {
         console.warn("Keine Ausrüstungsoption gefunden.");
         if (onFinish) onFinish(); 
         return;
     }
-
     let newInventory = [...(character.inventory || [])];
     let goldToAdd = 0;
 
-    selectedEquipOption.items.forEach(entry => {
+    // Safe access to items array
+    const items = selectedEquipOption.items || [];
+    items.forEach(entry => {
         if (entry.item_id === 'gold') {
             goldToAdd += entry.quantity;
         } else {
             const itemData = getItemById(entry.item_id);
-            
-            // Item so oft hinzufügen wie angegeben
             for (let i = 0; i < entry.quantity; i++) {
                 newInventory.push({
                     ...itemData,
-                    // Eindeutige Instanz-ID für das Inventar-Management
                     instanceId: Math.random().toString(36).substr(2, 9) 
                 });
             }
         }
     });
 
-    // Charakter updaten
     const finalCharacter = {
         ...character,
         inventory: newInventory,
         gold: (character.gold || 0) + goldToAdd,
-        isCharacterComplete: true // Flag setzen, dass Erstellung fertig ist
+        isCharacterComplete: true
     };
-
-    console.log("Finalizing Character...", finalCharacter);
     
-    // Update durchführen
     if (updateCharacter) updateCharacter(finalCharacter);
-    
-    // Callback aufrufen (z.B. Screen wechseln)
     if (onFinish) onFinish();
   };
 
-  // +++ ENDE Ausrüstungs-Logik +++
+  // Determine safe skill list
+  const skillKeys = SKILL_MAP ? Object.keys(SKILL_MAP) : [];
 
   return (
     <div className="summary-panel-layout">
-      
-      {/* --- LINKE SPALTE --- */}
       <div className="summary-column-left">
-        
-        {/* Box 1: Grundlagen */}
         <div className="summary-box">
           <div className="summary-basics">
-            <img src={portraitSrc} alt="Charakterporträt" className="summary-portrait-img" />
+            {portraitSrc && <img src={portraitSrc} alt="Charakterporträt" className="summary-portrait-img" />}
             <div className="summary-basics-info">
               <h3>{character.name}</h3>
               <p>{race?.name} {charClass?.name} {level}</p>
@@ -223,7 +204,6 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
           </div>
         </div>
 
-        {/* Box 2: Kampfwerte */}
         <div className="summary-box">
           <h3>Kampfwerte</h3>
           <ul className="summary-stats-grid">
@@ -233,11 +213,10 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
           </ul>
         </div>
         
-        {/* Box 3: Attribute */}
         <div className="summary-box">
           <h3>Attribute</h3>
           <ul className="ability-summary-list">
-            {Object.keys(abilities).map(key => {
+            {abilities && Object.keys(abilities).map(key => {
               const statKey = key.toLowerCase();
               return <StatDisplay key={statKey} statKey={statKey} label={statKey.toUpperCase()} value={finalStats[statKey]} modifier={modifiers[statKey]} />;
             })}
@@ -245,10 +224,7 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
         </div>
       </div>
 
-      {/* --- RECHTE SPALTE --- */}
       <div className="summary-column-right">
-
-        {/* Box 4: Klassen-Auswahl */}
         <div className="summary-box">
           <h3>Klassen-Auswahl (Lvl 1)</h3>
           <ul className="skill-summary-list features-list">
@@ -262,15 +238,14 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
           </ul>
         </div>
 
-        {/* Box 5: Fertigkeiten (Einklappbar) */}
         <div className="summary-box">
           <h3 className={`collapsible-header ${isSkillsOpen ? 'open' : ''}`} onClick={() => setIsSkillsOpen(!isSkillsOpen)}>
             Fertigkeiten <span className="collapse-icon">{isSkillsOpen ? '▼' : '►'}</span>
           </h3>
           {isSkillsOpen && (
             <ul className="skill-summary-list features-list scrollable-list-box">
-              {Object.keys(SKILL_MAP).map(skillKey => <SkillDisplay key={skillKey} skillKey={skillKey} character={character} />)}
-              {showExpertiseThievesTools && (
+              {skillKeys.map(skillKey => <SkillDisplay key={skillKey} skillKey={skillKey} character={character} />)}
+              {character.expertise_choices?.includes("thieves_tools") && (
                 <Tooltip text={"Expertise in Diebeswerkzeug (DEX). Dein Übungsbonus wird verdoppelt."}>
                   <li className="skill-item">
                     <div className="skill-info">
@@ -284,7 +259,6 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
           )}
         </div>
 
-        {/* Box 6: Ausrüstung (Vorschau) - NEU */}
         <div className="summary-box">
             <h3>Ausrüstung (Vorschau)</h3>
             <div className="equipment-preview">
@@ -292,18 +266,21 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
                     <>
                         <p><strong>Paket {selectedEquipOption.id.toUpperCase()}: {selectedEquipOption.label}</strong></p>
                         <ul className="equip-list-summary">
-                            {selectedEquipOption.items.map((item, i) => {
-                                // Löse den Namen auf
-                                const realItem = item.item_id === 'gold' 
-                                    ? { name: "Goldmünzen" } 
-                                    : getItemById(item.item_id);
-                                
-                                return (
-                                    <li key={i}>
-                                        {item.quantity}x {realItem.name}
-                                    </li>
-                                );
-                            })}
+                            {selectedEquipOption.items && selectedEquipOption.items.length > 0 ? (
+                                selectedEquipOption.items.map((item, i) => {
+                                    const realItem = item.item_id === 'gold' 
+                                        ? { name: "Goldmünzen" } 
+                                        : getItemById(item.item_id);
+                                    
+                                    return (
+                                        <li key={i}>
+                                            {item.quantity}x {realItem ? realItem.name : item.item_id}
+                                        </li>
+                                    );
+                                })
+                            ) : (
+                                <li>Keine Items in diesem Paket.</li>
+                            )}
                         </ul>
                     </>
                 ) : (
@@ -312,7 +289,6 @@ export const SummaryPanel = ({ character, updateCharacter, onFinish }) => {
             </div>
         </div>
 
-        {/* FINALISIEREN BUTTON */}
         <div className="summary-actions" style={{ marginTop: '20px', textAlign: 'center' }}>
             <button className="finalize-button" onClick={finalizeCharacter}>
                 Abenteuer beginnen
