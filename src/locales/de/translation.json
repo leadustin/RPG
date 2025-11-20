@@ -409,5 +409,8 @@
     "book_history": "Geschichtsbuch",
     "rope_silk": "Seisseil (15m)",
     "artisan_tools_choice": "Handwerkerwerkzeug (Wahl)"
+  },
+  "featSelection": {
+    "magicInitiatePrompt": "Wähle deine Sprüche für die Klasse: {{class}}"
   }
 }
