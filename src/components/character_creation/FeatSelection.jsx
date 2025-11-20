@@ -8,7 +8,6 @@ import Tooltip from '../tooltip/Tooltip';
 import skillDetails from '../../data/skillDetails.json';
 
 // --- BILDER IMPORTIEREN ---
-// 1. Zauber-Icons
 const spellIconModules = import.meta.glob('../../assets/images/icons/*.(png|webp|jpg|svg)', { eager: true });
 const spellIcons = {};
 for (const path in spellIconModules) {
@@ -16,7 +15,6 @@ for (const path in spellIconModules) {
   spellIcons[fileName] = spellIconModules[path].default;
 }
 
-// 2. Werkzeug-Icons (Proficiencies)
 const toolIconModules = import.meta.glob('../../assets/images/proficiencies/*.(png|webp|jpg|svg)', { eager: true });
 const toolIcons = {};
 for (const path in toolIconModules) {
@@ -24,7 +22,6 @@ for (const path in toolIconModules) {
   toolIcons[fileName] = toolIconModules[path].default;
 }
 
-// 3. Skill-Icons
 const skillIconModules = import.meta.glob('../../assets/images/skills/*.(png|webp|jpg|svg)', { eager: true });
 const skillIcons = {};
 for (const path in skillIconModules) {
@@ -100,6 +97,11 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
     setOpenPanels(prev => ({ ...prev, [panel]: !prev[panel] }));
   };
 
+  // Safe Check: Wenn feat oder mechanics fehlen, breche ab
+  if (!feat || !feat.mechanics) {
+    return <div className="feat-selection-info"><p className="small-text text-muted">Keine Auswahl erforderlich.</p></div>;
+  }
+
   useEffect(() => {
     if (character.feat_choices && character.feat_choices[feat.key]) {
       setSelections(character.feat_choices[feat.key]);
@@ -142,13 +144,10 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
       }
   };
 
-  // Sicherstellen, dass mechanics existiert
-  if (!feat || !feat.mechanics) {
-      return <div className="feat-selection-info"><p>Keine Auswahl erforderlich.</p></div>;
-  }
+  const mechanicType = feat.mechanics.type;
 
   // === LOGIK 1: MAGIC INITIATE (Zauber) ===
-  if (feat.mechanics.type === 'magic_initiate') {
+  if (mechanicType === 'magic_initiate') {
     const spellClass = feat.mechanics.spell_class; 
     const cantripCount = feat.mechanics.cantrips_choose || 0;
     const spellCount = feat.mechanics.spells_level_1_choose || 0;
@@ -165,7 +164,6 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
             {t('featSelection.magicInitiatePrompt', { class: t(`classes.${spellClass}`, spellClass) })}
         </p>
         
-        {/* Cantrips */}
         <div className="collapsible-section">
             <h4 className={`collapsible-header ${openPanels.cantrips ? 'open' : ''}`} onClick={() => togglePanel('cantrips')}>
                 {t('common.cantrip')} ({selectedCantripsCount}/{cantripCount})
@@ -188,7 +186,6 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
             )}
         </div>
 
-        {/* Level 1 Spells */}
         <div className="collapsible-section" style={{marginTop: '10px'}}>
             <h4 className={`collapsible-header ${openPanels.spells ? 'open' : ''}`} onClick={() => togglePanel('spells')}>
                 {t('common.level1Spell')} ({selectedSpellsCount}/{spellCount})
@@ -215,9 +212,9 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
   }
 
   // === LOGIK 2: HANDWERKER (Crafter) ===
-  if (feat.mechanics.type === 'crafter_utility') {
-    // FIX: Optional Chaining für proficiencies
-    const toolCount = feat.mechanics.proficiencies?.count || 3; 
+  if (mechanicType === 'crafter_utility') {
+    // SICHERER ZUGRIFF: Nutze ?. falls proficiencies fehlt
+    const toolCount = feat.mechanics.proficiencies?.count || 3;
     const selectedCount = Object.keys(selections).filter(k => k.startsWith('tool') && selections[k]).length;
 
     return (
@@ -252,8 +249,8 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
   }
 
   // === LOGIK 3: MUSIKER (Musician) ===
-  if (feat.mechanics.type === 'musician_inspiration') {
-    // FIX: Optional Chaining
+  if (mechanicType === 'musician_inspiration') {
+    // SICHERER ZUGRIFF
     const count = feat.mechanics.proficiencies?.count || 3;
     const selectedCount = Object.keys(selections).filter(k => k.startsWith('instrument') && selections[k]).length;
 
@@ -289,7 +286,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
   }
 
   // === LOGIK 4: GEÜBT (Skilled) ===
-  if (feat.mechanics.type === 'gain_proficiency_choice') {
+  if (mechanicType === 'gain_proficiency_choice') {
     const count = feat.mechanics.count || 3;
     const selectedCount = Object.keys(selections).filter(k => k.startsWith('choice') && selections[k]).length;
     
@@ -297,7 +294,6 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
         <div className="feat-selection-container">
             <p className="small-text">Wähle eine Kombination aus 3 Fertigkeiten oder Werkzeugen.</p>
             
-            {/* Skills Sektion */}
             <div className="collapsible-section">
                 <h4 className={`collapsible-header ${openPanels.skills ? 'open' : ''}`} onClick={() => togglePanel('skills')}>
                     {t('skills.title')}
@@ -321,7 +317,6 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
                 )}
             </div>
 
-             {/* Tools Sektion */}
              <div className="collapsible-section" style={{marginTop: '10px'}}>
                 <h4 className={`collapsible-header ${openPanels.tools ? 'open' : ''}`} onClick={() => togglePanel('tools')}>
                     {t('tools.categories.artisan')} & mehr
@@ -361,7 +356,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
       'crafter_utility': "Schnelleres Herstellen und Rabatte."
   };
 
-  const desc = passiveDescriptions[feat.mechanics.type];
+  const desc = passiveDescriptions[mechanicType];
 
   return (
     <div className="feat-selection-info">
