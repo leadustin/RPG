@@ -97,9 +97,9 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
     setOpenPanels(prev => ({ ...prev, [panel]: !prev[panel] }));
   };
 
-  // Safe Check: Wenn feat oder mechanics fehlen, breche ab
+  // +++ SAFETY CHECK +++
   if (!feat || !feat.mechanics) {
-    return <div className="feat-selection-info"><p className="small-text text-muted">Keine Auswahl erforderlich.</p></div>;
+      return <div className="feat-selection-info"><p className="small-text text-muted">Keine Auswahl erforderlich.</p></div>;
   }
 
   useEffect(() => {
@@ -117,11 +117,6 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
           [feat.key]: newSelections
       };
       updateCharacter({ feat_choices: updatedFeatChoices });
-  };
-
-  const handleSelection = (type, index, value) => {
-    const newSelections = { ...selections, [`${type}_${index}`]: value };
-    updateSelections(newSelections);
   };
 
   const handleGridClick = (type, key, maxSlots, sharedPoolPrefix = null) => {
@@ -144,6 +139,11 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
       }
   };
 
+  const handleSelection = (type, index, value) => {
+    const newSelections = { ...selections, [`${type}_${index}`]: value };
+    updateSelections(newSelections);
+  };
+
   const mechanicType = feat.mechanics.type;
 
   // === LOGIK 1: MAGIC INITIATE (Zauber) ===
@@ -164,6 +164,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
             {t('featSelection.magicInitiatePrompt', { class: t(`classes.${spellClass}`, spellClass) })}
         </p>
         
+        {/* Cantrips */}
         <div className="collapsible-section">
             <h4 className={`collapsible-header ${openPanels.cantrips ? 'open' : ''}`} onClick={() => togglePanel('cantrips')}>
                 {t('common.cantrip')} ({selectedCantripsCount}/{cantripCount})
@@ -186,6 +187,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
             )}
         </div>
 
+        {/* Level 1 Spells */}
         <div className="collapsible-section" style={{marginTop: '10px'}}>
             <h4 className={`collapsible-header ${openPanels.spells ? 'open' : ''}`} onClick={() => togglePanel('spells')}>
                 {t('common.level1Spell')} ({selectedSpellsCount}/{spellCount})
@@ -213,7 +215,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
 
   // === LOGIK 2: HANDWERKER (Crafter) ===
   if (mechanicType === 'crafter_utility') {
-    // SICHERER ZUGRIFF: Nutze ?. falls proficiencies fehlt
+    // +++ SAFETY: Nutze ?. und Fallback +++
     const toolCount = feat.mechanics.proficiencies?.count || 3;
     const selectedCount = Object.keys(selections).filter(k => k.startsWith('tool') && selections[k]).length;
 
@@ -250,7 +252,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
 
   // === LOGIK 3: MUSIKER (Musician) ===
   if (mechanicType === 'musician_inspiration') {
-    // SICHERER ZUGRIFF
+     // +++ SAFETY: Nutze ?. und Fallback +++
     const count = feat.mechanics.proficiencies?.count || 3;
     const selectedCount = Object.keys(selections).filter(k => k.startsWith('instrument') && selections[k]).length;
 
