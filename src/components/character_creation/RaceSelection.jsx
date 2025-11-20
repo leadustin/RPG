@@ -14,6 +14,30 @@ export const RaceSelection = ({ character, updateCharacter }) => {
   
   const selectedRace = character.race;
   
+  // +++ NEU: Initialisierungs-Logik +++
+  useEffect(() => {
+    // Wenn noch kein Volk gewählt ist, aber Daten da sind -> Wähle das erste
+    if (!selectedRace && allRaceData && allRaceData.length > 0) {
+        // Timeout verhindert "Update during render" Warnungen
+        setTimeout(() => {
+            const defaultRace = allRaceData[0];
+            updateCharacter({ 
+              race: defaultRace,
+              // Reset der Unter-Optionen
+              subrace: null, 
+              ancestry: null, 
+              lineage: null, 
+              legacy: null,
+              // Falls das erste Volk feste Boni hat, setzen wir diese auch gleich
+              ability_bonus_assignments: defaultRace.ability_bonuses?.fixed || {},
+              floating_bonus_assignments: {}
+            });
+        }, 0);
+    }
+  }, [selectedRace, updateCharacter]); // Abhängigkeiten
+  // +++ ENDE NEU +++
+
+  
   // Wir holen uns dynamisch das aktuell gewählte Unter-Element, egal wie es im JSON heißt
   const selectedSubOption = character.subrace || character.ancestry || character.lineage || character.legacy;
 
@@ -146,8 +170,9 @@ export const RaceSelection = ({ character, updateCharacter }) => {
     return Object.values(character.floating_bonus_assignments || {}).includes(index);
   };
 
+  // +++ FALLBACK: Zeige Loading, wenn selectedRace noch nicht da ist +++
   if (!selectedRace) {
-    return <div>{t('common.loadingRaces')}</div>;
+    return <div className="loading-text">{t('common.loadingRaces')}</div>;
   }
   
   const floatingBonuses = selectedRace.ability_bonuses?.floating || [];
