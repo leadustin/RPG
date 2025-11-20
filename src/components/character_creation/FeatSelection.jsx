@@ -5,7 +5,7 @@ import './SelectionPanel.css';
 import './SkillSelection.css'; 
 import spellsData from '../../data/spells.json';
 import Tooltip from '../tooltip/Tooltip';
-import skillDetails from '../../data/skillDetails.json'; // Für Skill-Beschreibungen
+import skillDetails from '../../data/skillDetails.json';
 
 // --- BILDER IMPORTIEREN ---
 // 1. Zauber-Icons
@@ -16,7 +16,7 @@ for (const path in spellIconModules) {
   spellIcons[fileName] = spellIconModules[path].default;
 }
 
-// 2. Werkzeug-Icons (Proficiencies) - Matching über den deutschen Dateinamen
+// 2. Werkzeug-Icons (Proficiencies)
 const toolIconModules = import.meta.glob('../../assets/images/proficiencies/*.(png|webp|jpg|svg)', { eager: true });
 const toolIcons = {};
 for (const path in toolIconModules) {
@@ -24,7 +24,7 @@ for (const path in toolIconModules) {
   toolIcons[fileName] = toolIconModules[path].default;
 }
 
-// 3. Skill-Icons - Matching über den englischen Key (Dateiname)
+// 3. Skill-Icons
 const skillIconModules = import.meta.glob('../../assets/images/skills/*.(png|webp|jpg|svg)', { eager: true });
 const skillIcons = {};
 for (const path in skillIconModules) {
@@ -90,7 +90,6 @@ const ItemTooltipContent = ({ name, type, description }) => (
 export const FeatSelection = ({ feat, character, updateCharacter }) => {
   const { t } = useTranslation();
   const [selections, setSelections] = useState({});
-  // Alle Panels standardmäßig offen
   const [openPanels, setOpenPanels] = useState({ 
       cantrips: true, spells: true, 
       tools: true, instruments: true, 
@@ -123,36 +122,33 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
     updateSelections(newSelections);
   };
 
-  // Generischer Handler für das Grid
   const handleGridClick = (type, key, maxSlots, sharedPoolPrefix = null) => {
-      // Prefix bestimmt, ob wir z.B. 'choice_0' (shared) oder 'cantrip_0' (specific) nutzen
       const storagePrefix = sharedPoolPrefix || type;
-
-      // 1. Ist dieses Element schon gewählt? (Egal in welchem Slot dieses Typs/Pools)
       const existingEntry = Object.entries(selections).find(([k, v]) => k.startsWith(storagePrefix) && v === key);
       
       if (existingEntry) {
-          // ABWÄHLEN
           const [slotKey] = existingEntry;
           const newSelections = { ...selections };
           delete newSelections[slotKey];
           updateSelections(newSelections);
       } else {
-          // AUSWÄHLEN
-          // Suche freien Slot
           for (let i = 0; i < maxSlots; i++) {
               if (!selections[`${storagePrefix}_${i}`]) {
                   handleSelection(storagePrefix, i, key);
                   return;
               }
           }
-          // Wenn voll, überschreibe den letzten Slot (UX Entscheidung)
           handleSelection(storagePrefix, maxSlots - 1, key);
       }
   };
 
+  // Sicherstellen, dass mechanics existiert
+  if (!feat || !feat.mechanics) {
+      return <div className="feat-selection-info"><p>Keine Auswahl erforderlich.</p></div>;
+  }
+
   // === LOGIK 1: MAGIC INITIATE (Zauber) ===
-  if (feat.mechanics?.type === 'magic_initiate') {
+  if (feat.mechanics.type === 'magic_initiate') {
     const spellClass = feat.mechanics.spell_class; 
     const cantripCount = feat.mechanics.cantrips_choose || 0;
     const spellCount = feat.mechanics.spells_level_1_choose || 0;
@@ -219,8 +215,9 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
   }
 
   // === LOGIK 2: HANDWERKER (Crafter) ===
-  if (feat.mechanics?.type === 'crafter_utility') {
-    const toolCount = feat.mechanics.proficiencies?.count || 3;
+  if (feat.mechanics.type === 'crafter_utility') {
+    // FIX: Optional Chaining für proficiencies
+    const toolCount = feat.mechanics.proficiencies?.count || 3; 
     const selectedCount = Object.keys(selections).filter(k => k.startsWith('tool') && selections[k]).length;
 
     return (
@@ -255,7 +252,8 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
   }
 
   // === LOGIK 3: MUSIKER (Musician) ===
-  if (feat.mechanics?.type === 'musician_inspiration') {
+  if (feat.mechanics.type === 'musician_inspiration') {
+    // FIX: Optional Chaining
     const count = feat.mechanics.proficiencies?.count || 3;
     const selectedCount = Object.keys(selections).filter(k => k.startsWith('instrument') && selections[k]).length;
 
@@ -271,7 +269,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
                         {INSTRUMENTS.map(key => {
                             const isSelected = Object.values(selections).includes(key);
                             const name = t(`instruments.${key}`, key);
-                            const iconSrc = toolIcons[name]; // Instrumente liegen im gleichen Ordner wie Tools
+                            const iconSrc = toolIcons[name];
                             return (
                                 <Tooltip key={key} content={<ItemTooltipContent name={name} type={t('instruments.category')} />}>
                                     <div className={`skill-choice ${isSelected ? 'selected' : ''}`} onClick={() => handleGridClick('instrument', key, count)}>
@@ -291,11 +289,9 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
   }
 
   // === LOGIK 4: GEÜBT (Skilled) ===
-  if (feat.mechanics?.type === 'gain_proficiency_choice') {
+  if (feat.mechanics.type === 'gain_proficiency_choice') {
     const count = feat.mechanics.count || 3;
     const selectedCount = Object.keys(selections).filter(k => k.startsWith('choice') && selections[k]).length;
-
-    // Wir nutzen hier 'choice' als sharedPoolPrefix, damit Skills und Tools in denselben Topf (max 3) zählen
     
     return (
         <div className="feat-selection-container">
@@ -334,7 +330,6 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
                     <div className="skill-grid">
                         {[...ARTISAN_TOOLS, ...INSTRUMENTS, ...OTHER_TOOLS].map(key => {
                             const isSelected = Object.values(selections).includes(key);
-                            // Versuche Name aus tools oder instruments zu holen
                             const name = t(`tools.${key}`, { defaultValue: t(`instruments.${key}`, key)});
                             const iconSrc = toolIcons[name];
                             return (
@@ -366,7 +361,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
       'crafter_utility': "Schnelleres Herstellen und Rabatte."
   };
 
-  const desc = passiveDescriptions[feat.mechanics?.type];
+  const desc = passiveDescriptions[feat.mechanics.type];
 
   return (
     <div className="feat-selection-info">
