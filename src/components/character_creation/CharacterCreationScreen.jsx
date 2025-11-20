@@ -116,6 +116,10 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
           ...character.stats,
           // Stelle sicher, dass HP voll sind beim Start
           currentHp: character.stats?.maxHp || 10, 
+          languages: [
+             "common", // Common ist immer dabei (fest)
+             ...Object.values(character.selectedLanguages || {}) 
+        ]
         }
       };
 
