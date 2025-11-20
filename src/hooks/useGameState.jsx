@@ -561,20 +561,34 @@ export const useGameState = () => {
       const ammoToReturn = quiver.content;
 
       // Check ob Stack schon existiert
-      const existingStack = inventory.find(i => i.itemId === ammoToReturn.itemId);
+      const existingStackIndex = inventory.findIndex(i => i.itemId === ammoToReturn.itemId);
 
-      if (existingStack) {
-          existingStack.quantity += ammoToReturn.quantity;
+      if (existingStackIndex > -1) {
+          // Existierenden Stack aktualisieren
+          const stack = { ...inventory[existingStackIndex] };
+          stack.quantity += ammoToReturn.quantity;
+          inventory[existingStackIndex] = stack;
       } else {
-          // Wir müssen das originale Item rekonstruieren (vereinfacht)
-          // Idealerweise laden wir die Stats aus allItems, aber hier tricksen wir kurz:
+          // Neues Item erstellen
+          // WICHTIG: Wir müssen die vollen Item-Daten laden!
           const baseItem = allItems.find(i => i.id === ammoToReturn.itemId);
+          
           if (baseItem) {
               inventory.push({
                   ...baseItem,
                   instanceId: Date.now(),
-                  id: Date.now(), // Neue ID
+                  id: Date.now(), // Neue ID für React-Keys
+                  itemId: baseItem.id, // Referenz-ID sicherstellen
                   quantity: ammoToReturn.quantity
+              });
+          } else {
+              console.warn("Konnte Item-Daten für Rückgabe nicht finden:", ammoToReturn.itemId);
+              // Fallback: Nur das zurückgeben, was wir haben (könnte fehlerhaft sein)
+              inventory.push({
+                  ...ammoToReturn,
+                  instanceId: Date.now(),
+                  id: Date.now(),
+                  type: "ammo" // Sicherstellen, dass der Typ stimmt
               });
           }
       }
