@@ -169,7 +169,8 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
             
             {openPanels.spells && (
                 <div className="skill-grid">
-                    {availableLevel1Spells.map(spell => {
+                    {/* KORREKTUR: Hier stand vorher 'availableLevel1Spells' */}
+                    {availableSpells.map(spell => { 
                         const isSelected = Object.values(selections).includes(spell.key);
                         const iconSrc = icons[spell.icon] || icons['skill_placeholder.png'];
 
