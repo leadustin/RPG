@@ -36,7 +36,11 @@ for (const path in classIconModules) {
 export const ClassSelection = ({ character, updateCharacter }) => {
   const { t } = useTranslation();
   const selectedClass = character.class;
-  const skillChoiceData = selectedClass.proficiencies.skills;
+  
+  // +++ SAFETY FIX START +++
+  // Falls selectedClass existiert aber proficiencies fehlen, Fallback nutzen
+  const skillChoiceData = selectedClass?.proficiencies?.skills;
+  // +++ SAFETY FIX ENDE +++
 
   const handleSkillChange = (newSelections) => {
     updateCharacter({ skill_proficiencies_choice: newSelections });
