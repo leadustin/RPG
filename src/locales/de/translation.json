@@ -296,5 +296,115 @@
     "stealth": "Heimlichkeit",
     "survival": "Überlebenskunst"
   },
-  "skills.title": "Fertigkeiten"
+  "skills.title": "Fertigkeiten",
+  
+  "backgrounds": {
+    "acolyte": {
+      "description": "Du hast dein Leben dem Dienst in einem Tempel gewidmet, heilige Riten durchgeführt und Opfer dargebracht. Deine Erfahrung mit göttlichen Mächten gewährt dir Einblicke in religiöse Traditionen und Zugang zu grundlegender klerikaler Magie."
+    },
+    "artisan": {
+      "description": "Du hast eine Lehre bei einem Meister absolviert und das Handwerk von der Pike auf gelernt. Deine Hände sind geschickt im Erschaffen und Reparieren, und du kennst den Wert von harter Arbeit und guten Werkzeugen."
+    },
+    "charlatan": {
+      "description": "Du verstehst es, Leute zu lesen und sie genau das glauben zu lassen, was du willst. Dein Leben war ein Spiel aus Täuschung und Taschenspielertricks, sei es um zu überleben oder um andere um ihr Gold zu erleichtern."
+    },
+    "criminal": {
+      "description": "Du hast auf der falschen Seite des Gesetzes gelebt. Du kennst die dunklen Gassen, die Codes der Unterwelt und weißt, wie man ungesehen bleibt. Deine Wachsamkeit war oft das Einzige, was dich vor dem Kerker bewahrt hat."
+    },
+    "entertainer": {
+      "description": "Du lebst für das Rampenlicht. Ob mit Musik, Tanz oder Schauspiel, du weißt, wie man eine Menge fesselt. Deine Kunst öffnet dir Türen und Herzen, die anderen verschlossen bleiben."
+    },
+    "farmer": {
+      "description": "Du kommst von den Feldern und dem einfachen Landleben. Du bist harte körperliche Arbeit gewohnt, verstehst die Zyklen der Natur und die Bedürfnisse von Tieren. Deine Zähigkeit ist legendär."
+    },
+    "guard": {
+      "description": "Du hast gelernt, wachsam zu sein und für Ordnung zu sorgen. Ob als Stadtwache oder Leibwächter, du bist geübt darin, Gefahren zu erkennen und Ärger im Keim zu ersticken."
+    },
+    "guide": {
+      "description": "Die Wildnis ist dein Zuhause. Du hast Reisende durch gefährliches Terrain geführt und gelernt, von dem zu leben, was die Natur bietet. Ein Hauch druidischer Magie begleitet dich."
+    },
+    "hermit": {
+      "description": "Du hast lange Zeit in Abgeschiedenheit verbracht – sei es in einem Kloster oder allein in der Wildnis. Diese Zeit der Stille hat dir tiefe Einsichten und medizinische Kenntnisse geschenkt."
+    },
+    "merchant": {
+      "description": "Du weißt, wie man einen Handel abschließt. Du hast Waren gekauft, verkauft und transportiert und dabei gelernt, Menschen einzuschätzen und zu überzeugen. Das Glück scheint dir oft hold zu sein."
+    },
+    "noble": {
+      "description": "Du wurdest in eine privilegierte Schicht geboren. Du kennst die Etikette bei Hofe, hast eine gute Bildung genossen und bist es gewohnt, dass man dir zuhört. Dein Name allein öffnet oft schon Türen."
+    },
+    "sage": {
+      "description": "Du hast Jahre zwischen staubigen Büchern und Schriftrollen verbracht. Dein Wissensdurst ist unstillbar, und du hast dir sogar einige Grundlagen der arkanen Magie angeeignet."
+    },
+    "sailor": {
+      "description": "Das Meer ist dein eigentliches Zuhause. Du kennst die Launen des Wetters, die harte Arbeit an Deck und die wilden Schlägereien in den Hafenkneipen."
+    },
+    "scribe": {
+      "description": "Du bist ein Meister der Schrift. Du hast Dokumente kopiert, Briefe verfasst und Archive verwaltet. Deine Beobachtungsgabe ist scharf, und kaum ein Detail entgeht dir."
+    },
+    "soldier": {
+      "description": "Krieg ist dein Handwerk. Du hast in einer Armee gedient, Befehle befolgt und im Chaos der Schlacht gekämpft. Deine Angriffe sind brutal und effizient."
+    },
+    "wayfarer": {
+      "description": "Du bist nirgendwo lange zu Hause. Die Straße ruft dich immer wieder. Du hast gelernt, dich anzupassen, Kontakte zu knüpfen und dich aus brenzligen Situationen herauszuwinden."
+    }
+  },
+  "feats": {
+    "alert": "Wachsam",
+    "crafter": "Handwerker",
+    "healer": "Heilkundiger",
+    "lucky": "Glückspilz",
+    "magic_initiate_cleric": "Magischer Adept (Kleriker)",
+    "magic_initiate_druid": "Magischer Adept (Druide)",
+    "magic_initiate_wizard": "Magischer Adept (Magier)",
+    "musician": "Musiker",
+    "savage_attacker": "Wilder Angreifer",
+    "skilled": "Geübt",
+    "tavern_brawler": "Kneipenschläger",
+    "tough": "Zäh"
+  },
+  "items": {
+    "calligrapher": "Kalligraphenwerkzeug",
+    "book_prayer": "Gebetbuch",
+    "holy_symbol": "Heiliges Symbol",
+    "parchment": "Pergament",
+    "robe": "Robe",
+    "gold": "Goldmünzen",
+    "pouch": "Gürteltasche",
+    "travelers_clothes": "Reisekleidung",
+    "forgery_kit": "Fälschersatz",
+    "costume": "Kostüm",
+    "fine_clothes": "Feine Kleidung",
+    "dagger": "Dolch",
+    "thieves_tools": "Diebeswerkzeug",
+    "crowbar": "Brecheisen",
+    "musical_instrument_choice": "Musikinstrument (Wahl)",
+    "mirror": "Stahlspiegel",
+    "perfume": "Parfüm",
+    "carpenter": "Zimmermannswerkzeug",
+    "sickle": "Sichel",
+    "healers_kit": "Heilerset",
+    "iron_pot": "Eisentopf",
+    "shovel": "Schaufel",
+    "spear": "Speer",
+    "light_crossbow": "Leichte Armbrust",
+    "bolts": "Bolzen",
+    "gaming_set_choice": "Spielset (Wahl)",
+    "lantern_hooded": "Sturmlaterne",
+    "manacles": "Handschellen",
+    "quiver": "Köcher",
+    "shortbow": "Kurzbogen",
+    "arrows": "Pfeile",
+    "cartographer": "Kartographenwerkzeug",
+    "bedroll": "Schlafsack",
+    "tent": "Zelt",
+    "quarterstaff": "Kampfstab",
+    "herbalism_kit": "Kräuterkundesatz",
+    "book_philosophy": "Philosophisches Buch",
+    "lamp": "Lampe",
+    "oil": "Öl (Fläschchen)",
+    "navigator": "Navigationswerkzeug",
+    "book_history": "Geschichtsbuch",
+    "rope_silk": "Seisseil (15m)",
+    "artisan_tools_choice": "Handwerkerwerkzeug (Wahl)"
+  }
 }

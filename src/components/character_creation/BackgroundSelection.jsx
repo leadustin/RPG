@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import "./BackgroundSelection.css";
 import "./PanelDetails.css";
 import backgroundDataRaw from "../../data/backgrounds.json";
+import featureDataRaw from "../../data/features.json"; // <--- NEU: Import der Features
 
 // Konvertiere das JSON-Objekt in ein Array für die Liste (Filtert leere Einträge)
 const allBackgrounds = Array.isArray(backgroundDataRaw) 
@@ -59,7 +60,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
       if (selectedAsi.third) bonuses[selectedAsi.third] = (bonuses[selectedAsi.third] || 0) + 1;
     }
 
-    // +++ ÄNDERUNG: Check gegen Endlosschleife +++
     const currentOptions = character.background_options || {};
     const bonusesChanged = JSON.stringify(currentOptions.bonuses) !== JSON.stringify(bonuses);
     const modeChanged = currentOptions.asiMode !== asiMode;
@@ -74,7 +74,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
         }
       });
     }
-    // +++ ENDE ÄNDERUNG +++
 
   }, [selectedAsi, asiMode, equipChoice, selectedBackground, updateCharacter, character.background_options]);
 
@@ -85,6 +84,10 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
     }
     return <div className="loading-text">{t('common.loadingBackgrounds')}</div>;
   }
+
+  // <--- NEU: Finde das zugehörige Feat-Objekt --->
+  const backgroundFeat = featureDataRaw.find(f => f.key === selectedBackground.feat);
+  // <--- ENDE NEU --->
 
   const allowedAttributes = selectedBackground.ability_scores || [];
 
@@ -118,7 +121,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                 className={`background-button ${selectedBackground.key === bg.key ? "selected" : ""}`}
                 onClick={() => updateCharacter({ background: bg })}
               >
-                {/* 2024 Badge hier entfernt */}
                 <span className="bg-name">{bg.name}</span>
               </button>
             ))}
@@ -130,7 +132,11 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
       <div className="background-column-right">
         <div className="background-box">
           <h2 className="panel-details-header">{selectedBackground.name}</h2>
-          <p className="panel-details-description">{t(selectedBackground.description)}</p>
+          
+          {/* Beschreibung übersetzen, falls Key vorhanden, sonst Fallback */}
+          <p className="panel-details-description">
+            {t(selectedBackground.description, selectedBackground.description)}
+          </p>
 
           {selectedBackground.source === "PHB2024" ? (
             <div className="phb2024-options">
@@ -190,20 +196,30 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                   </div>
               </div>
 
-              <div className="details-divider"></div>B
+              <div className="details-divider"></div>
 
-              {/* 3. FEAT (Fest) */}
+              {/* 3. FEAT (Dynamisch geladen) */}
               <div className="option-section">
-                  <h4>{t('background.feature', { name: t(`feats.${selectedBackground.feat}`, selectedBackground.feat) })}</h4>
+                  <h4>Talent (Feat)</h4> {/* Hardcoded Header oder via Translation t('background.featTitle') */}
                   <div className="feat-card">
-                      <strong>{t(`feats.${selectedBackground.feat}`)}</strong>
-                      <p className="small-text">Gewährt durch Hintergrund.</p>
+                      {/* Zeige Name aus features.json oder Fallback */}
+                      <strong>
+                        {backgroundFeat ? backgroundFeat.name : t(`feats.${selectedBackground.feat}`, selectedBackground.feat)}
+                      </strong>
+                      
+                      {/* Zeige Beschreibung aus features.json */}
+                      <p className="small-text" style={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
+                        {backgroundFeat 
+                          ? backgroundFeat.description 
+                          : "Beschreibung für dieses Talent konnte nicht geladen werden."
+                        }
+                      </p>
                   </div>
               </div>
 
-              <div className="details-divider"></div>C
+              <div className="details-divider"></div>
 
-              {/* 4. AUSRÜSTUNG (Klickbare Boxen statt Radio-Buttons) */}
+              {/* 4. AUSRÜSTUNG */}
               <div className="option-section">
                   <h4>Ausrüstung</h4>
                   <div className="equipment-options">
@@ -213,7 +229,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
                             className={`equipment-option clickable-box ${equipChoice === option.id ? 'selected' : ''}`}
                             onClick={() => setEquipChoice(option.id)}
                           >
-                              {/* Hidden input für Logik entfernt, DIV übernimmt Klick */}
                               <div className="equip-content">
                                   <span className="equip-label">{option.id === 'a' ? "Paket A: Ausrüstung" : "Paket B: Gold"}</span>
                                   <ul className="equip-list-preview">
@@ -229,7 +244,6 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
 
             </div>
           ) : (
-            // FALLBACK FÜR ALTE DATENSTRUKTUR
             <div>
                 <p>Daten werden geladen...</p>
             </div>
