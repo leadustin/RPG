@@ -333,13 +333,16 @@
     "value": 2, 
     "icon": "manacles.webp" 
   },
-  { 
-    "id": "quiver", 
-    "name": "Köcher", 
-    "type": "resource", 
-    "weight": 0.5, 
-    "value": 1, 
-    "icon": "quiver.webp" 
+  {
+    "id": "quiver",
+    "name": "Köcher",
+    "type": "quiver",
+    "slot": "ammo",
+    "weight": 1,
+    "value": 1,
+    "capacity": 20,
+    "description": "Hält bis zu 20 Pfeile oder Bolzen.",
+    "icon": "quiver.webp"
   },
   { 
     "id": "cartographer", 

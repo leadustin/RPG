@@ -49,6 +49,9 @@ const CharacterSheet = ({
   handleEquipItem,
   handleUnequipItem,
   handleToggleTwoHanded,
+  // +++ FIX: Diese beiden haben gefehlt! +++
+  handleFillQuiver,
+  handleUnloadQuiver
 }) => {
   const { t } = useTranslation(); 
   const [activeTab, setActiveTab] = useState("Inventory");
@@ -79,7 +82,6 @@ const CharacterSheet = ({
     return totalWeight;
   }, [character]);
 
-  // +++ FILTER LOGIK ANGEPASST +++
   const filteredInventory = useMemo(() => {
     if (!character || !character.inventory) {
       return [];
@@ -88,19 +90,17 @@ const CharacterSheet = ({
       return character.inventory;
     }
 
-    // Spezialfilter für "Rüstung" zeigt alles anziehbare außer Waffen/Schmuck
+    // Spezialfilter für "Rüstung"
     if (activeFilter === "armor") {
         return character.inventory.filter(item => 
             ["armor", "shield", "head", "hands", "boots", "cloth", "belt", "cloak"].includes(item.type)
         );
     }
 
-    // Standard-Filter für exakte Übereinstimmung (weapon, potion, scroll, loot...)
     return character.inventory.filter(
       (item) => item && item.type === activeFilter
     );
   }, [character, activeFilter]);
-  // +++ ENDE ANPASSUNG +++
   
   const finalModifiers = useMemo(() => {
     if (!character) return {};
@@ -206,7 +206,7 @@ const CharacterSheet = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  // +++ DROP TARGET UPDATED +++
+  // --- Drop Target ---
   const [, drop] = useDrop(
     () => ({
       accept: [
@@ -214,8 +214,9 @@ const CharacterSheet = ({
         ItemTypes.ARMOR,
         ItemTypes.SHIELD,
         ItemTypes.ACCESSORY,
-        ItemTypes.CLOTH,   // Akzeptiert Kleidung
-        ItemTypes.AMMO,    // Akzeptiert Munition
+        ItemTypes.CLOTH,
+        ItemTypes.AMMO,    // <-- WICHTIG
+        ItemTypes.QUIVER,  // <-- WICHTIG
         ItemTypes.HEAD,
         ItemTypes.HANDS,
         ItemTypes.BOOTS,
@@ -229,7 +230,6 @@ const CharacterSheet = ({
     }),
     [handleUnequipItem]
   );
-  // +++ ENDE DROP TARGET +++
 
   const getClassIconSrc = () => {
     if (!character || !character.class || !character.class.icon) {
@@ -402,21 +402,22 @@ const CharacterSheet = ({
                   {character.equipment["off-hand"] && " (Off-Hand räumen)"}
                 </button>
               )}
-              {canTwoWeaponFight() && (
-                <div className="combat-style-indicator">
-                  <span className="style-active">⚔️ Two-Weapon Fighting</span>
-                </div>
-              )}
               
-              {/* +++ NEUE SLOTS +++ */}
+              {/* +++ FERNKAMPF & MUNITION +++ */}
               <p className="slot-label">Fernkampf</p>
               <div className="two-column-grid">
                 <EquipmentSlot slotType="ranged" currentItem={character.equipment.ranged} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="ammo" currentItem={character.equipment.ammo} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot 
+                    slotType="ammo" 
+                    currentItem={character.equipment.ammo} 
+                    onEquipItem={enhancedHandleEquipItem}
+                    onFillQuiver={handleFillQuiver}     // <--- FIX: Handler weitergegeben
+                    onUnloadQuiver={handleUnloadQuiver} // <--- FIX: Handler weitergegeben
+                />
               </div>
             </div>
 
-            {/* Restliche Panels (Model, Stats) bleiben gleich */}
+            {/* MODEL & STATS */}
             <div className="character-model-column">
               <div className="character-viewer">
                 <img src={character.model || "https://placeholder.pics/svg/160x300"} alt="Character Model" />

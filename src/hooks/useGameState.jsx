@@ -476,6 +476,121 @@ export const useGameState = () => {
       };
     });
   }, []);
+  // --- KÖCHER LOGIK ---
+
+  const handleFillQuiver = useCallback((ammoItem) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      const equipment = { ...character.equipment };
+      const quiver = equipment.ammo;
+
+      // Sicherheitschecks
+      if (!quiver || quiver.type !== "quiver") return prevState;
+      if (ammoItem.type !== "ammo") return prevState;
+
+      // Check: Ist schon eine ANDERE Munitionsart drin?
+      if (quiver.content && quiver.content.itemId !== ammoItem.itemId) {
+        // Log: Nur eine Art erlaubt
+        return {
+            ...prevState,
+            logEntries: [...prevState.logEntries, createLogEntry(`Der Köcher enthält bereits ${quiver.content.name}. Leere ihn zuerst.`, "general")]
+        };
+      }
+
+      // Berechne Kapazität
+      const currentAmount = quiver.content ? quiver.content.quantity : 0;
+      const spaceLeft = (quiver.capacity || 20) - currentAmount;
+
+      if (spaceLeft <= 0) {
+         return {
+            ...prevState,
+            logEntries: [...prevState.logEntries, createLogEntry("Der Köcher ist voll.", "general")]
+        };
+      }
+
+      // Wie viel können wir übertragen?
+      const amountToTransfer = Math.min(spaceLeft, ammoItem.quantity);
+
+      // 1. Köcher Inhalt aktualisieren
+      const newContent = {
+          itemId: ammoItem.itemId,
+          name: ammoItem.name,
+          quantity: currentAmount + amountToTransfer
+      };
+      
+      const newQuiver = { ...quiver, content: newContent };
+      equipment.ammo = newQuiver;
+
+      // 2. Inventar aktualisieren (Ammo reduzieren/entfernen)
+      const inventory = [...character.inventory];
+      const invItemIndex = inventory.findIndex(i => i.id === ammoItem.id);
+      
+      if (invItemIndex > -1) {
+          if (inventory[invItemIndex].quantity > amountToTransfer) {
+              // Reduzieren
+              inventory[invItemIndex] = { 
+                  ...inventory[invItemIndex], 
+                  quantity: inventory[invItemIndex].quantity - amountToTransfer 
+              };
+          } else {
+              // Entfernen
+              inventory.splice(invItemIndex, 1);
+          }
+      }
+
+      return {
+        ...prevState,
+        character: { ...character, equipment, inventory },
+        logEntries: [...prevState.logEntries, createLogEntry(`${amountToTransfer}x ${ammoItem.name} in den Köcher gefüllt.`, "item")]
+      };
+    });
+  }, []);
+
+  const handleUnloadQuiver = useCallback(() => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      const equipment = { ...character.equipment };
+      const quiver = equipment.ammo;
+
+      if (!quiver || !quiver.content) return prevState;
+
+      // Inhalt zurück ins Inventar
+      const inventory = [...character.inventory];
+      const ammoToReturn = quiver.content;
+
+      // Check ob Stack schon existiert
+      const existingStack = inventory.find(i => i.itemId === ammoToReturn.itemId);
+
+      if (existingStack) {
+          existingStack.quantity += ammoToReturn.quantity;
+      } else {
+          // Wir müssen das originale Item rekonstruieren (vereinfacht)
+          // Idealerweise laden wir die Stats aus allItems, aber hier tricksen wir kurz:
+          const baseItem = allItems.find(i => i.id === ammoToReturn.itemId);
+          if (baseItem) {
+              inventory.push({
+                  ...baseItem,
+                  instanceId: Date.now(),
+                  id: Date.now(), // Neue ID
+                  quantity: ammoToReturn.quantity
+              });
+          }
+      }
+
+      // Köcher leeren
+      const newQuiver = { ...quiver };
+      delete newQuiver.content;
+      equipment.ammo = newQuiver;
+
+      return {
+        ...prevState,
+        character: { ...character, equipment, inventory },
+        logEntries: [...prevState.logEntries, createLogEntry(`Köcher geleert (${ammoToReturn.quantity}x ${ammoToReturn.name}).`, "item")]
+      };
+    });
+  }, []);
 
   return {
     gameState,
@@ -494,6 +609,8 @@ export const useGameState = () => {
     handleUpdatePosition,
     handleDiscoverLocation,
     handleConfirmLevelUp,
+    handleFillQuiver,
+    handleUnloadQuiver,
     rollDiceFormula,
   };
 };

@@ -27,6 +27,10 @@ function App() {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
+    // +++ NEU: Köcher-Handler importieren +++
+    handleFillQuiver,
+    handleUnloadQuiver,
+    // +++ ENDE NEU +++
     handleEnterLocation,
     handleLeaveLocation,
     handleUpdatePosition,
@@ -41,7 +45,6 @@ function App() {
     setShowCharacterSheet((prevState) => !prevState);
   };
 
-  // Wir prüfen jetzt Autosave und manuelle Slots getrennt
   const autoSaveExists = loadAutoSave() !== undefined;
   const manualSaveExists = getSaveSlots().some((slot) => slot !== null);
   const saveFileExists = autoSaveExists || manualSaveExists;
@@ -134,6 +137,10 @@ function App() {
               handleEquipItem={handleEquipItem}
               handleUnequipItem={handleUnequipItem}
               handleToggleTwoHanded={handleToggleTwoHanded}
+              // +++ NEU: Handler an CharacterSheet übergeben +++
+              handleFillQuiver={handleFillQuiver}
+              handleUnloadQuiver={handleUnloadQuiver}
+              // +++ ENDE NEU +++
             />
           )}
 
@@ -161,8 +168,7 @@ function App() {
           )}
         </div>
 
-        {/* --- 2. NEUES LOG-SYSTEM --- */}
-        {/* Wird außerhalb des game-containers gerendert, um frei beweglich zu sein */}
+        {/* --- LOG-SYSTEM --- */}
         {gameState.screen === "game" && (
           <EventLog entries={gameState.logEntries} />
         )}
@@ -171,5 +177,5 @@ function App() {
     </DndProvider>
   );
 }
-//OK
+
 export default App;

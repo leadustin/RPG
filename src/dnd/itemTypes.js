@@ -9,18 +9,19 @@ export const ItemTypes = {
   BOOTS: 'boots',
   BELT: 'belt',
   ACCESSORY: 'accessory',
-  CLOTH: 'cloth',       // Wichtig: heißt 'cloth', nicht 'clothing'
-  AMMO: 'ammo',         // Neu: Für Pfeile/Bolzen
+  CLOTH: 'cloth',       
+  AMMO: 'ammo',
+  QUIVER: 'quiver',
 
   // --- Verbrauchsgüter & Sonstiges ---
-  POTION: 'potion',     // Neu: Tränke, Öle, Gifte
-  SCROLL: 'scroll',     // Neu: Schriftrollen
-  FOOD: 'food',         // Neu: Rationen
-  TOOL: 'tool',         // Neu: Werkzeuge, Instrumente
-  RESOURCE: 'resource', // Neu: Materialien, Camping-Ausrüstung
-  LOOT: 'loot',         // Neu: Verkaufsgüter (Edelsteine, Gold)
-  QUEST: 'quest',       // Neu: Quest-Items
+  POTION: 'potion',
+  SCROLL: 'scroll',
+  FOOD: 'food',
+  TOOL: 'tool',     
+  RESOURCE: 'resource',
+  LOOT: 'loot',         
+  QUEST: 'quest',       
   
   // --- Fallback ---
-  ITEM: 'item'          // Generisches
+  ITEM: 'item'
 };
