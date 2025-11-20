@@ -5,6 +5,7 @@ import './SelectionPanel.css';
 import './SkillSelection.css'; 
 import spellsData from '../../data/spells.json';
 import Tooltip from '../tooltip/Tooltip';
+import skillDetails from '../../data/skillDetails.json'; // Für Skill-Beschreibungen
 
 // --- BILDER IMPORTIEREN ---
 // 1. Zauber-Icons
@@ -15,21 +16,45 @@ for (const path in spellIconModules) {
   spellIcons[fileName] = spellIconModules[path].default;
 }
 
-// 2. Werkzeug-Icons (Proficiencies)
+// 2. Werkzeug-Icons (Proficiencies) - Matching über den deutschen Dateinamen
 const toolIconModules = import.meta.glob('../../assets/images/proficiencies/*.(png|webp|jpg|svg)', { eager: true });
 const toolIcons = {};
 for (const path in toolIconModules) {
-  // Wir entfernen die Dateiendung für den Key, um leichter zu matchen
   const fileName = path.split('/').pop().replace(/\.(png|webp|jpg|svg)$/, '');
   toolIcons[fileName] = toolIconModules[path].default;
 }
 
-// --- DATEN: Handwerkerwerkzeuge ---
+// 3. Skill-Icons - Matching über den englischen Key (Dateiname)
+const skillIconModules = import.meta.glob('../../assets/images/skills/*.(png|webp|jpg|svg)', { eager: true });
+const skillIcons = {};
+for (const path in skillIconModules) {
+  const fileName = path.split('/').pop().replace(/\.(png|webp|jpg|svg)$/, '');
+  skillIcons[fileName] = skillIconModules[path].default;
+}
+
+// --- LISTEN ---
 const ARTISAN_TOOLS = [
   "alchemist", "brewer", "calligrapher", "carpenter", "cartographer", 
   "cobbler", "cook", "glassblower", "jeweler", "leatherworker", 
   "mason", "painter", "potter", "smith", "stonecarver", 
   "tinker", "weaver", "woodcarver"
+];
+
+const INSTRUMENTS = [
+  "bagpipes", "drum", "dulcimer", "flute", "lute", "lyre", 
+  "horn", "panflute", "shawm", "viol"
+];
+
+const OTHER_TOOLS = [
+    "thieves_tools", "disguise_kit", "forgery_kit", "herbalism_kit", 
+    "navigator_tools", "poisoner_kit", "dice", "card", "dragonchess"
+];
+
+const SKILLS = [
+    "acrobatics", "animal_handling", "arcana", "athletics", "deception", 
+    "history", "insight", "intimidation", "investigation", "medicine", 
+    "nature", "perception", "performance", "persuasion", "religion", 
+    "sleight_of_hand", "stealth", "survival"
 ];
 
 // Hilfsfunktion zum Filtern von Zaubern
@@ -39,7 +64,7 @@ const getSpellsByClassAndLevel = (className, level) => {
   );
 };
 
-// Tooltip Inhalt für Zauber
+// --- TOOLTIPS ---
 const SpellTooltipContent = ({ spell }) => (
   <div className="tooltip-content">
     <h4 className="item-name">{spell.name}</h4>
@@ -51,14 +76,10 @@ const SpellTooltipContent = ({ spell }) => (
         <span>Reichweite: {spell.ui_range || spell.range}</span>
     </div>
     <p className="item-description">{spell.ui_description || spell.description}</p>
-    {spell.ui_scaling && (
-        <p className="item-scaling"><em>{spell.ui_scaling}</em></p>
-    )}
   </div>
 );
 
-// Tooltip Inhalt für Werkzeuge (Angepasst an Skill-Tooltip Design)
-const ToolTooltipContent = ({ name, type, description }) => (
+const ItemTooltipContent = ({ name, type, description }) => (
     <div className="tooltip-content">
       <h4 className="item-name">{name}</h4>
       <div className="item-type">{type}</div>
@@ -69,7 +90,12 @@ const ToolTooltipContent = ({ name, type, description }) => (
 export const FeatSelection = ({ feat, character, updateCharacter }) => {
   const { t } = useTranslation();
   const [selections, setSelections] = useState({});
-  const [openPanels, setOpenPanels] = useState({ cantrips: true, spells: true, tools: true });
+  // Alle Panels standardmäßig offen
+  const [openPanels, setOpenPanels] = useState({ 
+      cantrips: true, spells: true, 
+      tools: true, instruments: true, 
+      skills: true 
+  });
 
   const togglePanel = (panel) => {
     setOpenPanels(prev => ({ ...prev, [panel]: !prev[panel] }));
@@ -83,50 +109,49 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
     }
   }, [feat.key]);
 
-  const handleSelection = (type, index, value) => {
-    // Check: Ist Wert schon in einem anderen Slot gewählt?
-    const isAlreadySelected = Object.entries(selections).some(
-        ([key, selectedVal]) => key.startsWith(type) && key !== `${type}_${index}` && selectedVal === value
-    );
-
-    if (isAlreadySelected && value !== "") return; 
-
-    const newSelections = { ...selections, [`${type}_${index}`]: value };
-    setSelections(newSelections);
-
-    const updatedFeatChoices = {
-        ...character.feat_choices,
-        [feat.key]: newSelections
-    };
-    
-    updateCharacter({ feat_choices: updatedFeatChoices });
+  const updateSelections = (newSelections) => {
+      setSelections(newSelections);
+      const updatedFeatChoices = {
+          ...character.feat_choices,
+          [feat.key]: newSelections
+      };
+      updateCharacter({ feat_choices: updatedFeatChoices });
   };
 
-  // Generische Grid-Klick-Logik (funktioniert für Spells UND Tools)
-  const handleGridClick = (type, key, maxSlots) => {
-      // 1. Ist dieses Element schon gewählt? -> Abwählen
-      const existingSlotEntry = Object.entries(selections).find(([k, v]) => k.startsWith(type) && v === key);
+  const handleSelection = (type, index, value) => {
+    const newSelections = { ...selections, [`${type}_${index}`]: value };
+    updateSelections(newSelections);
+  };
+
+  // Generischer Handler für das Grid
+  const handleGridClick = (type, key, maxSlots, sharedPoolPrefix = null) => {
+      // Prefix bestimmt, ob wir z.B. 'choice_0' (shared) oder 'cantrip_0' (specific) nutzen
+      const storagePrefix = sharedPoolPrefix || type;
+
+      // 1. Ist dieses Element schon gewählt? (Egal in welchem Slot dieses Typs/Pools)
+      const existingEntry = Object.entries(selections).find(([k, v]) => k.startsWith(storagePrefix) && v === key);
       
-      if (existingSlotEntry) {
-          const [slotKey] = existingSlotEntry;
+      if (existingEntry) {
+          // ABWÄHLEN
+          const [slotKey] = existingEntry;
           const newSelections = { ...selections };
           delete newSelections[slotKey];
-          setSelections(newSelections);
-          updateCharacter({ feat_choices: { ...character.feat_choices, [feat.key]: newSelections } });
+          updateSelections(newSelections);
       } else {
-          // 2. Freien Slot suchen
+          // AUSWÄHLEN
+          // Suche freien Slot
           for (let i = 0; i < maxSlots; i++) {
-              if (!selections[`${type}_${i}`]) {
-                  handleSelection(type, i, key);
+              if (!selections[`${storagePrefix}_${i}`]) {
+                  handleSelection(storagePrefix, i, key);
                   return;
               }
           }
-          // 3. Wenn voll, letzten Slot überschreiben
-          handleSelection(type, maxSlots - 1, key);
+          // Wenn voll, überschreibe den letzten Slot (UX Entscheidung)
+          handleSelection(storagePrefix, maxSlots - 1, key);
       }
   };
 
-  // === 1. LOGIK: MAGIC INITIATE ===
+  // === LOGIK 1: MAGIC INITIATE (Zauber) ===
   if (feat.mechanics?.type === 'magic_initiate') {
     const spellClass = feat.mechanics.spell_class; 
     const cantripCount = feat.mechanics.cantrips_choose || 0;
@@ -143,6 +168,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
         <p className="small-text" style={{marginBottom: '10px'}}>
             {t('featSelection.magicInitiatePrompt', { class: t(`classes.${spellClass}`, spellClass) })}
         </p>
+        
         {/* Cantrips */}
         <div className="collapsible-section">
             <h4 className={`collapsible-header ${openPanels.cantrips ? 'open' : ''}`} onClick={() => togglePanel('cantrips')}>
@@ -165,6 +191,7 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
                 </div>
             )}
         </div>
+
         {/* Level 1 Spells */}
         <div className="collapsible-section" style={{marginTop: '10px'}}>
             <h4 className={`collapsible-header ${openPanels.spells ? 'open' : ''}`} onClick={() => togglePanel('spells')}>
@@ -191,51 +218,105 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
     );
   }
 
-  // === 2. LOGIK: CRAFTER (Handwerker) ===
+  // === LOGIK 2: HANDWERKER (Crafter) ===
   if (feat.mechanics?.type === 'crafter_utility') {
     const toolCount = feat.mechanics.proficiencies?.count || 3;
-    const selectedToolsCount = Object.keys(selections).filter(k => k.startsWith('tool') && selections[k]).length;
+    const selectedCount = Object.keys(selections).filter(k => k.startsWith('tool') && selections[k]).length;
 
     return (
         <div className="feat-selection-container">
             <p className="small-text">{t('featSelection.crafterPrompt')}</p>
-            
             <div className="collapsible-section">
                  <h4 className={`collapsible-header ${openPanels.tools ? 'open' : ''}`} onClick={() => togglePanel('tools')}>
-                    {t('tools.categories.artisan')} ({selectedToolsCount}/{toolCount})
+                    {t('tools.categories.artisan')} ({selectedCount}/{toolCount})
                 </h4>
-                
                 {openPanels.tools && (
                     <div className="skill-grid">
-                        {ARTISAN_TOOLS.map(toolKey => {
-                            const isSelected = Object.values(selections).includes(toolKey);
-                            const toolName = t(`tools.${toolKey}`, toolKey);
-                            
-                            // Bild-Matching: Versuche, den übersetzten Namen als Dateinamen zu finden
-                            // z.B. "Alchemistenwerkzeug" -> "Alchemistenwerkzeug.png"
-                            const iconSrc = toolIcons[toolName] || null;
-
+                        {ARTISAN_TOOLS.map(key => {
+                            const isSelected = Object.values(selections).includes(key);
+                            const name = t(`tools.${key}`, key);
+                            const iconSrc = toolIcons[name]; 
                             return (
-                                <Tooltip 
-                                    key={toolKey} 
-                                    content={
-                                        <ToolTooltipContent 
-                                            name={toolName} 
-                                            type={t('tools.categories.artisan')} 
-                                            description={t('featSelection.toolTooltipDescription')} 
-                                        />
-                                    }
-                                >
-                                    <div 
-                                        className={`skill-choice ${isSelected ? 'selected' : ''}`} 
-                                        onClick={() => handleGridClick('tool', toolKey, toolCount)}
-                                    >
-                                        {iconSrc ? (
-                                            <img src={iconSrc} alt={toolName} className="skill-icon" />
-                                        ) : (
-                                            <span className="skill-name-fallback">{toolName.substring(0, 2)}</span>
-                                        )}
-                                        {/* Falls kein Icon da ist, zeigen wir den Namen (oder bei Hover durch Tooltip) */}
+                                <Tooltip key={key} content={<ItemTooltipContent name={name} type={t('tools.categories.artisan')} description={t('featSelection.toolTooltipDescription')} />}>
+                                    <div className={`skill-choice ${isSelected ? 'selected' : ''}`} onClick={() => handleGridClick('tool', key, toolCount)}>
+                                        {iconSrc ? <img src={iconSrc} alt={name} className="skill-icon" /> : <span className="skill-name-fallback">{name.substring(0,2)}</span>}
+                                    </div>
+                                </Tooltip>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+            <div className="passive-bonuses">
+                 <p className="small-text text-muted" style={{marginTop: '10px'}}><strong>Passiv:</strong> {t('featSelection.crafterPassive')}</p>
+            </div>
+        </div>
+    );
+  }
+
+  // === LOGIK 3: MUSIKER (Musician) ===
+  if (feat.mechanics?.type === 'musician_inspiration') {
+    const count = feat.mechanics.proficiencies?.count || 3;
+    const selectedCount = Object.keys(selections).filter(k => k.startsWith('instrument') && selections[k]).length;
+
+    return (
+        <div className="feat-selection-container">
+             <p className="small-text">Wähle 3 Musikinstrumente.</p>
+             <div className="collapsible-section">
+                 <h4 className={`collapsible-header ${openPanels.instruments ? 'open' : ''}`} onClick={() => togglePanel('instruments')}>
+                    {t('instruments.category')} ({selectedCount}/{count})
+                </h4>
+                {openPanels.instruments && (
+                    <div className="skill-grid">
+                        {INSTRUMENTS.map(key => {
+                            const isSelected = Object.values(selections).includes(key);
+                            const name = t(`instruments.${key}`, key);
+                            const iconSrc = toolIcons[name]; // Instrumente liegen im gleichen Ordner wie Tools
+                            return (
+                                <Tooltip key={key} content={<ItemTooltipContent name={name} type={t('instruments.category')} />}>
+                                    <div className={`skill-choice ${isSelected ? 'selected' : ''}`} onClick={() => handleGridClick('instrument', key, count)}>
+                                        {iconSrc ? <img src={iconSrc} alt={name} className="skill-icon" /> : <span className="skill-name-fallback">{name.substring(0,2)}</span>}
+                                    </div>
+                                </Tooltip>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+             <div className="passive-bonuses">
+                 <p className="small-text text-muted" style={{marginTop: '10px'}}><strong>Passiv:</strong> Gewährt Inspiration nach einer Rast.</p>
+            </div>
+        </div>
+    );
+  }
+
+  // === LOGIK 4: GEÜBT (Skilled) ===
+  if (feat.mechanics?.type === 'gain_proficiency_choice') {
+    const count = feat.mechanics.count || 3;
+    const selectedCount = Object.keys(selections).filter(k => k.startsWith('choice') && selections[k]).length;
+
+    // Wir nutzen hier 'choice' als sharedPoolPrefix, damit Skills und Tools in denselben Topf (max 3) zählen
+    
+    return (
+        <div className="feat-selection-container">
+            <p className="small-text">Wähle eine Kombination aus 3 Fertigkeiten oder Werkzeugen.</p>
+            
+            {/* Skills Sektion */}
+            <div className="collapsible-section">
+                <h4 className={`collapsible-header ${openPanels.skills ? 'open' : ''}`} onClick={() => togglePanel('skills')}>
+                    {t('skills.title')}
+                </h4>
+                {openPanels.skills && (
+                    <div className="skill-grid">
+                        {SKILLS.map(key => {
+                            const isSelected = Object.values(selections).includes(key);
+                            const name = t(`skills.${key}`, key);
+                            const iconSrc = skillIcons[key];
+                            const desc = skillDetails[key]?.description;
+                            return (
+                                <Tooltip key={key} content={<ItemTooltipContent name={name} type={t('skills.title')} description={desc} />}>
+                                    <div className={`skill-choice ${isSelected ? 'selected' : ''}`} onClick={() => handleGridClick('skill', key, count, 'choice')}>
+                                        {iconSrc ? <img src={iconSrc} alt={name} className="skill-icon" /> : <span className="skill-name-fallback">{name.substring(0,2)}</span>}
                                     </div>
                                 </Tooltip>
                             );
@@ -244,25 +325,56 @@ export const FeatSelection = ({ feat, character, updateCharacter }) => {
                 )}
             </div>
 
-            <div className="passive-bonuses">
-                 <p className="small-text text-muted" style={{marginTop: '10px'}}>
-                    <strong>Passiv:</strong> {t('featSelection.crafterPassive')}
-                 </p>
+             {/* Tools Sektion */}
+             <div className="collapsible-section" style={{marginTop: '10px'}}>
+                <h4 className={`collapsible-header ${openPanels.tools ? 'open' : ''}`} onClick={() => togglePanel('tools')}>
+                    {t('tools.categories.artisan')} & mehr
+                </h4>
+                {openPanels.tools && (
+                    <div className="skill-grid">
+                        {[...ARTISAN_TOOLS, ...INSTRUMENTS, ...OTHER_TOOLS].map(key => {
+                            const isSelected = Object.values(selections).includes(key);
+                            // Versuche Name aus tools oder instruments zu holen
+                            const name = t(`tools.${key}`, { defaultValue: t(`instruments.${key}`, key)});
+                            const iconSrc = toolIcons[name];
+                            return (
+                                <Tooltip key={key} content={<ItemTooltipContent name={name} type="Werkzeug" />}>
+                                    <div className={`skill-choice ${isSelected ? 'selected' : ''}`} onClick={() => handleGridClick('tool', key, count, 'choice')}>
+                                        {iconSrc ? <img src={iconSrc} alt={name} className="skill-icon" /> : <span className="skill-name-fallback">{name.substring(0,2)}</span>}
+                                    </div>
+                                </Tooltip>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+             <div className="passive-bonuses">
+                 <p className="small-text text-muted" style={{marginTop: '10px'}}><strong>Gesamt gewählt:</strong> {selectedCount}/{count}</p>
             </div>
         </div>
     );
   }
 
-  // Fallback
+  // === LOGIK 5: PASSIVE TALENTE (Fallbacks) ===
+  const passiveDescriptions = {
+      'hp_bonus_per_level': "Deine Trefferpunkte erhöhen sich um 2 pro Level.",
+      'initiative_bonus': "Du erhältst einen Bonus auf Initiative-Würfe.",
+      'healer_feat_utility': "Du kannst das Heilerset besser nutzen und heilst mehr.",
+      'resource_lucky_points': "Du hast Glückspunkte, um Würfe zu beeinflussen.",
+      'unarmed_upgrade': "Deine waffenlosen Schläge sind stärker (1W4 + STÄ) und können stoßen.",
+      'damage_reroll_advantage': "Du kannst Schadenswürfel von Waffenangriffen wiederholen.",
+      'crafter_utility': "Schnelleres Herstellen und Rabatte."
+  };
+
+  const desc = passiveDescriptions[feat.mechanics?.type];
+
   return (
     <div className="feat-selection-info">
-      {feat.mechanics?.type === 'hp_bonus_per_level' && (
-         <p className="small-text text-muted">Passiver Bonus: +2 HP pro Level (automatisch).</p>
+      {desc ? (
+          <p className="small-text text-muted"><strong>Effekt:</strong> {desc}</p>
+      ) : (
+          <p className="small-text text-muted">Keine weitere Auswahl erforderlich.</p>
       )}
-      {feat.mechanics?.type === 'initiative_bonus' && (
-         <p className="small-text text-muted">Passiver Bonus: Initiative erhöht (automatisch).</p>
-      )}
-      {!feat.mechanics && <p className="small-text text-muted">Keine Auswahl erforderlich.</p>}
     </div>
   );
 };
