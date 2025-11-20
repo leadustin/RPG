@@ -1,12 +1,10 @@
 // src/components/character_creation/ClassSelection.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // useEffect hinzugefügt
 import './ClassSelection.css';
 import './PanelDetails.css';
 import allClassData from '../../data/classes.json';
 import { SkillSelection } from './SkillSelection';
 import { useTranslation } from "react-i18next";
-
-// +++ FIX: Import angepasst (SKILL_NAMES_DE entfernt, SKILL_MAP hinzugefügt) +++
 import { SKILL_MAP } from '../../engine/characterEngine';
 
 // +++ IMPORTS (Bleiben gleich) +++
@@ -36,15 +34,35 @@ for (const path in classIconModules) {
 export const ClassSelection = ({ character, updateCharacter }) => {
   const { t } = useTranslation();
   const selectedClass = character.class;
-  
-  // +++ SAFETY FIX START +++
-  // Falls selectedClass existiert aber proficiencies fehlen, Fallback nutzen
-  const skillChoiceData = selectedClass?.proficiencies?.skills;
-  // +++ SAFETY FIX ENDE +++
 
-  const handleSkillChange = (newSelections) => {
-    updateCharacter({ skill_proficiencies_choice: newSelections });
-  };
+  // +++ NEU: Initialisierungs-Logik +++
+  useEffect(() => {
+    if (!selectedClass && allClassData.length > 0) {
+      // Wähle die erste Klasse aus, um leeren State zu vermeiden
+      // (Wir nutzen setTimeout, um Update-Zyklus-Probleme zu vermeiden)
+      setTimeout(() => {
+          updateCharacter({ 
+              class: allClassData[0],
+              // Reset aller Auswahlen für sauberen Start
+              skill_proficiencies_choice: [],
+              subclassKey: null,
+              cantrips_known: [],
+              spells_known: [],
+              spells_prepared: [],
+              spellbook: [],
+              fighting_style: null,
+              favored_enemy: null,
+              natural_explorer: null,
+              expertise_choices: [],
+              class_tool_choice: null,
+              tool_proficiencies_choice: [],
+              weapon_mastery_choices: [], 
+          });
+      }, 0);
+    }
+  }, [selectedClass, updateCharacter]); // Abhängigkeiten
+  // +++ ENDE NEU +++
+
   
   // State für Panels
   const [openPanels, setOpenPanels] = useState(['skills', 'cantrips']);
@@ -61,28 +79,28 @@ export const ClassSelection = ({ character, updateCharacter }) => {
     });
   };
   
+  const handleSkillChange = (newSelections) => {
+    updateCharacter({ skill_proficiencies_choice: newSelections });
+  };
+
+  // Wenn immer noch keine Klasse da ist (z.B. beim allerersten Render), zeige Loading
   if (!selectedClass) {
-    return <div>{t('common.loadingClasses')}</div>;
+    return <div className="loading-text">{t('common.loadingClasses')}</div>;
   }
 
-  // +++ FIX: Skill-Optionen-Logik bereinigt +++
+  // +++ SAFETY FIX: skillChoiceData +++
+  // Sicherer Zugriff auf proficiencies
+  const skillChoiceData = selectedClass.proficiencies?.skills;
+
   let skillOptions = [];
   if (skillChoiceData && skillChoiceData.from) {
-    // Wir nutzen die Keys aus SKILL_MAP für 'any'
     const allSkillKeys = Object.keys(SKILL_MAP);
     
     if (skillChoiceData.from === 'any') {
       skillOptions = allSkillKeys;
     } 
     else if (Array.isArray(skillChoiceData.from)) {
-      // Wir nehmen die Liste direkt. 
-      // Annahme: classes.json nutzt jetzt Keys (z.B. "history") oder die Namen werden später via Translation gemappt.
       skillOptions = skillChoiceData.from;
-      
-      // Falls deine classes.json noch deutsche Namen ("Geschichte") enthält,
-      // wird das in SkillSelection.jsx via t('skills.Geschichte') versucht zu übersetzen.
-      // Das ist nicht ideal, aber bringt die App erstmal wieder zum Laufen.
-      // Langfristig solltest du classes.json auf Keys ("history") umstellen.
     }
   }
   // +++ ENDE FIX +++
@@ -119,7 +137,7 @@ export const ClassSelection = ({ character, updateCharacter }) => {
             key={cls.key} 
             onClick={() => updateCharacter({ 
                 class: cls, 
-                // Reset aller Auswahlen
+                // Reset aller Auswahlen bei Wechsel
                 skill_proficiencies_choice: [],
                 subclassKey: null,
                 cantrips_known: [],
