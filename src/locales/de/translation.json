@@ -17,6 +17,8 @@
     "loadingRaces": "Lade Völker...",
     "loadingClasses": "Lade Klassen...",
     "loadingBackgrounds": "Lade Hintergründe...",
+    "cantrip": "Zaubertrick",
+    "level1Spell": "Zauber Grad 1",
     "back": "Zurück",
     "next": "Weiter",
     "choose": "Wähle...",
@@ -297,7 +299,7 @@
     "survival": "Überlebenskunst"
   },
   "skills.title": "Fertigkeiten",
-  
+
   "backgrounds": {
     "acolyte": {
       "description": "Du hast dein Leben dem Dienst in einem Tempel gewidmet, heilige Riten durchgeführt und Opfer dargebracht. Deine Erfahrung mit göttlichen Mächten gewährt dir Einblicke in religiöse Traditionen und Zugang zu grundlegender klerikaler Magie."
@@ -347,6 +349,7 @@
     "wayfarer": {
       "description": "Du bist nirgendwo lange zu Hause. Die Straße ruft dich immer wieder. Du hast gelernt, dich anzupassen, Kontakte zu knüpfen und dich aus brenzligen Situationen herauszuwinden."
     }
+    
   },
   "feats": {
     "alert": "Wachsam",

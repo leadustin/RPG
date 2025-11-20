@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import "./BackgroundSelection.css";
 import "./PanelDetails.css";
 import backgroundDataRaw from "../../data/backgrounds.json";
-import featureDataRaw from "../../data/features.json"; // <--- NEU: Import der Features
+import featureDataRaw from "../../data/features.json";
+import { FeatSelection } from './FeatSelection';
 
 // Konvertiere das JSON-Objekt in ein Array für die Liste (Filtert leere Einträge)
 const allBackgrounds = Array.isArray(backgroundDataRaw) 
@@ -200,20 +201,35 @@ export const BackgroundSelection = ({ character, updateCharacter }) => {
 
               {/* 3. FEAT (Dynamisch geladen) */}
               <div className="option-section">
-                  <h4>Talent (Feat)</h4> {/* Hardcoded Header oder via Translation t('background.featTitle') */}
+                  <h4>Talent (Feat)</h4>
                   <div className="feat-card">
-                      {/* Zeige Name aus features.json oder Fallback */}
-                      <strong>
-                        {backgroundFeat ? backgroundFeat.name : t(`feats.${selectedBackground.feat}`, selectedBackground.feat)}
-                      </strong>
+                      <div className="feat-header">
+                        <strong>
+                            {backgroundFeat ? backgroundFeat.name : t(`feats.${selectedBackground.feat}`, selectedBackground.feat)}
+                        </strong>
+                        {/* Kleines Badge für die Quelle */}
+                        {backgroundFeat?.source && <span className="source-badge">{backgroundFeat.source}</span>}
+                      </div>
                       
-                      {/* Zeige Beschreibung aus features.json */}
-                      <p className="small-text" style={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
+                      <p className="small-text description-text">
                         {backgroundFeat 
                           ? backgroundFeat.description 
                           : "Beschreibung für dieses Talent konnte nicht geladen werden."
                         }
                       </p>
+
+                      {/* --- HIER IST DIE NEUE INTERAKTIVE KOMPONENTE --- */}
+                      {backgroundFeat && (
+                        <div className="feat-choices-wrapper">
+                            <div className="details-divider-light"></div>
+                            <FeatSelection 
+                                feat={backgroundFeat} 
+                                character={character} 
+                                updateCharacter={updateCharacter} 
+                            />
+                        </div>
+                      )}
+                      {/* ------------------------------------------------ */}
                   </div>
               </div>
 
