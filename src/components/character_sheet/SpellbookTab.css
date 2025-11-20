@@ -71,3 +71,80 @@
 .spell-details em {
     color: #aaa;
 }
+
+.spell-row-container {
+    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.spell-row-header {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.spell-row-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.spell-icon-small {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    border-radius: 4px;
+    border: 1px solid #444;
+}
+
+.spell-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.spell-name {
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.spell-meta {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.feat-badge {
+    color: #ffd700;
+    font-size: 0.8rem;
+    font-weight: normal;
+}
+
+.spell-row-details {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid #444;
+    font-size: 0.9rem;
+}
+
+.slot-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 2px 8px;
+    margin-right: 8px;
+    font-size: 0.85rem;
+}
+
+.slot-level {
+    margin-right: 6px;
+    color: #ccc;
+}
+
+.slot-amount {
+    color: #ffd700;
+    font-weight: bold;
+}
