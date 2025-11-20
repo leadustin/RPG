@@ -2,6 +2,13 @@
 import allClassData from "../data/classes.json";
 import { LEVEL_XP_TABLE } from "../utils/helpers";
 
+// NEU: Import der RulesEngine für ausgelagerte Mechaniken
+import { 
+  getFeatHpBonus, 
+  checkFeatProficiency, 
+  getInitiativeBonusFromFeats 
+} from "./rulesEngine"; 
+
 /**
  * Berechnet den Modifikator für einen Attributswert.
  */
@@ -22,11 +29,17 @@ export const getProficiencyBonus = (level) => {
 
 /**
  * Holt den vom Spieler zugewiesenen Attributsbonus für ein Attribut.
- * (PHB 2024 Logik: Boni kommen aus dem Hintergrund und werden in ability_bonus_assignments gespeichert)
+ * (PHB 2024 Update: Boni kommen primär aus background_options)
  */
 export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
 
+  // 1. Priorität: Neue Background-Optionen (PHB 2024)
+  if (character.background_options?.bonuses) {
+     return character.background_options.bonuses[abilityKey] || 0;
+  }
+
+  // 2. Fallback: Legacy System (Rasse/Manuell, z.B. für alte 5e Inhalte)
   if (
     character.ability_bonus_assignments &&
     character.ability_bonus_assignments[abilityKey]
@@ -38,20 +51,26 @@ export const getRacialAbilityBonus = (character, abilityKey) => {
 };
 
 /**
- * Berechnet die maximalen Lebenspunkte auf Stufe 1.
+ * Berechnet die maximalen Lebenspunkte auf Stufe 1 (oder Basis).
  */
 export const calculateInitialHP = (character) => {
-  if (!character.class || !character.race) return 0;
+  if (!character.class) return 0; // Race ist nicht mehr zwingend für Basis-HP, aber Con
 
   const finalCon =
     character.abilities.con + getRacialAbilityBonus(character, "con");
   const conModifier = getAbilityModifier(finalCon);
+  
+  // Basis HP: Hit Die + Con Mod
   let hp = character.class.hit_die + conModifier;
 
-  // Zwerge erhalten +1 HP pro Stufe (also +1 auf Stufe 1)
-  if (character.race.key === "dwarf") {
+  // Zwerge (+1 HP) - Legacy Check
+  if (character.race?.key === "dwarf") {
     hp += 1;
   }
+
+  // NEU: RulesEngine für Feat-Boni (z.B. "Tough")
+  hp += getFeatHpBonus(character);
+
   return hp;
 };
 
@@ -128,6 +147,8 @@ export const calculateAC = (character) => {
       unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + wisModifier);
     }
 
+    // Hinweis: Draconic Sorcerer AC (13+Dex) könnte hier via RulesEngine ergänzt werden
+    
     return unarmoredAC + shieldBonus;
   }
 };
@@ -156,7 +177,7 @@ export const SKILL_MAP = {
 
 /**
  * Prüft, ob ein Charakter in einer Fertigkeit geübt ist.
- * Nutzt jetzt nur noch englische Keys (z.B. 'insight').
+ * Berücksichtigt jetzt Hintergrund, Rasse, Klasse UND Talente.
  */
 export const isProficientInSkill = (character, skillKey) => {
   const {
@@ -188,6 +209,11 @@ export const isProficientInSkill = (character, skillKey) => {
     return true;
   }
 
+  // 4. NEU: RulesEngine für Feats (Skilled, Crafter, etc.)
+  if (checkFeatProficiency(character, skillKey)) {
+      return true;
+  }
+
   return false;
 };
 
@@ -201,7 +227,7 @@ export const calculateSkillBonus = (character, skillKey) => {
     getRacialAbilityBonus(character, abilityKey);
   const modifier = getAbilityModifier(finalAbilityScore);
 
-  // Verwendet jetzt das tatsächliche Level des Charakters
+  // Verwendet das tatsächliche Level des Charakters
   const proficiencyBonus = getProficiencyBonus(character.level || 1);
 
   if (isProficientInSkill(character, skillKey)) {
@@ -209,6 +235,20 @@ export const calculateSkillBonus = (character, skillKey) => {
   }
 
   return modifier;
+};
+
+/**
+ * Berechnet die Initiative (DEX + Boni wie "Alert").
+ */
+export const calculateInitiative = (character) => {
+    const finalDex = character.abilities.dex + getRacialAbilityBonus(character, "dex");
+    let initBonus = getAbilityModifier(finalDex);
+    
+    // NEU: Bonus durch "Alert" Feat (benötigt Proficiency Bonus)
+    const pb = getProficiencyBonus(character.level || 1);
+    initBonus += getInitiativeBonusFromFeats(character, pb);
+    
+    return initBonus;
 };
 
 /**
@@ -242,12 +282,13 @@ export const calculateMeleeDamage = (character) => {
     return `${damage} ${modifierString}`;
   } else {
     // Standard für waffenlosen Schlag (1 + Stärke-Modifikator)
+    // (Hier könnte man später Tavern Brawler Logik einfügen via RulesEngine)
     const unarmedDamage = 1 + strModifier;
     return unarmedDamage.toString();
   }
 };
 
-// Deutsche Beschreibungen für die Hauptattribute (Content, kein Legacy-Code)
+// Deutsche Beschreibungen (Content)
 export const ABILITY_DESCRIPTIONS_DE = {
   str: "Stärke: Misst die körperliche Kraft. Wichtig für Nahkampfangriffe und Athletik.",
   dex: "Geschicklichkeit: Misst die Agilität, Reflexe und Balance. Wichtig für Rüstungsklasse, Fernkampfangriffe und Akrobatik.",
@@ -257,7 +298,6 @@ export const ABILITY_DESCRIPTIONS_DE = {
   cha: "Charisma: Misst die Überzeugungskraft, Persönlichkeit und Führungsstärke. Wichtig für soziale Interaktion und einige Magieformen.",
 };
 
-// Deutsche Beschreibungen für die Kampfwerte
 export const COMBAT_STATS_DESCRIPTIONS_DE = {
   ac: "Gibt an, wie schwer es ist, dich im Kampf zu treffen. Basiert auf 10 + deinem Geschicklichkeits-Modifikator. Rüstung und Schilde können diesen Wert erhöhen.",
   hp: "Deine Lebensenergie. Erreicht sie 0, bist du kampfunfähig. Basiert auf dem Trefferwürfel deiner Klasse und deinem Konstitutions-Modifikator.",
@@ -265,81 +305,53 @@ export const COMBAT_STATS_DESCRIPTIONS_DE = {
     "Ein Bonus, den du auf alle Würfe addierst, in denen du geübt bist (Angriffe, Fertigkeiten, etc.). Er steigt mit deinem Charakterlevel an.",
 };
 
-// Deutsche Beschreibungen für die Fertigkeiten
 export const SKILL_DESCRIPTIONS_DE = {
-  acrobatics:
-    "Akrobatik (Geschicklichkeit): Die Fähigkeit, auf den Beinen zu bleiben, Sprünge zu meistern und akrobatische Manöver auszuführen.",
-  animal_handling:
-    "Tierkunde (Weisheit): Die Fähigkeit, Tiere zu beruhigen, zu verstehen und zu kontrollieren.",
-  arcana:
-    "Arkanum (Intelligenz): Das Wissen über Magie, magische Kreaturen, Zauber und arkane Symbole.",
-  athletics:
-    "Athletik (Stärke): Die Fähigkeit, zu klettern, springen, schwimmen und körperliche Kraft anzuwenden.",
-  deception:
-    "Täuschung (Charisma): Die Fähigkeit, die Wahrheit zu verbergen, sei es durch Lügen, Verkleidung oder Ablenkung.",
-  history:
-    "Geschichte (Intelligenz): Das Wissen über historische Ereignisse, legendäre Personen und vergangene Zivilisationen.",
-  insight:
-    "Einblick (Weisheit): Die Fähigkeit, die wahren Absichten einer Kreatur durch Körpersprache und Verhalten zu erkennen.",
-  intimidation:
-    "Einschüchtern (Charisma): Die Fähigkeit, andere durch Drohungen, feindselige Handlungen und körperliche Präsenz zu beeinflussen.",
-  investigation:
-    "Nachforschungen (Intelligenz): Die Fähigkeit, nach Hinweisen zu suchen, Schlussfolgerungen zu ziehen und Details zu analysieren.",
-  medicine:
-    "Medizin (Weisheit): Die Fähigkeit, Verletzungen zu stabilisieren, Krankheiten zu diagnostizieren und Wunden zu behandeln.",
-  nature:
-    "Naturkunde (Intelligenz): Das Wissen über Gelände, Pflanzen, Tiere und das Wetter.",
-  perception:
-    "Wahrnehmung (Weisheit): Die Fähigkeit, etwas zu sehen, zu hören, zu riechen oder auf andere Weise wahrzunehmen.",
-  performance:
-    "Darbietung (Charisma): Die Fähigkeit, ein Publikum durch Musik, Tanz, Schauspiel oder eine andere Form der Unterhaltung zu fesseln.",
-  persuasion:
-    "Überzeugen (Charisma): Die Fähigkeit, andere durch Takt, Freundlichkeit und gute Argumente zu beeinflussen.",
-  religion:
-    "Religion (Intelligenz): Das Wissen über Gottheiten, religiöse Riten, heilige Symbole und die Ebenen der Existenz.",
-  sleight_of_hand:
-    "Fingerfertigkeit (Geschicklichkeit): Die Fähigkeit, Taschendiebstahl zu begehen, Schlösser zu knacken und andere manuelle Tricks auszuführen.",
-  stealth:
-    "Heimlichkeit (Geschicklichkeit): Die Fähigkeit, sich ungesehen und ungehört an anderen vorbeizuschleichen.",
-  survival:
-    "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden.",
+  acrobatics: "Akrobatik (Geschicklichkeit): Die Fähigkeit, auf den Beinen zu bleiben, Sprünge zu meistern und akrobatische Manöver auszuführen.",
+  animal_handling: "Tierkunde (Weisheit): Die Fähigkeit, Tiere zu beruhigen, zu verstehen und zu kontrollieren.",
+  arcana: "Arkanum (Intelligenz): Das Wissen über Magie, magische Kreaturen, Zauber und arkane Symbole.",
+  athletics: "Athletik (Stärke): Die Fähigkeit, zu klettern, springen, schwimmen und körperliche Kraft anzuwenden.",
+  deception: "Täuschung (Charisma): Die Fähigkeit, die Wahrheit zu verbergen, sei es durch Lügen, Verkleidung oder Ablenkung.",
+  history: "Geschichte (Intelligenz): Das Wissen über historische Ereignisse, legendäre Personen und vergangene Zivilisationen.",
+  insight: "Einblick (Weisheit): Die Fähigkeit, die wahren Absichten einer Kreatur durch Körpersprache und Verhalten zu erkennen.",
+  intimidation: "Einschüchtern (Charisma): Die Fähigkeit, andere durch Drohungen, feindselige Handlungen und körperliche Präsenz zu beeinflussen.",
+  investigation: "Nachforschungen (Intelligenz): Die Fähigkeit, nach Hinweisen zu suchen, Schlussfolgerungen zu ziehen und Details zu analysieren.",
+  medicine: "Medizin (Weisheit): Die Fähigkeit, Verletzungen zu stabilisieren, Krankheiten zu diagnostizieren und Wunden zu behandeln.",
+  nature: "Naturkunde (Intelligenz): Das Wissen über Gelände, Pflanzen, Tiere und das Wetter.",
+  perception: "Wahrnehmung (Weisheit): Die Fähigkeit, etwas zu sehen, zu hören, zu riechen oder auf andere Weise wahrzunehmen.",
+  performance: "Darbietung (Charisma): Die Fähigkeit, ein Publikum durch Musik, Tanz, Schauspiel oder eine andere Form der Unterhaltung zu fesseln.",
+  persuasion: "Überzeugen (Charisma): Die Fähigkeit, andere durch Takt, Freundlichkeit und gute Argumente zu beeinflussen.",
+  religion: "Religion (Intelligenz): Das Wissen über Gottheiten, religiöse Riten, heilige Symbole und die Ebenen der Existenz.",
+  sleight_of_hand: "Fingerfertigkeit (Geschicklichkeit): Die Fähigkeit, Taschendiebstahl zu begehen, Schlösser zu knacken und andere manuelle Tricks auszuführen.",
+  stealth: "Heimlichkeit (Geschicklichkeit): Die Fähigkeit, sich ungesehen und ungehört an anderen vorbeizuschleichen.",
+  survival: "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden.",
 };
 
 /**
  * HILFSFUNKTION: Ermittelt die HP-Würfelformel für den Stufenaufstieg.
  */
 const getHpRollFormula = (character) => {
-  const hitDie = character.class.hit_die || 8; // z.B. 8
+  const hitDie = character.class.hit_die || 8; 
   const conMod = getAbilityModifier(
     character.abilities.con + getRacialAbilityBonus(character, "con")
   );
 
   const formula = `1d${hitDie}`;
-
-  if (conMod === 0) {
-    return formula;
-  }
-
-  // Fügt den Modifikator hinzu (z.B. "1d8+2" or "1d8-1")
+  if (conMod === 0) return formula;
   return `${formula}${conMod > 0 ? "+" : ""}${conMod}`;
 };
 
 
 /**
  * Findet die korrekte Anzahl an Meisterschaften für die aktuelle Stufe.
- * Liest dynamisch alle 'level_X_count'-Einträge.
  */
 const getMasteryCountForLevel = (masteryData, level) => {
   if (!masteryData) return 0;
   let currentMax = 0;
   let bestLevel = 0;
 
-  // Iteriert durch alle "level_X_count"-Einträge in der JSON
   for (const key in masteryData) {
     if (key.startsWith("level_") && key.endsWith("_count")) {
       const levelKey = parseInt(key.split('_')[1]);
-      
-      // Finde die höchste Stufe, die der Charakter erreicht hat
       if (level >= levelKey && levelKey > bestLevel) {
         bestLevel = levelKey;
         currentMax = masteryData[key];
@@ -352,29 +364,24 @@ const getMasteryCountForLevel = (masteryData, level) => {
 
 /**
  * PRÜFT AUF STUFENAUFSTIEG
- * (ANGEPASST: Bereitet Stufenaufstieg für Modal vor)
  */
 export const checkForLevelUp = (character) => {
-  // Stelle sicher, dass level und experience existieren
   const level = character.level || 1;
   const experience = character.experience || 0;
 
   if (level >= 20 || character.pendingLevelUp) {
-    return character; // Max. Level oder bereits ein Stufenaufstieg ausstehend
+    return character;
   }
 
   const nextLevel = level + 1;
   const xpForNextLevel = LEVEL_XP_TABLE[nextLevel];
 
   if (experience >= xpForNextLevel) {
-    // STUFENAUFSTIEG AUSSTEHEND!
-    console.log(
-      `STUFENAUFSTIEG ANSTEHEND: ${character.name} ist bereit für Stufe ${nextLevel}!`
-    );
+    console.log(`STUFENAUFSTIEG ANSTEHEND: ${character.name} ist bereit für Stufe ${nextLevel}!`);
 
     const classData = allClassData.find(c => c.key === character.class.key);
     
-    // Prüfen, ob eine Subklassen-Wahl ansteht (basierend auf Feature-Namen)
+    // Prüfen auf Subklassen-Wahl
     const isSubclassChoiceLevel = classData?.features.some(f => 
       f.level === nextLevel && (
         f.name.toLowerCase().includes("archetyp") || 
@@ -389,25 +396,21 @@ export const checkForLevelUp = (character) => {
       )
     );
 
-    // KORREKTUR: Prüfen, ob eine Attributssteigerung ansteht (basierend auf Feature-Namen)
+    // Prüfen auf ASI
     const isAbilityIncrease = classData?.features.some(f =>
       f.level === nextLevel &&
       f.name.toLowerCase() === "fähigkeitspunkte / merkmal"
     );
     
-    // Finde die aktuelle und die neue Anzahl an Meisterschaften
+    // Prüfen auf Waffenmeisterschaft
     const currentMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, level);
     const newMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, nextLevel);
-
-    // Prüfe, ob die Anzahl sich erhöht hat
     const isMasteryIncrease = newMasteryCount > currentMasteryCount;
 
     if (isMasteryIncrease) {
         console.log(`Neue Waffenmeisterschaft freigeschaltet auf Stufe ${nextLevel}! (Anzahl: ${newMasteryCount})`);
     }
 
-
-    // Bereite die Daten für das Modal vor
     return {
       ...character,
       pendingLevelUp: {
@@ -422,21 +425,19 @@ export const checkForLevelUp = (character) => {
     };
   }
 
-  // Kein Stufenaufstieg
   return character;
 };
 
 
 /**
- * WENDET STUFENAUFSTIEG AN (NEUE FUNKTION)
- * Wendet die gewürfelten HP, das neue Level und die AUSWAHL (ASI, Subklasse) an.
+ * WENDET STUFENAUFSTIEG AN
  */
 export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   if (!character.pendingLevelUp) return character;
 
   const { newLevel } = character.pendingLevelUp;
 
-  // --- Start: ASI anwenden ---
+  // --- ASI anwenden ---
   const newAbilities = { ...character.abilities };
   if (levelUpChoices?.asi) {
     console.log("Wende ASI an:", levelUpChoices.asi);
@@ -446,24 +447,18 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
       }
     }
   }
-  // --- Ende: ASI anwenden ---
 
-  // --- Start: Subklasse anwenden ---
-  // Nimm die neue Subklasse, falls eine gewählt wurde, sonst behalte die alte
+  // --- Subklasse anwenden ---
   const newSubclassKey = levelUpChoices?.subclassKey || character.subclassKey;
-  // --- Ende: Subklasse anwenden ---
 
-
-  // --- Start: Neue Fähigkeiten hinzufügen ---
+  // --- Neue Fähigkeiten sammeln ---
   const classData = allClassData.find(c => c.key === character.class.key);
   let newFeatures = [];
   let newSubclassFeatures = [];
 
   if (classData) {
-    // 2. Finde alle Features der Hauptklasse für das newLevel
     newFeatures = classData.features.filter(f => f.level === newLevel);
     
-    // 3. Finde Features der Subklasse (basierend auf der newSubclassKey)
     if (newSubclassKey && classData.subclasses) {
       const subclassData = classData.subclasses.find(sc => sc.key === newSubclassKey);
       if (subclassData && subclassData.features) {
@@ -472,52 +467,52 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
     }
   }
 
-  // 4. Kombiniere alle neuen Fähigkeiten
   const allNewFeatures = [...newFeatures, ...newSubclassFeatures];
   
   if (allNewFeatures.length > 0) {
     console.log(`Neue Fähigkeiten für ${character.name} auf Stufe ${newLevel}:`, allNewFeatures.map(f => f.name));
   }
-  // --- Ende: Neue Fähigkeiten hinzufügen ---
 
-  // Alte HP berechnen (basierend auf dem Level *vor* dem Aufstieg)
+  // --- HP berechnen ---
   const oldMaxHP = character.stats.maxHp;
-
   let finalHpGain = hpRollResult;
 
-  // KORREKTUR (D&D 2024): Alle Zwerge erhalten +1 HP pro Stufe
-  if (character.race.key === "dwarf") {
+  // Zwerge erhalten +1 HP pro Stufe
+  if (character.race?.key === "dwarf") {
     finalHpGain += 1;
   }
+  
+  // Hinweis: Hier könnte man später auch +2 HP für "Tough" Feat addieren, 
+  // wenn die RulesEngine erweitert wird. Aktuell wird es bei calculateInitialHP global draufgerechnet, 
+  // aber beim Level-Up addieren wir hier nur den Zuwachs.
 
   const newMaxHP = oldMaxHP + finalHpGain;
 
-  // Entferne das pendingLevelUp-Flag und wende die Stats an
+  // --- Charakter Update ---
   const { pendingLevelUp, ...restOfCharacter } = character;
 
   const updatedCharacter = {
     ...restOfCharacter,
     level: newLevel,
-    abilities: newAbilities, // <-- NEUE Abilities (mit ASI)
+    abilities: newAbilities, 
     subclassKey: newSubclassKey,
     stats: {
       ...character.stats,
       maxHp: newMaxHP,
       hp: newMaxHP,
     },
-    // 5. Füge die neuen Fähigkeiten zu den bestehenden hinzu
     features: [
       ...(character.features || []), // Alte Features
       ...allNewFeatures             // Neue Features
     ],
   };
 
-  // Wichtig: Erneut prüfen, falls genug EP für *noch* einen Stufenaufstieg vorhanden sind
+  // Erneut prüfen, falls noch mehr EP vorhanden sind
   return checkForLevelUp(updatedCharacter);
 };
 
 /**
- * VERGIBT ERFAHRUNGSPUNKTE (für die ganze Gruppe)
+ * VERGIBT ERFAHRUNGSPUNKTE
  */
 export const grantExperienceToParty = (party, defeatedEnemies) => {
   const totalXp = defeatedEnemies.reduce(
