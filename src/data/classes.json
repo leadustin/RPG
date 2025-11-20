@@ -11,7 +11,7 @@
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
     "skills": {
       "choose": 2,
-      "from": ["Tierkunde", "Athletik", "Einschüchtern", "Naturkunde", "Wahrnehmung", "Überlebenskunst"]
+      "from": ["animal_handling", "athletics", "intimidation", "nature", "perception", "survival"]
     }
   },
   "weapon_mastery": {
@@ -351,7 +351,7 @@
     "weapons": ["Einfache Waffen"],
     "skills": {
       "choose": 2,
-      "from": ["Geschichte", "Überzeugen", "Einblick", "Medizin", "Religion"]
+      "from": ["history", "persuasion", "insight", "medicine", "religion"]
     }
   },
   "features": [
@@ -613,7 +613,7 @@
     "tools": ["Kräuterkunde-Set"],
     "skills": {
       "choose": 2,
-      "from": ["Tierkunde", "Arkanum", "Einblick", "Medizin", "Naturkunde", "Wahrnehmung", "Religion", "Überlebenskunst"]
+      "from": ["animal_handling", "arcana", "insight", "medicine", "nature", "perception", "religion", "survival"]
     }
   },
   "features": [
@@ -732,7 +732,7 @@
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
     "skills": {
       "choose": 2,
-      "from": ["Akrobatik", "Tierkunde", "Athletik", "Geschichte", "Einblick", "Einschüchtern", "Wahrnehmung", "Überlebenskunst"]
+      "from": ["acrobatics", "animal_handling", "athletics", "history", "insight", "intimidation", "perception", "survival"]
     }
   }, 
   "weapon_mastery": {
@@ -910,7 +910,7 @@
     "tools": ["Ein Handwerkerwerkzeug oder ein Musikinstrument deiner Wahl"],
     "skills": {
       "choose": 2,
-      "from": ["Akrobatik", "Athletik", "Geschichte", "Einblick", "Religion", "Heimlichkeit"]
+      "from": ["acrobatics", "athletics", "history", "insight", "religion", "stealth"]
     }
   },
   "martial_arts_progression": [
@@ -1101,7 +1101,7 @@
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
     "skills": {
       "choose": 2,
-      "from": ["Athletik", "Einblick", "Einschüchtern", "Medizin", "Überzeugen", "Religion"]
+      "from": ["athletics", "insight", "intimidation", "medicine", "persuasion", "religion"]
     }
   },
   "weapon_mastery": {
@@ -1283,7 +1283,7 @@
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
     "skills": {
       "choose": 3,
-      "from": ["Tierkunde", "Athletik", "Wahrnehmung", "Nachforschungen", "Naturkunde", "Einblick", "Heimlichkeit", "Überlebenskunst"]
+      "from": ["animal_handling", "athletics", "perception", "investigation", "nature", "insight", "stealth", "survival"]
     }
   },
   "weapon_mastery": {
@@ -1443,7 +1443,7 @@
     "tools": ["Diebeswerkzeug"],
     "skills": {
       "choose": 4,
-      "from": ["Akrobatik", "Athletik", "Täuschung", "Einblick", "Einschüchtern", "Nachforschungen", "Wahrnehmung", "Darbietung", "Überzeugen", "Fingerfertigkeit", "Heimlichkeit"]
+      "from": ["acrobatics", "athletics", "deception", "insight", "intimidation", "investigation", "perception", "performance", "persuasion", "sleight_of_hand", "stealth"]
     }
   },
   "sneak_attack_progression": [
@@ -1652,7 +1652,7 @@
     "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
     "skills": {
       "choose": 2,
-      "from": ["Arkanum", "Täuschung", "Einblick", "Einschüchtern", "Überzeugen", "Religion"]
+      "from": ["arcana", "deception", "insight", "intimidation", "persuasion", "religion"]
     }
   },
   "features": [
@@ -1776,7 +1776,7 @@
     "weapons": ["Einfache Waffen"],
     "skills": {
       "choose": 2,
-      "from": ["Arkanum", "Täuschung", "Geschichte", "Einschüchtern", "Nachforschungen", "Naturkunde", "Religion"]
+      "from": ["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"]
     }
   },
   "pact_magic_progression": [
@@ -1961,7 +1961,7 @@
     "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
     "skills": {
       "choose": 2,
-      "from": ["Arkanum", "Geschichte", "Einblick", "Nachforschungen", "Medizin", "Religion"]
+      "from": ["arcana", "history", "insight", "investigation", "medicine", "religion"]
     }
   },
   "features": [

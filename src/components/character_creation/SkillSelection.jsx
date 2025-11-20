@@ -2,7 +2,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next'; // +++ NEU +++
 import './SkillSelection.css';
-// import { SKILL_NAMES_DE } from '../../engine/characterEngine'; // <-- ENTFERNT
+// import { SKILL_NAMES_DE } from '../../engine/characterEngine';
 import Tooltip from '../tooltip/Tooltip';
 import { SkillTooltip } from '../tooltip/SkillTooltip';
 import skillDetails from '../../data/skillDetails.json';
