@@ -38,7 +38,7 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     race: null,
     class: null,
     background: null,
-    attributes: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
+    abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
     skills: [],
     level: 1,
     experience: 0,
