@@ -1,12 +1,18 @@
 // src/engine/characterEngine.jsx
 import allClassData from "../data/classes.json";
-import { LEVEL_XP_TABLE } from "../utils/helpers";
+import { LEVEL_XP_TABLE, rollDiceFormula } from "../utils/helpers";
 
-// NEU: Import der RulesEngine für ausgelagerte Mechaniken
+// Import der RulesEngine für ausgelagerte Mechaniken
 import { 
   getFeatHpBonus, 
   checkFeatProficiency, 
-  getInitiativeBonusFromFeats 
+  getInitiativeBonusFromFeats,
+  getUnarmedDamageDie,
+  hasSavageAttacker,
+  hasHealerStabilizeBonus,
+  getHealerFeatHealingFormula,
+  hasLuckyFeat,
+  getCrafterDiscount
 } from "./rulesEngine"; 
 
 /**
@@ -39,7 +45,7 @@ export const getRacialAbilityBonus = (character, abilityKey) => {
      return character.background_options.bonuses[abilityKey] || 0;
   }
 
-  // 2. Fallback: Legacy System (Rasse/Manuell, z.B. für alte 5e Inhalte)
+  // 2. Fallback: Legacy System (Rasse/Manuell)
   if (
     character.ability_bonus_assignments &&
     character.ability_bonus_assignments[abilityKey]
@@ -54,7 +60,7 @@ export const getRacialAbilityBonus = (character, abilityKey) => {
  * Berechnet die maximalen Lebenspunkte auf Stufe 1 (oder Basis).
  */
 export const calculateInitialHP = (character) => {
-  if (!character.class) return 0; // Race ist nicht mehr zwingend für Basis-HP, aber Con
+  if (!character.class) return 0; 
 
   const finalCon =
     character.abilities.con + getRacialAbilityBonus(character, "con");
@@ -63,12 +69,12 @@ export const calculateInitialHP = (character) => {
   // Basis HP: Hit Die + Con Mod
   let hp = character.class.hit_die + conModifier;
 
-  // Zwerge (+1 HP) - Legacy Check
+  // Zwerge (+1 HP)
   if (character.race?.key === "dwarf") {
     hp += 1;
   }
 
-  // NEU: RulesEngine für Feat-Boni (z.B. "Tough")
+  // RulesEngine für Feat-Boni (z.B. "Tough")
   hp += getFeatHpBonus(character);
 
   return hp;
@@ -79,7 +85,7 @@ export const calculateInitialHP = (character) => {
  */
 export const calculateAC = (character) => {
   if (!character || !character.abilities || !character.class) {
-    return 10; // Fallback
+    return 10; 
   }
 
   // 1. Finale Attribut-Modifikatoren berechnen
@@ -90,7 +96,7 @@ export const calculateAC = (character) => {
   // 2. Ausgerüstete Items
   const equippedArmorData = character.equipment?.armor;
 
-  // Schild-Erkennung (Vereinfacht)
+  // Schild-Erkennung
   let shieldBonus = 0;
   const offHand = character.equipment?.["off-hand"] || character.equipment?.shield;
   
@@ -146,8 +152,6 @@ export const calculateAC = (character) => {
       const wisModifier = getAbilityModifier(finalWis);
       unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + wisModifier);
     }
-
-    // Hinweis: Draconic Sorcerer AC (13+Dex) könnte hier via RulesEngine ergänzt werden
     
     return unarmoredAC + shieldBonus;
   }
@@ -191,7 +195,7 @@ export const isProficientInSkill = (character, skillKey) => {
     return true;
   }
 
-  // 2. Übung durch Volk (z.B. Elfen in Wahrnehmung)
+  // 2. Übung durch Volk
   if (
     race && race.traits &&
     race.traits.some(
@@ -208,8 +212,8 @@ export const isProficientInSkill = (character, skillKey) => {
   ) {
     return true;
   }
-
-  // 4. NEU: RulesEngine für Feats (Skilled, Crafter, etc.)
+  
+  // 4. RulesEngine für Feats (Skilled, Crafter, etc.)
   if (checkFeatProficiency(character, skillKey)) {
       return true;
   }
@@ -227,7 +231,6 @@ export const calculateSkillBonus = (character, skillKey) => {
     getRacialAbilityBonus(character, abilityKey);
   const modifier = getAbilityModifier(finalAbilityScore);
 
-  // Verwendet das tatsächliche Level des Charakters
   const proficiencyBonus = getProficiencyBonus(character.level || 1);
 
   if (isProficientInSkill(character, skillKey)) {
@@ -244,7 +247,7 @@ export const calculateInitiative = (character) => {
     const finalDex = character.abilities.dex + getRacialAbilityBonus(character, "dex");
     let initBonus = getAbilityModifier(finalDex);
     
-    // NEU: Bonus durch "Alert" Feat (benötigt Proficiency Bonus)
+    // Bonus durch "Alert" Feat
     const pb = getProficiencyBonus(character.level || 1);
     initBonus += getInitiativeBonusFromFeats(character, pb);
     
@@ -258,6 +261,10 @@ export const calculateMeleeDamage = (character) => {
   const strScore =
     character.abilities.str + getRacialAbilityBonus(character, "str");
   const strModifier = getAbilityModifier(strScore);
+
+  // Modifikator als String (+X / -X)
+  const modifierString =
+      strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
 
   // Prüfen, ob eine Waffe in der Haupthand ausgerüstet ist
   const mainHandWeapon = character.equipment?.["main-hand"];
@@ -277,12 +284,19 @@ export const calculateMeleeDamage = (character) => {
       }
     }
 
-    const modifierString =
-      strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
     return `${damage} ${modifierString}`;
   } else {
-    // Standard für waffenlosen Schlag (1 + Stärke-Modifikator)
-    // (Hier könnte man später Tavern Brawler Logik einfügen via RulesEngine)
+    // +++ WAFFENLOSER SCHLAG +++
+    
+    // Prüfe via RulesEngine, ob ein Upgrade (z.B. Tavern Brawler) vorliegt
+    const upgradedDie = getUnarmedDamageDie(character); // z.B. "1d4"
+
+    if (upgradedDie) {
+        // Wenn Talent vorhanden: Würfel + Stärke
+        return `${upgradedDie} ${modifierString}`;
+    }
+
+    // Standard: 1 + Stärke-Modifikator
     const unarmedDamage = 1 + strModifier;
     return unarmedDamage.toString();
   }
@@ -381,7 +395,6 @@ export const checkForLevelUp = (character) => {
 
     const classData = allClassData.find(c => c.key === character.class.key);
     
-    // Prüfen auf Subklassen-Wahl
     const isSubclassChoiceLevel = classData?.features.some(f => 
       f.level === nextLevel && (
         f.name.toLowerCase().includes("archetyp") || 
@@ -396,13 +409,11 @@ export const checkForLevelUp = (character) => {
       )
     );
 
-    // Prüfen auf ASI
     const isAbilityIncrease = classData?.features.some(f =>
       f.level === nextLevel &&
       f.name.toLowerCase() === "fähigkeitspunkte / merkmal"
     );
     
-    // Prüfen auf Waffenmeisterschaft
     const currentMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, level);
     const newMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, nextLevel);
     const isMasteryIncrease = newMasteryCount > currentMasteryCount;
@@ -482,10 +493,6 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
     finalHpGain += 1;
   }
   
-  // Hinweis: Hier könnte man später auch +2 HP für "Tough" Feat addieren, 
-  // wenn die RulesEngine erweitert wird. Aktuell wird es bei calculateInitialHP global draufgerechnet, 
-  // aber beim Level-Up addieren wir hier nur den Zuwachs.
-
   const newMaxHP = oldMaxHP + finalHpGain;
 
   // --- Charakter Update ---
@@ -502,8 +509,8 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
       hp: newMaxHP,
     },
     features: [
-      ...(character.features || []), // Alte Features
-      ...allNewFeatures             // Neue Features
+      ...(character.features || []), 
+      ...allNewFeatures             
     ],
   };
 
@@ -553,4 +560,110 @@ export const grantXpToCharacter = (character, xpAmount) => {
     experience: (character.experience || 0) + xpAmount,
   };
   return checkForLevelUp(updatedChar);
+};
+
+/**
+ * Führt einen Schadenswurf für den Nahkampf durch.
+ * Berücksichtigt "Wilder Angreifer" (Savage Attacker).
+ * @returns {Object} { total, rolls, formula, isCritical, msg }
+ */
+export const performMeleeDamageRoll = (character, isCritical = false) => {
+  // 1. Hole die Schadensformel (z.B. "1d8 +3")
+  const damageString = calculateMeleeDamage(character);
+  
+  // Zerlege in Würfel und Modifikator (z.B. ["1d8", "+3"])
+  // Wir nehmen an, der erste Teil ist der Würfel.
+  const parts = damageString.split(' ');
+  const dicePart = parts[0]; // "1d8"
+  const modPart = parts.length > 1 ? parts[1] : "+0"; // "+3"
+
+  // Kritischer Treffer: Verdopple die Anzahl der Würfel (z.B. "1d8" -> "2d8")
+  let rollDice = dicePart;
+  if (isCritical) {
+    const [count, type] = dicePart.split('d');
+    rollDice = `${parseInt(count) * 2}d${type}`;
+  }
+
+  // 2. Prüfe auf "Wilder Angreifer"
+  const hasSavage = hasSavageAttacker(character);
+  
+  // 3. Würfeln
+  let result1 = rollDiceFormula(rollDice);
+  let finalDiceTotal = result1;
+  let msg = `Würfelt ${rollDice}: ${result1}`;
+
+  // Wenn Savage Attacker: Würfle ein zweites Mal und nimm das höhere Ergebnis (nur für die Würfel, nicht den Mod!)
+  if (hasSavage) {
+    let result2 = rollDiceFormula(rollDice);
+    finalDiceTotal = Math.max(result1, result2);
+    msg = `Wilder Angreifer (${rollDice}): Würfelt ${result1} und ${result2}. Nutze ${finalDiceTotal}.`;
+  }
+
+  // 4. Modifikator addieren
+  const modifier = parseInt(modPart.replace('+', '')); // "+3" -> 3
+  const totalDamage = finalDiceTotal + modifier;
+
+  if (modifier !== 0) {
+    msg += ` Modifikator (${modPart}): ${totalDamage} Gesamtschaden.`;
+  } else {
+    msg += ` Gesamtschaden: ${totalDamage}.`;
+  }
+
+  return {
+    total: totalDamage,
+    rolls: [finalDiceTotal], // Für Logs
+    formula: damageString,
+    isSavageAttacker: hasSavage,
+    logMessage: msg
+  };
+};
+
+/**
+ * Berechnet die Heilung durch das "Heilkundiger"-Talent.
+ * Formel (PHB 2024 Test): 1W6 + Übungsbonus + Weisheits-Modifikator (für Medizin)
+ */
+export const performHealerKitHealingRoll = (character) => {
+  const formulaType = getHealerFeatHealingFormula(character);
+  
+  if (!formulaType) return null;
+
+  // Basis-Wurf (meist 1d6)
+  const diceResult = rollDiceFormula("1d6");
+  
+  // Boni berechnen
+  const pb = getProficiencyBonus(character.level || 1);
+  
+  // Wir nehmen Weisheit als Standard für Medizin, könnte aber auch INT sein je nach Build
+  const wisScore = character.abilities.wis + getRacialAbilityBonus(character, "wis");
+  const wisMod = getAbilityModifier(wisScore);
+
+  const totalHeal = diceResult + pb + wisMod;
+
+  return {
+    total: totalHeal,
+    breakdown: `1d6 (${diceResult}) + PB (${pb}) + WIS (${wisMod})`,
+    isStabilizeBonus: hasHealerStabilizeBonus(character) // Info: Setzt TP auf 1 bei Stabilisierung
+  };
+};
+
+/**
+ * Berechnet die maximalen Glückspunkte (Lucky Points).
+ */
+export const calculateMaxLuckyPoints = (character) => {
+  if (!hasLuckyFeat(character)) return 0;
+
+  // PHB 2024: Anzahl = Übungsbonus
+  return getProficiencyBonus(character.level || 1);
+};
+
+/**
+ * Berechnet den Preis eines Items für diesen Charakter (berücksichtigt Crafter-Rabatt).
+ */
+export const calculateItemPriceForCharacter = (character, basePrice) => {
+  const discountPercent = getCrafterDiscount(character); // z.B. 0.20
+  if (discountPercent > 0) {
+    const discount = Math.floor(basePrice * discountPercent);
+    return Math.max(0, basePrice - discount);
+  }
+  return basePrice;
 };

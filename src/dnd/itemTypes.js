@@ -1,17 +1,26 @@
 // src/dnd/itemTypes.js
-
-// Definiert die verschiedenen "Typen" von ziehbaren Elementen in deinem Spiel.
-// Dies stellt sicher, dass ein Item nur in einem passenden Slot abgelegt werden kann.
 export const ItemTypes = {
-  ITEM: 'item',
+  // --- Ausrüstung ---
   WEAPON: 'weapon',
   ARMOR: 'armor',
   SHIELD: 'shield',
-  ACCESSORY: 'accessory',
-  CLOTH: 'cloth',
-  BELT: 'belt',
-  BOOTS: 'boots',
-  HANDS: 'hands',
   HEAD: 'head',
-  // Hier könntest du später weitere Typen hinzufügen
+  HANDS: 'hands',
+  BOOTS: 'boots',
+  BELT: 'belt',
+  ACCESSORY: 'accessory',
+  CLOTH: 'cloth',       // Wichtig: heißt 'cloth', nicht 'clothing'
+  AMMO: 'ammo',         // Neu: Für Pfeile/Bolzen
+
+  // --- Verbrauchsgüter & Sonstiges ---
+  POTION: 'potion',     // Neu: Tränke, Öle, Gifte
+  SCROLL: 'scroll',     // Neu: Schriftrollen
+  FOOD: 'food',         // Neu: Rationen
+  TOOL: 'tool',         // Neu: Werkzeuge, Instrumente
+  RESOURCE: 'resource', // Neu: Materialien, Camping-Ausrüstung
+  LOOT: 'loot',         // Neu: Verkaufsgüter (Edelsteine, Gold)
+  QUEST: 'quest',       // Neu: Quest-Items
+  
+  // --- Fallback ---
+  ITEM: 'item'          // Generisches
 };

@@ -82,6 +82,7 @@ export const checkFeatProficiency = (character, skillOrToolKey) => {
   return false;
 };
 
+
 /**
  * Sammelt alle Zauber, die durch Feats gewährt wurden (z.B. "Magic Initiate")
  */
@@ -103,4 +104,79 @@ export const getFeatSpells = (character) => {
   });
 
   return spells;
+};
+
+// +++ NEU: Prüft auf verbesserten waffenlosen Schlag (Tavern Brawler / Monk) +++
+export const getUnarmedDamageDie = (character) => {
+  const features = getAllCharacterFeatures(character);
+  
+  for (const feat of features) {
+    // Sucht nach Mechanik-Typ 'unarmed_upgrade' (siehe features.json für Tavern Brawler)
+    if (feat.mechanics?.type === 'unarmed_upgrade') {
+      return feat.mechanics.damage_dice; // z.B. "1d4"
+    }
+  }
+  
+  // Hier könnte man später auch Mönch-Logik einfügen (Martial Arts die)
+  // if (character.class.key === 'monk') { ... }
+
+  return null; // Kein Upgrade
+};
+
+/**
+ * Prüft, ob der Charakter das Talent "Wilder Angreifer" hat.
+ */
+export const hasSavageAttacker = (character) => {
+  const features = getAllCharacterFeatures(character);
+  return features.some(f => f.mechanics?.type === 'damage_reroll_advantage');
+};
+
+// --- HEILKUNDIGER (HEALER) ---
+
+/**
+ * Prüft, ob der Charakter beim Stabilisieren 1 TP statt 0 TP gewährt.
+ */
+export const hasHealerStabilizeBonus = (character) => {
+  const features = getAllCharacterFeatures(character);
+  return features.some(f => f.mechanics?.type === 'healer_feat_utility');
+};
+
+/**
+ * Gibt die Formel für die Heilung mit dem Heilerset zurück.
+ * (Normalerweise 1d6 + 4 + Hit Dice, aber PHB 2024 hat neue Regeln: W6 + PB + Attribut)
+ */
+export const getHealerFeatHealingFormula = (character) => {
+  const features = getAllCharacterFeatures(character);
+  const feat = features.find(f => f.mechanics?.type === 'healer_feat_utility');
+  
+  if (!feat) return null;
+  
+  // Default Fallback, falls JSON leer ist
+  return feat.mechanics.healing_amount || "1d6"; 
+};
+
+// --- GLÜCKSPILZ (LUCKY) ---
+
+/**
+ * Prüft, ob der Charakter das Talent "Glückspilz" hat.
+ */
+export const hasLuckyFeat = (character) => {
+  const features = getAllCharacterFeatures(character);
+  return features.some(f => f.mechanics?.type === 'resource_lucky_points');
+};
+
+// --- HANDWERKER (CRAFTER) ---
+
+/**
+ * Gibt den Rabatt-Prozentsatz für Händler zurück.
+ */
+export const getCrafterDiscount = (character) => {
+  const features = getAllCharacterFeatures(character);
+  const feat = features.find(f => f.mechanics?.type === 'crafter_utility');
+  
+  if (feat && feat.mechanics.shopping_discount) {
+      // "20_percent" -> 0.20
+      if (feat.mechanics.shopping_discount === "20_percent") return 0.20;
+  }
+  return 0;
 };

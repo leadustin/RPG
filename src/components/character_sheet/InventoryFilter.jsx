@@ -1,26 +1,29 @@
-// src/components/character_sheet/InventoryFilter.js
+// src/components/character_sheet/InventoryFilter.jsx
 import React from 'react';
 import './InventoryFilter.css';
 
-// KORREKTUR: Ein Objekt für die deutschen Bezeichnungen
-const filterOptions = [
-  { key: 'all', label: 'Alles' },
-  { key: 'weapon', label: 'Waffen' },
-  { key: 'armor', label: 'Rüstung' },
-  { key: 'accessory', label: 'Schmuck' },
-  { key: 'consumable', label: 'Verbrauch' }
-];
-
 const InventoryFilter = ({ activeFilter, onFilterChange }) => {
+  const filters = [
+    { key: 'all', label: 'Alle' },
+    { key: 'weapon', label: 'Waffen' },
+    { key: 'armor', label: 'Rüstung' }, // Zeigt Rüstung, Schilde, Helme, Handschuhe, Stiefel, Kleidung
+    { key: 'potion', label: 'Tränke' },
+    { key: 'scroll', label: 'Rollen' },
+    { key: 'tool', label: 'Werkzeug' },
+    { key: 'ammo', label: 'Munition' },
+    { key: 'resource', label: 'Material' },
+    { key: 'loot', label: 'Plunder' },
+  ];
+
   return (
-    <div className="inventory-filter-container">
-      {filterOptions.map(option => (
+    <div className="inventory-filter">
+      {filters.map(filter => (
         <button
-          key={option.key}
-          className={`filter-btn ${activeFilter === option.key ? 'active' : ''}`}
-          onClick={() => onFilterChange(option.key)}
+          key={filter.key}
+          className={`filter-btn ${activeFilter === filter.key ? 'active' : ''}`}
+          onClick={() => onFilterChange(filter.key)}
         >
-          {option.label}
+          {filter.label}
         </button>
       ))}
     </div>

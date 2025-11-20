@@ -5,21 +5,17 @@ import { CreationSidebar } from "./CreationSidebar";
 import { SelectionPanel } from "./SelectionPanel";
 import { useTranslation } from "react-i18next";
 
-// Importiere die Daten (werden für Validierung benötigt)
 import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";
 import allBackgroundData from "../../data/backgrounds.json";
 
-// +++ NEU: Import der Inventory Engine +++
 import { initializeInventory } from '../../engine/inventoryEngine';
 
-// --- Die Schlüssel für die Schritte ---
 const STEPS = ['Class', 'Background', 'Race', 'Abilities', 'Identity', 'Zusammenfassung'];
 
 export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
   const { t } = useTranslation();
 
-  // --- stepTranslations dynamisch ---
   const stepTranslations = {
     Race: t('creation.step_race'),
     Class: t('creation.step_class'),
@@ -31,101 +27,183 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
 
   const [currentStep, setCurrentStep] = useState(STEPS[0]);
   const [maxStepIndex, setMaxStepIndex] = useState(0); 
+  const [errorMsg, setErrorMsg] = useState(""); // Für Validierungs-Meldungen
 
-  // Zentraler State für den Charakter
+  const defaultRace = allRaceData.find((r) => r.key === "human");
+  const defaultProps = defaultRace?.physical_props;
+
   const [character, setCharacter] = useState({
-    name: "",
-    race: null,
-    class: null,
-    background: null,
-    abilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
-    skills: [],
-    level: 1,
-    experience: 0,
+    name: t('creation.default_name'),
+    gender: "male",
+    age: defaultProps?.age?.default || 20,
+    height: defaultProps?.height?.default || 1.75,
+    weight: defaultProps?.weight?.default || 75,
+    alignment: "n",
+    race: allRaceData.find((r) => r.key === "human"),
+    subrace: null,
+    ancestry: null,
+    class: allClassData.find((c) => c.key === "fighter"),
+    subclassKey: null,
+    cantrips_known: [],
+    spells_known: [],
+    spells_prepared: [],
+    spellbook: [],
+    fighting_style: null,
+    favored_enemy: null,
+    natural_explorer: null,
+    expertise_choices: [],
+    class_tool_choice: null,
+    tool_proficiencies_choice: [], 
+    background: allBackgroundData[0],
+    abilities: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
+    ability_bonus_assignments: {}, 
+    floating_bonus_assignments: {}, 
+    skill_proficiencies_choice: [],
+    weapon_mastery_choices: [],
     
-    // +++ NEU: Platzhalter für Inventar & Geld (werden am Ende befüllt) +++
+    // Datenspeicher für UI-Komponenten
+    selectedLanguages: {}, 
+    feat_choices: {},     
+    background_options: { equipmentOption: 'a', asiMode: 'focus', bonuses: {} },
+
+    // Platzhalter
+    background_choices: { languages: [], tools: [] }, // <--- Das hier hat gefehlt/wurde nicht befüllt!
     inventory: [],
     wallet: { gold: 0, silver: 0, copper: 0 },
-    
-    // Optionale Felder
-    subclassKey: null, 
-    feat_choices: {},     // Für Talente wie "Magischer Adept"
-    background_options: { // Für Hintergrund-Wahl (Ausrüstung A/B)
-        equipmentOption: 'a',
-        asiMode: 'focus',
-        bonuses: {}
-    } 
+    level: 1,
+    experience: 0
   });
 
-  // Funktion zum Aktualisieren des Charakters
-  const updateCharacter = useCallback((updates) => {
-    setCharacter((prev) => ({ ...prev, ...updates }));
+  const updateCharacter = useCallback((newValues) => {
+    setCharacter((prevCharacter) => {
+      const updatedValues = { ...newValues };
+
+      // Reset-Logik bei Hintergrund-Wechsel
+      if (updatedValues.background && updatedValues.background.key !== prevCharacter.background.key) {
+        updatedValues.background_choices = { languages: [], tools: [] };
+        // Auch temporäre Auswahlen resetten
+        updatedValues.feat_choices = {}; 
+      }
+
+      // Reset-Logik bei Rassen-Wechsel
+      if (updatedValues.race && updatedValues.race.key !== prevCharacter.race.key) {
+        const newRaceProps = updatedValues.race.physical_props;
+        if (newRaceProps) {
+          updatedValues.age = newRaceProps.age?.default || 25;
+          updatedValues.height = newRaceProps.height?.default || 1.75;
+          updatedValues.weight = newRaceProps.weight?.default || 75;
+        }
+        updatedValues.subrace = null; 
+        updatedValues.ancestry = null;
+        updatedValues.portrait = null; 
+        if (!updatedValues.gender) updatedValues.gender = prevCharacter.gender;
+      }
+
+      return { ...prevCharacter, ...updatedValues };
+    });
   }, []);
 
   const currentStepIndex = STEPS.indexOf(currentStep);
 
-  const handleStepSelect = (stepName) => {
-    const stepIndex = STEPS.indexOf(stepName);
-    if (stepIndex <= maxStepIndex) {
-      setCurrentStep(stepName);
+  const handleStepSelect = (step) => {
+    const selectedIndex = STEPS.indexOf(step);
+    if (selectedIndex <= maxStepIndex) {
+      setCurrentStep(step);
+      setErrorMsg(""); // Fehler zurücksetzen bei Wechsel
     }
   };
 
   const handlePrevStep = () => {
     if (currentStepIndex > 0) {
       setCurrentStep(STEPS[currentStepIndex - 1]);
+      setErrorMsg("");
     }
   };
 
-  // Validierung (bleibt gleich)
-  const canProceed = () => {
-    const char = character;
-    switch (currentStep) {
-      case 'Class':
-        return !!char.class;
-      case 'Background':
-        return !!char.background;
-      case 'Race':
-        if (!char.race) return false;
-        // Subrace-Check
-        if (char.race.subraces && char.race.subraces.length > 0 && !char.subraceKey) return false;
-        return !!char.race;
-      case 'Abilities':
-        // Optional: Prüfen, ob Punkte verteilt sind
-        return true; 
-      case 'Identity':
-        return !!char.name && char.name.trim() !== "";
-      default:
-        return true;
-    }
-  };
+  // --- VALIDIERUNG: Prüft, ob alles Wichtige gewählt wurde ---
+  const validateCharacter = (char) => {
+    const errors = [];
 
+    // 1. Name
+    if (!char.name || char.name.trim() === "") {
+      errors.push("Bitte gib deinem Charakter einen Namen (Identität).");
+    }
+
+    // 2. Sprachen (PHB 2024: Immer 2 Wahl-Sprachen im Hintergrund)
+    // Wir prüfen, ob selectedLanguages 2 Einträge hat
+    const langCount = Object.keys(char.selectedLanguages || {}).length;
+    // Optional: Du kannst hier "2" hartcodieren oder es dynamisch machen, falls manche Rassen mehr/weniger haben.
+    // Für jetzt warnen wir nur, wenn gar nichts gewählt wurde, um nicht zu strikt zu sein.
+    if (langCount < 1) { 
+       // errors.push("Du hast noch keine zusätzlichen Sprachen gewählt (Identität)."); 
+       // (Kommentiert, falls du es optional lassen willst)
+    }
+
+    // 3. Talente/Feats (z.B. "Magischer Adept" braucht Zauber-Auswahl)
+    if (char.background?.feat) {
+       // Prüfen ob für das Talent eine Auswahl getroffen wurde, falls nötig
+       // Das ist komplexer, da wir wissen müssten, welches Talent welche Wahl braucht.
+       // Für den Moment überspringen wir tiefe Validierung hier.
+    }
+
+    return errors;
+  };
+  
   const handleNextStep = () => {
-    // --- FINALISIERUNG DES CHARAKTERS ---
+    // --- FINALISIERUNG ---
     if (currentStepIndex === STEPS.length - 1) {
       
-      // 1. Inventar & Geld berechnen (mithilfe der neuen Engine)
+      // 1. Validierung vor Abschluss
+      const validationErrors = validateCharacter(character);
+      if (validationErrors.length > 0) {
+        setErrorMsg(validationErrors.join(" "));
+        return; // Abbruch, nicht speichern!
+      }
+
+      // 2. Daten Konsolidieren (Das behebt den Absturz!)
+      // Wir sammeln die verstreuten Daten ein
+      const consolidatedLanguages = [
+        "common", 
+        ...Object.values(character.selectedLanguages || {})
+      ];
+
+      // Sammle Werkzeuge aus den Feat-Choices (z.B. Crafter)
+      let consolidatedTools = [];
+      if (character.feat_choices) {
+         Object.values(character.feat_choices).forEach(choiceObj => {
+             // Wenn es ein Tool ist (beginnt oft mit 'tool_' oder ist einfach ein String im Objekt)
+             Object.entries(choiceObj).forEach(([key, val]) => {
+                 if (val && (key.startsWith('tool') || key.startsWith('instrument') || key.startsWith('choice'))) {
+                     // Prüfen ob es ein Tool ist (simple Heuristik oder Abgleich mit Listen)
+                     consolidatedTools.push(val);
+                 }
+             });
+         });
+      }
+
+      // 3. Inventar & Geld berechnen
       const { inventory, wallet } = initializeInventory(character);
 
-      // 2. Finales Objekt zusammenbauen
+      // 4. Finales Objekt zusammenbauen
       const finalCharacter = {
         ...character,
-        inventory, // Das berechnete Inventar
-        wallet,    // Das berechnete Geld
+        inventory, 
+        wallet,
         stats: {
           ...character.stats,
-          // Stelle sicher, dass HP voll sind beim Start
           currentHp: character.stats?.maxHp || 10, 
-          languages: [
-             "common", // Common ist immer dabei (fest)
-             ...Object.values(character.selectedLanguages || {}) 
-        ]
-        }
+        },
+        // Hier füllen wir das Feld, das useGameState erwartet:
+        background_choices: {
+            languages: consolidatedLanguages,
+            tools: consolidatedTools
+        },
+        // Auch direkt auf Root-Ebene speichern, falls andere Komponenten es dort suchen
+        languages: consolidatedLanguages 
       };
 
-      console.log("Charakter fertiggestellt & Inventar generiert:", finalCharacter);
+      console.log("Charakter validiert & fertiggestellt:", finalCharacter);
       
-      // 3. An die App übergeben
       onCharacterFinalized(finalCharacter);
     } 
     // --- NORMALER SCHRITT ---
@@ -133,6 +211,7 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
       const nextIndex = currentStepIndex + 1;
       setCurrentStep(STEPS[nextIndex]);
       setMaxStepIndex(Math.max(maxStepIndex, nextIndex));
+      setErrorMsg("");
     }
   };
 
@@ -147,17 +226,22 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
         onPrev={handlePrevStep} 
         onNext={handleNextStep} 
         character={character}
-        canProceed={canProceed()} // Validierung an Sidebar übergeben für Button-Status
       />
       
-      <SelectionPanel
-        currentStep={currentStep}
-        character={character}
-        updateCharacter={updateCharacter}
-        allRaceData={allRaceData}
-        allClassData={allClassData}
-        allBackgroundData={allBackgroundData}
-      />
+      <div className="panel-content-wrapper">
+          {/* Fehlermeldung anzeigen */}
+          {errorMsg && (
+            <div className="validation-error-banner">
+                ⚠️ {errorMsg}
+            </div>
+          )}
+          
+          <SelectionPanel
+            currentStep={currentStep}
+            character={character}
+            updateCharacter={updateCharacter}
+          />
+      </div>
     </div>
   );
 };

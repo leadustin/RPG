@@ -1,4 +1,4 @@
-// src/hooks/useGameState.js
+// src/hooks/useGameState.jsx
 
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -7,7 +7,6 @@ import {
   deleteAutoSave,
   saveToSlot,
 } from "../utils/persistence";
-// *** 1. IMPORT ERWEITERT (aus vorherigem Schritt, bleibt gleich) ***
 import {
   calculateInitialHP,
   calculateAC,
@@ -17,6 +16,7 @@ import {
 import allRaceData from "../data/races.json";
 import locationsData from "../data/locations.json";
 import { rollDiceFormula } from "../utils/helpers";
+
 // Item-Daten importieren
 import armorData from "../data/items/armor.json";
 import weaponsData from "../data/items/weapons.json";
@@ -40,87 +40,66 @@ const allItems = [
   ...headsData,
 ];
 
-// --- NEUE HELPER-FUNKTION FÜR LOG-EINTRÄGE ---
+// --- HELPER-FUNKTION FÜR LOG-EINTRÄGE ---
 const createLogEntry = (message, type = "general") => ({
-  id: Date.now() + Math.random(), // Sorge für Einzigartigkeit
+  id: Date.now() + Math.random(),
   timestamp: new Date(),
-  type, // 'general', 'combat', 'xp', 'level', 'item', 'dialog'
+  type, 
   message,
 });
-// --- ENDE HELPER-FUNKTION ---
 
 export const useGameState = () => {
   const [gameState, setGameState] = useState({
     screen: "start",
     character: null,
-    logEntries: [], // <-- 1. LOG-ARRAY HINZUGEFÜGT
+    logEntries: [], 
   });
 
-  // Initiales Laden: ENTFERNT. Wir starten immer mit screen: "start".
-  /*
-  useEffect(() => {
-    const loadedState = loadAutoSave();
-    if (loadedState) {
-      setGameState(loadedState);
-    }
-  }, []);
-  */
-
-  // Autosave: Speichere bei JEDER Änderung, wenn im Spiel
+  // Autosave
   useEffect(() => {
     if (gameState.screen === "game" && gameState.character) {
-      saveAutoSave(gameState); // Speichert jetzt auch logEntries mit
+      saveAutoSave(gameState); 
     }
   }, [gameState]);
 
-  // NEUER Handler, um das Autosave-Spiel (Fortsetzen) zu laden
   const handleLoadAutoSaveGame = () => {
     const loadedState = loadAutoSave();
     if (loadedState) {
-      // --- LOG-ANPASSUNG ---
-      // Stelle sicher, dass alte Saves auch das Log-Array bekommen
       if (!loadedState.logEntries) {
         loadedState.logEntries = [createLogEntry("Spielstand geladen.")];
       }
-      // Konvertiere alte Timestamps (falls als String gespeichert) zurück in Date-Objekte
       loadedState.logEntries = loadedState.logEntries.map((entry) => ({
         ...entry,
         timestamp: new Date(entry.timestamp),
       }));
-      // --- ENDE LOG-ANPASSUNG ---
       setGameState(loadedState);
     } else {
-      // Fallback, falls Autosave gelöscht wurde
       console.warn("Konnte Autosave nicht laden.");
     }
   };
 
   const handleNewGame = () => {
-    // --- LOG-ANPASSUNG ---
     setGameState((prevState) => ({
       ...prevState,
       screen: "character-creation",
-      logEntries: [], // Logs zurücksetzen
-      character: null, // Charakter zurücksetzen
+      logEntries: [],
+      character: null,
     }));
-    // --- ENDE LOG-ANPASSUNG ---
   };
 
   const handleDeleteGame = () => {
     deleteAutoSave();
-    // --- LOG-ANPASSUNG ---
     setGameState({
       screen: "start",
       character: null,
-      logEntries: [], // Logs zurücksetzen
+      logEntries: [],
     });
-    // --- ENDE LOG-ANPASSUNG ---
   };
 
   const handleSaveToSlot = useCallback(
     (slotId, saveName) => {
       if (gameState.character) {
-        saveToSlot(slotId, gameState, saveName); // Speichert automatisch den gesamten gameState inkl. Logs
+        saveToSlot(slotId, gameState, saveName);
       }
     },
     [gameState]
@@ -129,19 +108,15 @@ export const useGameState = () => {
   const handleLoadFromSlot = useCallback(
     (slotData) => {
       if (slotData && slotData.gameState) {
-        // --- LOG-ANPASSUNG ---
         const loadedState = slotData.gameState;
-        // Stelle sicher, dass auch hier Logs korrekt behandelt werden
         if (!loadedState.logEntries) {
           loadedState.logEntries = [createLogEntry("Spielstand geladen.")];
         }
-        // Konvertiere Timestamps
         loadedState.logEntries = loadedState.logEntries.map((entry) => ({
           ...entry,
           timestamp: new Date(entry.timestamp),
         }));
         setGameState(loadedState);
-        // --- ENDE LOG-ANPASSUNG ---
       }
     },
     [setGameState]
@@ -169,6 +144,7 @@ export const useGameState = () => {
       abilities: tempChar.abilities,
     };
 
+    // Start-Equipment (Ausgerüstet) aus Klasse laden
     const equipmentList = finalizedCharacter.class.starting_equipment || [];
     const initialEquipment = {};
     equipmentList.forEach((item) => {
@@ -181,19 +157,36 @@ export const useGameState = () => {
       }
     });
 
-    const startingInventory = [
-      allItems.find((item) => item.id === "longsword"),
-      allItems.find((item) => item.id === "greatsword"),
-      allItems.find((item) => item.id === "leather-armor"),
-      allItems.find((item) => item.id === "shield"),
-      allItems.find((item) => item.id === "healing-potion"),
-    ].filter(Boolean);
+    // +++ ÄNDERUNG: Inventar "hydrieren" statt überschreiben +++
+    // 1. Hole das rohe Inventar aus dem CharacterCreationScreen (enthält itemId, quantity, instanceId)
+    const rawInventory = finalizedCharacter.inventory || [];
+
+    // 2. Verknüpfe es mit den echten Item-Daten aus allItems
+    const characterInventory = rawInventory.map(rawItem => {
+        // Suche das Item anhand der ID (z.B. "dagger")
+        const itemDef = allItems.find(i => i.id === rawItem.itemId);
+        
+        if (!itemDef) {
+            console.warn(`Item-Definition nicht gefunden für ID: ${rawItem.itemId}`);
+            return null;
+        }
+
+        // Kombiniere Definition mit Instanz-Daten
+        return {
+            ...itemDef,      // Name, Gewicht, Typ, etc.
+            ...rawItem,      // quantity, instanceId
+            id: rawItem.instanceId || crypto.randomUUID() // Wichtig: CharacterSheet nutzt 'id' als Key
+        };
+    }).filter(Boolean); // Entferne null-Werte (nicht gefundene Items)
+    // +++ ENDE ÄNDERUNG +++
 
     const characterWithStats = {
       ...finalizedCharacter,
       stats: initialStats,
-      inventory: startingInventory,
+      inventory: characterInventory, // <-- Hier nutzen wir jetzt das echte Inventar
       equipment: initialEquipment,
+      // Stelle sicher, dass Wallet übernommen wird (falls nicht schon im finalizedCharacter)
+      wallet: finalizedCharacter.wallet || { gold: 0, silver: 0, copper: 0 },
       position: { x: 2048, y: 1536 },
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
@@ -202,68 +195,21 @@ export const useGameState = () => {
       experience: 0,
     };
 
-    // --- START: NEUER, SEHR DETAILLIERTER LOG-BLOCK ---
-    // Dieser Block erfasst alle Felder aus dem `character`-State der CreationScreen.
+    // --- Log-Block (Sicher) ---
     const characterCreationSummary = {
-      // --- Identität & Volk ---
       Name: characterWithStats.name,
-      Geschlecht: characterWithStats.gender,
-      Alter: characterWithStats.age,
-      Groesse: characterWithStats.height,
-      Gewicht: characterWithStats.weight,
-      Gesinnung: characterWithStats.alignment,
-      Rasse: characterWithStats.race.name,
-      Subrasse: characterWithStats.subrace?.name || "Keine",
-      Abstammung: characterWithStats.ancestry?.name || "Keine",
-
-      // --- Klasse & Hintergrund ---
-      Klasse: characterWithStats.class.name,
-      Subklasse_Key: characterWithStats.subclassKey || "Keine",
-      Hintergrund: characterWithStats.background.name,
-      Hintergrund_Sprachen: characterWithStats.background_choices.languages,
-      Hintergrund_Werkzeuge: characterWithStats.background_choices.tools,
-
-      // --- Attribute (Rohdaten) ---
+      Rasse: characterWithStats.race?.name,
+      Klasse: characterWithStats.class?.name,
+      Hintergrund: characterWithStats.background?.name,
+      Hintergrund_Sprachen: characterWithStats.background_choices?.languages || [],
+      Hintergrund_Werkzeuge: characterWithStats.background_choices?.tools || [],
       Basis_Attribute: characterWithStats.abilities,
-      Attributsbonus_Zuweisung: characterWithStats.ability_bonus_assignments,
-
-      // --- Fähigkeiten (Proficiencies) ---
-      Gewaehlte_Skills: characterWithStats.skill_proficiencies_choice,
-      Gewaehlte_Expertise: characterWithStats.expertise_choices,
-      Waffen_Meisterschaft: characterWithStats.weapon_mastery_choices,
-
-      // --- Klassenspezifische Auswahl (Lvl 1) ---
       Kampfstil: characterWithStats.fighting_style || "Kein",
-      Bevorzugter_Feind: characterWithStats.favored_enemy || "Kein",
-      Gelaende: characterWithStats.natural_explorer || "Kein",
-      Klassen_Werkzeug: characterWithStats.class_tool_choice || "Kein",
-      Barden_Instrumente: characterWithStats.tool_proficiencies_choice,
-
-      // --- Magie (Lvl 1) ---
-      Zaubertricks: characterWithStats.cantrips_known,
-      Zauberbuch: characterWithStats.spellbook,
-      Bekannte_Zauber: characterWithStats.spells_known,
-      Vorbereitete_Zauber: characterWithStats.spells_prepared,
-
-      // --- ABGELEITETE DATEN (Zur Kontrolle) ---
-      Finale_Attribute_mit_Bonus: characterWithStats.stats.abilities,
-      Start_Inventar_IDs: characterWithStats.inventory.map((item) => item.id),
-      Start_Ausruestung: Object.keys(characterWithStats.equipment).map(
-        (slot) => ({
-          slot: slot,
-          item: characterWithStats.equipment[slot]?.name,
-        })
-      ),
+      Start_Inventar_IDs: characterWithStats.inventory?.map((item) => item.itemId || item.id) || [],
     };
 
-    // Log der detaillierten Zusammenfassung
-    console.log(
-      "--- CHARAKTER ERSTELLT: DETAILLOG ALLER AUSWAHLEN ---",
-      characterCreationSummary
-    );
-    // --- ENDE: NEUER LOG-BLOCK ---
+    console.log("--- CHARAKTER ERSTELLT ---", characterCreationSummary);
 
-    // --- LOG-ANPASSUNG ---
     setGameState({
       screen: "game",
       character: characterWithStats,
@@ -274,29 +220,24 @@ export const useGameState = () => {
         ),
       ],
     });
-    // --- ENDE LOG-ANPASSUNG ---
   };
 
-  // *** handleDiscoverLocation ANGEPASST ***
   const handleDiscoverLocation = useCallback((locationId) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
 
-      // Prüfen, ob der Ort bereits entdeckt wurde
       if (
         prevState.character.discoveredLocations &&
         prevState.character.discoveredLocations.includes(locationId)
       ) {
-        return prevState; // Nichts tun, wenn schon entdeckt
+        return prevState;
       }
 
-      // Den neuen Ort zum Array hinzufügen
       const newDiscoveredLocations = [
         ...(prevState.character.discoveredLocations || []),
         locationId,
       ];
 
-      // --- START DER LOG-ÄNDERUNG ---
       let updatedCharacter = {
         ...prevState.character,
         discoveredLocations: newDiscoveredLocations,
@@ -306,7 +247,6 @@ export const useGameState = () => {
       const locationData = locationsData.find((loc) => loc.id === locationId);
 
       if (locationData) {
-        // Standard-Entdeckungs-Log
         newLogEntries.push(
           createLogEntry(
             `Neuer Ort entdeckt: ${locationData.name}`,
@@ -314,9 +254,7 @@ export const useGameState = () => {
           )
         );
 
-        // EP-Logik für Entdeckung
         if (locationData.xp > 0) {
-          // Rufe die Engine-Funktion auf
           updatedCharacter = grantXpToCharacter(
             updatedCharacter,
             locationData.xp
@@ -328,7 +266,6 @@ export const useGameState = () => {
             )
           );
 
-          // Prüfen, ob dies ein Level Up ausgelöst hat
           if (
             updatedCharacter.pendingLevelUp &&
             !prevState.character.pendingLevelUp
@@ -342,12 +279,11 @@ export const useGameState = () => {
           }
         }
       }
-      // --- ENDE DER LOG-ÄNDERUNG ---
 
       return {
         ...prevState,
         character: updatedCharacter,
-        logEntries: newLogEntries, // Speichere die neuen Logs
+        logEntries: newLogEntries,
       };
     });
   }, []);
@@ -359,7 +295,6 @@ export const useGameState = () => {
       character.worldMapPosition = currentPosition;
       character.currentLocation = locationId;
 
-      // Optional: Log-Eintrag hinzufügen
       const locationData = locationsData.find((loc) => loc.id === locationId);
       const newLogEntry = createLogEntry(
         `Betritt ${locationData?.name || "einen Ort"}.`,
@@ -400,7 +335,6 @@ export const useGameState = () => {
       character.position = newPosition;
       character.currentLocation = "worldmap";
 
-      // Optional: Log-Eintrag hinzufügen
       const newLogEntry = createLogEntry(
         `Verlässt ${currentLocationData?.name || "Ort"} und kehrt zur Weltkarte zurück.`,
         "general"
@@ -431,7 +365,6 @@ export const useGameState = () => {
       }
       equipment[targetSlot] = item;
 
-      // Log-Eintrag
       const newLogEntry = createLogEntry(
         `${item.name} ausgerüstet (${targetSlot}).`,
         "item"
@@ -493,7 +426,6 @@ export const useGameState = () => {
       inventory.push(equipment[sourceSlot]);
       equipment[sourceSlot] = null;
 
-      // Log-Eintrag
       const newLogEntry = createLogEntry(
         `${item.name} abgelegt (in Inventar).`,
         "item"
@@ -526,14 +458,12 @@ export const useGameState = () => {
         return prevState;
       }
 
-      // 2. Beide Argumente an die Engine-Funktion übergeben
       const updatedCharacter = applyLevelUp(
         prevState.character,
         hpRollResult,
-        levelUpChoices // <-- 3. HIER 'levelUpChoices' WEITERGEBEN
+        levelUpChoices 
       );
 
-      // --- LOG-ANPASSUNG ---
       const newLogEntry = createLogEntry(
         `${updatedCharacter.name} hat Stufe ${updatedCharacter.level} erreicht!`,
         "level"
@@ -542,15 +472,14 @@ export const useGameState = () => {
       return {
         ...prevState,
         character: updatedCharacter,
-        logEntries: [...prevState.logEntries, newLogEntry], // Log hinzufügen
+        logEntries: [...prevState.logEntries, newLogEntry],
       };
-      // --- ENDE LOG-ANPASSUNG ---
     });
   }, []);
 
   return {
     gameState,
-    setGameState, // <-- WICHTIG: setGameState exponieren
+    setGameState, 
     handleNewGame,
     handleLoadAutoSaveGame,
     handleDeleteGame,

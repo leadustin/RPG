@@ -31,16 +31,33 @@ const EquipmentSlot = ({ slotType, currentItem, onEquipItem, isTwoHandedDisplay 
 
   // --- Drop-Logik (größtenteils unverändert) ---
   const getAcceptedItemTypes = () => {
+    // --- WAFFEN (Main/Off/Range) ---
     if (slotType.includes("hand")) {
       if (slotType === "off-hand") {
-        return [ItemTypes.WEAPON, ItemTypes.ARMOR];
+        return [ItemTypes.WEAPON, ItemTypes.ARMOR]; // Schilde sind 'armor'
       }
       return [ItemTypes.WEAPON];
     }
     if (slotType === "ranged") return [ItemTypes.WEAPON];
-    if (slotType.includes("ring") || slotType === "amulet" || slotType === "belt") return [ItemTypes.ACCESSORY];
+
+    // --- SCHMUCK (Ringe/Amulette) ---
+    if (slotType.includes("ring") || slotType === "amulet") return [ItemTypes.ACCESSORY];
+    
+    // --- RÜSTUNGSTEILE (Gürtel, Schuhe, Handschuhe, Kopf) ---
+    if (slotType === "belt") return [ItemTypes.BELT];
+    if (slotType === "boots") return [ItemTypes.BOOTS];
+    if (slotType === "gloves") return [ItemTypes.HANDS];
+    if (slotType === "head") return [ItemTypes.HEAD];
+
+    // --- +++ NEU: KLEIDUNG & MUNITION +++ ---
     if (slotType === "cloth") return [ItemTypes.CLOTH];
-    return [ItemTypes.ARMOR];
+    if (slotType === "ammo") return [ItemTypes.AMMO];
+    // --- ENDE NEU ---
+
+    // --- STANDARD RÜSTUNG (Brust) ---
+    if (slotType === "armor") return [ItemTypes.ARMOR];
+
+    return []; // Fallback
   };
 
   const canItemDrop = (item) => {
