@@ -411,6 +411,9 @@
     "artisan_tools_choice": "Handwerkerwerkzeug (Wahl)"
   },
   "featSelection": {
-    "magicInitiatePrompt": "Wähle deine Sprüche für die Klasse: {{class}}"
+    "magicInitiatePrompt": "Wähle deine Sprüche für die Klasse: {{class}}",
+    "crafterPrompt": "Als Handwerker meisterst du verschiedene Werkzeuge. Wähle drei aus.",
+    "crafterPassive": "Schnelleres Herstellen und 20% Rabatt auf nicht-magische Gegenstände.",
+    "toolTooltipDescription": "Ermöglicht das Herstellen von Gegenständen und verleiht Boni auf entsprechende Würfe."
   }
 }
