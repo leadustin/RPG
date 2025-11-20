@@ -1,142 +1,163 @@
+// src/components/character_sheet/SpellbookTab.jsx
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import './SpellbookTab.css';
 import spellsEngine from '../../engine/spellsEngine';
-import { WizardLogic } from '../../engine/logic/classes/WizardLogic'; 
+import { getFeatSpells } from '../../engine/rulesEngine';
+
+// --- ICONS LADEN ---
+const iconModules = import.meta.glob('../../assets/images/icons/*.(png|webp|jpg|svg)', { eager: true });
+const spellIcons = {};
+for (const path in iconModules) {
+  const fileName = path.split('/').pop();
+  spellIcons[fileName] = iconModules[path].default;
+}
 
 const SpellbookTab = ({ character }) => {
-    const [selectedSpell, setSelectedSpell] = useState(null);
-    const logic = useMemo(() => new WizardLogic(character), [character]);
+  const { t } = useTranslation();
+  const [expandedSpell, setExpandedSpell] = useState(null);
 
-    // NEU: Hole die gesamten Zauberdaten inklusive Slots
-    const spellcastingData = useMemo(() => {
-        // Hole die berechneten Daten von der Logic-Klasse
-        if (logic.getSpellcastingData) {
-             return logic.getSpellcastingData();
-        }
-        return { slots: [], maxLevel: 0, cantripCount: 0 };
-    }, [logic]);
+  // 1. Slots berechnen (Generisch für alle Klassen)
+  const spellSlots = useMemo(() => {
+    if (!character?.class?.spellcasting?.spell_slots_by_level) {
+      return [];
+    }
+    // Level - 1, da Array bei Index 0 beginnt (Level 1 = Index 0)
+    const levelIndex = (character.level || 1) - 1;
+    return character.class.spellcasting.spell_slots_by_level[levelIndex] || [];
+  }, [character]);
 
+  // 2. Alle Zauber sammeln und gruppieren
+  const spellsByLevel = useMemo(() => {
+    if (!character) return {};
 
-    // Memoisiere die gruppierten Zauber (wie zuvor)
-    const spellsByLevel = useMemo(() => {
-        if (!character || !logic) {
-            return {};
-        }
-        
-        // Hole die Zauberkeys über die Logik
-        const knownSpellKeys = logic.getSpellbookSpells(); 
-        
-        return knownSpellKeys.reduce((acc, spellKey) => {
-            const spell = spellsEngine.getSpell(spellKey); 
-            
-            if (spell) {
-                const level = spell.level;
-                if (!acc[level]) {
-                    acc[level] = [];
-                }
-                acc[level].push(spell);
-            }
-            return acc;
-        }, {});
-    }, [character, logic]);
+    // A. Zauber aus der Klasse (Zauberbuch, Bekannt, Vorbereitet)
+    const classKeys = new Set([
+      ...(character.cantrips_known || []),
+      ...(character.spells_known || []),
+      ...(character.spells_prepared || []),
+      ...(character.spellbook || []) // Auch Zauberbuch anzeigen
+    ]);
 
-    const handleSpellClick = (spell) => {
-        setSelectedSpell(spell);
+    // B. Zauber aus Talenten (via RulesEngine)
+    const featSpells = getFeatSpells(character);
+    const featKeys = new Set([
+      ...(featSpells.cantrips || []),
+      ...(featSpells.level1 || [])
+    ]);
+
+    const grouped = {};
+
+    // Helper zum Hinzufügen
+    const addSpell = (key, isFeat) => {
+      const spell = spellsEngine.getSpell(key);
+      if (!spell) return;
+
+      const level = spell.level;
+      if (!grouped[level]) grouped[level] = [];
+
+      // Vermeide Duplikate in der Anzeige
+      if (!grouped[level].some(s => s.key === spell.key)) {
+        grouped[level].push({ ...spell, isFeat });
+      }
     };
 
-    const renderSpellDetails = () => {
-        if (!selectedSpell) {
-            return <div className="spell-details-placeholder">Wähle einen Zauber aus, um Details anzuzeigen.</div>;
-        }
+    classKeys.forEach(k => addSpell(k, false));
+    featKeys.forEach(k => addSpell(k, true));
 
-        // Greift auf die 'ui_'-Felder zu, wenn vorhanden, sonst Fallback
-        const castingTime = selectedSpell.ui_casting_time || selectedSpell.casting_time;
-        const range = selectedSpell.ui_range || selectedSpell.range;
-        const duration = selectedSpell.ui_duration || selectedSpell.duration;
-        const description = selectedSpell.ui_description || selectedSpell.description;
-        const scaling = selectedSpell.ui_scaling || selectedSpell.scaling;
-        const components = selectedSpell.components || [];
+    return grouped;
+  }, [character]);
 
-        return (
-            <div className="spell-details">
-                <h3>{selectedSpell.name}</h3>
-                <p><em>{selectedSpell.school} {selectedSpell.level > 0 ? `(Grad ${selectedSpell.level})` : ' (Zaubertrick)'}</em></p>
-                <p><strong>Zauberdauer:</strong> {castingTime}</p>
-                <p><strong>Reichweite:</strong> {range}</p>
-                <p><strong>Komponenten:</strong> {components.join(', ')}</p>
-                <p><strong>Dauer:</strong> {duration}</p>
-                <br/>
-                <p>{description}</p>
-                {scaling && <p><strong>Skalierung:</strong> {scaling}</p>}
-            </div>
-        );
-    };
 
-    // NEU: Funktion zur Anzeige der Zauberslots
-    const renderSpellSlots = () => {
-        const slots = spellcastingData.slots;
-        const maxSpellLevel = spellcastingData.maxLevel;
-        const cantripCount = spellcastingData.cantripCount;
-        
-        const slotDisplays = [];
+  const toggleSpell = (key) => {
+    setExpandedSpell(expandedSpell === key ? null : key);
+  };
 
-        // Cantrips (Zaubertricks)
-        if (cantripCount > 0) {
-            slotDisplays.push(
-                <div key="cantrips" className="spell-slot-info cantrip-slot">
-                    Bekannte Zaubertricks: <span className="slot-count">{cantripCount}</span>
-                </div>
-            );
-        }
-
-        // Zauberslots (Level 1 bis maxLevel)
-        // Wir iterieren bis maxLevel (z.B. Level 1 für einen Stufe 2 Magier)
-        for (let i = 0; i < maxSpellLevel; i++) {
-            const level = i + 1;
-            const maxSlots = slots[i];
-            
-            // Annahme: Aktuell verfügbare Slots sind gleich Max Slots (kein Zustand für verbrauchte Slots)
-            const currentSlots = maxSlots; 
-
-            slotDisplays.push(
-                <div key={level} className="spell-slot-info">
-                    Grad {level} Slots: <span className="slot-count">{currentSlots}/{maxSlots}</span>
-                </div>
-            );
-        }
-
-        if (slotDisplays.length === 0) {
-            return <p className="spell-slot-container">Keine Zauberplätze oder Zaubertricks bekannt.</p>;
-        }
-
-        return <div className="spell-slot-container">{slotDisplays}</div>;
-    };
-
+  // --- RENDER HELPER ---
+  const renderSpellRow = (spell) => {
+    const iconSrc = spellIcons[spell.icon] || spellIcons['skill_placeholder.png'];
+    const isExpanded = expandedSpell === spell.key;
 
     return (
-        <div className="spellbook-tab">
-            <div className="spell-list-container">
-                <h2>Zauberbuch</h2>
-                {renderSpellSlots()} {/* NEU: Slots anzeigen */}
-                
-                {Object.keys(spellsByLevel).sort((a, b) => a - b).map(level => ( 
-                    <div key={level} className="spell-level-section">
-                        <h3>{level > 0 ? `Grad ${level}` : 'Zaubertricks (Grad 0)'}</h3>
-                        <ul className="spell-list">
-                            {spellsByLevel[level].map(spell => (
-                                <li key={spell.key} onClick={() => handleSpellClick(spell)}>
-                                    {spell.name}
-                                 </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
+      <div key={spell.key} className={`spell-row-container ${isExpanded ? 'expanded' : ''}`}>
+        {/* Hauptzeile (Klickbar) */}
+        <div className="spell-row-header" onClick={() => toggleSpell(spell.key)}>
+            <div className="spell-icon-wrapper">
+                <img src={iconSrc} alt={spell.name} className="spell-icon-small" />
             </div>
-            <div className="spell-details-container">
-                {renderSpellDetails()}
+            <div className="spell-info">
+                <span className="spell-name">
+                    {spell.name} 
+                    {spell.isFeat && <span className="feat-badge" title="Durch Talent gewährt"> (T)</span>}
+                </span>
+                <span className="spell-meta">
+                    {spell.casting_time} • {spell.range}
+                </span>
+            </div>
+            <div className="spell-arrow">
+                {isExpanded ? '▲' : '▼'}
             </div>
         </div>
+
+        {/* Details (Ausklappbar) */}
+        {isExpanded && (
+            <div className="spell-row-details">
+                <div className="detail-grid">
+                    <div><strong>Dauer:</strong> {spell.duration}</div>
+                    <div><strong>Komponenten:</strong> {spell.components?.join(', ')}</div>
+                    <div><strong>Schule:</strong> {t(`magicSchools.${spell.school}`, spell.school)}</div>
+                </div>
+                <p className="spell-description">{spell.description}</p>
+                {spell.damage && (
+                    <div className="spell-damage-tag">
+                        Schaden: {spell.damage} ({t(`damageTypes.${spell.damage_type}`, spell.damage_type)})
+                    </div>
+                )}
+            </div>
+        )}
+      </div>
     );
+  };
+
+  // --- UI RENDER ---
+  return (
+    <div className="spellbook-tab">
+      <div className="spellbook-header">
+          <h2>Zauberbuch</h2>
+          {/* Slot-Anzeige */}
+          {spellSlots.length > 0 && (
+            <div className="spell-slots-bar">
+                {spellSlots.map((count, i) => (
+                    count > 0 && (
+                        <div key={i} className="slot-badge">
+                            <span className="slot-level">Grad {i + 1}</span>
+                            <span className="slot-amount">{count}</span>
+                        </div>
+                    )
+                ))}
+            </div>
+          )}
+      </div>
+
+      <div className="spell-list-container">
+        {Object.keys(spellsByLevel).length === 0 ? (
+            <div className="empty-state">Keine Zauber bekannt.</div>
+        ) : (
+            // Sortiere Level (0 zuerst)
+            Object.keys(spellsByLevel).sort((a, b) => parseInt(a) - parseInt(b)).map(level => (
+                <div key={level} className="spell-level-group">
+                    <h3 className="level-header">
+                        {level === "0" ? t('common.cantrip') : `${t('common.level1Spell').replace('1', level)}`}
+                    </h3>
+                    <div className="spell-list">
+                        {spellsByLevel[level].map(spell => renderSpellRow(spell))}
+                    </div>
+                </div>
+            ))
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default SpellbookTab;
