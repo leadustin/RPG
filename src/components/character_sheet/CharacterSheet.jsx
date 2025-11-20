@@ -49,7 +49,6 @@ const CharacterSheet = ({
   handleEquipItem,
   handleUnequipItem,
   handleToggleTwoHanded,
-  // +++ FIX: Diese beiden haben gefehlt! +++
   handleFillQuiver,
   handleUnloadQuiver
 }) => {
@@ -90,7 +89,6 @@ const CharacterSheet = ({
       return character.inventory;
     }
 
-    // Spezialfilter für "Rüstung"
     if (activeFilter === "armor") {
         return character.inventory.filter(item => 
             ["armor", "shield", "head", "hands", "boots", "cloth", "belt", "cloak"].includes(item.type)
@@ -206,7 +204,6 @@ const CharacterSheet = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  // --- Drop Target ---
   const [, drop] = useDrop(
     () => ({
       accept: [
@@ -215,8 +212,8 @@ const CharacterSheet = ({
         ItemTypes.SHIELD,
         ItemTypes.ACCESSORY,
         ItemTypes.CLOTH,
-        ItemTypes.AMMO,    // <-- WICHTIG
-        ItemTypes.QUIVER,  // <-- WICHTIG
+        ItemTypes.AMMO,    
+        ItemTypes.QUIVER,  
         ItemTypes.HEAD,
         ItemTypes.HANDS,
         ItemTypes.BOOTS,
@@ -397,13 +394,16 @@ const CharacterSheet = ({
                 <EquipmentSlot slotType="off-hand" currentItem={getTwoHandedDisplayItem() || character.equipment["off-hand"]} onEquipItem={enhancedHandleEquipItem} isTwoHandedDisplay={!!getTwoHandedDisplayItem()} />
               </div>
               {character.equipment["main-hand"] && character.equipment["main-hand"].properties?.some((p) => p.startsWith("Vielseitig")) && (
-                <button onClick={() => handleToggleTwoHanded("main-hand")} className="toggle-btn" disabled={character.equipment["off-hand"] !== null}>
+                <button 
+                    onClick={() => handleToggleTwoHanded("main-hand")} 
+                    className="toggle-btn" 
+                    // +++ FIX: disabled-Attribut entfernt, damit der Klick die Off-Hand leeren kann +++
+                >
                   {character.equipment["main-hand"].isTwoHanded ? "Einhändig" : "Zweihändig"}
-                  {character.equipment["off-hand"] && " (Off-Hand räumen)"}
+                  {!character.equipment["main-hand"].isTwoHanded && character.equipment["off-hand"] ? " (Off-Hand räumen)" : ""}
                 </button>
               )}
               
-              {/* +++ FERNKAMPF & MUNITION +++ */}
               <p className="slot-label">Fernkampf</p>
               <div className="two-column-grid">
                 <EquipmentSlot slotType="ranged" currentItem={character.equipment.ranged} onEquipItem={enhancedHandleEquipItem} />
@@ -411,13 +411,12 @@ const CharacterSheet = ({
                     slotType="ammo" 
                     currentItem={character.equipment.ammo} 
                     onEquipItem={enhancedHandleEquipItem}
-                    onFillQuiver={handleFillQuiver}     // <--- FIX: Handler weitergegeben
-                    onUnloadQuiver={handleUnloadQuiver} // <--- FIX: Handler weitergegeben
+                    onFillQuiver={handleFillQuiver}
+                    onUnloadQuiver={handleUnloadQuiver}
                 />
               </div>
             </div>
 
-            {/* MODEL & STATS */}
             <div className="character-model-column">
               <div className="character-viewer">
                 <img src={character.model || "https://placeholder.pics/svg/160x300"} alt="Character Model" />

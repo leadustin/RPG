@@ -144,7 +144,6 @@ export const useGameState = () => {
       abilities: tempChar.abilities,
     };
 
-    // Start-Equipment (Ausgerüstet) aus Klasse laden
     const equipmentList = finalizedCharacter.class.starting_equipment || [];
     const initialEquipment = {};
     equipmentList.forEach((item) => {
@@ -157,35 +156,26 @@ export const useGameState = () => {
       }
     });
 
-    // +++ ÄNDERUNG: Inventar "hydrieren" statt überschreiben +++
-    // 1. Hole das rohe Inventar aus dem CharacterCreationScreen (enthält itemId, quantity, instanceId)
+    // Inventar hydrieren
     const rawInventory = finalizedCharacter.inventory || [];
-
-    // 2. Verknüpfe es mit den echten Item-Daten aus allItems
     const characterInventory = rawInventory.map(rawItem => {
-        // Suche das Item anhand der ID (z.B. "dagger")
         const itemDef = allItems.find(i => i.id === rawItem.itemId);
-        
         if (!itemDef) {
             console.warn(`Item-Definition nicht gefunden für ID: ${rawItem.itemId}`);
             return null;
         }
-
-        // Kombiniere Definition mit Instanz-Daten
         return {
-            ...itemDef,      // Name, Gewicht, Typ, etc.
-            ...rawItem,      // quantity, instanceId
-            id: rawItem.instanceId || crypto.randomUUID() // Wichtig: CharacterSheet nutzt 'id' als Key
+            ...itemDef,      
+            ...rawItem,      
+            id: rawItem.instanceId || crypto.randomUUID() 
         };
-    }).filter(Boolean); // Entferne null-Werte (nicht gefundene Items)
-    // +++ ENDE ÄNDERUNG +++
+    }).filter(Boolean);
 
     const characterWithStats = {
       ...finalizedCharacter,
       stats: initialStats,
-      inventory: characterInventory, // <-- Hier nutzen wir jetzt das echte Inventar
+      inventory: characterInventory,
       equipment: initialEquipment,
-      // Stelle sicher, dass Wallet übernommen wird (falls nicht schon im finalizedCharacter)
       wallet: finalizedCharacter.wallet || { gold: 0, silver: 0, copper: 0 },
       position: { x: 2048, y: 1536 },
       currentLocation: "worldmap",
@@ -195,7 +185,6 @@ export const useGameState = () => {
       experience: 0,
     };
 
-    // --- Log-Block (Sicher) ---
     const characterCreationSummary = {
       Name: characterWithStats.name,
       Rasse: characterWithStats.race?.name,
@@ -348,68 +337,7 @@ export const useGameState = () => {
     });
   }, []);
 
-  const handleEquipItem = useCallback((item, targetSlot) => {
-    setGameState((prevState) => {
-      if (!prevState.character) return prevState;
-      const character = { ...prevState.character };
-      const inventory = [...character.inventory];
-      const equipment = { ...character.equipment };
-      const itemIndex = inventory.findIndex(
-        (invItem) => invItem.id === item.id
-      );
-      if (itemIndex === -1) return prevState;
-      inventory.splice(itemIndex, 1);
-      const previouslyEquippedItem = equipment[targetSlot];
-      if (previouslyEquippedItem) {
-        inventory.push(previouslyEquippedItem);
-      }
-      equipment[targetSlot] = item;
-
-      const newLogEntry = createLogEntry(
-        `${item.name} ausgerüstet (${targetSlot}).`,
-        "item"
-      );
-
-      return {
-        ...prevState,
-        character: { ...character, inventory, equipment },
-        logEntries: [...prevState.logEntries, newLogEntry],
-      };
-    });
-  }, []);
-
-  const handleToggleTwoHanded = (slotId) => {
-    setGameState((prevGameState) => {
-      const newCharacter = { ...prevGameState.character };
-      const weapon = newCharacter.equipment[slotId];
-      let newLogEntries = [...prevGameState.logEntries];
-
-      if (weapon && weapon.properties.some((p) => p.startsWith("Vielseitig"))) {
-        const currentState = weapon.isTwoHanded || false;
-        weapon.isTwoHanded = !currentState;
-
-        if (weapon.isTwoHanded) {
-          newLogEntries.push(
-            createLogEntry(`${weapon.name} wird jetzt zweihändig geführt.`, "item")
-          );
-          if (newCharacter.equipment["off-hand"]) {
-            const offHandItem = newCharacter.equipment["off-hand"];
-            newCharacter.inventory.push(offHandItem);
-            newCharacter.equipment["off-hand"] = null;
-            newLogEntries.push(
-              createLogEntry(`${offHandItem.name} abgelegt (in Inventar).`, "item")
-            );
-          }
-        } else {
-          newLogEntries.push(
-            createLogEntry(`${weapon.name} wird jetzt einhändig geführt.`, "item")
-          );
-        }
-      }
-      return { ...prevGameState, character: newCharacter, logEntries: newLogEntries };
-    });
-  };
-
+  // +++ GEÄNDERT: UNEQUIP ZUERST DEFINIEREN +++
   const handleUnequipItem = useCallback((item, sourceSlot) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -438,6 +366,193 @@ export const useGameState = () => {
       };
     });
   }, []);
+  // +++ ENDE +++
+
+  const handleEquipItem = useCallback((item, targetSlot) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      const inventory = [...character.inventory];
+      const equipment = { ...character.equipment };
+      const itemIndex = inventory.findIndex(
+        (invItem) => invItem.id === item.id
+      );
+      if (itemIndex === -1) return prevState;
+      
+      inventory.splice(itemIndex, 1);
+      const previouslyEquippedItem = equipment[targetSlot];
+      if (previouslyEquippedItem) {
+        inventory.push(previouslyEquippedItem);
+      }
+      equipment[targetSlot] = item;
+
+      const newLogEntry = createLogEntry(
+        `${item.name} ausgerüstet (${targetSlot}).`,
+        "item"
+      );
+
+      return {
+        ...prevState,
+        character: { ...character, inventory, equipment },
+        logEntries: [...prevState.logEntries, newLogEntry],
+      };
+    });
+  }, []);
+
+  // +++ KÖCHER LOGIK (Hinzugefügt) +++
+  const handleFillQuiver = useCallback((ammoItem) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      const equipment = { ...character.equipment };
+      const quiver = equipment.ammo;
+
+      if (!quiver || quiver.type !== "quiver") return prevState;
+      if (ammoItem.type !== "ammo") return prevState;
+
+      if (quiver.content && quiver.content.itemId !== ammoItem.itemId) {
+        return {
+            ...prevState,
+            logEntries: [...prevState.logEntries, createLogEntry(`Der Köcher enthält bereits ${quiver.content.name}.`, "general")]
+        };
+      }
+
+      const currentAmount = quiver.content ? quiver.content.quantity : 0;
+      const spaceLeft = (quiver.capacity || 20) - currentAmount;
+
+      if (spaceLeft <= 0) {
+         return {
+            ...prevState,
+            logEntries: [...prevState.logEntries, createLogEntry("Der Köcher ist voll.", "general")]
+        };
+      }
+
+      const amountToTransfer = Math.min(spaceLeft, ammoItem.quantity);
+
+      const newContent = {
+          itemId: ammoItem.itemId,
+          name: ammoItem.name,
+          quantity: currentAmount + amountToTransfer
+      };
+      
+      const newQuiver = { ...quiver, content: newContent };
+      equipment.ammo = newQuiver;
+
+      const inventory = [...character.inventory];
+      const invItemIndex = inventory.findIndex(i => i.id === ammoItem.id);
+      
+      if (invItemIndex > -1) {
+          if (inventory[invItemIndex].quantity > amountToTransfer) {
+              inventory[invItemIndex] = { 
+                  ...inventory[invItemIndex], 
+                  quantity: inventory[invItemIndex].quantity - amountToTransfer 
+              };
+          } else {
+              inventory.splice(invItemIndex, 1);
+          }
+      }
+
+      return {
+        ...prevState,
+        character: { ...character, equipment, inventory },
+        logEntries: [...prevState.logEntries, createLogEntry(`${amountToTransfer}x ${ammoItem.name} in den Köcher gefüllt.`, "item")]
+      };
+    });
+  }, []);
+
+  const handleUnloadQuiver = useCallback(() => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      const equipment = { ...character.equipment };
+      const quiver = equipment.ammo;
+
+      if (!quiver || !quiver.content) return prevState;
+
+      const inventory = [...character.inventory];
+      const ammoToReturn = quiver.content;
+      const existingStackIndex = inventory.findIndex(i => i.itemId === ammoToReturn.itemId);
+
+      if (existingStackIndex > -1) {
+          const stack = { ...inventory[existingStackIndex] };
+          stack.quantity += ammoToReturn.quantity;
+          inventory[existingStackIndex] = stack;
+      } else {
+          const baseItem = allItems.find(i => i.id === ammoToReturn.itemId);
+          if (baseItem) {
+              inventory.push({
+                  ...baseItem,
+                  instanceId: Date.now(),
+                  id: Date.now(),
+                  itemId: baseItem.id,
+                  quantity: ammoToReturn.quantity
+              });
+          }
+      }
+
+      const newQuiver = { ...quiver };
+      delete newQuiver.content;
+      equipment.ammo = newQuiver;
+
+      return {
+        ...prevState,
+        character: { ...character, equipment, inventory },
+        logEntries: [...prevState.logEntries, createLogEntry(`Köcher geleert.`, "item")]
+      };
+    });
+  }, []);
+  // +++ ENDE KÖCHER +++
+
+  // +++ FIXED: Toggle 2H mit korrekter Mutation +++
+  const handleToggleTwoHanded = useCallback((slotId) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+
+      const character = { ...prevState.character };
+      const equipment = { ...character.equipment };
+      
+      const originalWeapon = equipment[slotId];
+      if (!originalWeapon) return prevState;
+
+      // Kopie erstellen!
+      const weapon = { ...originalWeapon }; 
+      
+      let logEntries = [...prevState.logEntries];
+
+      if (weapon.properties && weapon.properties.some((p) => p.startsWith("Vielseitig"))) {
+        
+        const wasTwoHanded = weapon.isTwoHanded || false;
+        weapon.isTwoHanded = !wasTwoHanded;
+
+        if (weapon.isTwoHanded) {
+          logEntries.push(createLogEntry(`${weapon.name} wird jetzt zweihändig geführt.`, "item"));
+
+          if (equipment["off-hand"]) {
+            const offHandItem = equipment["off-hand"];
+            const inventory = [...character.inventory];
+            inventory.push(offHandItem);
+            character.inventory = inventory;
+            equipment["off-hand"] = null;
+            logEntries.push(createLogEntry(`${offHandItem.name} abgelegt (in Inventar).`, "item"));
+          }
+        } else {
+          logEntries.push(createLogEntry(`${weapon.name} wird jetzt einhändig geführt.`, "item"));
+        }
+
+        // Zurückschreiben
+        equipment[slotId] = weapon;
+        character.equipment = equipment;
+
+        return {
+          ...prevState,
+          character,
+          logEntries
+        };
+      }
+      return prevState;
+    });
+  }, []);
+  // +++ ENDE FIX +++
 
   const handleUpdatePosition = useCallback((newPosition) => {
     setGameState((prevState) => {
@@ -476,135 +591,6 @@ export const useGameState = () => {
       };
     });
   }, []);
-  // --- KÖCHER LOGIK ---
-
-  const handleFillQuiver = useCallback((ammoItem) => {
-    setGameState((prevState) => {
-      if (!prevState.character) return prevState;
-      const character = { ...prevState.character };
-      const equipment = { ...character.equipment };
-      const quiver = equipment.ammo;
-
-      // Sicherheitschecks
-      if (!quiver || quiver.type !== "quiver") return prevState;
-      if (ammoItem.type !== "ammo") return prevState;
-
-      // Check: Ist schon eine ANDERE Munitionsart drin?
-      if (quiver.content && quiver.content.itemId !== ammoItem.itemId) {
-        // Log: Nur eine Art erlaubt
-        return {
-            ...prevState,
-            logEntries: [...prevState.logEntries, createLogEntry(`Der Köcher enthält bereits ${quiver.content.name}. Leere ihn zuerst.`, "general")]
-        };
-      }
-
-      // Berechne Kapazität
-      const currentAmount = quiver.content ? quiver.content.quantity : 0;
-      const spaceLeft = (quiver.capacity || 20) - currentAmount;
-
-      if (spaceLeft <= 0) {
-         return {
-            ...prevState,
-            logEntries: [...prevState.logEntries, createLogEntry("Der Köcher ist voll.", "general")]
-        };
-      }
-
-      // Wie viel können wir übertragen?
-      const amountToTransfer = Math.min(spaceLeft, ammoItem.quantity);
-
-      // 1. Köcher Inhalt aktualisieren
-      const newContent = {
-          itemId: ammoItem.itemId,
-          name: ammoItem.name,
-          quantity: currentAmount + amountToTransfer
-      };
-      
-      const newQuiver = { ...quiver, content: newContent };
-      equipment.ammo = newQuiver;
-
-      // 2. Inventar aktualisieren (Ammo reduzieren/entfernen)
-      const inventory = [...character.inventory];
-      const invItemIndex = inventory.findIndex(i => i.id === ammoItem.id);
-      
-      if (invItemIndex > -1) {
-          if (inventory[invItemIndex].quantity > amountToTransfer) {
-              // Reduzieren
-              inventory[invItemIndex] = { 
-                  ...inventory[invItemIndex], 
-                  quantity: inventory[invItemIndex].quantity - amountToTransfer 
-              };
-          } else {
-              // Entfernen
-              inventory.splice(invItemIndex, 1);
-          }
-      }
-
-      return {
-        ...prevState,
-        character: { ...character, equipment, inventory },
-        logEntries: [...prevState.logEntries, createLogEntry(`${amountToTransfer}x ${ammoItem.name} in den Köcher gefüllt.`, "item")]
-      };
-    });
-  }, []);
-
-  const handleUnloadQuiver = useCallback(() => {
-    setGameState((prevState) => {
-      if (!prevState.character) return prevState;
-      const character = { ...prevState.character };
-      const equipment = { ...character.equipment };
-      const quiver = equipment.ammo;
-
-      if (!quiver || !quiver.content) return prevState;
-
-      // Inhalt zurück ins Inventar
-      const inventory = [...character.inventory];
-      const ammoToReturn = quiver.content;
-
-      // Check ob Stack schon existiert
-      const existingStackIndex = inventory.findIndex(i => i.itemId === ammoToReturn.itemId);
-
-      if (existingStackIndex > -1) {
-          // Existierenden Stack aktualisieren
-          const stack = { ...inventory[existingStackIndex] };
-          stack.quantity += ammoToReturn.quantity;
-          inventory[existingStackIndex] = stack;
-      } else {
-          // Neues Item erstellen
-          // WICHTIG: Wir müssen die vollen Item-Daten laden!
-          const baseItem = allItems.find(i => i.id === ammoToReturn.itemId);
-          
-          if (baseItem) {
-              inventory.push({
-                  ...baseItem,
-                  instanceId: Date.now(),
-                  id: Date.now(), // Neue ID für React-Keys
-                  itemId: baseItem.id, // Referenz-ID sicherstellen
-                  quantity: ammoToReturn.quantity
-              });
-          } else {
-              console.warn("Konnte Item-Daten für Rückgabe nicht finden:", ammoToReturn.itemId);
-              // Fallback: Nur das zurückgeben, was wir haben (könnte fehlerhaft sein)
-              inventory.push({
-                  ...ammoToReturn,
-                  instanceId: Date.now(),
-                  id: Date.now(),
-                  type: "ammo" // Sicherstellen, dass der Typ stimmt
-              });
-          }
-      }
-
-      // Köcher leeren
-      const newQuiver = { ...quiver };
-      delete newQuiver.content;
-      equipment.ammo = newQuiver;
-
-      return {
-        ...prevState,
-        character: { ...character, equipment, inventory },
-        logEntries: [...prevState.logEntries, createLogEntry(`Köcher geleert (${ammoToReturn.quantity}x ${ammoToReturn.name}).`, "item")]
-      };
-    });
-  }, []);
 
   return {
     gameState,
@@ -618,13 +604,13 @@ export const useGameState = () => {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
+    handleFillQuiver, // <-- Jetzt da
+    handleUnloadQuiver, // <-- Jetzt da
     handleEnterLocation,
     handleLeaveLocation,
     handleUpdatePosition,
     handleDiscoverLocation,
     handleConfirmLevelUp,
-    handleFillQuiver,
-    handleUnloadQuiver,
     rollDiceFormula,
   };
 };

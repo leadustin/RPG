@@ -120,7 +120,7 @@
     "icon": "placeholder_weapon.webp"
   },
   {
-    "id": "light-crossbow",
+    "id": "light_crossbow",
     "name": "Leichte Armbrust",
     "type": "weapon",
     "slot": "ranged",
@@ -132,7 +132,7 @@
     "icon": "placeholder_weapon.webp"
   },
   {
-    "id": "heavy-crossbow",
+    "id": "heavy_crossbow",
     "name": "Schwere Armbrust",
     "type": "weapon",
     "slot": "ranged",
@@ -245,6 +245,18 @@
     "value": 12000,
     "description": "Ein magischer Kriegshammer, der nach dem Wurf in die Hand seines Trägers zurückkehrt. Besonders effektiv gegen Riesen.",
     "bonus": "+3 auf Angriffs- und Schadenswürfe. Kehrt nach dem Wurf zurück. Verursacht zusätzlichen Schaden bei Riesen.",
+    "icon": "placeholder_weapon.webp"
+  },
+  {
+    "id": "quarterstaff",
+    "name": "Kampfstab",
+    "type": "weapon",
+    "slot": "main-hand",
+    "damage": "1W6",
+    "properties": ["Vielseitig (1W8)"],
+    "weight": 2,
+    "value": 0.2,
+    "description": "Ein einfacher Stab aus Holz, oft von Mönchen oder Magiern genutzt.",
     "icon": "placeholder_weapon.webp"
   }
 ]

@@ -284,12 +284,13 @@
     "icon": "placeholder_item.webp"
   },
   {
-    "id": "thieves-tools",
+    "id": "thieves_tools",
     "name": "Diebeswerkzeug",
     "type": "tool",
+    "slot": "consumable",
     "weight": 1,
     "value": 25,
-    "description": "Ein Set von Werkzeugen zum Knacken von Schlössern und Entschärfen von Fallen.",
+    "description": "Ein Satz von Dietrichen und anderen Werkzeugen.",
     "effect": "Ermöglicht Würfe zum Entschärfen von Fallen und Knacken von Schlössern.",
     "icon": "tools.webp"
   },
