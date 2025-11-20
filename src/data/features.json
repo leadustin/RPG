@@ -2644,5 +2644,161 @@
       "item_key": "transmuters_stone",
       "options": ["cast_polymorph_any", "cast_raise_dead", "remove_all_curses_diseases_poisons", "restore_youth"]
     }
+  },
+  {
+    "key": "magic_initiate_cleric",
+    "name": "Magischer Adept (Kleriker)",
+    "description": "Du hast gelernt, göttliche Magie zu wirken. Du lernst zwei Zaubertricks (Cantrips) und einen Zauber des 1. Grades deiner Wahl von der Kleriker-Zauberliste. Du kannst den Zauber des 1. Grades einmal auf seiner niedrigsten Stufe wirken, ohne einen Zauberplatz zu verbrauchen, und musst eine lange Rast beenden, bevor du dies wieder tun kannst. Du kannst ihn auch unter Verwendung von Zauberplätzen wirken.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "magic_initiate",
+      "spell_class": "cleric",
+      "cantrips_choose": 2,
+      "spells_level_1_choose": 1,
+      "casting_ability": "wis",
+      "free_cast_refresh": "long_rest"
+    }
+  },
+  {
+    "key": "magic_initiate_druid",
+    "name": "Magischer Adept (Druide)",
+    "description": "Du hast gelernt, die Magie der Natur zu nutzen. Du lernst zwei Zaubertricks (Cantrips) und einen Zauber des 1. Grades deiner Wahl von der Druiden-Zauberliste. Du kannst den Zauber des 1. Grades einmal auf seiner niedrigsten Stufe wirken, ohne einen Zauberplatz zu verbrauchen (Regeneration nach langer Rast). Du kannst ihn auch mit Zauberplätzen wirken.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "magic_initiate",
+      "spell_class": "druid",
+      "cantrips_choose": 2,
+      "spells_level_1_choose": 1,
+      "casting_ability": "wis",
+      "free_cast_refresh": "long_rest"
+    }
+  },
+  {
+    "key": "magic_initiate_wizard",
+    "name": "Magischer Adept (Magier)",
+    "description": "Du hast gelernt, arkane Magie zu wirken. Du lernst zwei Zaubertricks (Cantrips) und einen Zauber des 1. Grades deiner Wahl von der Magier-Zauberliste. Du kannst den Zauber des 1. Grades einmal auf seiner niedrigsten Stufe wirken, ohne einen Zauberplatz zu verbrauchen (Regeneration nach langer Rast). Du kannst ihn auch mit Zauberplätzen wirken.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "magic_initiate",
+      "spell_class": "wizard",
+      "cantrips_choose": 2,
+      "spells_level_1_choose": 1,
+      "casting_ability": "int",
+      "free_cast_refresh": "long_rest"
+    }
+  },
+  {
+    "key": "alert",
+    "name": "Wachsam",
+    "description": "Du bist stets auf Gefahren gefasst. Du erhältst einen Bonus auf deine Initiative-Würfe in Höhe deines Übungsbonus. Du kannst zudem deine Initiative mit einem willigen Verbündeten tauschen, wenn der Kampf beginnt.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "initiative_bonus",
+      "value": "proficiency_bonus",
+      "utility": "swap_initiative"
+    }
+  },
+  {
+    "key": "tough",
+    "name": "Zäh",
+    "description": "Deine Trefferpunkte erhöhen sich um das Doppelte deines Charakterlevels. Immer wenn du ein Level aufsteigst, erhältst du 2 zusätzliche Trefferpunkte.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "hp_bonus_per_level",
+      "value": 2
+    }
+  },
+  {
+    "key": "skilled",
+    "name": "Geübt",
+    "description": "Du erhältst Übung in 3 Fertigkeiten oder Werkzeugen deiner Wahl.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "gain_proficiency_choice",
+      "count": 3,
+      "options": "any_skill_or_tool"
+    }
+  },
+  {
+    "key": "musician",
+    "name": "Musiker",
+    "description": "Du bist ein inspirierender Künstler. Du erhältst Übung mit 3 Musikinstrumenten. Nach einer kurzen oder langen Rast kannst du Verbündeten 'Heroische Inspiration' gewähren (Vorteil auf einen beliebigen W20-Wurf).",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "musician_inspiration",
+      "proficiencies": { "type": "tool", "category": "instrument", "count": 3 },
+      "effect": "grant_heroic_inspiration_on_rest"
+    }
+  },
+  {
+    "key": "healer",
+    "name": "Heilkundiger",
+    "description": "Du bist ein fähiger Arzt. Wenn du eine Kreatur mit einem Heilerset stabilisierst, erhält sie 1 TP zurück. Du kannst zudem Anwendungen des Heilersets nutzen, um Trefferpunkte wiederherzustellen (W6 + PB + Attributsmod).",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "healer_feat_utility",
+      "stabilize_bonus": "1_hp",
+      "healing_action": "expend_kit_use",
+      "healing_amount": "1d6_plus_proficiency_plus_stat"
+    }
+  },
+  {
+    "key": "lucky",
+    "name": "Glückspilz",
+    "description": "Du hast eine Anzahl von Glückspunkten gleich deinem Übungsbonus. Du kannst sie ausgeben, um dir Vorteil bei einem W20-Wurf zu geben oder einem Gegner Nachteil zu geben, der dich angreift.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "resource_lucky_points",
+      "amount": "proficiency_bonus",
+      "refresh": "long_rest",
+      "effect": "grant_advantage_or_impose_disadvantage"
+    }
+  },
+  {
+    "key": "tavern_brawler",
+    "name": "Kneipenschläger",
+    "description": "Du bist an raue Kämpfe gewöhnt. Dein waffenloser Schlag verursacht 1W4 + STÄ Schaden. Wenn du triffst, kannst du das Ziel 1,5m wegstoßen. Du hast zudem Vorteile beim Improvisieren von Waffen.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "unarmed_upgrade",
+      "damage_dice": "1d4",
+      "on_hit_effect": "push_1_5m",
+      "reroll_damage_1s": true
+    }
+  },
+  {
+    "key": "crafter",
+    "name": "Handwerker (Talent)",
+    "description": "Du erhältst Übung mit 3 Handwerkerwerkzeugen. Du kannst Gegenstände schneller herstellen und erhältst Rabatt beim Kauf von nicht-magischen Gegenständen.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "crafter_utility",
+      "proficiencies": { "type": "tool", "category": "artisan", "count": 3 },
+      "crafting_speed_bonus": "20_percent",
+      "shopping_discount": "20_percent"
+    }
+  },
+  {
+    "key": "savage_attacker",
+    "name": "Wilder Angreifer",
+    "description": "Einmal pro Zug, wenn du Schaden mit einer Waffe würfelst, kannst du die Schadenswürfel zweimal würfeln und das höhere Ergebnis verwenden.",
+    "feature_type": "feat",
+    "source": "PHB2024",
+    "mechanics": {
+      "type": "damage_reroll_advantage",
+      "trigger": "weapon_damage_roll",
+      "frequency": "once_per_turn"
+    }
   }
 ]
