@@ -157,7 +157,7 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
             container: "#dice-box", // Selector kommt hier rein
             assetPath: "/assets/dice-box/",
             theme: "default",
-            scale: 6, // WICHTIG: Skalierung
+            scale: 12, // WICHTIG: Skalierung
           });
           // +++ ENDE KORREKTUR +++
 
