@@ -2,15 +2,16 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import DiceBox from "@3d-dice/dice-box";
 import { getRacialAbilityBonus } from '../../engine/characterEngine';
-import allClassData from '../../data/classes.json'; 
-import featuresData from '../../data/features.json'; 
+import allClassData from '../../data/classes.json';
+import featuresData from '../../data/features.json';
+import spellsData from '../../data/spells.json'; // <--- WICHTIG: Zauberdaten
 import './LevelUpScreen.css';
 
 // Import der wiederverwendeten Komponenten
 import { WeaponMasterySelection } from '../character_creation/WeaponMasterySelection';
-import { FeatSelection } from '../character_creation/FeatSelection'; 
-import '../character_creation/SkillSelection.css'; 
-import '../character_creation/PanelDetails.css'; 
+import { FeatSelection } from '../character_creation/FeatSelection';
+import '../character_creation/SkillSelection.css';
+import '../character_creation/PanelDetails.css';
 
 // KORREKTUR (D&D 2024): Alle Zwerge erhalten +1 HP pro Stufe
 const getRacialHpBonus = (character) => {
@@ -18,7 +19,6 @@ const getRacialHpBonus = (character) => {
   return 0;
 };
 
-// +++ WIEDERHERGESTELLTE HILFSFUNKTION +++
 const rollDiceFormula = (formula, results) => {
   let bonus = 0;
   if (formula.includes('+')) {
@@ -26,7 +26,7 @@ const rollDiceFormula = (formula, results) => {
   } else if (formula.includes('-')) {
     bonus = -parseInt(formula.split('-')[1] || 0);
   }
-  
+
   const diceValues = results.map(r => r.value);
   const diceSum = diceValues.reduce((a, b) => a + b, 0);
 
@@ -36,7 +36,102 @@ const rollDiceFormula = (formula, results) => {
     bonus: bonus
   };
 };
-// +++ ENDE WIEDERHERGESTELLTE HILFSFUNKTION +++
+
+// +++ NEUE KOMPONENTE: Lokale Zauberauswahl +++
+const LevelUpSpellSelection = ({ character, cantripsCount, spellsCount, onSelectionChange }) => {
+  const [selectedCantrips, setSelectedCantrips] = useState([]);
+  const [selectedSpells, setSelectedSpells] = useState([]);
+  const classKey = character.class.key;
+  const newLevel = character.pendingLevelUp.newLevel;
+
+  // Maximale Spruchstufe berechnen (Heuristik für Level Up)
+  let maxSpellLevel = 1;
+  if (['wizard', 'sorcerer', 'bard', 'cleric', 'druid'].includes(classKey)) {
+    maxSpellLevel = Math.ceil(newLevel / 2);
+  } else if (['ranger', 'paladin'].includes(classKey)) {
+    maxSpellLevel = Math.ceil(newLevel / 2);
+    if (newLevel < 2) maxSpellLevel = 0;
+  } else if (classKey === 'warlock') {
+    maxSpellLevel = Math.ceil(newLevel / 2);
+    if (maxSpellLevel > 5) maxSpellLevel = 5;
+  }
+
+  // Verfügbare Zauber filtern
+  const availableCantrips = spellsData.filter(s =>
+    s.level === 0 &&
+    s.classes.includes(classKey) &&
+    !(character.cantrips_known || []).includes(s.key)
+  );
+
+  const availableSpells = spellsData.filter(s =>
+    s.level > 0 &&
+    s.level <= maxSpellLevel &&
+    s.classes.includes(classKey) &&
+    !(character.spells_known || []).includes(s.key) &&
+    !(character.spellbook || []).includes(s.key)
+  );
+
+  const handleCantripToggle = (key) => {
+    if (selectedCantrips.includes(key)) {
+      setSelectedCantrips(selectedCantrips.filter(k => k !== key));
+    } else if (selectedCantrips.length < cantripsCount) {
+      setSelectedCantrips([...selectedCantrips, key]);
+    }
+  };
+
+  const handleSpellToggle = (key) => {
+    if (selectedSpells.includes(key)) {
+      setSelectedSpells(selectedSpells.filter(k => k !== key));
+    } else if (selectedSpells.length < spellsCount) {
+      setSelectedSpells([...selectedSpells, key]);
+    }
+  };
+
+  // Melde Änderungen nach oben
+  useEffect(() => {
+    onSelectionChange({ cantrips: selectedCantrips, spells: selectedSpells });
+  }, [selectedCantrips, selectedSpells]);
+
+  return (
+    <div className="feat-sub-selection">
+      {cantripsCount > 0 && (
+        <div style={{ marginBottom: '20px' }}>
+          <h4>Wähle {cantripsCount} neue Zaubertricks</h4>
+          <div className="skill-grid">
+            {availableCantrips.map(spell => (
+              <div
+                key={spell.key}
+                className={`skill-choice ${selectedCantrips.includes(spell.key) ? 'selected' : ''}`}
+                onClick={() => handleCantripToggle(spell.key)}
+              >
+                {spell.name}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {spellsCount > 0 && (
+        <div>
+          <h4>Wähle {spellsCount} neue Zauber (bis Grad {maxSpellLevel})</h4>
+          <div className="skill-grid" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+            {availableSpells.map(spell => (
+              <div
+                key={spell.key}
+                className={`skill-choice ${selectedSpells.includes(spell.key) ? 'selected' : ''}`}
+                onClick={() => handleSpellToggle(spell.key)}
+              >
+                <span style={{ marginRight: 'auto' }}>{spell.name}</span>
+                <span style={{ fontSize: '0.8em', color: '#aaa' }}>Grad {spell.level}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+// +++ ENDE NEUE KOMPONENTE +++
 
 
 const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) => {
@@ -59,8 +154,8 @@ const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) 
 
   return (
     <div className="asi-selection">
-      <h4>Attributswerte erhöhen ({points} Punkte übrig)</h4>
-      <p>Verteile +2 auf ein Attribut oder +1 auf zwei Attribute.</p>
+      <h4>Attributswerte erhöhen</h4>
+      <p className="small-text">Verteile +2 auf ein Attribut oder +1 auf zwei Attribute.</p>
       {Object.keys(finalAbilities).map((key) => (
         <div key={key} className="asi-row">
           <span className="asi-label">{key.toUpperCase()} ({finalAbilities[key]})</span>
@@ -81,8 +176,8 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
     <div className="subclass-selection">
       <h4>Wähle deinen Archetyp</h4>
       {classData.subclasses.map(sc => (
-        <div 
-          key={sc.key} 
+        <div
+          key={sc.key}
           className={`subclass-option ${selectedKey === sc.key ? 'selected' : ''}`}
           onClick={() => onSelect(sc.key)}
         >
@@ -97,36 +192,43 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
 
 export const LevelUpScreen = ({ character, onConfirm }) => {
   const { newLevel } = character.pendingLevelUp;
-  
-  // Schritte: 0=HP, 1=ASI/Feat, 2=Subclass, 3=Mastery, 4=Summary
-  const [step, setStep] = useState(0); 
+
+  // Schritte: 0=HP, 1=ASI/Feat, 2=Subclass, 3=Spells, 4=Mastery, 5=Summary
+  const [step, setStep] = useState(0);
   const [rollResult, setRollResult] = useState(null);
-  
+
   // State für ASI vs Feat
-  const [levelUpMode, setLevelUpMode] = useState('asi'); // 'asi' oder 'feat'
+  const [levelUpMode, setLevelUpMode] = useState('asi');
   const [asiPoints, setAsiPoints] = useState(2);
   const [asiChoices, setAsiChoices] = useState({});
-  
+
   // State für Feats
   const [selectedFeatKey, setSelectedFeatKey] = useState(null);
-  const [featSelections, setFeatSelections] = useState({}); 
+  const [featSelections, setFeatSelections] = useState({});
 
   const [selectedSubclass, setSelectedSubclass] = useState(null);
   const [masteryChoices, setMasteryChoices] = useState(character.weapon_mastery_choices || []);
-  
+
+  // +++ NEU: Zauber State +++
+  const [spellChoices, setSpellChoices] = useState({ cantrips: [], spells: [] });
+
   const [narratorText, setNarratorText] = useState("");
 
   const diceContainerRef = useRef(null);
   const diceInstanceRef = useRef(null);
 
-  const { 
-    hpRollFormula, 
-    isAbilityIncrease, 
+  const {
+    hpRollFormula,
+    isAbilityIncrease,
     isSubclassChoice,
     isMasteryIncrease,
-    newMasteryCount
+    newMasteryCount,
+    // +++ NEU: Daten aus der Engine +++
+    newCantripsToLearn,
+    newSpellsToLearn
   } = character.pendingLevelUp;
 
+  const hasSpellChoice = newCantripsToLearn > 0 || newSpellsToLearn > 0;
   const racialHpBonus = getRacialHpBonus(character);
 
   const finalAbilities = useMemo(() => {
@@ -137,29 +239,25 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     return final;
   }, [character]);
 
-  // Verfügbare Feats filtern (bereits gewählte ausschließen)
   const availableFeats = useMemo(() => {
-      const existingFeats = [character.background?.feat, ...(character.feats || [])];
-      return featuresData.filter(f => !existingFeats.includes(f.key) && f.feature_type === "feat");
+    const existingFeats = [character.background?.feat, ...(character.feats || [])];
+    return featuresData.filter(f => !existingFeats.includes(f.key) && f.feature_type === "feat");
   }, [character]);
 
-  // +++ FIX: Robuste DiceBox Initialisierung (Neue API) +++
+  // +++ FIX: Robuste DiceBox Initialisierung mit neuer API (v1.1.0) +++
   useEffect(() => {
     if (step === 0) {
-      // Kurze Verzögerung, um sicherzustellen, dass das DOM bereit ist
       const timer = setTimeout(() => {
         if (diceContainerRef.current) {
-          // Container leeren, um doppelte Canvas zu verhindern
           diceContainerRef.current.innerHTML = '';
 
-          // +++ HIER IST DIE KORREKTUR: Config Objekt als einziges Argument +++
+          // WICHTIG: Config Object als einziges Argument
           const box = new DiceBox({
-            container: "#dice-box", // Selector kommt hier rein
+            container: "#dice-box",
             assetPath: "/assets/dice-box/",
             theme: "default",
-            scale: 12, // WICHTIG: Skalierung
+            scale: 6,
           });
-          // +++ ENDE KORREKTUR +++
 
           box.init().then(() => {
             diceInstanceRef.current = box;
@@ -168,32 +266,20 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       }, 50);
       return () => clearTimeout(timer);
     } else {
-      // Aufräumen, wenn Schritt verlassen wird
       diceInstanceRef.current = null;
     }
   }, [step]);
   // +++ ENDE FIX +++
 
-  // --- USEEFFECT FÜR ERZÄHLER-TEXT ---
   useEffect(() => {
-    switch(step) {
-      case 0:
-        setNarratorText(`Du fühlst dich stärker, ${character.name}. Die Strapazen haben dich gestählt. Stelle fest, wie viel zäher du geworden bist.`);
-        break;
-      case 1:
-        setNarratorText("Dein Körper und Geist entwickeln sich. Wählst du Attribute oder ein neues Talent?");
-        break;
-      case 2:
-        setNarratorText("Mit deiner neuen Kraft musst du dich nun spezialisieren. Wähle den Pfad, dem du folgen wirst.");
-        break;
-      case 3:
-        setNarratorText("Deine Fähigkeiten mit der Waffe sind gewachsen. Wähle eine neue Meisterschaft.");
-        break;
-      case 4:
-        setNarratorText("Deine Entscheidungen sind getroffen. Sieh dir die Zusammenfassung an und bestätige deinen Aufstieg.");
-        break;
-      default:
-        setNarratorText("");
+    switch (step) {
+      case 0: setNarratorText(`Du fühlst dich stärker, ${character.name}. Stelle fest, wie viel zäher du geworden bist.`); break;
+      case 1: setNarratorText("Dein Körper und Geist entwickeln sich. Wählst du Attribute oder ein neues Talent?"); break;
+      case 2: setNarratorText("Wähle den Pfad, dem du folgen wirst."); break;
+      case 3: setNarratorText("Dein arkanes Wissen wächst."); break;
+      case 4: setNarratorText("Deine Waffenkunst verfeinert sich."); break;
+      case 5: setNarratorText("Bestätige deinen Aufstieg."); break;
+      default: setNarratorText("");
     }
   }, [step, character.name]);
 
@@ -202,86 +288,65 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     if (diceInstanceRef.current) {
       try {
         const results = await diceInstanceRef.current.roll(hpRollFormula);
-        const formulaResult = rollDiceFormula(hpRollFormula, results); 
+        const formulaResult = rollDiceFormula(hpRollFormula, results);
         setRollResult({ ...formulaResult, racialBonus: racialHpBonus });
       } catch (e) {
         console.error("Dice roll error:", e);
-        // Fallback
         const fallbackRoll = Math.floor(Math.random() * parseInt(hpRollFormula.split('d')[1] || 8)) + 1;
         setRollResult({ total: fallbackRoll, dice: [fallbackRoll], bonus: 0, racialBonus: racialHpBonus });
       }
     } else {
-      console.warn("DiceBox nicht initialisiert. Nutze Fallback-Wurf.");
       const fallbackRoll = Math.floor(Math.random() * parseInt(hpRollFormula.split('d')[1] || 8)) + 1;
       let bonus = 0;
       if (hpRollFormula.includes('+')) bonus = parseInt(hpRollFormula.split('+')[1] || 0);
-      setRollResult({ 
-        total: fallbackRoll + bonus, 
-        dice: [fallbackRoll],
-        bonus: bonus, 
-        racialBonus: racialHpBonus 
-      });
+      setRollResult({ total: fallbackRoll + bonus, dice: [fallbackRoll], bonus, racialBonus: racialHpBonus });
     }
   };
 
   // --- LOGIK ZUM SCHRITTWEISEN VORRÜCKEN ---
   const navigateToNextStep = (currentStep) => {
-    if (currentStep < 1 && isAbilityIncrease) {
-      setStep(1); // Gehe zu ASI/Feat
-    } else if (currentStep < 2 && isSubclassChoice) {
-      setStep(2); // Gehe zu Subclass
-    } else if (currentStep < 3 && isMasteryIncrease) {
-      setStep(3); // Gehe zu Mastery
-    } else {
-      setStep(4); // Gehe zur Zusammenfassung
-    }
+    if (currentStep < 1 && isAbilityIncrease) setStep(1);
+    else if (currentStep < 2 && isSubclassChoice) setStep(2);
+    else if (currentStep < 3 && hasSpellChoice) setStep(3); // <--- Schritt 3: Zauber
+    else if (currentStep < 4 && isMasteryIncrease) setStep(4);
+    else setStep(5);
   };
 
-  const handleConfirmHP = () => {
-    navigateToNextStep(0);
-  };
-  
+  const handleConfirmHP = () => navigateToNextStep(0);
+
   const handleConfirmDecision = () => {
-    // Validierung für den aktuellen Modus (ASI oder Feat)
     if (levelUpMode === 'asi') {
-        if (isAbilityIncrease && asiPoints > 0) {
-            alert("Bitte verteile alle Attributspunkte.");
-            return;
-        }
+      if (asiPoints > 0) return alert("Bitte verteile alle Attributspunkte.");
     } else {
-        if (!selectedFeatKey) {
-            alert("Bitte wähle ein Talent.");
-            return;
-        }
+      if (!selectedFeatKey) return alert("Bitte wähle ein Talent.");
     }
     navigateToNextStep(1);
   };
-  
+
   const handleConfirmSubclass = () => {
-    if (isSubclassChoice && !selectedSubclass) {
-      alert("Bitte wähle einen Archetyp.");
-      return;
-    }
+    if (!selectedSubclass) return alert("Bitte wähle einen Archetyp.");
     navigateToNextStep(2);
   };
 
-  const handleConfirmMastery = () => {
-     if (isMasteryIncrease && masteryChoices.length < newMasteryCount) {
-       alert(`Bitte wähle deine ${newMasteryCount}. Waffenmeisterschaft aus.`);
-       return;
-    }
+  const handleConfirmSpells = () => {
+    if (spellChoices.cantrips.length < newCantripsToLearn) return alert(`Bitte wähle ${newCantripsToLearn} Zaubertricks.`);
+    if (spellChoices.spells.length < newSpellsToLearn) return alert(`Bitte wähle ${newSpellsToLearn} Zauber.`);
     navigateToNextStep(3);
   };
 
+  const handleConfirmMastery = () => {
+    if (masteryChoices.length < newMasteryCount) return alert(`Bitte wähle deine ${newMasteryCount}. Waffenmeisterschaft aus.`);
+    navigateToNextStep(4);
+  };
+
   const handleConfirmAll = () => {
-    // Wir übergeben je nach Modus entweder ASI oder FEAT
     const choices = {
       asi: levelUpMode === 'asi' ? asiChoices : null,
       feat: levelUpMode === 'feat' ? { key: selectedFeatKey, selections: featSelections[selectedFeatKey] } : null,
       subclassKey: selectedSubclass,
-      weapon_mastery_choices: masteryChoices
+      weapon_mastery_choices: masteryChoices,
+      newSpells: spellChoices // <--- Übergebe Zauber an die Engine
     };
-    // Der Rest wird in characterEngine.jsx (applyLevelUp) verarbeitet
     onConfirm(rollResult.total, choices);
   };
 
@@ -289,261 +354,151 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     setAsiChoices(newChoices);
     setAsiPoints(newPoints);
   };
-  
-  // Helper für FeatSelection Updates
+
   const handleFeatSelectionUpdate = (updates) => {
-      if (updates.feat_choices) {
-          setFeatSelections(prev => ({
-              ...prev,
-              ...updates.feat_choices
-          }));
-      }
+    if (updates.feat_choices) {
+      setFeatSelections(prev => ({ ...prev, ...updates.feat_choices }));
+    }
   };
 
   const selectedFeat = featuresData.find(f => f.key === selectedFeatKey);
 
   return (
     <div className="levelup-screen">
-      
-      {/* Linke Spalte (Info) */}
       <div className="levelup-sidebar">
         <h2>Stufenaufstieg!</h2>
-        <p className="levelup-subtitle">{character.name} steigt auf Stufe {newLevel} auf!</p>
-        
+        <p className="levelup-subtitle">{character.name} &rarr; Stufe {newLevel}</p>
+
         <div className="levelup-summary-preview">
-  <h4>Charakterübersicht</h4>
-  <p>Klasse: {character.class.name}</p>
-  <p>Trefferpunkte: {character.stats.hp} / {character.stats.maxHp}
-     {rollResult && ` (+${rollResult.total + (rollResult.racialBonus || 0)})`}
-  </p>
-  <p>Rüstungsklasse: {character.stats.ac || '?'}</p> 
-  
-  {/* --- ATTRIBUTS-GRID --- */}
-  <div className="ability-grid-preview">
-    {finalAbilities && Object.keys(finalAbilities).map((key) => {
-      // Vorschau der Erhöhung
-      const bonus = levelUpMode === 'asi' ? (asiChoices[key] || 0) : 0;
-      return (
-        <div key={key} className={`ability-preview-item ${bonus > 0 ? 'boosted' : ''}`}>
-            <span className="ability-preview-label">{key.toUpperCase()}</span>
-            <span className="ability-preview-value">{finalAbilities[key] + bonus}</span>
+          <p>TP: {character.stats.hp} {rollResult && ` + ${rollResult.total + (rollResult.racialBonus || 0)}`}</p>
+          <div className="ability-grid-preview">
+            {Object.keys(finalAbilities).map((key) => {
+              const bonus = levelUpMode === 'asi' ? (asiChoices[key] || 0) : 0;
+              return (
+                <div key={key} className={`ability-preview-item ${bonus > 0 ? 'boosted' : ''}`}>
+                  <span className="ability-preview-label">{key.toUpperCase()}</span>
+                  <span className="ability-preview-value">{finalAbilities[key] + bonus}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      );
-    })}
-  </div>
-</div>
-        
-         <div className="levelup-steps">
-          <div className={`step-item ${step === 0 ? 'active' : step > 0 ? 'complete' : ''}`}>
-             Trefferpunkte
-          </div>
-          {isAbilityIncrease && (
-            <div className={`step-item ${step === 1 ? 'active' : step > 1 ? 'complete' : ''}`}>
-               Attribute / Talent
-            </div>
-          )}
-          {isSubclassChoice && (
-            <div className={`step-item ${step === 2 ? 'active' : step > 2 ? 'complete' : ''}`}>
-               Archetyp
-            </div>
-          )}
-           {isMasteryIncrease && (
-            <div className={`step-item ${step === 3 ? 'active' : step > 3 ? 'complete' : ''}`}>
-               Meisterschaft
-            </div>
-          )}
-          <div className={`step-item ${step === 4 ? 'active' : ''}`}>
-             Zusammenfassung
-          </div>
+
+        <div className="levelup-steps">
+          <div className={`step-item ${step === 0 ? 'active' : step > 0 ? 'complete' : ''}`}>Trefferpunkte</div>
+          {isAbilityIncrease && <div className={`step-item ${step === 1 ? 'active' : step > 1 ? 'complete' : ''}`}>Attribute / Talent</div>}
+          {isSubclassChoice && <div className={`step-item ${step === 2 ? 'active' : step > 2 ? 'complete' : ''}`}>Archetyp</div>}
+          {hasSpellChoice && <div className={`step-item ${step === 3 ? 'active' : step > 3 ? 'complete' : ''}`}>Zauber</div>}
+          {isMasteryIncrease && <div className={`step-item ${step === 4 ? 'active' : step > 4 ? 'complete' : ''}`}>Meisterschaft</div>}
+          <div className={`step-item ${step === 5 ? 'active' : ''}`}>Zusammenfassung</div>
         </div>
       </div>
 
-      {/* Rechte Spalte (Aktionen) */}
       <div className="levelup-main-panel">
-        
-        {/* ERZÄHLER-BOX */}
-        <div className="narrator-box">
-          <p>{narratorText}</p>
-        </div>
-        
-        {/* CONTAINER FÜR DEN AKTIVEN SCHRITT */}
+        <div className="narrator-box"><p>{narratorText}</p></div>
         <div className="levelup-container">
-          
-          {/* Schritt 0: HP-Wurf */}
+
+          {/* 0: HP */}
           {step === 0 && (
             <div className="levelup-section hp-roll-section">
-              {/* Wichtig: ID dice-box muss existieren für 3d-dice */}
-              <div 
-                ref={diceContainerRef} 
-                id="dice-box" 
-                style={{ width: '100%', height: '300px', position: 'relative' }}
-              ></div>
-              
+              <div ref={diceContainerRef} id="dice-box" style={{ width: '100%', height: '300px', position: 'relative' }}></div>
               {!rollResult ? (
-                <button onClick={handleRollHP} className="roll-button">
-                  Würfeln ({hpRollFormula}{racialHpBonus > 0 ? ` + ${racialHpBonus}` : ''})
-                </button>
+                <button onClick={handleRollHP} className="roll-button">Würfeln ({hpRollFormula})</button>
               ) : (
                 <div className="hp-result">
-                  <p>Gewürfelt: {rollResult.dice.join(' + ')}</p>
-                  <p>Modifikator: {rollResult.bonus}</p>
-                  {racialHpBonus > 0 && <p>Rassenbonus (Zwerg): {racialHpBonus}</p>}
-                  <p className="hp-total">Gesamt-Zuwachs: {rollResult.total + racialHpBonus}</p>
+                  <p>Wurf: {rollResult.dice} + {rollResult.bonus} {racialHpBonus > 0 && `+ ${racialHpBonus} (Zwerg)`} = <strong>{rollResult.total + racialHpBonus}</strong></p>
                   <button onClick={handleConfirmHP} className="confirm-button">Weiter</button>
                 </div>
               )}
             </div>
           )}
-          
-          {/* Schritt 1: ASI oder FEAT */}
+
+          {/* 1: ASI oder FEAT */}
           {step === 1 && isAbilityIncrease && (
             <div className="levelup-section choices-section">
-              
-              {/* Umschalter */}
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-                  <button 
-                    className={`toggle-button ${levelUpMode === 'asi' ? 'active' : ''}`}
-                    onClick={() => setLevelUpMode('asi')}
-                    style={{ flex: 1, padding: '10px', background: levelUpMode === 'asi' ? '#d4af37' : '#333', color: levelUpMode === 'asi' ? '#000' : '#fff', border: '1px solid #555', cursor: 'pointer' }}
-                  >
-                      Attribute verbessern
-                  </button>
-                  <button 
-                    className={`toggle-button ${levelUpMode === 'feat' ? 'active' : ''}`}
-                    onClick={() => setLevelUpMode('feat')}
-                    style={{ flex: 1, padding: '10px', background: levelUpMode === 'feat' ? '#d4af37' : '#333', color: levelUpMode === 'feat' ? '#000' : '#fff', border: '1px solid #555', cursor: 'pointer' }}
-                  >
-                      Talent wählen
-                  </button>
+              <div className="toggle-group">
+                <button className={levelUpMode === 'asi' ? 'active' : ''} onClick={() => setLevelUpMode('asi')}>Attribute verbessern</button>
+                <button className={levelUpMode === 'feat' ? 'active' : ''} onClick={() => setLevelUpMode('feat')}>Talent wählen</button>
               </div>
 
-              {levelUpMode === 'asi' ? (
-                  <div className="choice-block">
-                    <AbilityScoreImprovement
-                      finalAbilities={finalAbilities}
-                      points={asiPoints}
-                      choices={asiChoices}
-                      onChange={handleAsiChange}
-                    />
+              <div className="choice-block">
+                {levelUpMode === 'asi' ? (
+                  <AbilityScoreImprovement finalAbilities={finalAbilities} points={asiPoints} choices={asiChoices} onChange={handleAsiChange} />
+                ) : (
+                  <div className="feat-picker">
+                    <select className="panel-select" onChange={(e) => setSelectedFeatKey(e.target.value)} value={selectedFeatKey || ""}>
+                      <option value="" disabled>Wähle ein Talent...</option>
+                      {availableFeats.map(f => <option key={f.key} value={f.key}>{f.name}</option>)}
+                    </select>
+                    {selectedFeat && (
+                      <div className="feat-details-box">
+                        <p><strong>{selectedFeat.name}</strong></p>
+                        <p className="small-text">{selectedFeat.description}</p>
+                        <div className="feat-sub-selection">
+                          <FeatSelection
+                            feat={selectedFeat}
+                            character={{ ...character, feat_choices: featSelections }}
+                            updateCharacter={handleFeatSelectionUpdate}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-              ) : (
-                  <div className="choice-block" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                      <h4>Wähle ein Talent</h4>
-                      <select 
-                          style={{ padding: '8px', background: '#222', color: '#fff', border: '1px solid #555' }}
-                          onChange={(e) => setSelectedFeatKey(e.target.value)}
-                          value={selectedFeatKey || ""}
-                      >
-                          <option value="" disabled>Wähle ein Talent...</option>
-                          {availableFeats.map(f => <option key={f.key} value={f.key}>{f.name}</option>)}
-                      </select>
-                      
-                      {selectedFeat && (
-                          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '5px' }}>
-                              <p><strong>{selectedFeat.name}</strong></p>
-                              <p style={{ fontSize: '0.9em', fontStyle: 'italic' }}>{selectedFeat.description}</p>
-                              
-                              {/* FEAT SELECTION EINBINDEN */}
-                              <div style={{ marginTop: '15px' }}>
-                                  <FeatSelection 
-                                      feat={selectedFeat}
-                                      character={{ ...character, feat_choices: featSelections }}
-                                      updateCharacter={handleFeatSelectionUpdate}
-                                  />
-                              </div>
-                          </div>
-                      )}
-                  </div>
-              )}
-              
+                )}
+              </div>
               <button onClick={handleConfirmDecision} className="confirm-button">Weiter</button>
             </div>
           )}
 
-          {/* Schritt 2: Subclass */}
+          {/* 2: Subclass */}
           {step === 2 && isSubclassChoice && (
-             <div className="levelup-section choices-section">
+            <div className="levelup-section choices-section">
               <div className="choice-block">
-                <SubclassSelection
-                  classKey={character.class.key}
-                  selectedKey={selectedSubclass}
-                  onSelect={setSelectedSubclass}
-                />
+                <SubclassSelection classKey={character.class.key} selectedKey={selectedSubclass} onSelect={setSelectedSubclass} />
               </div>
               <button onClick={handleConfirmSubclass} className="confirm-button">Weiter</button>
             </div>
           )}
-          
-          {/* Schritt 3: Mastery */}
-          {step === 3 && isMasteryIncrease && (
-             <div className="levelup-section choices-section">
-               <div className="choice-block">
-                  <h4>Waffenmeisterschaft (Wähle {newMasteryCount})</h4>
-                  <p>Du hast eine neue Waffenmeisterschaft gelernt.</p>
-                  <WeaponMasterySelection
-                    character={{ 
-                      ...character, 
-                      level: newLevel, 
-                      weapon_mastery_choices: masteryChoices 
-                    }}
-                    updateCharacter={(updates) => setMasteryChoices(updates.weapon_mastery_choices)}
-                  />
-                </div>
+
+          {/* 3: Zauber */}
+          {step === 3 && hasSpellChoice && (
+            <div className="levelup-section choices-section">
+              <div className="choice-block">
+                <h3>Magisches Wissen erweitert</h3>
+                <LevelUpSpellSelection
+                  character={character}
+                  cantripsCount={newCantripsToLearn}
+                  spellsCount={newSpellsToLearn}
+                  onSelectionChange={setSpellChoices}
+                />
+              </div>
+              <button onClick={handleConfirmSpells} className="confirm-button">Weiter</button>
+            </div>
+          )}
+
+          {/* 4: Mastery */}
+          {step === 4 && isMasteryIncrease && (
+            <div className="levelup-section choices-section">
+              <div className="choice-block">
+                <h4>Waffenmeisterschaft (Wähle {newMasteryCount})</h4>
+                <WeaponMasterySelection character={{ ...character, level: newLevel, weapon_mastery_choices: masteryChoices }} updateCharacter={(updates) => setMasteryChoices(updates.weapon_mastery_choices)} />
+              </div>
               <button onClick={handleConfirmMastery} className="confirm-button">Weiter</button>
             </div>
           )}
 
-          {/* Schritt 4: Zusammenfassung */}
-          {step === 4 && (
+          {/* 5: Summary */}
+          {step === 5 && (
             <div className="levelup-section summary-section">
               <h3>Zusammenfassung</h3>
               <p>TP +{rollResult.total + (rollResult.racialBonus || 0)}</p>
-              
-              {isAbilityIncrease && levelUpMode === 'asi' && Object.values(asiChoices).some(v => v > 0) && (
-                <div>
-                  <p>Attributserhöhungen:</p>
-                  <ul>
-                    {Object.keys(asiChoices).map(key => 
-                      asiChoices[key] > 0 && <li key={key}>{key.toUpperCase()}: +{asiChoices[key]}</li>
-                    )}
-                  </ul>
-                </div>
-              )}
-
-              {isAbilityIncrease && levelUpMode === 'feat' && selectedFeat && (
-                  <p>Neues Talent: <strong>{selectedFeat.name}</strong></p>
-              )}
-
-              {isSubclassChoice && selectedSubclass && (
-                <p>
-                  Neuer Archetyp: {
-                    allClassData
-                      .find(c => c.key === character.class.key)
-                      ?.subclasses.find(sc => sc.key === selectedSubclass)
-                      ?.name
-                  }
-                </p>
-              )}
-
-              {isMasteryIncrease && masteryChoices.length > (character.weapon_mastery_choices?.length || 0) && (
-                <div>
-                  <p>Neue Waffenmeisterschaften:</p>
-                  <ul>
-                    {masteryChoices
-                      .filter(m => !(character.weapon_mastery_choices || []).includes(m))
-                      .map(key => (
-                        <li key={key}>{key} (Neu)</li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-
-              <button onClick={handleConfirmAll} className="confirm-button final-confirm">
-                Aufstieg bestätigen
-              </button>
+              {isAbilityIncrease && levelUpMode === 'asi' && <p>Attribute erhöht.</p>}
+              {isAbilityIncrease && levelUpMode === 'feat' && selectedFeat && <p>Neues Talent: <strong>{selectedFeat.name}</strong></p>}
+              {isSubclassChoice && selectedSubclass && <p>Archetyp gewählt.</p>}
+              {hasSpellChoice && <p>Neue Zauber gelernt.</p>}
+              <button onClick={handleConfirmAll} className="confirm-button final-confirm">Aufstieg bestätigen</button>
             </div>
           )}
-
         </div>
       </div>
     </div>

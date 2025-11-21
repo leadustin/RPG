@@ -3,9 +3,9 @@ import allClassData from "../data/classes.json";
 import { LEVEL_XP_TABLE, rollDiceFormula } from "../utils/helpers";
 
 // Import der RulesEngine für ausgelagerte Mechaniken
-import { 
-  getFeatHpBonus, 
-  checkFeatProficiency, 
+import {
+  getFeatHpBonus,
+  checkFeatProficiency,
   getInitiativeBonusFromFeats,
   getUnarmedDamageDie,
   hasSavageAttacker,
@@ -13,7 +13,7 @@ import {
   getHealerFeatHealingFormula,
   hasLuckyFeat,
   getCrafterDiscount
-} from "./rulesEngine"; 
+} from "./rulesEngine";
 
 /**
  * Berechnet den Modifikator für einen Attributswert.
@@ -40,7 +40,7 @@ export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
 
   if (character.background_options?.bonuses) {
-     return character.background_options.bonuses[abilityKey] || 0;
+    return character.background_options.bonuses[abilityKey] || 0;
   }
 
   if (
@@ -57,12 +57,12 @@ export const getRacialAbilityBonus = (character, abilityKey) => {
  * Berechnet die maximalen Lebenspunkte auf Stufe 1 (oder Basis).
  */
 export const calculateInitialHP = (character) => {
-  if (!character.class) return 0; 
+  if (!character.class) return 0;
 
   const finalCon =
     character.abilities.con + getRacialAbilityBonus(character, "con");
   const conModifier = getAbilityModifier(finalCon);
-  
+
   let hp = character.class.hit_die + conModifier;
 
   if (character.race?.key === "dwarf") {
@@ -79,7 +79,7 @@ export const calculateInitialHP = (character) => {
  */
 export const calculateAC = (character) => {
   if (!character || !character.abilities || !character.class) {
-    return 10; 
+    return 10;
   }
 
   const finalDex =
@@ -90,9 +90,9 @@ export const calculateAC = (character) => {
 
   let shieldBonus = 0;
   const offHand = character.equipment?.["off-hand"] || character.equipment?.shield;
-  
+
   if (offHand && (offHand.type === "shield" || (offHand.ac && offHand.ac > 0))) {
-      shieldBonus = offHand.ac || 2;
+    shieldBonus = offHand.ac || 2;
   }
 
   if (equippedArmorData) {
@@ -133,7 +133,7 @@ export const calculateAC = (character) => {
       const wisModifier = getAbilityModifier(finalWis);
       unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + wisModifier);
     }
-    
+
     return unarmoredAC + shieldBonus;
   }
 };
@@ -188,9 +188,9 @@ export const isProficientInSkill = (character, skillKey) => {
   ) {
     return true;
   }
-  
+
   if (checkFeatProficiency(character, skillKey)) {
-      return true;
+    return true;
   }
 
   return false;
@@ -219,13 +219,13 @@ export const calculateSkillBonus = (character, skillKey) => {
  * Berechnet die Initiative.
  */
 export const calculateInitiative = (character) => {
-    const finalDex = character.abilities.dex + getRacialAbilityBonus(character, "dex");
-    let initBonus = getAbilityModifier(finalDex);
-    
-    const pb = getProficiencyBonus(character.level || 1);
-    initBonus += getInitiativeBonusFromFeats(character, pb);
-    
-    return initBonus;
+  const finalDex = character.abilities.dex + getRacialAbilityBonus(character, "dex");
+  let initBonus = getAbilityModifier(finalDex);
+
+  const pb = getProficiencyBonus(character.level || 1);
+  initBonus += getInitiativeBonusFromFeats(character, pb);
+
+  return initBonus;
 };
 
 /**
@@ -237,7 +237,7 @@ export const calculateMeleeDamage = (character) => {
   const strModifier = getAbilityModifier(strScore);
 
   const modifierString =
-      strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
+    strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
 
   const mainHandWeapon = character.equipment?.["main-hand"];
 
@@ -257,10 +257,10 @@ export const calculateMeleeDamage = (character) => {
     return `${damage} ${modifierString}`;
   } else {
     // Prüfe auf Tavern Brawler
-    const upgradedDie = getUnarmedDamageDie(character); 
+    const upgradedDie = getUnarmedDamageDie(character);
 
     if (upgradedDie) {
-        return `${upgradedDie} ${modifierString}`;
+      return `${upgradedDie} ${modifierString}`;
     }
 
     const unarmedDamage = 1 + strModifier;
@@ -273,21 +273,21 @@ export const calculateMeleeDamage = (character) => {
  */
 export const performMeleeDamageRoll = (character, isCritical = false) => {
   const damageString = calculateMeleeDamage(character);
-  
+
   if (!damageString.includes('d')) {
-      const staticDmg = parseInt(damageString);
-      return {
-          total: staticDmg,
-          rolls: [],
-          formula: damageString,
-          isSavageAttacker: false,
-          logMessage: `Schaden: ${staticDmg} (Fest)`
-      };
+    const staticDmg = parseInt(damageString);
+    return {
+      total: staticDmg,
+      rolls: [],
+      formula: damageString,
+      isSavageAttacker: false,
+      logMessage: `Schaden: ${staticDmg} (Fest)`
+    };
   }
 
   const parts = damageString.split(' ');
-  const dicePart = parts[0]; 
-  const modPart = parts.length > 1 ? parts[1] : "+0"; 
+  const dicePart = parts[0];
+  const modPart = parts.length > 1 ? parts[1] : "+0";
 
   let rollDice = dicePart;
   if (isCritical) {
@@ -296,7 +296,7 @@ export const performMeleeDamageRoll = (character, isCritical = false) => {
   }
 
   const hasSavage = hasSavageAttacker(character);
-  
+
   let result1 = rollDiceFormula(rollDice);
   let finalDiceTotal = result1;
   let msg = `Würfelt ${rollDice}: [${result1}]`;
@@ -307,7 +307,7 @@ export const performMeleeDamageRoll = (character, isCritical = false) => {
     msg = `Wilder Angreifer (${rollDice}): Würfelt [${result1}] und [${result2}]. Nutze [${finalDiceTotal}].`;
   }
 
-  const modifier = parseInt(modPart.replace('+', '')); 
+  const modifier = parseInt(modPart.replace('+', ''));
   const totalDamage = finalDiceTotal + modifier;
 
   if (modifier !== 0) {
@@ -341,7 +341,7 @@ export const performHealerKitHealingRoll = (character) => {
   return {
     total: totalHeal,
     breakdown: `1d6 (${diceResult}) + PB (${pb}) + WIS (${wisMod})`,
-    isStabilizeBonus: hasHealerStabilizeBonus(character) 
+    isStabilizeBonus: hasHealerStabilizeBonus(character)
   };
 };
 
@@ -351,7 +351,7 @@ export const calculateMaxLuckyPoints = (character) => {
 };
 
 export const calculateItemPriceForCharacter = (character, basePrice) => {
-  const discountPercent = getCrafterDiscount(character); 
+  const discountPercent = getCrafterDiscount(character);
   if (discountPercent > 0) {
     const discount = Math.floor(basePrice * discountPercent);
     return Math.max(0, basePrice - discount);
@@ -362,7 +362,7 @@ export const calculateItemPriceForCharacter = (character, basePrice) => {
 // --- LEVEL UP LOGIK ---
 
 const getHpRollFormula = (character) => {
-  const hitDie = character.class.hit_die || 8; 
+  const hitDie = character.class.hit_die || 8;
   const conMod = getAbilityModifier(
     character.abilities.con + getRacialAbilityBonus(character, "con")
   );
@@ -426,12 +426,12 @@ export const checkForLevelUp = (character) => {
     console.log(`STUFENAUFSTIEG ANSTEHEND: ${character.name} -> Stufe ${nextLevel}`);
 
     const classData = allClassData.find(c => c.key === character.class.key);
-    
+
     const isAbilityIncrease = classData?.features.some(f =>
       f.level === nextLevel && f.name.toLowerCase().includes("fähigkeitspunkte")
     );
-    
-    const isSubclassChoice = classData?.features.some(f => 
+
+    const isSubclassChoice = classData?.features.some(f =>
       f.level === nextLevel && (f.name.includes("Archetyp") || f.name.includes("Tradition") || f.name.includes("Zirkel") || f.name.includes("Pfad") || f.name.includes("Eid") || f.name.includes("Ursprung") || f.name.includes("Schutzpatron"))
     );
 
@@ -444,21 +444,21 @@ export const checkForLevelUp = (character) => {
     let newSpellsToLearn = 0;
     const isWizard = character.class.key === 'wizard';
 
-    if (classData) { 
-        // Cantrips
-        const currentCantrips = getCantripsKnownCount(classData, level);
-        const nextCantrips = getCantripsKnownCount(classData, nextLevel);
-        newCantripsToLearn = Math.max(0, nextCantrips - currentCantrips);
+    if (classData) {
+      // Cantrips
+      const currentCantrips = getCantripsKnownCount(classData, level);
+      const nextCantrips = getCantripsKnownCount(classData, nextLevel);
+      newCantripsToLearn = Math.max(0, nextCantrips - currentCantrips);
 
-        // Known Spells (Datengetrieben)
-        const currentKnown = getSpellsKnownCount(classData, level);
-        const nextKnown = getSpellsKnownCount(classData, nextLevel);
-        newSpellsToLearn = Math.max(0, nextKnown - currentKnown);
-        
-        // Magier Sonderregel (immer +2 ins Buch)
-        if (isWizard) {
-            newSpellsToLearn = 2; 
-        }
+      // Known Spells (Datengetrieben)
+      const currentKnown = getSpellsKnownCount(classData, level);
+      const nextKnown = getSpellsKnownCount(classData, nextLevel);
+      newSpellsToLearn = Math.max(0, nextKnown - currentKnown);
+
+      // Magier Sonderregel (immer +2 ins Buch)
+      if (isWizard) {
+        newSpellsToLearn = 2;
+      }
     }
 
     return {
@@ -466,11 +466,11 @@ export const checkForLevelUp = (character) => {
       pendingLevelUp: {
         newLevel: nextLevel,
         hpRollFormula: getHpRollFormula(character),
-        isAbilityIncrease, 
-        isSubclassChoice: isSubclassChoice && !character.subclassKey, 
+        isAbilityIncrease,
+        isSubclassChoice: isSubclassChoice && !character.subclassKey,
         isMasteryIncrease,
         newMasteryCount: newMastery,
-        
+
         // Zauber-Infos
         newCantripsToLearn,
         newSpellsToLearn,
@@ -501,10 +501,10 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
     }
   }
   if (levelUpChoices?.feat) {
-      newFeats.push(levelUpChoices.feat.key);
-      if (levelUpChoices.feat.selections) {
-          newFeatChoices[levelUpChoices.feat.key] = levelUpChoices.feat.selections;
-      }
+    newFeats.push(levelUpChoices.feat.key);
+    if (levelUpChoices.feat.selections) {
+      newFeatChoices[levelUpChoices.feat.key] = levelUpChoices.feat.selections;
+    }
   }
 
   // --- Subklasse ---
@@ -516,25 +516,25 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   let newSpellbook = [...(character.spellbook || [])];
 
   if (levelUpChoices?.newSpells) {
-      if (levelUpChoices.newSpells.cantrips) {
-          newCantripsKnown = [...newCantripsKnown, ...levelUpChoices.newSpells.cantrips];
+    if (levelUpChoices.newSpells.cantrips) {
+      newCantripsKnown = [...newCantripsKnown, ...levelUpChoices.newSpells.cantrips];
+    }
+
+    if (levelUpChoices.newSpells.spells) {
+      if (character.class.key === 'wizard') {
+        // Magier: Ins Zauberbuch
+        newSpellbook = [...newSpellbook, ...levelUpChoices.newSpells.spells];
+      } else {
+        // Andere: Zu bekannten Zaubern
+        newSpellsKnown = [...newSpellsKnown, ...levelUpChoices.newSpells.spells];
       }
-      
-      if (levelUpChoices.newSpells.spells) {
-          if (character.class.key === 'wizard') {
-              // Magier: Ins Zauberbuch
-              newSpellbook = [...newSpellbook, ...levelUpChoices.newSpells.spells];
-          } else {
-              // Andere: Zu bekannten Zaubern
-              newSpellsKnown = [...newSpellsKnown, ...levelUpChoices.newSpells.spells];
-          }
-      }
+    }
   }
 
   // --- Waffenmeisterschaften ---
   let newMasteries = character.weapon_mastery_choices || [];
   if (levelUpChoices?.weapon_mastery_choices) {
-      newMasteries = levelUpChoices.weapon_mastery_choices;
+    newMasteries = levelUpChoices.weapon_mastery_choices;
   }
 
   // --- Features & HP ---
@@ -546,15 +546,15 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   const newMaxHP = oldMaxHP + finalHpGain;
 
   const classData = allClassData.find(c => c.key === character.class.key);
-  let allNewFeatures = []; 
+  let allNewFeatures = [];
   if (classData) {
-     allNewFeatures = classData.features.filter(f => f.level === newLevel);
-     if (newSubclassKey && classData.subclasses) {
-        const sc = classData.subclasses.find(s => s.key === newSubclassKey);
-        if (sc) {
-            allNewFeatures = [...allNewFeatures, ...sc.features.filter(f => f.level === newLevel)];
-        }
-     }
+    allNewFeatures = classData.features.filter(f => f.level === newLevel);
+    if (newSubclassKey && classData.subclasses) {
+      const sc = classData.subclasses.find(s => s.key === newSubclassKey);
+      if (sc) {
+        allNewFeatures = [...allNewFeatures, ...sc.features.filter(f => f.level === newLevel)];
+      }
+    }
   }
 
   const { pendingLevelUp, ...restOfCharacter } = character;
@@ -562,12 +562,12 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   const updatedCharacter = {
     ...restOfCharacter,
     level: newLevel,
-    abilities: newAbilities, 
+    abilities: newAbilities,
     subclassKey: newSubclassKey,
     feats: newFeats,
     feat_choices: newFeatChoices,
     weapon_mastery_choices: newMasteries,
-    
+
     // Zauberlisten updaten
     cantrips_known: newCantripsKnown,
     spells_known: newSpellsKnown,
@@ -579,8 +579,8 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
       hp: newMaxHP,
     },
     features: [
-      ...(character.features || []), 
-      ...allNewFeatures             
+      ...(character.features || []),
+      ...allNewFeatures
     ],
   };
 
@@ -645,4 +645,120 @@ export const grantXpToCharacter = (character, xpAmount) => {
   console.log(`${character.name} erhält ${xpAmount} EP.`);
   const updatedChar = { ...character, experience: (character.experience || 0) + xpAmount };
   return checkForLevelUp(updatedChar);
+};
+
+// --- RAST-SYSTEM (Short/Long Rest) ---
+
+export const calculateMaxHitDice = (character) => {
+  return character.level || 1;
+};
+
+export const calculateMaxSpellSlots = (character) => {
+  const classData = allClassData.find(c => c.key === character.class.key);
+  if (!classData) return {};
+
+  const slotsObj = {};
+
+  // 1. Standard Spellcasting
+  if (classData.spellcasting && classData.spellcasting.spell_slots_by_level) {
+    const levelIndex = (character.level || 1) - 1;
+    const slots = classData.spellcasting.spell_slots_by_level[levelIndex];
+    if (slots) {
+      slots.forEach((count, index) => {
+        if (count > 0) {
+          slotsObj[index + 1] = count;
+        }
+      });
+    }
+  }
+
+  // 2. Warlock Pact Magic
+  if (classData.pact_magic_progression) {
+    const prog = classData.pact_magic_progression.find(p => p.level === (character.level || 1));
+    if (prog) {
+      // Warlock Slots sind immer auf dem höchsten verfügbaren Level
+      // Wir speichern sie unter diesem Level
+      slotsObj[prog.slot_level] = (slotsObj[prog.slot_level] || 0) + prog.slots;
+    }
+  }
+
+  return slotsObj;
+};
+
+export const performShortRest = (character, diceToSpend) => {
+  const maxHitDice = calculateMaxHitDice(character);
+  // Wenn undefined, gehen wir davon aus, dass sie voll sind (Kompatibilität)
+  let currentHitDice = character.currentHitDice !== undefined ? character.currentHitDice : maxHitDice;
+
+  if (diceToSpend > currentHitDice) {
+    return { success: false, message: "Nicht genügend Trefferwürfel verfügbar." };
+  }
+
+  let totalHealed = 0;
+  const conMod = getAbilityModifier(character.abilities.con + getRacialAbilityBonus(character, "con"));
+  const hitDieValue = character.class.hit_die;
+  const rolls = [];
+
+  for (let i = 0; i < diceToSpend; i++) {
+    const roll = Math.floor(Math.random() * hitDieValue) + 1;
+    const heal = Math.max(0, roll + conMod);
+    totalHealed += heal;
+    rolls.push(roll);
+  }
+
+  const newHp = Math.min(character.stats.maxHp, character.stats.hp + totalHealed);
+  currentHitDice -= diceToSpend;
+
+  // Warlock: Slots zurücksetzen bei Short Rest
+  let newSpellSlots = character.currentSpellSlots ? { ...character.currentSpellSlots } : calculateMaxSpellSlots(character);
+  if (character.class.key === 'warlock') {
+    newSpellSlots = calculateMaxSpellSlots(character);
+  }
+
+  const updatedCharacter = {
+    ...character,
+    stats: { ...character.stats, hp: newHp },
+    currentHitDice,
+    currentSpellSlots: newSpellSlots
+  };
+
+  return {
+    success: true,
+    character: updatedCharacter,
+    healed: totalHealed,
+    rolls,
+    message: `${character.name} nutzt ${diceToSpend} TW und heilt ${totalHealed} TP.`
+  };
+};
+
+export const performLongRest = (character) => {
+  const maxHitDice = calculateMaxHitDice(character);
+  let currentHitDice = character.currentHitDice !== undefined ? character.currentHitDice : maxHitDice;
+
+  // PHB: Regain half of max Hit Dice (min 1)
+  const regainedDice = Math.max(1, Math.floor(maxHitDice / 2));
+  currentHitDice = Math.min(maxHitDice, currentHitDice + regainedDice);
+
+  // Full HP
+  const newHp = character.stats.maxHp;
+
+  // Reset Spell Slots
+  const newSpellSlots = calculateMaxSpellSlots(character);
+
+  // Reset Abilities (Placeholder for future feature tracking)
+  // ...
+
+  const updatedCharacter = {
+    ...character,
+    stats: { ...character.stats, hp: newHp },
+    currentHitDice,
+    currentSpellSlots: newSpellSlots
+  };
+
+  return {
+    success: true,
+    character: updatedCharacter,
+    regainedHitDice: regainedDice,
+    message: `Lange Rast beendet. TP und Zauberplätze vollständig erholt.`
+  };
 };

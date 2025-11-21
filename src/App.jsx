@@ -27,15 +27,15 @@ function App() {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
-    // +++ NEU: Köcher-Handler importieren +++
     handleFillQuiver,
     handleUnloadQuiver,
-    // +++ ENDE NEU +++
     handleEnterLocation,
     handleLeaveLocation,
     handleUpdatePosition,
     handleDiscoverLocation,
-    handleConfirmLevelUp
+    handleConfirmLevelUp,
+    handleShortRest,
+    handleLongRest
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -107,6 +107,8 @@ function App() {
             onUpdatePosition={handleUpdatePosition}
             onDiscoverLocation={handleDiscoverLocation}
             saveFileExists={saveFileExists}
+            onShortRest={handleShortRest}
+            onLongRest={handleLongRest}
           />
         );
       default:
@@ -137,19 +139,17 @@ function App() {
               handleEquipItem={handleEquipItem}
               handleUnequipItem={handleUnequipItem}
               handleToggleTwoHanded={handleToggleTwoHanded}
-              // +++ NEU: Handler an CharacterSheet übergeben +++
               handleFillQuiver={handleFillQuiver}
               handleUnloadQuiver={handleUnloadQuiver}
-              // +++ ENDE NEU +++
             />
           )}
 
           {gameState.character && gameState.character.pendingLevelUp && (
-          <LevelUpScreen
-            character={gameState.character}
-            onConfirm={handleConfirmLevelUp}
-          />
-        )}
+            <LevelUpScreen
+              character={gameState.character}
+              onConfirm={handleConfirmLevelUp}
+            />
+          )}
 
           {saveManagerMode && (
             <SaveSlotManager
@@ -172,7 +172,7 @@ function App() {
         {gameState.screen === "game" && (
           <EventLog entries={gameState.logEntries} />
         )}
-        
+
       </div>
     </DndProvider>
   );

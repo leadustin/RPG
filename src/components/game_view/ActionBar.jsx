@@ -3,12 +3,12 @@
 import React, { useState } from 'react'; // <-- KORREKT
 import './ActionBar.css';
 import OptionsMenu from './OptionsMenu';
-import Tooltip from '../tooltip/Tooltip'; 
+import Tooltip from '../tooltip/Tooltip';
 
 // 'character' ist jetzt der *aktive* Charakter (aus GameView)
-function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }) { 
+function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, onRestClick }) {
     const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
-    
+
     const [activeTab, setActiveTab] = useState('Inventar');
     const [tabBeforeOptions, setTabBeforeOptions] = useState('Inventar');
 
@@ -20,30 +20,30 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
     const rangedWeapon = equipment['ranged'] || null;
 
     // Hover-Logik ist nicht mehr nötig
-    
-    const classTabName = (character && character.class && character.class.name) 
-                            ? character.class.name 
-                            : "Klasse";
+
+    const classTabName = (character && character.class && character.class.name)
+        ? character.class.name
+        : "Klasse";
 
     const handleOpenOptions = () => {
-        setTabBeforeOptions(activeTab); 
+        setTabBeforeOptions(activeTab);
         setActiveTab('Optionen');
         setIsOptionsModalOpen(true);
     };
 
     const handleCloseOptions = () => {
         setIsOptionsModalOpen(false);
-        setActiveTab(tabBeforeOptions); 
+        setActiveTab(tabBeforeOptions);
     };
 
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
-        setTabBeforeOptions(tabName); 
+        setTabBeforeOptions(tabName);
     };
 
     const handleInventoryClick = () => {
-        handleTabClick('Inventar'); 
-        onToggleCharacterSheet(); 
+        handleTabClick('Inventar');
+        onToggleCharacterSheet();
     };
 
     const getTabClassName = (tabName) => {
@@ -59,11 +59,11 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
     };
 
     const EmptySlot = () => <div className="hotbar-slot"></div>;
-    
+
     // Helfer-Komponente: Leitet ...rest (z.B. onMouseEnter) an das div weiter
     const EquippedItemSlot = ({ item, ...rest }) => {
         if (!item) {
-            return <EmptySlot />; 
+            return <EmptySlot />;
         }
 
         let iconSrc = null;
@@ -74,32 +74,32 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
                 try {
                     iconSrc = require(`../../assets/images/icons/placeholder_weapon.webp`);
                 } catch (e2) {
-                    iconSrc = null; 
+                    iconSrc = null;
                 }
             }
         }
 
         return (
-            <div 
-                className="hotbar-slot equipped" 
+            <div
+                className="hotbar-slot equipped"
                 {...rest} // <-- Wichtig: Leitet Tooltip-Events weiter
             >
                 {iconSrc && <img src={iconSrc} alt={item.name} />}
             </div>
         );
     };
-    
+
     const slots = Array(16).fill(<EmptySlot />);
 
     return (
         <>
             <div className="ui-container">
                 <div className="hotbar-container">
-                    
+
                     <div className="hotbar ui-panel">
-                        
+
                         <div className="global-controls">
-                            <div className="global-control-icon"></div>
+                            <div className="global-control-icon" onClick={onRestClick} title="Rasten (Kurze/Lange Rast)" style={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#ffd700', fontWeight: 'bold' }}>R</div>
                             <div className="global-control-icon"></div>
                             <div className="global-control-icon"></div>
                             <div className="global-control-icon"></div>
@@ -111,7 +111,7 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
                             {/* Linke Slots (Wrapper korrigiert) */}
                             <div className="left-side-slots-integrated">
                                 <div className="side-slot-column">
-                                    
+
                                     {/* KORREKTUR: 'item' statt 'text' für vollen Tooltip */}
                                     {mainHandWeapon ? (
                                         <Tooltip item={mainHandWeapon}>
@@ -125,7 +125,7 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
                                     <div className="hotbar-slot hotbar-slot-half"></div>
                                 </div>
                                 <div className="side-slot-column">
-                                    
+
                                     {/* KORREKTUR: 'item' statt 'text' für vollen Tooltip */}
                                     {rangedWeapon ? (
                                         <Tooltip item={rangedWeapon}>
@@ -159,22 +159,22 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
                                 )}
                             </div>
                         </div>
-                        
+
                         {/* Footer mit Tabs (bleibt gleich) */}
                         <div className="hotbar-footer">
                             <div className="hotbar-tab-container">
                                 <div className={getTabClassName('Inventar')} onClick={handleInventoryClick}>Inventar</div>
                                 <div className={getTabClassName('Allgem.')} onClick={() => handleTabClick('AllGEm.')}>Allgem.</div>
-                                <div 
-                                    className={getTabClassName(classTabName)} 
+                                <div
+                                    className={getTabClassName(classTabName)}
                                     onClick={() => handleTabClick(classTabName)}
                                 >
                                     {classTabName}
                                 </div>
                                 <div className={getTabClassName('Gegenst.')} onClick={() => handleTabClick('Gegenst.')}>Gegenst.</div>
                                 <div className={getTabClassName('Passiv')} onClick={() => handleTabClick('Passiv')}>Passiv</div>
-                                <div 
-                                    className={getTabClassName('Optionen')} 
+                                <div
+                                    className={getTabClassName('Optionen')}
                                     onClick={handleOpenOptions}
                                 >
                                     Optionen
@@ -183,16 +183,16 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
 
                             {/* +/- Buttons (bleibt gleich) */}
                             <div className="hotbar-row-controls">
-                                <button 
-                                    className="hotbar-row-button" 
-                                    onClick={handleDecreaseRows} 
+                                <button
+                                    className="hotbar-row-button"
+                                    onClick={handleDecreaseRows}
                                     disabled={visibleRows === 2}
                                 >
                                     -
                                 </button>
-                                <button 
-                                    className="hotbar-row-button" 
-                                    onClick={handleIncreaseRows} 
+                                <button
+                                    className="hotbar-row-button"
+                                    onClick={handleIncreaseRows}
                                     disabled={visibleRows === 3}
                                 >
                                     +
@@ -205,12 +205,12 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character }
             </div>
 
             {/* Tooltip-Rendering (ENTFERNT) */}
-            
+
             {/* Modal-Rendering (bleibt gleich) */}
             {isOptionsModalOpen && (
-                <OptionsMenu 
-                    onSave={onSaveGame} 
-                    onLoad={onLoadGame} 
+                <OptionsMenu
+                    onSave={onSaveGame}
+                    onLoad={onLoadGame}
                     onClose={handleCloseOptions}
                     showSaveLoadControls={true}
                 />
