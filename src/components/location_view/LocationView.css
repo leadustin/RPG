@@ -1,53 +1,146 @@
+/* src/components/location_view/LocationView.css */
+
 .location-view {
+    position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     height: 100%;
-    color: #333;
-    padding: 20px;
+    width: 100%;
+    background-color: #0c0c0c;
+    color: #eee;
+    overflow: hidden;
+}
+
+/* Header oben fixiert */
+.location-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.85);
+    border-bottom: 1px solid #444;
+    z-index: 10; /* Über der Map */
+    pointer-events: none; /* Klicks gehen durch auf die Map (außer Text markieren) */
     box-sizing: border-box;
 }
 
-.location-view.city {
-    background: url('https://placehold.co/1920x1080/DEB887/FFFFFF?text=Stadt-Hintergrund') no-repeat center center;
-    background-size: cover;
+.location-header h1 {
+    margin: 0;
+    color: #d4af37;
+    font-size: 1.8em;
+    pointer-events: auto;
 }
 
-.location-view.dungeon {
-     background: url('https://placehold.co/1920x1080/696969/FFFFFF?text=Dungeon-Hintergrund') no-repeat center center;
-     background-size: cover;
-     color: white;
+.location-type {
+    font-style: italic;
+    color: #aaa;
+    margin: 5px 0;
+    font-size: 0.9em;
 }
 
-
-.location-view h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+.location-desc {
+    margin: 5px 0 0;
+    font-size: 1em;
+    max-width: 800px;
+    pointer-events: auto;
 }
 
-.location-view p {
-    font-size: 1.2em;
-    margin-bottom: 40px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+/* Map Container füllt alles aus */
+.location-map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Basis-Ebene */
 }
 
-.location-view button {
-    padding: 12px 25px;
-    font-size: 1.1em;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #8b4513;
-    color: white;
-    border: 2px solid #5a2d0c;
+/* Interaktions-Panel (Shop Buttons) */
+.location-actions {
+    position: absolute;
+    top: 140px; /* Etwas Platz unter dem Header lassen */
+    left: 20px;
+    z-index: 20; /* WICHTIG: Über der Map */
+    
+    background: rgba(15, 15, 15, 0.9);
+    padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    transition: all 0.2s ease-in-out;
+    border: 1px solid #555;
+    min-width: 200px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
 }
 
-.location-view button:hover {
-    background-color: #a0522d;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.4);
+.location-actions h3 {
+    margin: 0 0 10px 0;
+    color: #d4af37;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+    font-size: 1.1em;
+}
+
+.shop-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.shop-buttons button {
+    padding: 10px 12px;
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.shop-buttons button:hover {
+    background: #3a3a3a;
+    border-color: #d4af37;
+    color: #ffd700;
+    transform: translateX(3px);
+}
+
+.shop-buttons button .icon {
+    font-size: 1.2em;
+}
+
+/* Footer Button (Verlassen) */
+.location-footer {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    z-index: 20; /* Über der Map */
+}
+
+.leave-btn {
+    padding: 12px 25px;
+    background: #5a1a1a;
+    color: #ffcccc;
+    border: 1px solid #a00000;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: background 0.2s;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.leave-btn:hover {
+    background: #752020;
+    color: white;
+    border-color: #ff4444;
+}
+
+.location-view-error {
+    padding: 50px;
+    text-align: center;
+    color: #ff6b6b;
+    font-size: 1.5em;
 }

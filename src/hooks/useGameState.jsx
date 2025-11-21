@@ -42,11 +42,10 @@ const allItems = [
   ...headsData,
 ];
 
-// --- HELPER-FUNKTION FÜR LOG-EINTRÄGE ---
 const createLogEntry = (message, type = "general") => ({
   id: Date.now() + Math.random(),
   timestamp: new Date(),
-  type,
+  type, 
   message,
 });
 
@@ -54,13 +53,12 @@ export const useGameState = () => {
   const [gameState, setGameState] = useState({
     screen: "start",
     character: null,
-    logEntries: [],
+    logEntries: [], 
   });
 
-  // Autosave
   useEffect(() => {
     if (gameState.screen === "game" && gameState.character) {
-      saveAutoSave(gameState);
+      saveAutoSave(gameState); 
     }
   }, [gameState]);
 
@@ -158,19 +156,18 @@ export const useGameState = () => {
       }
     });
 
-    // Inventar hydrieren
     const rawInventory = finalizedCharacter.inventory || [];
     const characterInventory = rawInventory.map(rawItem => {
-      const itemDef = allItems.find(i => i.id === rawItem.itemId);
-      if (!itemDef) {
-        console.warn(`Item-Definition nicht gefunden für ID: ${rawItem.itemId}`);
-        return null;
-      }
-      return {
-        ...itemDef,
-        ...rawItem,
-        id: rawItem.instanceId || crypto.randomUUID()
-      };
+        const itemDef = allItems.find(i => i.id === rawItem.itemId);
+        if (!itemDef) {
+            console.warn(`Item-Definition nicht gefunden für ID: ${rawItem.itemId}`);
+            return null;
+        }
+        return {
+            ...itemDef,      
+            ...rawItem,      
+            id: rawItem.instanceId || crypto.randomUUID() 
+        };
     }).filter(Boolean);
 
     const characterWithStats = {
@@ -339,7 +336,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  // +++ GEÄNDERT: UNEQUIP ZUERST DEFINIEREN +++
   const handleUnequipItem = useCallback((item, sourceSlot) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -368,7 +364,6 @@ export const useGameState = () => {
       };
     });
   }, []);
-  // +++ ENDE +++
 
   const handleEquipItem = useCallback((item, targetSlot) => {
     setGameState((prevState) => {
@@ -380,7 +375,7 @@ export const useGameState = () => {
         (invItem) => invItem.id === item.id
       );
       if (itemIndex === -1) return prevState;
-
+      
       inventory.splice(itemIndex, 1);
       const previouslyEquippedItem = equipment[targetSlot];
       if (previouslyEquippedItem) {
@@ -401,7 +396,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  // +++ KÖCHER LOGIK (Hinzugefügt) +++
   const handleFillQuiver = useCallback((ammoItem) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -414,8 +408,8 @@ export const useGameState = () => {
 
       if (quiver.content && quiver.content.itemId !== ammoItem.itemId) {
         return {
-          ...prevState,
-          logEntries: [...prevState.logEntries, createLogEntry(`Der Köcher enthält bereits ${quiver.content.name}.`, "general")]
+            ...prevState,
+            logEntries: [...prevState.logEntries, createLogEntry(`Der Köcher enthält bereits ${quiver.content.name}.`, "general")]
         };
       }
 
@@ -423,35 +417,35 @@ export const useGameState = () => {
       const spaceLeft = (quiver.capacity || 20) - currentAmount;
 
       if (spaceLeft <= 0) {
-        return {
-          ...prevState,
-          logEntries: [...prevState.logEntries, createLogEntry("Der Köcher ist voll.", "general")]
+         return {
+            ...prevState,
+            logEntries: [...prevState.logEntries, createLogEntry("Der Köcher ist voll.", "general")]
         };
       }
 
       const amountToTransfer = Math.min(spaceLeft, ammoItem.quantity);
 
       const newContent = {
-        itemId: ammoItem.itemId,
-        name: ammoItem.name,
-        quantity: currentAmount + amountToTransfer
+          itemId: ammoItem.itemId,
+          name: ammoItem.name,
+          quantity: currentAmount + amountToTransfer
       };
-
+      
       const newQuiver = { ...quiver, content: newContent };
       equipment.ammo = newQuiver;
 
       const inventory = [...character.inventory];
       const invItemIndex = inventory.findIndex(i => i.id === ammoItem.id);
-
+      
       if (invItemIndex > -1) {
-        if (inventory[invItemIndex].quantity > amountToTransfer) {
-          inventory[invItemIndex] = {
-            ...inventory[invItemIndex],
-            quantity: inventory[invItemIndex].quantity - amountToTransfer
-          };
-        } else {
-          inventory.splice(invItemIndex, 1);
-        }
+          if (inventory[invItemIndex].quantity > amountToTransfer) {
+              inventory[invItemIndex] = { 
+                  ...inventory[invItemIndex], 
+                  quantity: inventory[invItemIndex].quantity - amountToTransfer 
+              };
+          } else {
+              inventory.splice(invItemIndex, 1);
+          }
       }
 
       return {
@@ -473,23 +467,24 @@ export const useGameState = () => {
 
       const inventory = [...character.inventory];
       const ammoToReturn = quiver.content;
+      
       const existingStackIndex = inventory.findIndex(i => i.itemId === ammoToReturn.itemId);
 
       if (existingStackIndex > -1) {
-        const stack = { ...inventory[existingStackIndex] };
-        stack.quantity += ammoToReturn.quantity;
-        inventory[existingStackIndex] = stack;
+          const stack = { ...inventory[existingStackIndex] };
+          stack.quantity += ammoToReturn.quantity;
+          inventory[existingStackIndex] = stack;
       } else {
-        const baseItem = allItems.find(i => i.id === ammoToReturn.itemId);
-        if (baseItem) {
-          inventory.push({
-            ...baseItem,
-            instanceId: Date.now(),
-            id: Date.now(),
-            itemId: baseItem.id,
-            quantity: ammoToReturn.quantity
-          });
-        }
+          const baseItem = allItems.find(i => i.id === ammoToReturn.itemId);
+          if (baseItem) {
+              inventory.push({
+                  ...baseItem,
+                  instanceId: Date.now(),
+                  id: Date.now(),
+                  itemId: baseItem.id,
+                  quantity: ammoToReturn.quantity
+              });
+          }
       }
 
       const newQuiver = { ...quiver };
@@ -503,26 +498,23 @@ export const useGameState = () => {
       };
     });
   }, []);
-  // +++ ENDE KÖCHER +++
 
-  // +++ FIXED: Toggle 2H mit korrekter Mutation +++
   const handleToggleTwoHanded = useCallback((slotId) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
 
       const character = { ...prevState.character };
       const equipment = { ...character.equipment };
-
+      
       const originalWeapon = equipment[slotId];
       if (!originalWeapon) return prevState;
 
-      // Kopie erstellen!
-      const weapon = { ...originalWeapon };
-
+      const weapon = { ...originalWeapon }; 
+      
       let logEntries = [...prevState.logEntries];
 
       if (weapon.properties && weapon.properties.some((p) => p.startsWith("Vielseitig"))) {
-
+        
         const wasTwoHanded = weapon.isTwoHanded || false;
         weapon.isTwoHanded = !wasTwoHanded;
 
@@ -541,7 +533,6 @@ export const useGameState = () => {
           logEntries.push(createLogEntry(`${weapon.name} wird jetzt einhändig geführt.`, "item"));
         }
 
-        // Zurückschreiben
         equipment[slotId] = weapon;
         character.equipment = equipment;
 
@@ -554,7 +545,6 @@ export const useGameState = () => {
       return prevState;
     });
   }, []);
-  // +++ ENDE FIX +++
 
   const handleUpdatePosition = useCallback((newPosition) => {
     setGameState((prevState) => {
@@ -569,41 +559,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  const handleShortRest = useCallback((diceToSpend) => {
-    setGameState((prevState) => {
-      if (!prevState.character) return prevState;
-
-      const result = performShortRest(prevState.character, diceToSpend);
-
-      if (!result.success) {
-        return {
-          ...prevState,
-          logEntries: [...prevState.logEntries, createLogEntry(result.message, "general")]
-        };
-      }
-
-      return {
-        ...prevState,
-        character: result.character,
-        logEntries: [...prevState.logEntries, createLogEntry(result.message, "general")]
-      };
-    });
-  }, []);
-
-  const handleLongRest = useCallback(() => {
-    setGameState((prevState) => {
-      if (!prevState.character) return prevState;
-
-      const result = performLongRest(prevState.character);
-
-      return {
-        ...prevState,
-        character: result.character,
-        logEntries: [...prevState.logEntries, createLogEntry(result.message, "general")]
-      };
-    });
-  }, []);
-
   const handleConfirmLevelUp = useCallback((hpRollResult, levelUpChoices) => {
     setGameState((prevState) => {
       if (!prevState.character || !prevState.character.pendingLevelUp) {
@@ -613,7 +568,7 @@ export const useGameState = () => {
       const updatedCharacter = applyLevelUp(
         prevState.character,
         hpRollResult,
-        levelUpChoices
+        levelUpChoices 
       );
 
       const newLogEntry = createLogEntry(
@@ -629,9 +584,49 @@ export const useGameState = () => {
     });
   }, []);
 
+  const handleShortRest = useCallback((diceToSpend) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const result = performShortRest(prevState.character, diceToSpend);
+      
+      if (!result.success) return prevState;
+
+      return {
+          ...prevState,
+          character: result.character,
+          logEntries: [...prevState.logEntries, createLogEntry(result.message, "general")]
+      };
+    });
+  }, []);
+
+  const handleLongRest = useCallback((diceToSpend) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const result = performLongRest(prevState.character);
+      
+      return {
+          ...prevState,
+          character: result.character,
+          logEntries: [...prevState.logEntries, createLogEntry(result.message, "general")]
+      };
+    });
+  }, []);
+
+  // +++ NEU: Shop Handler +++
+  const handleShopTransaction = useCallback((newCharacter, logMessage) => {
+    setGameState((prevState) => {
+      const newLogEntry = createLogEntry(logMessage, "item");
+      return {
+        ...prevState,
+        character: newCharacter,
+        logEntries: [...prevState.logEntries, newLogEntry],
+      };
+    });
+  }, []);
+
   return {
     gameState,
-    setGameState,
+    setGameState, 
     handleNewGame,
     handleLoadAutoSaveGame,
     handleDeleteGame,
@@ -641,8 +636,8 @@ export const useGameState = () => {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
-    handleFillQuiver, // <-- Jetzt da
-    handleUnloadQuiver, // <-- Jetzt da
+    handleFillQuiver, 
+    handleUnloadQuiver, 
     handleEnterLocation,
     handleLeaveLocation,
     handleUpdatePosition,
@@ -650,6 +645,7 @@ export const useGameState = () => {
     handleConfirmLevelUp,
     handleShortRest,
     handleLongRest,
+    handleShopTransaction,
     rollDiceFormula,
   };
 };

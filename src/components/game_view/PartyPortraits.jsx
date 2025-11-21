@@ -1,36 +1,50 @@
-// src/components/game_view/PartyPortraits.js
+// src/components/game_view/PartyPortraits.jsx
 import React from 'react';
 import './PartyPortraits.css';
 
+// Hilfsfunktion für Portrait-Bilder
+const portraitImages = import.meta.glob('../../assets/images/portraits/**/*.webp', { eager: true, import: 'default' });
+
+const getPortraitModule = (raceKey, gender, portraitIndex) => {
+    // Fallback, falls raceKey nicht existiert (z.B. bei Initialisierung)
+    if (!raceKey) return null;
+    
+    const genderString = gender === 'male' ? 'male' : 'female';
+    const path = `../../assets/images/portraits/${raceKey}/${genderString}/${portraitIndex}.webp`;
+    return portraitImages[path];
+};
+
 export const PartyPortraits = ({ party, activeCharacterId, onSelectCharacter }) => {
+  if (!party) return null;
+
   return (
     <div className="party-portraits-container">
-      {party.map(member => {
-        // hp als Zahl auslesen, egal ob Object oder Number
-        const rawHp = member.stats?.hp ?? 10;
-        const hp = typeof rawHp === 'object' && rawHp.total !== undefined ? rawHp.total : rawHp;
-
-        const maxHpRaw = member.stats?.maxHp ?? 10;
-        const maxHp = typeof maxHpRaw === 'object' && maxHpRaw.total !== undefined ? maxHpRaw.total : maxHpRaw;
+      {party.map((char, index) => {
+        // Bestimme das Bild
+        let imgSrc = char.portrait;
+        if (!imgSrc && char.race) {
+            // Fallback: Versuche Bild dynamisch zu laden, falls nicht im Char gespeichert
+            imgSrc = getPortraitModule(char.race.key, char.gender, 1); 
+        }
 
         return (
           <div 
-            key={member.id} 
-            className={`portrait-item ${member.id === activeCharacterId ? 'active' : ''}`}
-            onClick={() => onSelectCharacter(member.id)}
-            title={member.stats?.hpDetail ? `${member.stats.hpDetail.die} + Mod ${member.stats.hpDetail.bonus} = ${member.stats.hpDetail.total}` : undefined}
+            key={char.id || index} // <--- HIER WAR DER FEHLER (Key hinzugefügt)
+            className={`portrait-wrapper ${char.id === activeCharacterId ? 'active' : ''}`}
+            onClick={() => onSelectCharacter(char.id || 'player')}
           >
-            <img src={member.portrait} alt={member.name} className="character-portrait-img" />
+            {imgSrc ? (
+                <img src={imgSrc} alt={char.name} className="portrait-image" />
+            ) : (
+                <div className="portrait-placeholder">{char.name?.charAt(0)}</div>
+            )}
             
-            <div className="character-overlay">
-              <span className="name">{member.name}</span>
-              <div className="hp-bar-wrapper">
+            {/* Mini HP Bar */}
+            <div className="mini-hp-bar">
                 <div 
-                  className="hp-bar" 
-                  style={{ width: `${(hp / maxHp) * 100}%` }}
-                ></div>
-                <span className="hp-text">{`${hp} / ${maxHp}`}</span>
-              </div>
+                    className="mini-hp-fill" 
+                    style={{ width: `${(char.stats.hp / char.stats.maxHp) * 100}%` }}
+                />
             </div>
           </div>
         );
