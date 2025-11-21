@@ -151,44 +151,25 @@
   ]
 },
   {
-  "key": "bard",
-  "name": "Barde",
-  "icon": "Class_Bard_Icon.png",
-  "description": "Ein inspirierender Magier, dessen Macht von Musik, Worten und Geschichten herrührt. Seine Magie entspringt der schöpferischen Energie des Multiversums.",
-  "hit_die": 8,
-  "saving_throws": ["dexterity", "charisma"],
-  "spellcasting": {
-    "type": "FULL",
-    "casting_ability": "cha",
-    "cantrip_progression": [
-      2, 2, 2, 
-      3, 3, 3, 3, 3, 3, 
-      4, 4, 4, 4, 4, 4, 4, 
-      5, 5, 5, 5
-    ],
-    "spell_slots_by_level": [
-      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 3, 1, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 2, 1]
-    ]
-  },
+    "key": "bard",
+    "name": "Barde",
+    "icon": "Class_Bard_Icon.png",
+    "description": "Ein inspirierender Magier, dessen Macht von Musik herrührt.",
+    "hit_die": 8,
+    "saving_throws": ["dexterity", "charisma"],
+    "spellcasting": {
+      "type": "FULL",
+      "casting_ability": "cha",
+      "cantrip_progression": [2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5],
+      "spells_known_progression": [4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 15, 16, 18, 19, 19, 20, 22, 22, 22],
+      "spell_slots_by_level": [
+        [2, 0, 0, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0, 0, 0, 0], [4, 2, 0, 0, 0, 0, 0, 0, 0], [4, 3, 0, 0, 0, 0, 0, 0, 0],
+        [4, 3, 2, 0, 0, 0, 0, 0, 0], [4, 3, 3, 0, 0, 0, 0, 0, 0], [4, 3, 3, 1, 0, 0, 0, 0, 0], [4, 3, 3, 2, 0, 0, 0, 0, 0],
+        [4, 3, 3, 3, 1, 0, 0, 0, 0], [4, 3, 3, 3, 2, 0, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0],
+        [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0],
+        [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1], [4, 3, 3, 3, 3, 2, 2, 2, 1]
+      ]
+    },
   "proficiencies": {
     "armor": ["Leichte Rüstung"],
     "weapons": ["Einfache Waffen", "Handarmbrüste", "Langschwerter", "Rapier", "Kurzschwerter"],
@@ -308,44 +289,24 @@
   ]
 },
   {
-  "key": "cleric",
-  "name": "Kleriker",
-  "icon": "Class_Cleric_Icon.png",
-  "description": "Ein Kleriker ist ein Priester, der göttliche Magie ausübt, um die Macht seiner Gottheit in die Welt zu tragen.",
-  "hit_die": 8,
-  "saving_throws": ["wisdom", "charisma"],
-  "spellcasting": {
-    "type": "FULL",
-    "casting_ability": "wis",
-    "cantrip_progression": [
-      3, 3, 3, 
-      4, 4, 4, 4, 4, 4, 
-      5, 5, 5, 5, 5, 5, 5, 
-      6, 6, 6, 6
-    ],
-    "spell_slots_by_level": [
-      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 3, 1, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 2, 1]
-    ]
-  },
+    "key": "cleric",
+    "name": "Kleriker",
+    "icon": "Class_Cleric_Icon.png",
+    "description": "Ein Priester, der göttliche Magie ausübt.",
+    "hit_die": 8,
+    "saving_throws": ["wisdom", "charisma"],
+    "spellcasting": {
+      "type": "FULL",
+      "casting_ability": "wis",
+      "cantrip_progression": [3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+      "spell_slots_by_level": [
+        [2, 0, 0, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0, 0, 0, 0], [4, 2, 0, 0, 0, 0, 0, 0, 0], [4, 3, 0, 0, 0, 0, 0, 0, 0],
+        [4, 3, 2, 0, 0, 0, 0, 0, 0], [4, 3, 3, 0, 0, 0, 0, 0, 0], [4, 3, 3, 1, 0, 0, 0, 0, 0], [4, 3, 3, 2, 0, 0, 0, 0, 0],
+        [4, 3, 3, 3, 1, 0, 0, 0, 0], [4, 3, 3, 3, 2, 0, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0],
+        [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0],
+        [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1], [4, 3, 3, 3, 3, 2, 2, 2, 1]
+      ]
+    },
   "proficiencies": {
     "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
     "weapons": ["Einfache Waffen"],
@@ -569,44 +530,24 @@
   ]
 },
   {
-  "key": "druid",
-  "name": "Druide",
-  "icon": "Class_Druid_Icon.png",
-  "description": "Ein Priester der Alten Weise, der seine Macht aus der Natur selbst schöpft und die Gestalt wilder Tiere annehmen kann.",
-  "hit_die": 8,
-  "saving_throws": ["intelligence", "wisdom"],
-  "spellcasting": {
-    "type": "FULL",
-    "casting_ability": "wis",
-    "cantrip_progression": [
-      2, 2, 2, 
-      3, 3, 3, 3, 3, 3, 
-      4, 4, 4, 4, 4, 4, 4, 
-      5, 5, 5, 5
-    ],
-    "spell_slots_by_level": [
-      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 3, 1, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 2, 1]
-    ]
-  },
+    "key": "druid",
+    "name": "Druide",
+    "icon": "Class_Druid_Icon.png",
+    "description": "Ein Priester der Alten Weise, der die Gestalt wilder Tiere annehmen kann.",
+    "hit_die": 8,
+    "saving_throws": ["intelligence", "wisdom"],
+    "spellcasting": {
+      "type": "FULL",
+      "casting_ability": "wis",
+      "cantrip_progression": [2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+      "spell_slots_by_level": [
+        [2, 0, 0, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0, 0, 0, 0], [4, 2, 0, 0, 0, 0, 0, 0, 0], [4, 3, 0, 0, 0, 0, 0, 0, 0],
+        [4, 3, 2, 0, 0, 0, 0, 0, 0], [4, 3, 3, 0, 0, 0, 0, 0, 0], [4, 3, 3, 1, 0, 0, 0, 0, 0], [4, 3, 3, 2, 0, 0, 0, 0, 0],
+        [4, 3, 3, 3, 1, 0, 0, 0, 0], [4, 3, 3, 3, 2, 0, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0],
+        [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0],
+        [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1], [4, 3, 3, 3, 3, 2, 2, 2, 1]
+      ]
+    },
   "proficiencies": {
     "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde (nicht aus Metall)"],
     "weapons": ["Keulen", "Dolche", "Wurfspeere", "Streitkolben", "Kampfstäbe", "Krummsäbel", "Sicheln", "Schleudern"],
@@ -722,26 +663,20 @@
 },
   {
   "key": "fighter",
-  "name": "Kämpfer",
-  "icon": "Class_Fighter_Icon.png",
-  "description": "Ein Meister der Kampfkunst, der in jeder Waffe und Rüstung geübt ist und über unübertroffene Fähigkeiten auf dem Schlachtfeld verfügt.",
-  "hit_die": 10,
-  "saving_throws": ["strength", "constitution"],
-  "proficiencies": {
-    "armor": ["Alle Rüstungen", "Schilde"],
-    "weapons": ["Einfache Waffen", "Kriegswaffen"],
-    "skills": {
-      "choose": 2,
-      "from": ["acrobatics", "animal_handling", "athletics", "history", "insight", "intimidation", "perception", "survival"]
-    }
-  }, 
-  "weapon_mastery": {
-    "level_1_count": 3,
-    "level_4_count": 4,
-    "level_10_count": 5,
-    "level_16_count": 6,
-    "available_weapons": ["Handaxt", "Streitaxt","Großaxt","Großschwert","Großkeule","Hellebarde","Glefe","Pike","Lanze","Langschwert","Kurzschwert","Krummsäbel","Rapier","Morgenstern","Kriegshammer","Dreizack","Wurfspeer"]
-  },
+    "name": "Kämpfer",
+    "icon": "Class_Fighter_Icon.png",
+    "description": "Ein Meister der Kampfkunst.",
+    "hit_die": 10,
+    "saving_throws": ["strength", "constitution"],
+    "proficiencies": {
+      "armor": ["Alle Rüstungen", "Schilde"],
+      "weapons": ["Einfache Waffen", "Kriegswaffen"],
+      "skills": { "choose": 2, "from": ["acrobatics", "animal_handling", "athletics", "history", "insight", "intimidation", "perception", "survival"] }
+    },
+    "weapon_mastery": {
+      "level_1_count": 3, "level_4_count": 4, "level_10_count": 5, "level_16_count": 6,
+      "available_weapons": ["Handaxt", "Streitaxt","Großaxt","Großschwert","Großkeule","Hellebarde","Glefe","Pike","Lanze","Langschwert","Kurzschwert","Krummsäbel","Rapier","Morgenstern","Kriegshammer","Dreizack","Wurfspeer"]
+    },
   "features": [
     { "level": 1, "name": "Kampfstil", "description": "Du nimmst einen besonderen Kampfstil als deine Spezialität an (z.B. Bogenschießen, Verteidigung, Duellieren, Zwei-Waffen-Kampf)." },
     { "level": 1, "name": "Zweite Luft", "description": "Du kannst eine Bonusaktion verwenden, um Trefferpunkte in Höhe von 1W10 + deinem Kämpferlevel zurückzugewinnen." },
@@ -899,26 +834,21 @@
   ]
 },
   {
-  "key": "monk",
-  "name": "Mönch",
-  "icon": "Class_Monk_Icon.png",
-  "description": "Ein Meister der Kampfkünste, der die Kraft von Körper und Geist nutzt, um die mystische Energie des Ki zu kanalisieren.",
-  "hit_die": 8,
-  "saving_throws": ["strength", "dexterity"],
-  "proficiencies": {
-    "weapons": ["Einfache Waffen", "Kurzschwerter"],
-    "tools": ["Ein Handwerkerwerkzeug oder ein Musikinstrument deiner Wahl"],
-    "skills": {
-      "choose": 2,
-      "from": ["acrobatics", "athletics", "history", "insight", "religion", "stealth"]
-    }
-  },
-  "martial_arts_progression": [
-    { "level": 1, "dice": "1W4" },
-    { "level": 5, "dice": "1W6" },
-    { "level": 11, "dice": "1W8" },
-    { "level": 17, "dice": "1W10" }
-  ],
+    "key": "monk",
+    "name": "Mönch",
+    "icon": "Class_Monk_Icon.png",
+    "description": "Ein Meister der Kampfkünste und des Ki.",
+    "hit_die": 8,
+    "saving_throws": ["strength", "dexterity"],
+    "proficiencies": {
+      "weapons": ["Einfache Waffen", "Kurzschwerter"],
+      "tools": ["Ein Handwerkerwerkzeug oder ein Musikinstrument"],
+      "skills": { "choose": 2, "from": ["acrobatics", "athletics", "history", "insight", "religion", "stealth"] }
+    },
+    "martial_arts_progression": [
+      { "level": 1, "dice": "1W4" }, { "level": 5, "dice": "1W6" },
+      { "level": 11, "dice": "1W8" }, { "level": 17, "dice": "1W10" }
+    ],
   "features": [
     { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung oder Schild trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Weisheitsmodifikator." },
     { "level": 1, "name": "Kampfkunst", "description": "Du kannst Geschicklichkeit anstelle von Stärke für Angriffe mit unbewaffneten Schlägen und Mönchswaffen verwenden. Dein Schadenswürfel für diese Angriffe skaliert mit deinem Level (beginnend mit 1W4). Wenn du angreifst, kannst du einen unbewaffneten Schlag als Bonusaktion ausführen." },
@@ -1061,41 +991,24 @@
   ]
 },
  {
-  "key": "paladin",
-  "name": "Paladin",
-  "icon": "Class_Paladin_Icon.png",
-  "description": "Ein heiliger Krieger, gebunden an einen Eid, der als Leuchtfeuer der Hoffnung in einer von Dunkelheit geplagten Welt dient.",
-  "hit_die": 10,
-  "saving_throws": ["wisdom", "charisma"],
-  "spellcasting": {
-    "type": "HALF",
-    "casting_ability": "cha",
-    "cantrip_progression": [
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    ],
-    "spell_slots_by_level": [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [2, 0, 0, 0, 0, 0, 0, 0, 0],
-      [3, 0, 0, 0, 0, 0, 0, 0, 0],
-      [3, 0, 0, 0, 0, 0, 0, 0, 0],
-      [4, 2, 0, 0, 0, 0, 0, 0, 0],
-      [4, 2, 0, 0, 0, 0, 0, 0, 0],
-      [4, 3, 0, 0, 0, 0, 0, 0, 0],
-      [4, 3, 0, 0, 0, 0, 0, 0, 0],
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0]
-    ]
-  },
+    "key": "paladin",
+    "name": "Paladin",
+    "icon": "Class_Paladin_Icon.png",
+    "description": "Ein heiliger Krieger, gebunden an einen Eid.",
+    "hit_die": 10,
+    "saving_throws": ["wisdom", "charisma"],
+    "spellcasting": {
+      "type": "HALF",
+      "casting_ability": "cha",
+      "cantrip_progression": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "spell_slots_by_level": [
+        [0,0,0,0,0,0,0,0,0], [2,0,0,0,0,0,0,0,0], [3,0,0,0,0,0,0,0,0], [3,0,0,0,0,0,0,0,0],
+        [4,2,0,0,0,0,0,0,0], [4,2,0,0,0,0,0,0,0], [4,3,0,0,0,0,0,0,0], [4,3,0,0,0,0,0,0,0],
+        [4,3,2,0,0,0,0,0,0], [4,3,2,0,0,0,0,0,0], [4,3,3,0,0,0,0,0,0], [4,3,3,0,0,0,0,0,0],
+        [4,3,3,1,0,0,0,0,0], [4,3,3,1,0,0,0,0,0], [4,3,3,2,0,0,0,0,0], [4,3,3,2,0,0,0,0,0],
+        [4,3,3,3,1,0,0,0,0], [4,3,3,3,1,0,0,0,0], [4,3,3,3,2,0,0,0,0], [4,3,3,3,2,0,0,0,0]
+      ]
+    },
   "proficiencies": {
     "armor": ["Alle Rüstungen", "Schilde"],
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
@@ -1243,41 +1156,25 @@
   ]
 },
   {
-  "key": "ranger",
-  "name": "Waldläufer",
-  "icon": "Class_Ranger_Icon.png",
-  "description": "Ein Krieger der Wildnis, der Feinde mit geschärften Sinnen, tödlichen Waffen und einer tiefen Verbindung zur Natur jagt.",
-  "hit_die": 10,
-  "saving_throws": ["strength", "dexterity"],
-  "spellcasting": {
-    "type": "HALF",
-    "casting_ability": "wis",
-    "cantrip_progression": [
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    ],
-    "spell_slots_by_level": [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [2, 0, 0, 0, 0, 0, 0, 0, 0],
-      [3, 0, 0, 0, 0, 0, 0, 0, 0],
-      [3, 0, 0, 0, 0, 0, 0, 0, 0],
-      [4, 2, 0, 0, 0, 0, 0, 0, 0],
-      [4, 2, 0, 0, 0, 0, 0, 0, 0],
-      [4, 3, 0, 0, 0, 0, 0, 0, 0],
-      [4, 3, 0, 0, 0, 0, 0, 0, 0],
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0]
-    ]
-  },
+    "key": "ranger",
+    "name": "Waldläufer",
+    "icon": "Class_Ranger_Icon.png",
+    "description": "Ein Krieger der Wildnis mit geschärften Sinnen.",
+    "hit_die": 10,
+    "saving_throws": ["strength", "dexterity"],
+    "spellcasting": {
+      "type": "HALF",
+      "casting_ability": "wis",
+      "cantrip_progression": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      "spells_known_progression": [0, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11],
+      "spell_slots_by_level": [
+        [0,0,0,0,0,0,0,0,0], [2,0,0,0,0,0,0,0,0], [3,0,0,0,0,0,0,0,0], [3,0,0,0,0,0,0,0,0],
+        [4,2,0,0,0,0,0,0,0], [4,2,0,0,0,0,0,0,0], [4,3,0,0,0,0,0,0,0], [4,3,0,0,0,0,0,0,0],
+        [4,3,2,0,0,0,0,0,0], [4,3,2,0,0,0,0,0,0], [4,3,3,0,0,0,0,0,0], [4,3,3,0,0,0,0,0,0],
+        [4,3,3,1,0,0,0,0,0], [4,3,3,1,0,0,0,0,0], [4,3,3,2,0,0,0,0,0], [4,3,3,2,0,0,0,0,0],
+        [4,3,3,3,1,0,0,0,0], [4,3,3,3,1,0,0,0,0], [4,3,3,3,2,0,0,0,0], [4,3,3,3,2,0,0,0,0]
+      ]
+    },
   "proficiencies": {
     "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
     "weapons": ["Einfache Waffen", "Kriegswaffen"],
@@ -1431,33 +1328,25 @@
   ]
 },
   {
-  "key": "rogue",
-  "name": "Schurke",
-  "icon": "Class_Rogue_Icon.png",
-  "description": "Ein listiger und schwer fassbarer Abenteurer, der mit Geschick, Heimlichkeit und den Schwächen seiner Feinde zum Erfolg kommt.",
-  "hit_die": 8,
-  "saving_throws": ["dexterity", "intelligence"],
-  "proficiencies": {
-    "armor": ["Leichte Rüstung"],
-    "weapons": ["Einfache Waffen", "Handarmbrüste", "Langschwerter", "Rapier", "Kurzschwerter"],
-    "tools": ["Diebeswerkzeug"],
-    "skills": {
-      "choose": 4,
-      "from": ["acrobatics", "athletics", "deception", "insight", "intimidation", "investigation", "perception", "performance", "persuasion", "sleight_of_hand", "stealth"]
-    }
-  },
-  "sneak_attack_progression": [
-    { "level": 1, "dice": "1W6" }, { "level": 2, "dice": "1W6" },
-    { "level": 3, "dice": "2W6" }, { "level": 4, "dice": "2W6" },
-    { "level": 5, "dice": "3W6" }, { "level": 6, "dice": "3W6" },
-    { "level": 7, "dice": "4W6" }, { "level": 8, "dice": "4W6" },
-    { "level": 9, "dice": "5W6" }, { "level": 10, "dice": "5W6" },
-    { "level": 11, "dice": "6W6" }, { "level": 12, "dice": "6W6" },
-    { "level": 13, "dice": "7W6" }, { "level": 14, "dice": "7W6" },
-    { "level": 15, "dice": "8W6" }, { "level": 16, "dice": "8W6" },
-    { "level": 17, "dice": "9W6" }, { "level": 18, "dice": "9W6" },
-    { "level": 19, "dice": "10W6" }, { "level": 20, "dice": "10W6" }
-  ],
+    "key": "rogue",
+    "name": "Schurke",
+    "icon": "Class_Rogue_Icon.png",
+    "description": "Ein listiger Abenteurer, der mit Geschick und Heimlichkeit arbeitet.",
+    "hit_die": 8,
+    "saving_throws": ["dexterity", "intelligence"],
+    "proficiencies": {
+      "armor": ["Leichte Rüstung"],
+      "weapons": ["Einfache Waffen", "Handarmbrüste", "Langschwerter", "Rapier", "Kurzschwerter"],
+      "tools": ["Diebeswerkzeug"],
+      "skills": { "choose": 4, "from": ["acrobatics", "athletics", "deception", "insight", "intimidation", "investigation", "perception", "performance", "persuasion", "sleight_of_hand", "stealth"] }
+    },
+    "sneak_attack_progression": [
+      { "level": 1, "dice": "1W6" }, { "level": 2, "dice": "1W6" }, { "level": 3, "dice": "2W6" }, { "level": 4, "dice": "2W6" },
+      { "level": 5, "dice": "3W6" }, { "level": 6, "dice": "3W6" }, { "level": 7, "dice": "4W6" }, { "level": 8, "dice": "4W6" },
+      { "level": 9, "dice": "5W6" }, { "level": 10, "dice": "5W6" }, { "level": 11, "dice": "6W6" }, { "level": 12, "dice": "6W6" },
+      { "level": 13, "dice": "7W6" }, { "level": 14, "dice": "7W6" }, { "level": 15, "dice": "8W6" }, { "level": 16, "dice": "8W6" },
+      { "level": 17, "dice": "9W6" }, { "level": 18, "dice": "9W6" }, { "level": 19, "dice": "10W6" }, { "level": 20, "dice": "10W6" }
+    ],
   "weapon_mastery": {
   "level_1_count": 2,
   "available_weapons": ["Rapier", "Krummsäbel", "Kurzschwert", "Handaxt", "Wurfspeer"]
@@ -1610,44 +1499,25 @@
   ]
 },
   {
-  "key": "sorcerer",
-  "name": "Zauberer",
-  "icon": "Class_Sorcerer_Icon.png",
-  "description": "Ein Zauberwirker, der seine Magie aus einer angeborenen Gabe oder einer übernatürlichen Blutlinie schöpft.",
-  "hit_die": 6,
-  "saving_throws": ["constitution", "charisma"],
-  "spellcasting": {
-    "type": "FULL",
-    "casting_ability": "cha",
-    "cantrip_progression": [
-      4, 4, 4, 
-      5, 5, 5, 5, 5, 5, 
-      6, 6, 6, 6, 6, 6, 6, 
-      7, 7, 7, 7
-    ],
-    "spell_slots_by_level": [
-      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 3, 1, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 2, 1]
-    ]
-  },
+    "key": "sorcerer",
+    "name": "Zauberer",
+    "icon": "Class_Sorcerer_Icon.png",
+    "description": "Ein Zauberwirker mit angeborener Magie.",
+    "hit_die": 6,
+    "saving_throws": ["constitution", "charisma"],
+    "spellcasting": {
+      "type": "FULL",
+      "casting_ability": "cha",
+      "cantrip_progression": [4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
+      "spells_known_progression": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15, 15],
+      "spell_slots_by_level": [
+        [2, 0, 0, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0, 0, 0, 0], [4, 2, 0, 0, 0, 0, 0, 0, 0], [4, 3, 0, 0, 0, 0, 0, 0, 0],
+        [4, 3, 2, 0, 0, 0, 0, 0, 0], [4, 3, 3, 0, 0, 0, 0, 0, 0], [4, 3, 3, 1, 0, 0, 0, 0, 0], [4, 3, 3, 2, 0, 0, 0, 0, 0],
+        [4, 3, 3, 3, 1, 0, 0, 0, 0], [4, 3, 3, 3, 2, 0, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0],
+        [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0],
+        [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1], [4, 3, 3, 3, 3, 2, 2, 2, 1]
+      ]
+    },
   "proficiencies": {
     "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
     "skills": {
@@ -1760,47 +1630,44 @@
   ]
 },
   {
-  "key": "warlock",
-  "name": "Hexenmeister",
-  "icon": "Class_Warlock_Icon.png",
-  "description": "Ein Zauberwirker, der seine Macht durch einen Pakt mit einem außerweltlichen Wesen erlangt hat.",
-  "hit_die": 8,
-  "saving_throws": ["wisdom", "charisma"],
-  "spellcasting": {
-    "type": "PACT",
-    "casting_ability": "cha",
-    "cantrip_progression": [ 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ]
-  },
-  "proficiencies": {
-    "armor": ["Leichte Rüstung"],
-    "weapons": ["Einfache Waffen"],
-    "skills": {
-      "choose": 2,
-      "from": ["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"]
-    }
-  },
-  "pact_magic_progression": [
-    { "level": 1, "slots": 1, "slot_level": 1, "invocations_known": 0 },
-    { "level": 2, "slots": 2, "slot_level": 1, "invocations_known": 2 },
-    { "level": 3, "slots": 2, "slot_level": 2, "invocations_known": 2 },
-    { "level": 4, "slots": 2, "slot_level": 2, "invocations_known": 2 },
-    { "level": 5, "slots": 2, "slot_level": 3, "invocations_known": 3 },
-    { "level": 6, "slots": 2, "slot_level": 3, "invocations_known": 3 },
-    { "level": 7, "slots": 2, "slot_level": 4, "invocations_known": 4 },
-    { "level": 8, "slots": 2, "slot_level": 4, "invocations_known": 4 },
-    { "level": 9, "slots": 2, "slot_level": 5, "invocations_known": 5 },
-    { "level": 10, "slots": 2, "slot_level": 5, "invocations_known": 5 },
-    { "level": 11, "slots": 3, "slot_level": 5, "invocations_known": 5 },
-    { "level": 12, "slots": 3, "slot_level": 5, "invocations_known": 6 },
-    { "level": 13, "slots": 3, "slot_level": 5, "invocations_known": 6 },
-    { "level": 14, "slots": 3, "slot_level": 5, "invocations_known": 6 },
-    { "level": 15, "slots": 3, "slot_level": 5, "invocations_known": 7 },
-    { "level": 16, "slots": 3, "slot_level": 5, "invocations_known": 7 },
-    { "level": 17, "slots": 4, "slot_level": 5, "invocations_known": 7 },
-    { "level": 18, "slots": 4, "slot_level": 5, "invocations_known": 8 },
-    { "level": 19, "slots": 4, "slot_level": 5, "invocations_known": 8 },
-    { "level": 20, "slots": 4, "slot_level": 5, "invocations_known": 8 }
-  ],
+    "key": "warlock",
+    "name": "Hexenmeister",
+    "icon": "Class_Warlock_Icon.png",
+    "description": "Ein Zauberwirker mit einem Pakt.",
+    "hit_die": 8,
+    "saving_throws": ["wisdom", "charisma"],
+    "spellcasting": {
+      "type": "PACT",
+      "casting_ability": "cha",
+      "cantrip_progression": [ 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ]
+    },
+    "proficiencies": {
+      "armor": ["Leichte Rüstung"],
+      "weapons": ["Einfache Waffen"],
+      "skills": { "choose": 2, "from": ["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"] }
+    },
+    "pact_magic_progression": [
+      { "level": 1, "slots": 1, "slot_level": 1, "invocations_known": 0, "spells_known": 2 },
+      { "level": 2, "slots": 2, "slot_level": 1, "invocations_known": 2, "spells_known": 3 },
+      { "level": 3, "slots": 2, "slot_level": 2, "invocations_known": 2, "spells_known": 4 },
+      { "level": 4, "slots": 2, "slot_level": 2, "invocations_known": 2, "spells_known": 5 },
+      { "level": 5, "slots": 2, "slot_level": 3, "invocations_known": 3, "spells_known": 6 },
+      { "level": 6, "slots": 2, "slot_level": 3, "invocations_known": 3, "spells_known": 7 },
+      { "level": 7, "slots": 2, "slot_level": 4, "invocations_known": 4, "spells_known": 8 },
+      { "level": 8, "slots": 2, "slot_level": 4, "invocations_known": 4, "spells_known": 9 },
+      { "level": 9, "slots": 2, "slot_level": 5, "invocations_known": 5, "spells_known": 10 },
+      { "level": 10, "slots": 2, "slot_level": 5, "invocations_known": 5, "spells_known": 10 },
+      { "level": 11, "slots": 3, "slot_level": 5, "invocations_known": 5, "spells_known": 11 },
+      { "level": 12, "slots": 3, "slot_level": 5, "invocations_known": 6, "spells_known": 11 },
+      { "level": 13, "slots": 3, "slot_level": 5, "invocations_known": 6, "spells_known": 12 },
+      { "level": 14, "slots": 3, "slot_level": 5, "invocations_known": 6, "spells_known": 12 },
+      { "level": 15, "slots": 3, "slot_level": 5, "invocations_known": 7, "spells_known": 13 },
+      { "level": 16, "slots": 3, "slot_level": 5, "invocations_known": 7, "spells_known": 13 },
+      { "level": 17, "slots": 4, "slot_level": 5, "invocations_known": 7, "spells_known": 14 },
+      { "level": 18, "slots": 4, "slot_level": 5, "invocations_known": 8, "spells_known": 14 },
+      { "level": 19, "slots": 4, "slot_level": 5, "invocations_known": 8, "spells_known": 15 },
+      { "level": 20, "slots": 4, "slot_level": 5, "invocations_known": 8, "spells_known": 15 }
+    ],
   "features": [
     { "level": 1, "name": "Außerweltlicher Schutzpatron", "description": "Du schließt einen Pakt mit einem mächtigen Wesen." },
     { "level": 1, "name": "Paktmagie", "description": "Deine Zauberplätze sind begrenzt, regenerieren sich aber nach einer kurzen Rast und skalieren in ihrer Stufe." },
@@ -1924,39 +1791,24 @@
   ]
 },
   {
-  "key": "wizard",
-  "name": "Magier",
-  "icon": "Class_Wizard_Icon.png",
-  "description": "Ein gelehrter Zauberwirker, der die arkanen Energien durch jahrelanges Studium und unermüdliche Forschung zu meistern gelernt hat.",
-  "hit_die": 6,
-  "saving_throws": ["intelligence", "wisdom"],
-  "spellcasting": {
-    "type": "FULL",
-    "casting_ability": "int",
-    "cantrip_progression": [3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-    "spell_slots_by_level": [
-      [2, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [3, 0, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 2, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 0, 0, 0, 0, 0, 0, 0], 
-      [4, 3, 2, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 0, 0, 0, 0, 0, 0],
-      [4, 3, 3, 1, 0, 0, 0, 0, 0],
-      [4, 3, 3, 2, 0, 0, 0, 0, 0],
-      [4, 3, 3, 3, 1, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 0, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 0, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 0, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 3, 3, 3, 2, 1, 1, 1, 0],
-      [4, 4, 3, 3, 3, 1, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 1, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 1, 1],
-      [4, 3, 3, 3, 3, 2, 2, 2, 1]
-    ]
-  },
+    "key": "wizard",
+    "name": "Magier",
+    "icon": "Class_Wizard_Icon.png",
+    "description": "Ein gelehrter Zauberwirker.",
+    "hit_die": 6,
+    "saving_throws": ["intelligence", "wisdom"],
+    "spellcasting": {
+      "type": "FULL",
+      "casting_ability": "int",
+      "cantrip_progression": [3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+      "spell_slots_by_level": [
+        [2, 0, 0, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0, 0, 0, 0], [4, 2, 0, 0, 0, 0, 0, 0, 0], [4, 3, 0, 0, 0, 0, 0, 0, 0],
+        [4, 3, 2, 0, 0, 0, 0, 0, 0], [4, 3, 3, 0, 0, 0, 0, 0, 0], [4, 3, 3, 1, 0, 0, 0, 0, 0], [4, 3, 3, 2, 0, 0, 0, 0, 0],
+        [4, 3, 3, 3, 1, 0, 0, 0, 0], [4, 3, 3, 3, 2, 0, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0], [4, 3, 3, 3, 2, 1, 0, 0, 0],
+        [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 0, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0], [4, 3, 3, 3, 2, 1, 1, 1, 0],
+        [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1], [4, 3, 3, 3, 3, 2, 2, 2, 1]
+      ]
+    },
   "proficiencies": {
     "weapons": ["Dolche", "Wurfspeere", "Schleudern", "Kampfstäbe", "Leichte Armbrüste"],
     "skills": {
