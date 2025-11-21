@@ -309,3 +309,198 @@
   max-height: 400px;
   overflow-y: auto;
 }
+
+/* =========================================
+   NEU: STYLES FÜR ZAUBER-GRID UND TOOLTIPS
+   ========================================= */
+
+.feat-sub-selection {
+    width: 100%;
+}
+
+.spell-group {
+    margin-bottom: 30px;
+}
+
+.spell-group-title, .main-group-title {
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: #d4af37;
+    display: flex;
+    justify-content: space-between;
+}
+
+.selection-count {
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: normal;
+}
+
+.spell-level-subgroup {
+    margin-bottom: 20px;
+}
+
+.level-subtitle {
+    margin: 10px 0 8px 0;
+    font-size: 0.95rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Das Grid für die Icons */
+.spell-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 64px); /* Feste Größe für Icons */
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Icon-Only Card Style */
+.spell-selection-card.icon-only {
+    width: 64px;
+    height: 64px;
+    background: #000;
+    border: 2px solid #444;
+    border-radius: 8px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.spell-selection-card.icon-only:hover {
+    border-color: #aaa;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+.spell-selection-card.icon-only.selected {
+    border-color: #d4af37;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+.spell-selection-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.spell-selection-card.icon-only:hover .spell-selection-icon,
+.spell-selection-card.icon-only.selected .spell-selection-icon {
+    opacity: 1;
+}
+
+/* Das Auswahl-Häkchen */
+.spell-selection-check {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: #d4af37;
+    color: #000;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.7rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    z-index: 2;
+}
+
+/* --- TOOLTIP CONTENT STYLES (für Konsistenz) --- */
+.spell-tooltip-content {
+    max-width: 300px;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.spell-tooltip-header {
+    border-bottom: 1px solid #555;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.spell-tooltip-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #d4af37;
+}
+
+.spell-tooltip-school {
+    font-size: 0.8rem;
+    color: #aaa;
+    font-style: italic;
+}
+
+.spell-tooltip-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.05);
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.spell-tooltip-meta-grid .label {
+    color: #888;
+    margin-right: 5px;
+}
+
+.spell-tooltip-meta-grid .value {
+    color: #e0e0e0;
+}
+
+.spell-tooltip-description {
+    color: #ddd;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+}
+
+.spell-tooltip-scaling {
+    background: #2a2a2a;
+    padding: 5px;
+    border-left: 3px solid #6a8caf;
+    font-size: 0.85rem;
+    color: #ccc;
+    margin-bottom: 8px;
+}
+
+.spell-tooltip-footer {
+    font-size: 0.8rem;
+    color: #666;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 5px;
+    border-top: 1px solid #333;
+    padding-top: 5px;
+}
+
+.tag {
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+}
+
+.tag.ritual {
+    background: #2e4053;
+    color: #aed6f1;
+}
+
+.tag.concentration {
+    background: #641e16;
+    color: #f1948a;
+}

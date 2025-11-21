@@ -276,26 +276,54 @@ export const useGameState = () => {
     });
   }, []);
 
+  // --- HIER WURDE GEÄNDERT ---
   const handleEnterLocation = useCallback((locationId, currentPosition) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
-      const character = { ...prevState.character };
+      let character = { ...prevState.character };
+      let logEntries = [...prevState.logEntries];
+
+      // 1. Position aktualisieren
       character.worldMapPosition = currentPosition;
       character.currentLocation = locationId;
 
       const locationData = locationsData.find((loc) => loc.id === locationId);
-      const newLogEntry = createLogEntry(
+      
+      // 2. PRÜFEN: Ist der Ort schon entdeckt? Wenn nein -> XP geben
+      const isDiscovered = character.discoveredLocations && character.discoveredLocations.includes(locationId);
+      
+      if (!isDiscovered && locationData) {
+          // Ort zur Liste hinzufügen
+          const newDiscovered = [...(character.discoveredLocations || []), locationId];
+          character.discoveredLocations = newDiscovered;
+
+          logEntries.push(createLogEntry(`Neuer Ort entdeckt: ${locationData.name}`, "general"));
+
+          // XP vergeben
+          if (locationData.xp > 0) {
+              character = grantXpToCharacter(character, locationData.xp);
+              logEntries.push(createLogEntry(`Du erhältst ${locationData.xp} EP für das Entdecken von ${locationData.name}.`, "xp"));
+              
+              if (character.pendingLevelUp && !prevState.character.pendingLevelUp) {
+                  logEntries.push(createLogEntry(`${character.name} ist bereit für ein Level Up!`, "level"));
+              }
+          }
+      }
+
+      // 3. Log für das Betreten
+      logEntries.push(createLogEntry(
         `Betritt ${locationData?.name || "einen Ort"}.`,
         "general"
-      );
+      ));
 
       return {
         ...prevState,
         character,
-        logEntries: [...prevState.logEntries, newLogEntry],
+        logEntries,
       };
     });
   }, []);
+  // ---------------------------
 
   const handleLeaveLocation = useCallback(() => {
     setGameState((prevState) => {

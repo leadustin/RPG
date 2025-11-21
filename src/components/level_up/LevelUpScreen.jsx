@@ -1,25 +1,79 @@
 // src/components/level_up/LevelUpScreen.jsx
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import DiceBox from "@3d-dice/dice-box"; // <--- 3D Würfel wieder da!
+import { useTranslation } from 'react-i18next'; // Für Tooltip-Texte
+import DiceBox from "@3d-dice/dice-box"; 
 import { getRacialAbilityBonus } from '../../engine/characterEngine';
 import allClassData from '../../data/classes.json'; 
 import featuresData from '../../data/features.json'; 
 import spellsData from '../../data/spells.json'; 
 import './LevelUpScreen.css';
 
-// Import der wiederverwendeten Komponenten
+// Importe
 import { WeaponMasterySelection } from '../character_creation/WeaponMasterySelection';
 import { FeatSelection } from '../character_creation/FeatSelection'; 
+import Tooltip from '../tooltip/Tooltip'; // WICHTIG: Tooltip importieren
 import '../character_creation/SkillSelection.css'; 
 import '../character_creation/PanelDetails.css'; 
 
-// KORREKTUR (D&D 2024): Alle Zwerge erhalten +1 HP pro Stufe
+// --- ICONS LADEN ---
+const iconModules = import.meta.glob('../../assets/images/icons/*.(png|webp|jpg|svg)', { eager: true });
+const spellIcons = {};
+for (const path in iconModules) {
+  const fileName = path.split('/').pop();
+  spellIcons[fileName] = iconModules[path].default;
+}
+
+// --- TOOLTIP CONTENT (Kopie aus SpellbookTab für Konsistenz) ---
+const SpellTooltipContent = ({ spell, t }) => (
+  <div className="spell-tooltip-content">
+    <div className="spell-tooltip-header">
+      <span className="spell-tooltip-name">{spell.name}</span>
+      <span className="spell-tooltip-school">{t ? t(`magicSchools.${spell.school}`, spell.school) : spell.school}</span>
+    </div>
+    
+    <div className="spell-tooltip-meta-grid">
+      <div className="meta-item">
+        <span className="label">Zeit:</span>
+        <span className="value">{spell.ui_casting_time || spell.casting_time}</span>
+      </div>
+      <div className="meta-item">
+        <span className="label">RW:</span>
+        <span className="value">{spell.ui_range || spell.range}</span>
+      </div>
+      <div className="meta-item">
+        <span className="label">Dauer:</span>
+        <span className="value">{spell.ui_duration || spell.duration}</span>
+      </div>
+      <div className="meta-item">
+        <span className="label">Komp:</span>
+        <span className="value">{spell.components?.join(', ')}</span>
+      </div>
+    </div>
+
+    <div className="spell-tooltip-description">
+      {spell.ui_description || spell.description}
+    </div>
+
+    {spell.ui_scaling && (
+      <div className="spell-tooltip-scaling">
+        <strong>Auf höheren Graden:</strong> {spell.ui_scaling}
+      </div>
+    )}
+    
+    <div className="spell-tooltip-footer">
+      {spell.level === 0 ? (t ? t('common.cantrip') : "Zaubertrick") : `${t ? t('common.level') : "Grad"} ${spell.level}`}
+      {spell.ritual && <span className="tag ritual">Ritual</span>}
+      {(spell.duration || "").toLowerCase().includes("konz") && <span className="tag concentration">Konz.</span>}
+    </div>
+  </div>
+);
+
+// --- HELPER ---
 const getRacialHpBonus = (character) => {
   if (character.race.key === 'dwarf') return 1;
   return 0;
 };
 
-// Hilfsfunktion für DiceBox Ergebnisse
 const rollDiceFormula = (formula, results) => {
   let bonus = 0;
   if (formula.includes('+')) {
@@ -28,7 +82,6 @@ const rollDiceFormula = (formula, results) => {
     bonus = -parseInt(formula.split('-')[1] || 0);
   }
   
-  // DiceBox gibt ein Array von Objekten zurück: [{ value: 4, ... }, { value: 2, ... }]
   const diceValues = results.map(r => r.value);
   const diceSum = diceValues.reduce((a, b) => a + b, 0);
 
@@ -39,14 +92,14 @@ const rollDiceFormula = (formula, results) => {
   };
 };
 
-// +++ NEUE KOMPONENTE: Lokale Zauberauswahl +++
+// +++ KOMPONENTE: Zauberauswahl (Grid + Tooltip) +++
 const LevelUpSpellSelection = ({ character, cantripsCount, spellsCount, onSelectionChange }) => {
+    const { t } = useTranslation();
     const [selectedCantrips, setSelectedCantrips] = useState([]);
     const [selectedSpells, setSelectedSpells] = useState([]);
     const classKey = character.class.key;
     const newLevel = character.pendingLevelUp.newLevel;
 
-    // Maximale Spruchstufe berechnen (Heuristik für Level Up)
     let maxSpellLevel = 1;
     if (['wizard', 'sorcerer', 'bard', 'cleric', 'druid'].includes(classKey)) {
         maxSpellLevel = Math.ceil(newLevel / 2);
@@ -58,7 +111,7 @@ const LevelUpSpellSelection = ({ character, cantripsCount, spellsCount, onSelect
         if (maxSpellLevel > 5) maxSpellLevel = 5; 
     }
 
-    // Verfügbare Zauber filtern
+    // 1. Daten filtern
     const availableCantrips = spellsData.filter(s => 
         s.level === 0 && 
         s.classes.includes(classKey) && 
@@ -73,6 +126,17 @@ const LevelUpSpellSelection = ({ character, cantripsCount, spellsCount, onSelect
         !(character.spellbook || []).includes(s.key)
     );
 
+    // 2. Zauber nach Level gruppieren
+    const spellsByLevel = useMemo(() => {
+        const grouped = {};
+        availableSpells.forEach(spell => {
+            if (!grouped[spell.level]) grouped[spell.level] = [];
+            grouped[spell.level].push(spell);
+        });
+        return grouped;
+    }, [availableSpells]);
+
+    // Handler
     const handleCantripToggle = (key) => {
         if (selectedCantrips.includes(key)) {
             setSelectedCantrips(selectedCantrips.filter(k => k !== key));
@@ -89,52 +153,74 @@ const LevelUpSpellSelection = ({ character, cantripsCount, spellsCount, onSelect
         }
     };
 
-    // Melde Änderungen nach oben
     useEffect(() => {
         onSelectionChange({ cantrips: selectedCantrips, spells: selectedSpells });
     }, [selectedCantrips, selectedSpells]);
 
+    // 3. Render Helper für eine Karte (Nur Icon + Tooltip)
+    const renderSpellIcon = (spell, isSelected, onClick) => {
+        const iconSrc = spellIcons[spell.icon] || spellIcons['skill_placeholder.png'];
+        
+        return (
+            <Tooltip 
+                key={spell.key} 
+                content={<SpellTooltipContent spell={spell} t={t} />}
+            >
+                <div 
+                    className={`spell-selection-card icon-only ${isSelected ? 'selected' : ''}`}
+                    onClick={() => onClick(spell.key)}
+                >
+                    <img src={iconSrc} alt={spell.name} className="spell-selection-icon" />
+                    {isSelected && <div className="spell-selection-check">✓</div>}
+                </div>
+            </Tooltip>
+        );
+    };
+
     return (
         <div className="feat-sub-selection">
+            {/* ZAUBERTRICKS */}
             {cantripsCount > 0 && (
-                <div style={{marginBottom: '20px'}}>
-                    <h4>Wähle {cantripsCount} neue Zaubertricks</h4>
-                    <div className="skill-grid">
-                        {availableCantrips.map(spell => (
-                            <div 
-                                key={spell.key} 
-                                className={`skill-choice ${selectedCantrips.includes(spell.key) ? 'selected' : ''}`}
-                                onClick={() => handleCantripToggle(spell.key)}
-                            >
-                                {spell.name}
-                            </div>
-                        ))}
+                <div className="spell-group">
+                    <h4 className="spell-group-title">
+                        Neue Zaubertricks 
+                        <span className="selection-count">({selectedCantrips.length}/{cantripsCount})</span>
+                    </h4>
+                    <div className="spell-grid-layout">
+                        {availableCantrips.map(spell => 
+                            renderSpellIcon(spell, selectedCantrips.includes(spell.key), handleCantripToggle)
+                        )}
                     </div>
                 </div>
             )}
 
+            {/* ZAUBER (Gruppiert nach Grad) */}
             {spellsCount > 0 && (
-                <div>
-                    <h4>Wähle {spellsCount} neue Zauber (bis Grad {maxSpellLevel})</h4>
-                    <div className="skill-grid" style={{maxHeight: '300px', overflowY: 'auto'}}>
-                        {availableSpells.map(spell => (
-                            <div 
-                                key={spell.key} 
-                                className={`skill-choice ${selectedSpells.includes(spell.key) ? 'selected' : ''}`}
-                                onClick={() => handleSpellToggle(spell.key)}
-                            >
-                                <span style={{marginRight:'auto'}}>{spell.name}</span>
-                                <span style={{fontSize:'0.8em', color:'#aaa'}}>Grad {spell.level}</span>
+                <div className="spell-group-container">
+                    <h4 className="main-group-title">
+                        Neue Zauber 
+                        <span className="selection-count">({selectedSpells.length}/{spellsCount})</span>
+                    </h4>
+                    
+                    {Object.keys(spellsByLevel).sort((a,b) => a-b).map(level => (
+                        <div key={level} className="spell-level-subgroup">
+                            <h5 className="level-subtitle">Grad {level}</h5>
+                            <div className="spell-grid-layout">
+                                {spellsByLevel[level].map(spell => 
+                                    renderSpellIcon(spell, selectedSpells.includes(spell.key), handleSpellToggle)
+                                )}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
+                    
+                    {availableSpells.length === 0 && <p className="empty-msg">Keine neuen Zauber verfügbar.</p>}
                 </div>
             )}
         </div>
     );
 };
-// +++ ENDE NEUE KOMPONENTE +++
 
+// --- REST DER DATEI (AbilityScore, Subclass, Main Screen) BLEIBT GLEICH ---
 
 const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) => {
   const handleIncrease = (key) => {
@@ -191,32 +277,26 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
   );
 };
 
-
 export const LevelUpScreen = ({ character, onConfirm }) => {
   const { newLevel } = character.pendingLevelUp;
   
-  // Schritte: 0=HP, 1=ASI/Feat, 2=Subclass, 3=Spells, 4=Mastery, 5=Summary
   const [step, setStep] = useState(0); 
   const [rollResult, setRollResult] = useState(null);
   
-  // State für ASI vs Feat
   const [levelUpMode, setLevelUpMode] = useState('asi'); 
   const [asiPoints, setAsiPoints] = useState(2);
   const [asiChoices, setAsiChoices] = useState({});
   
-  // State für Feats
   const [selectedFeatKey, setSelectedFeatKey] = useState(null);
   const [featSelections, setFeatSelections] = useState({}); 
 
   const [selectedSubclass, setSelectedSubclass] = useState(null);
   const [masteryChoices, setMasteryChoices] = useState(character.weapon_mastery_choices || []);
   
-  // +++ NEU: Zauber State +++
   const [spellChoices, setSpellChoices] = useState({ cantrips: [], spells: [] });
 
   const [narratorText, setNarratorText] = useState("");
 
-  // Refs für 3D Würfel
   const diceContainerRef = useRef(null);
   const diceInstanceRef = useRef(null);
 
@@ -246,21 +326,17 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       return featuresData.filter(f => !existingFeats.includes(f.key) && f.feature_type === "feat");
   }, [character]);
 
-  // +++ FIX: Robuste DiceBox Initialisierung +++
   useEffect(() => {
     if (step === 0) {
-      // Timer verhindert Rendering-Konflikte
       const timer = setTimeout(() => {
         if (diceContainerRef.current) {
-          // Container leeren, um doppelte Canvas zu verhindern
           diceContainerRef.current.innerHTML = '';
           
-          // WICHTIG: Config Objekt als einziges Argument (v1.1)
           const box = new DiceBox({
             container: "#dice-box",
             assetPath: "/assets/dice-box/",
             theme: "default",
-            scale: 6, // Skalierung für bessere Sichtbarkeit
+            scale: 6,
           });
 
           box.init().then(() => {
@@ -270,11 +346,9 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       }, 100);
       return () => clearTimeout(timer);
     } else {
-      // Aufräumen, wenn Schritt verlassen wird
       diceInstanceRef.current = null;
     }
   }, [step]);
-  // +++ ENDE FIX +++
 
   useEffect(() => {
     switch(step) {
@@ -292,13 +366,11 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
   const handleRollHP = async () => {
     if (diceInstanceRef.current) {
       try {
-        // 3D Würfel nutzen
         const results = await diceInstanceRef.current.roll(hpRollFormula);
         const formulaResult = rollDiceFormula(hpRollFormula, results); 
         setRollResult({ ...formulaResult, racialBonus: racialHpBonus });
       } catch (e) {
         console.error("Dice roll error:", e);
-        // Fallback falls 3D fehlschlägt
         const fallbackRoll = Math.floor(Math.random() * parseInt(hpRollFormula.split('d')[1] || 8)) + 1;
         setRollResult({ total: fallbackRoll, dice: [fallbackRoll], bonus: 0, racialBonus: racialHpBonus });
       }
@@ -311,7 +383,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     }
   };
 
-  // --- LOGIK ZUM SCHRITTWEISEN VORRÜCKEN ---
   const navigateToNextStep = (currentStep) => {
     if (currentStep < 1 && isAbilityIncrease) setStep(1);
     else if (currentStep < 2 && isSubclassChoice) setStep(2);
@@ -406,10 +477,9 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
         <div className="narrator-box"><p>{narratorText}</p></div>
         <div className="levelup-container">
           
-          {/* 0: HP - MIT 3D WÜRFELN */}
+          {/* 0: HP */}
           {step === 0 && (
             <div className="levelup-section hp-roll-section">
-              {/* WICHTIG: ID dice-box muss existieren */}
               <div 
                 id="dice-box" 
                 ref={diceContainerRef} 
@@ -480,7 +550,13 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
              <div className="levelup-section choices-section">
                <div className="choice-block">
                   <h3>Magisches Wissen erweitert</h3>
-                  <LevelUpSpellSelection character={character} cantripsCount={newCantripsToLearn} spellsCount={newSpellsToLearn} onSelectionChange={setSpellChoices} />
+                  {/* HIER die neue Komponente */}
+                  <LevelUpSpellSelection 
+                    character={character} 
+                    cantripsCount={newCantripsToLearn} 
+                    spellsCount={newSpellsToLearn} 
+                    onSelectionChange={setSpellChoices} 
+                  />
                 </div>
               <button onClick={handleConfirmSpells} className="confirm-button">Weiter</button>
             </div>
