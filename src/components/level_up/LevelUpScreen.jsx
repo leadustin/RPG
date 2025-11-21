@@ -3,12 +3,12 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import DiceBox from "@3d-dice/dice-box";
 import { getRacialAbilityBonus } from '../../engine/characterEngine';
 import allClassData from '../../data/classes.json'; 
-import featuresData from '../../data/features.json'; // <--- NEU: Feats laden
+import featuresData from '../../data/features.json'; 
 import './LevelUpScreen.css';
 
 // Import der wiederverwendeten Komponenten
 import { WeaponMasterySelection } from '../character_creation/WeaponMasterySelection';
-import { FeatSelection } from '../character_creation/FeatSelection'; // <--- NEU
+import { FeatSelection } from '../character_creation/FeatSelection'; 
 import '../character_creation/SkillSelection.css'; 
 import '../character_creation/PanelDetails.css'; 
 
@@ -143,7 +143,7 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       return featuresData.filter(f => !existingFeats.includes(f.key) && f.feature_type === "feat");
   }, [character]);
 
-  // +++ FIX: Robuste DiceBox Initialisierung +++
+  // +++ FIX: Robuste DiceBox Initialisierung (Neue API) +++
   useEffect(() => {
     if (step === 0) {
       // Kurze Verzögerung, um sicherzustellen, dass das DOM bereit ist
@@ -152,12 +152,14 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           // Container leeren, um doppelte Canvas zu verhindern
           diceContainerRef.current.innerHTML = '';
 
-          const box = new DiceBox("#dice-box", {
+          // +++ HIER IST DIE KORREKTUR: Config Objekt als einziges Argument +++
+          const box = new DiceBox({
+            container: "#dice-box", // Selector kommt hier rein
             assetPath: "/assets/dice-box/",
             theme: "default",
-            scale: 6, // WICHTIG: Skalierung, damit man die Würfel sieht
-            // offscreen: true, // ENTFERNT, da oft fehleranfällig
+            scale: 6, // WICHTIG: Skalierung
           });
+          // +++ ENDE KORREKTUR +++
 
           box.init().then(() => {
             diceInstanceRef.current = box;
@@ -494,15 +496,9 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           {/* Schritt 4: Zusammenfassung */}
           {step === 4 && (
             <div className="levelup-section summary-section">
+              <h3>Zusammenfassung</h3>
+              <p>TP +{rollResult.total + (rollResult.racialBonus || 0)}</p>
               
-              {rollResult && (
-                <p>
-                  Neue Trefferpunkte: +{rollResult.dice.join(' + ')} (Wurf) + {rollResult.bonus} (KON)
-                  {rollResult.racialBonus ? ` + ${rollResult.racialBonus} (Zwerg)` : ""}
-                  = <strong>{rollResult.total + (rollResult.racialBonus || 0)} TP</strong>
-                </p>
-              )}
-
               {isAbilityIncrease && levelUpMode === 'asi' && Object.values(asiChoices).some(v => v > 0) && (
                 <div>
                   <p>Attributserhöhungen:</p>
