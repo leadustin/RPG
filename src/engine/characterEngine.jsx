@@ -35,17 +35,14 @@ export const getProficiencyBonus = (level) => {
 
 /**
  * Holt den vom Spieler zugewiesenen Attributsbonus für ein Attribut.
- * (PHB 2024 Update: Boni kommen primär aus background_options)
  */
 export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
 
-  // 1. Priorität: Neue Background-Optionen (PHB 2024)
   if (character.background_options?.bonuses) {
      return character.background_options.bonuses[abilityKey] || 0;
   }
 
-  // 2. Fallback: Legacy System (Rasse/Manuell)
   if (
     character.ability_bonus_assignments &&
     character.ability_bonus_assignments[abilityKey]
@@ -66,15 +63,12 @@ export const calculateInitialHP = (character) => {
     character.abilities.con + getRacialAbilityBonus(character, "con");
   const conModifier = getAbilityModifier(finalCon);
   
-  // Basis HP: Hit Die + Con Mod
   let hp = character.class.hit_die + conModifier;
 
-  // Zwerge (+1 HP)
   if (character.race?.key === "dwarf") {
     hp += 1;
   }
 
-  // RulesEngine für Feat-Boni (z.B. "Tough")
   hp += getFeatHpBonus(character);
 
   return hp;
@@ -88,25 +82,19 @@ export const calculateAC = (character) => {
     return 10; 
   }
 
-  // 1. Finale Attribut-Modifikatoren berechnen
   const finalDex =
     character.abilities.dex + getRacialAbilityBonus(character, "dex");
   const dexModifier = getAbilityModifier(finalDex);
 
-  // 2. Ausgerüstete Items
   const equippedArmorData = character.equipment?.armor;
 
-  // Schild-Erkennung
   let shieldBonus = 0;
   const offHand = character.equipment?.["off-hand"] || character.equipment?.shield;
   
-  if (offHand) {
-     if (offHand.type === "shield" || (offHand.ac && offHand.ac > 0)) {
-         shieldBonus = offHand.ac || 2;
-     }
+  if (offHand && (offHand.type === "shield" || (offHand.ac && offHand.ac > 0))) {
+      shieldBonus = offHand.ac || 2;
   }
 
-  // 3. Fall 1: Charakter trägt eine Rüstung
   if (equippedArmorData) {
     let baseAC = equippedArmorData.ac;
     let armorDexBonus = 0;
@@ -118,7 +106,6 @@ export const calculateAC = (character) => {
       armorName.includes("wams") ||
       armorName.includes("elfen-kettenrüstung")
     ) {
-      // Leichte Rüstung: Voller Dex-Bonus
       armorDexBonus = dexModifier;
     } else if (
       armorName.includes("kettenhemd") ||
@@ -126,18 +113,13 @@ export const calculateAC = (character) => {
       armorName.includes("brustplatte") ||
       armorName.includes("halbplatten")
     ) {
-      // Mittelschwere Rüstung: Max +2 Dex
       armorDexBonus = Math.min(dexModifier, 2);
     } else {
-      // Schwere Rüstung: Kein Dex-Bonus
       armorDexBonus = 0;
     }
 
     return baseAC + armorDexBonus + shieldBonus;
-  }
-
-  // 4. Fall 2: Charakter trägt KEINE Rüstung (Unarmored Defense)
-  else {
+  } else {
     let unarmoredAC = 10 + dexModifier;
 
     if (character.class.key === "barbarian") {
@@ -146,7 +128,6 @@ export const calculateAC = (character) => {
       const conModifier = getAbilityModifier(finalCon);
       unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + conModifier);
     } else if (character.class.key === "monk" && shieldBonus === 0) {
-      // Mönch verliert Unarmored Defense, wenn er ein Schild trägt
       const finalWis =
         character.abilities.wis + getRacialAbilityBonus(character, "wis");
       const wisModifier = getAbilityModifier(finalWis);
@@ -157,7 +138,6 @@ export const calculateAC = (character) => {
   }
 };
 
-// Eine Zuordnung aller Fertigkeiten zu ihren Hauptattributen
 export const SKILL_MAP = {
   acrobatics: "dex",
   animal_handling: "wis",
@@ -181,7 +161,6 @@ export const SKILL_MAP = {
 
 /**
  * Prüft, ob ein Charakter in einer Fertigkeit geübt ist.
- * Berücksichtigt jetzt Hintergrund, Rasse, Klasse UND Talente.
  */
 export const isProficientInSkill = (character, skillKey) => {
   const {
@@ -190,12 +169,10 @@ export const isProficientInSkill = (character, skillKey) => {
     skill_proficiencies_choice,
   } = character;
 
-  // 1. Übung durch Hintergrund (PHB 2024: 'skills' Array mit Keys)
   if (background?.skills && background.skills.includes(skillKey)) {
     return true;
   }
 
-  // 2. Übung durch Volk
   if (
     race && race.traits &&
     race.traits.some(
@@ -205,7 +182,6 @@ export const isProficientInSkill = (character, skillKey) => {
     return true;
   }
 
-  // 3. Übung durch die Klassen-Auswahl
   if (
     skill_proficiencies_choice &&
     skill_proficiencies_choice.includes(skillKey)
@@ -213,7 +189,6 @@ export const isProficientInSkill = (character, skillKey) => {
     return true;
   }
   
-  // 4. RulesEngine für Feats (Skilled, Crafter, etc.)
   if (checkFeatProficiency(character, skillKey)) {
       return true;
   }
@@ -241,13 +216,12 @@ export const calculateSkillBonus = (character, skillKey) => {
 };
 
 /**
- * Berechnet die Initiative (DEX + Boni wie "Alert").
+ * Berechnet die Initiative.
  */
 export const calculateInitiative = (character) => {
     const finalDex = character.abilities.dex + getRacialAbilityBonus(character, "dex");
     let initBonus = getAbilityModifier(finalDex);
     
-    // Bonus durch "Alert" Feat
     const pb = getProficiencyBonus(character.level || 1);
     initBonus += getInitiativeBonusFromFeats(character, pb);
     
@@ -255,28 +229,24 @@ export const calculateInitiative = (character) => {
 };
 
 /**
- * Berechnet den Nahkampfschaden basierend auf der Waffe und den Attributen.
+ * Berechnet den Nahkampfschaden (Anzeige).
  */
 export const calculateMeleeDamage = (character) => {
   const strScore =
     character.abilities.str + getRacialAbilityBonus(character, "str");
   const strModifier = getAbilityModifier(strScore);
 
-  // Modifikator als String (+X / -X)
   const modifierString =
       strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
 
-  // Prüfen, ob eine Waffe in der Haupthand ausgerüstet ist
   const mainHandWeapon = character.equipment?.["main-hand"];
 
   if (mainHandWeapon && mainHandWeapon.damage) {
-    // Wenn eine Waffe mit Schadenswert vorhanden ist
     let damage = mainHandWeapon.damage;
     const versatileProperty = mainHandWeapon.properties?.find((p) =>
       p.startsWith("Vielseitig")
     );
 
-    // Prüfen, ob die Waffe vielseitig ist und beidhändig geführt wird
     if (versatileProperty && mainHandWeapon.isTwoHanded) {
       const twoHandedDamage = versatileProperty.match(/\((.*?)\)/)?.[1];
       if (twoHandedDamage) {
@@ -286,20 +256,335 @@ export const calculateMeleeDamage = (character) => {
 
     return `${damage} ${modifierString}`;
   } else {
-    // +++ WAFFENLOSER SCHLAG +++
-    
-    // Prüfe via RulesEngine, ob ein Upgrade (z.B. Tavern Brawler) vorliegt
-    const upgradedDie = getUnarmedDamageDie(character); // z.B. "1d4"
+    // Prüfe auf Tavern Brawler
+    const upgradedDie = getUnarmedDamageDie(character); 
 
     if (upgradedDie) {
-        // Wenn Talent vorhanden: Würfel + Stärke
         return `${upgradedDie} ${modifierString}`;
     }
 
-    // Standard: 1 + Stärke-Modifikator
     const unarmedDamage = 1 + strModifier;
     return unarmedDamage.toString();
   }
+};
+
+/**
+ * Führt einen echten Schadenswurf durch (inkl. Wilder Angreifer).
+ */
+export const performMeleeDamageRoll = (character, isCritical = false) => {
+  const damageString = calculateMeleeDamage(character);
+  
+  if (!damageString.includes('d')) {
+      const staticDmg = parseInt(damageString);
+      return {
+          total: staticDmg,
+          rolls: [],
+          formula: damageString,
+          isSavageAttacker: false,
+          logMessage: `Schaden: ${staticDmg} (Fest)`
+      };
+  }
+
+  const parts = damageString.split(' ');
+  const dicePart = parts[0]; 
+  const modPart = parts.length > 1 ? parts[1] : "+0"; 
+
+  let rollDice = dicePart;
+  if (isCritical) {
+    const [count, type] = dicePart.split('d');
+    rollDice = `${parseInt(count) * 2}d${type}`;
+  }
+
+  const hasSavage = hasSavageAttacker(character);
+  
+  let result1 = rollDiceFormula(rollDice);
+  let finalDiceTotal = result1;
+  let msg = `Würfelt ${rollDice}: [${result1}]`;
+
+  if (hasSavage) {
+    let result2 = rollDiceFormula(rollDice);
+    finalDiceTotal = Math.max(result1, result2);
+    msg = `Wilder Angreifer (${rollDice}): Würfelt [${result1}] und [${result2}]. Nutze [${finalDiceTotal}].`;
+  }
+
+  const modifier = parseInt(modPart.replace('+', '')); 
+  const totalDamage = finalDiceTotal + modifier;
+
+  if (modifier !== 0) {
+    msg += ` Modifikator (${modPart}) = ${totalDamage} Gesamtschaden.`;
+  } else {
+    msg += ` = ${totalDamage} Gesamtschaden.`;
+  }
+
+  return {
+    total: totalDamage,
+    rolls: hasSavage ? [result1, finalDiceTotal] : [result1],
+    formula: damageString,
+    isSavageAttacker: hasSavage,
+    logMessage: msg
+  };
+};
+
+// --- SPEZIAL-FUNKTIONEN (Heiler, Glück, Crafter) ---
+
+export const performHealerKitHealingRoll = (character) => {
+  const formulaType = getHealerFeatHealingFormula(character);
+  if (!formulaType) return null;
+
+  const diceResult = rollDiceFormula("1d6");
+  const pb = getProficiencyBonus(character.level || 1);
+  const wisScore = character.abilities.wis + getRacialAbilityBonus(character, "wis");
+  const wisMod = getAbilityModifier(wisScore);
+
+  const totalHeal = diceResult + pb + wisMod;
+
+  return {
+    total: totalHeal,
+    breakdown: `1d6 (${diceResult}) + PB (${pb}) + WIS (${wisMod})`,
+    isStabilizeBonus: hasHealerStabilizeBonus(character) 
+  };
+};
+
+export const calculateMaxLuckyPoints = (character) => {
+  if (!hasLuckyFeat(character)) return 0;
+  return getProficiencyBonus(character.level || 1);
+};
+
+export const calculateItemPriceForCharacter = (character, basePrice) => {
+  const discountPercent = getCrafterDiscount(character); 
+  if (discountPercent > 0) {
+    const discount = Math.floor(basePrice * discountPercent);
+    return Math.max(0, basePrice - discount);
+  }
+  return basePrice;
+};
+
+// --- LEVEL UP LOGIK ---
+
+const getHpRollFormula = (character) => {
+  const hitDie = character.class.hit_die || 8; 
+  const conMod = getAbilityModifier(
+    character.abilities.con + getRacialAbilityBonus(character, "con")
+  );
+
+  const formula = `1d${hitDie}`;
+  if (conMod === 0) return formula;
+  return `${formula}${conMod > 0 ? "+" : ""}${conMod}`;
+};
+
+const getMasteryCountForLevel = (masteryData, level) => {
+  if (!masteryData) return 0;
+  let currentMax = 0;
+  let bestLevel = 0;
+
+  for (const key in masteryData) {
+    if (key.startsWith("level_") && key.endsWith("_count")) {
+      const levelKey = parseInt(key.split('_')[1]);
+      if (level >= levelKey && levelKey > bestLevel) {
+        bestLevel = levelKey;
+        currentMax = masteryData[key];
+      }
+    }
+  }
+  return currentMax;
+};
+
+// +++ NEU: Liest Zauber-Progression direkt aus der JSON-Datenstruktur +++
+const getSpellsKnownCount = (classData, level) => {
+  // 1. Warlock (Pact Magic)
+  if (classData.pact_magic_progression) {
+    const prog = classData.pact_magic_progression.find(p => p.level === level);
+    return prog ? prog.spells_known : 0;
+  }
+
+  // 2. Standard Spellcasting (Bard, Ranger, Sorcerer)
+  if (classData.spellcasting && classData.spellcasting.spells_known_progression) {
+    return classData.spellcasting.spells_known_progression[level - 1] || 0;
+  }
+
+  return 0; // Kleriker, Druide, Paladin, Magier haben andere Mechaniken
+};
+
+const getCantripsKnownCount = (classData, level) => {
+  if (!classData?.spellcasting?.cantrip_progression) return 0;
+  return classData.spellcasting.cantrip_progression[level - 1] || 0;
+};
+
+
+export const checkForLevelUp = (character) => {
+  const level = character.level || 1;
+  const experience = character.experience || 0;
+
+  if (level >= 20 || character.pendingLevelUp) {
+    return character;
+  }
+
+  const nextLevel = level + 1;
+  const xpForNextLevel = LEVEL_XP_TABLE[nextLevel];
+
+  if (experience >= xpForNextLevel) {
+    console.log(`STUFENAUFSTIEG ANSTEHEND: ${character.name} -> Stufe ${nextLevel}`);
+
+    const classData = allClassData.find(c => c.key === character.class.key);
+    
+    const isAbilityIncrease = classData?.features.some(f =>
+      f.level === nextLevel && f.name.toLowerCase().includes("fähigkeitspunkte")
+    );
+    
+    const isSubclassChoice = classData?.features.some(f => 
+      f.level === nextLevel && (f.name.includes("Archetyp") || f.name.includes("Tradition") || f.name.includes("Zirkel") || f.name.includes("Pfad") || f.name.includes("Eid") || f.name.includes("Ursprung") || f.name.includes("Schutzpatron"))
+    );
+
+    const currentMastery = getMasteryCountForLevel(classData?.weapon_mastery, level);
+    const newMastery = getMasteryCountForLevel(classData?.weapon_mastery, nextLevel);
+    const isMasteryIncrease = newMastery > currentMastery;
+
+    // +++ NEU: Datengetriebene Zauber-Berechnung +++
+    let newCantripsToLearn = 0;
+    let newSpellsToLearn = 0;
+    const isWizard = character.class.key === 'wizard';
+
+    if (classData) { 
+        // Cantrips
+        const currentCantrips = getCantripsKnownCount(classData, level);
+        const nextCantrips = getCantripsKnownCount(classData, nextLevel);
+        newCantripsToLearn = Math.max(0, nextCantrips - currentCantrips);
+
+        // Known Spells (Datengetrieben)
+        const currentKnown = getSpellsKnownCount(classData, level);
+        const nextKnown = getSpellsKnownCount(classData, nextLevel);
+        newSpellsToLearn = Math.max(0, nextKnown - currentKnown);
+        
+        // Magier Sonderregel (immer +2 ins Buch)
+        if (isWizard) {
+            newSpellsToLearn = 2; 
+        }
+    }
+
+    return {
+      ...character,
+      pendingLevelUp: {
+        newLevel: nextLevel,
+        hpRollFormula: getHpRollFormula(character),
+        isAbilityIncrease, 
+        isSubclassChoice: isSubclassChoice && !character.subclassKey, 
+        isMasteryIncrease,
+        newMasteryCount: newMastery,
+        
+        // Zauber-Infos
+        newCantripsToLearn,
+        newSpellsToLearn,
+        isWizard
+      },
+    };
+  }
+
+  return character;
+};
+
+
+export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
+  if (!character.pendingLevelUp) return character;
+
+  const { newLevel } = character.pendingLevelUp;
+
+  // --- ASI & Feats ---
+  const newAbilities = { ...character.abilities };
+  let newFeats = [...(character.feats || [])];
+  let newFeatChoices = { ...(character.feat_choices || {}) };
+
+  if (levelUpChoices?.asi) {
+    for (const key in levelUpChoices.asi) {
+      if (newAbilities[key] !== undefined) {
+        newAbilities[key] += levelUpChoices.asi[key];
+      }
+    }
+  }
+  if (levelUpChoices?.feat) {
+      newFeats.push(levelUpChoices.feat.key);
+      if (levelUpChoices.feat.selections) {
+          newFeatChoices[levelUpChoices.feat.key] = levelUpChoices.feat.selections;
+      }
+  }
+
+  // --- Subklasse ---
+  const newSubclassKey = levelUpChoices?.subclassKey || character.subclassKey;
+
+  // --- NEU: Zauber speichern ---
+  let newCantripsKnown = [...(character.cantrips_known || [])];
+  let newSpellsKnown = [...(character.spells_known || [])];
+  let newSpellbook = [...(character.spellbook || [])];
+
+  if (levelUpChoices?.newSpells) {
+      if (levelUpChoices.newSpells.cantrips) {
+          newCantripsKnown = [...newCantripsKnown, ...levelUpChoices.newSpells.cantrips];
+      }
+      
+      if (levelUpChoices.newSpells.spells) {
+          if (character.class.key === 'wizard') {
+              // Magier: Ins Zauberbuch
+              newSpellbook = [...newSpellbook, ...levelUpChoices.newSpells.spells];
+          } else {
+              // Andere: Zu bekannten Zaubern
+              newSpellsKnown = [...newSpellsKnown, ...levelUpChoices.newSpells.spells];
+          }
+      }
+  }
+
+  // --- Waffenmeisterschaften ---
+  let newMasteries = character.weapon_mastery_choices || [];
+  if (levelUpChoices?.weapon_mastery_choices) {
+      newMasteries = levelUpChoices.weapon_mastery_choices;
+  }
+
+  // --- Features & HP ---
+  const oldMaxHP = character.stats.maxHp;
+  let finalHpGain = hpRollResult;
+  if (character.race.key === "dwarf") {
+    finalHpGain += 1;
+  }
+  const newMaxHP = oldMaxHP + finalHpGain;
+
+  const classData = allClassData.find(c => c.key === character.class.key);
+  let allNewFeatures = []; 
+  if (classData) {
+     allNewFeatures = classData.features.filter(f => f.level === newLevel);
+     if (newSubclassKey && classData.subclasses) {
+        const sc = classData.subclasses.find(s => s.key === newSubclassKey);
+        if (sc) {
+            allNewFeatures = [...allNewFeatures, ...sc.features.filter(f => f.level === newLevel)];
+        }
+     }
+  }
+
+  const { pendingLevelUp, ...restOfCharacter } = character;
+
+  const updatedCharacter = {
+    ...restOfCharacter,
+    level: newLevel,
+    abilities: newAbilities, 
+    subclassKey: newSubclassKey,
+    feats: newFeats,
+    feat_choices: newFeatChoices,
+    weapon_mastery_choices: newMasteries,
+    
+    // Zauberlisten updaten
+    cantrips_known: newCantripsKnown,
+    spells_known: newSpellsKnown,
+    spellbook: newSpellbook,
+
+    stats: {
+      ...character.stats,
+      maxHp: newMaxHP,
+      hp: newMaxHP,
+    },
+    features: [
+      ...(character.features || []), 
+      ...allNewFeatures             
+    ],
+  };
+
+  return checkForLevelUp(updatedCharacter);
 };
 
 // Deutsche Beschreibungen (Content)
@@ -340,347 +625,24 @@ export const SKILL_DESCRIPTIONS_DE = {
   survival: "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden.",
 };
 
-/**
- * HILFSFUNKTION: Ermittelt die HP-Würfelformel für den Stufenaufstieg.
- */
-const getHpRollFormula = (character) => {
-  const hitDie = character.class.hit_die || 8; 
-  const conMod = getAbilityModifier(
-    character.abilities.con + getRacialAbilityBonus(character, "con")
-  );
-
-  const formula = `1d${hitDie}`;
-  if (conMod === 0) return formula;
-  return `${formula}${conMod > 0 ? "+" : ""}${conMod}`;
-};
-
-
-/**
- * Findet die korrekte Anzahl an Meisterschaften für die aktuelle Stufe.
- */
-const getMasteryCountForLevel = (masteryData, level) => {
-  if (!masteryData) return 0;
-  let currentMax = 0;
-  let bestLevel = 0;
-
-  for (const key in masteryData) {
-    if (key.startsWith("level_") && key.endsWith("_count")) {
-      const levelKey = parseInt(key.split('_')[1]);
-      if (level >= levelKey && levelKey > bestLevel) {
-        bestLevel = levelKey;
-        currentMax = masteryData[key];
-      }
-    }
-  }
-  return currentMax;
-};
-
-
-/**
- * PRÜFT AUF STUFENAUFSTIEG
- */
-export const checkForLevelUp = (character) => {
-  const level = character.level || 1;
-  const experience = character.experience || 0;
-
-  if (level >= 20 || character.pendingLevelUp) {
-    return character;
-  }
-
-  const nextLevel = level + 1;
-  const xpForNextLevel = LEVEL_XP_TABLE[nextLevel];
-
-  if (experience >= xpForNextLevel) {
-    console.log(`STUFENAUFSTIEG ANSTEHEND: ${character.name} ist bereit für Stufe ${nextLevel}!`);
-
-    const classData = allClassData.find(c => c.key === character.class.key);
-    
-    const isSubclassChoiceLevel = classData?.features.some(f => 
-      f.level === nextLevel && (
-        f.name.toLowerCase().includes("archetyp") || 
-        f.name.toLowerCase().includes("pfad") || 
-        f.name.toLowerCase().includes("domäne") || 
-        f.name.toLowerCase().includes("zirkel") || 
-        f.name.toLowerCase().includes("kolleg") || 
-        f.name.toLowerCase().includes("tradition") || 
-        f.name.toLowerCase().includes("eid") || 
-        f.name.toLowerCase().includes("ursprung") || 
-        f.name.toLowerCase().includes("schutzpatron")
-      )
-    );
-
-    const isAbilityIncrease = classData?.features.some(f =>
-      f.level === nextLevel &&
-      f.name.toLowerCase() === "fähigkeitspunkte / merkmal"
-    );
-    
-    const currentMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, level);
-    const newMasteryCount = getMasteryCountForLevel(classData?.weapon_mastery, nextLevel);
-    const isMasteryIncrease = newMasteryCount > currentMasteryCount;
-
-    if (isMasteryIncrease) {
-        console.log(`Neue Waffenmeisterschaft freigeschaltet auf Stufe ${nextLevel}! (Anzahl: ${newMasteryCount})`);
-    }
-
-    return {
-      ...character,
-      pendingLevelUp: {
-        newLevel: nextLevel,
-        hpRollFormula: getHpRollFormula(character),
-        isAbilityIncrease: isAbilityIncrease, 
-        isSubclassChoice: isSubclassChoiceLevel && !character.subclassKey, 
-        isMasteryIncrease: isMasteryIncrease,
-        newMasteryCount: newMasteryCount,
-        currentMasteryCount: currentMasteryCount 
-      },
-    };
-  }
-
-  return character;
-};
-
-
-/**
- * WENDET STUFENAUFSTIEG AN
- */
-export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
-  if (!character.pendingLevelUp) return character;
-
-  const { newLevel } = character.pendingLevelUp;
-
-  // --- ASI anwenden ---
-  const newAbilities = { ...character.abilities };
-  if (levelUpChoices?.asi) {
-    console.log("Wende ASI an:", levelUpChoices.asi);
-    for (const key in levelUpChoices.asi) {
-      if (newAbilities[key] !== undefined) {
-        newAbilities[key] += levelUpChoices.asi[key];
-      }
-    }
-  }
-
-  // +++ NEU: Talent (Feat) anwenden +++
-  let newFeats = [...(character.feats || [])];
-  let newFeatChoices = { ...(character.feat_choices || {}) };
-
-  if (levelUpChoices?.feat) {
-      const { key, selections } = levelUpChoices.feat;
-      console.log("Neues Talent gewählt:", key);
-      newFeats.push(key);
-      
-      // Wenn das Talent Entscheidungen hatte (z.B. Zauber), speichern wir diese auch
-      if (selections) {
-          newFeatChoices[key] = selections;
-      }
-  }
-
-  // --- Subklasse anwenden ---
-  const newSubclassKey = levelUpChoices?.subclassKey || character.subclassKey;
-
-  // --- Neue Fähigkeiten sammeln ---
-  const classData = allClassData.find(c => c.key === character.class.key);
-  let newFeatures = [];
-  let newSubclassFeatures = [];
-
-  if (classData) {
-    newFeatures = classData.features.filter(f => f.level === newLevel);
-    
-    if (newSubclassKey && classData.subclasses) {
-      const subclassData = classData.subclasses.find(sc => sc.key === newSubclassKey);
-      if (subclassData && subclassData.features) {
-        newSubclassFeatures = subclassData.features.filter(f => f.level === newLevel);
-      }
-    }
-  }
-
-  const allNewFeatures = [...newFeatures, ...newSubclassFeatures];
-  
-  if (allNewFeatures.length > 0) {
-    console.log(`Neue Fähigkeiten für ${character.name} auf Stufe ${newLevel}:`, allNewFeatures.map(f => f.name));
-  }
-
-  // --- HP berechnen ---
-  const oldMaxHP = character.stats.maxHp;
-  let finalHpGain = hpRollResult;
-
-  // Zwerge erhalten +1 HP pro Stufe
-  if (character.race?.key === "dwarf") {
-    finalHpGain += 1;
-  }
-  
-  const newMaxHP = oldMaxHP + finalHpGain;
-
-  // --- Charakter Update ---
-  const { pendingLevelUp, ...restOfCharacter } = character;
-
-  const updatedCharacter = {
-    ...restOfCharacter,
-    level: newLevel,
-    abilities: newAbilities,
-    feats: newFeats,
-    feat_choices: newFeatChoices, 
-    subclassKey: newSubclassKey,
-    stats: {
-      ...character.stats,
-      maxHp: newMaxHP,
-      hp: newMaxHP,
-    },
-    features: [
-      ...(character.features || []), 
-      ...allNewFeatures             
-    ],
-  };
-
-  // Erneut prüfen, falls noch mehr EP vorhanden sind
-  return checkForLevelUp(updatedCharacter);
-};
-
-/**
- * VERGIBT ERFAHRUNGSPUNKTE
- */
+// Weiterleitungs-Funktionen
 export const grantExperienceToParty = (party, defeatedEnemies) => {
-  const totalXp = defeatedEnemies.reduce(
-    (sum, enemy) => sum + (enemy.xp || 0),
-    0
-  );
+  const totalXp = defeatedEnemies.reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
   if (totalXp === 0) return party;
-
   const partySize = party.length;
   if (partySize === 0) return party;
-
   const xpPerMember = Math.floor(totalXp / partySize);
   if (xpPerMember === 0) return party;
-
   console.log(`Die Gruppe erhält ${totalXp} EP (${xpPerMember} pro Mitglied).`);
-
-  const updatedParty = party.map((character) => {
-    const updatedChar = {
-      ...character,
-      experience: (character.experience || 0) + xpPerMember,
-    };
+  return party.map((character) => {
+    const updatedChar = { ...character, experience: (character.experience || 0) + xpPerMember };
     return checkForLevelUp(updatedChar);
   });
-
-  return updatedParty;
 };
 
-/**
- * GIBT EINEM CHARAKTER EP
- */
 export const grantXpToCharacter = (character, xpAmount) => {
-  if (!xpAmount || xpAmount <= 0) {
-    return character;
-  }
+  if (!xpAmount || xpAmount <= 0) return character;
   console.log(`${character.name} erhält ${xpAmount} EP.`);
-  const updatedChar = {
-    ...character,
-    experience: (character.experience || 0) + xpAmount,
-  };
+  const updatedChar = { ...character, experience: (character.experience || 0) + xpAmount };
   return checkForLevelUp(updatedChar);
-};
-
-/**
- * Führt einen Schadenswurf für den Nahkampf durch.
- * Berücksichtigt "Wilder Angreifer" (Savage Attacker).
- * @returns {Object} { total, rolls, formula, isCritical, msg }
- */
-export const performMeleeDamageRoll = (character, isCritical = false) => {
-  // 1. Hole die Schadensformel (z.B. "1d8 +3")
-  const damageString = calculateMeleeDamage(character);
-  
-  // Zerlege in Würfel und Modifikator (z.B. ["1d8", "+3"])
-  // Wir nehmen an, der erste Teil ist der Würfel.
-  const parts = damageString.split(' ');
-  const dicePart = parts[0]; // "1d8"
-  const modPart = parts.length > 1 ? parts[1] : "+0"; // "+3"
-
-  // Kritischer Treffer: Verdopple die Anzahl der Würfel (z.B. "1d8" -> "2d8")
-  let rollDice = dicePart;
-  if (isCritical) {
-    const [count, type] = dicePart.split('d');
-    rollDice = `${parseInt(count) * 2}d${type}`;
-  }
-
-  // 2. Prüfe auf "Wilder Angreifer"
-  const hasSavage = hasSavageAttacker(character);
-  
-  // 3. Würfeln
-  let result1 = rollDiceFormula(rollDice);
-  let finalDiceTotal = result1;
-  let msg = `Würfelt ${rollDice}: ${result1}`;
-
-  // Wenn Savage Attacker: Würfle ein zweites Mal und nimm das höhere Ergebnis (nur für die Würfel, nicht den Mod!)
-  if (hasSavage) {
-    let result2 = rollDiceFormula(rollDice);
-    finalDiceTotal = Math.max(result1, result2);
-    msg = `Wilder Angreifer (${rollDice}): Würfelt ${result1} und ${result2}. Nutze ${finalDiceTotal}.`;
-  }
-
-  // 4. Modifikator addieren
-  const modifier = parseInt(modPart.replace('+', '')); // "+3" -> 3
-  const totalDamage = finalDiceTotal + modifier;
-
-  if (modifier !== 0) {
-    msg += ` Modifikator (${modPart}): ${totalDamage} Gesamtschaden.`;
-  } else {
-    msg += ` Gesamtschaden: ${totalDamage}.`;
-  }
-
-  return {
-    total: totalDamage,
-    rolls: [finalDiceTotal], // Für Logs
-    formula: damageString,
-    isSavageAttacker: hasSavage,
-    logMessage: msg
-  };
-};
-
-/**
- * Berechnet die Heilung durch das "Heilkundiger"-Talent.
- * Formel (PHB 2024 Test): 1W6 + Übungsbonus + Weisheits-Modifikator (für Medizin)
- */
-export const performHealerKitHealingRoll = (character) => {
-  const formulaType = getHealerFeatHealingFormula(character);
-  
-  if (!formulaType) return null;
-
-  // Basis-Wurf (meist 1d6)
-  const diceResult = rollDiceFormula("1d6");
-  
-  // Boni berechnen
-  const pb = getProficiencyBonus(character.level || 1);
-  
-  // Wir nehmen Weisheit als Standard für Medizin, könnte aber auch INT sein je nach Build
-  const wisScore = character.abilities.wis + getRacialAbilityBonus(character, "wis");
-  const wisMod = getAbilityModifier(wisScore);
-
-  const totalHeal = diceResult + pb + wisMod;
-
-  return {
-    total: totalHeal,
-    breakdown: `1d6 (${diceResult}) + PB (${pb}) + WIS (${wisMod})`,
-    isStabilizeBonus: hasHealerStabilizeBonus(character) // Info: Setzt TP auf 1 bei Stabilisierung
-  };
-};
-
-/**
- * Berechnet die maximalen Glückspunkte (Lucky Points).
- */
-export const calculateMaxLuckyPoints = (character) => {
-  if (!hasLuckyFeat(character)) return 0;
-
-  // PHB 2024: Anzahl = Übungsbonus
-  return getProficiencyBonus(character.level || 1);
-};
-
-/**
- * Berechnet den Preis eines Items für diesen Charakter (berücksichtigt Crafter-Rabatt).
- */
-export const calculateItemPriceForCharacter = (character, basePrice) => {
-  const discountPercent = getCrafterDiscount(character); // z.B. 0.20
-  if (discountPercent > 0) {
-    const discount = Math.floor(basePrice * discountPercent);
-    return Math.max(0, basePrice - discount);
-  }
-  return basePrice;
 };
