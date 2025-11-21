@@ -14,8 +14,13 @@ export const getAllCharacterFeatures = (character) => {
     if (featData) feats.push(featData);
   }
 
-  // 2. Hier könnten später Klassen-Features oder Rassen-Traits folgen
-  // ...
+  // 2. +++ NEU: Level-Up Feats +++
+  if (character.feats && Array.isArray(character.feats)) {
+    character.feats.forEach(featKey => {
+      const featData = featuresData.find(f => f.key === featKey);
+      if (featData) feats.push(featData);
+    });
+  }
 
   return feats;
 };

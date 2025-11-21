@@ -459,6 +459,21 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
     }
   }
 
+  // +++ NEU: Talent (Feat) anwenden +++
+  let newFeats = [...(character.feats || [])];
+  let newFeatChoices = { ...(character.feat_choices || {}) };
+
+  if (levelUpChoices?.feat) {
+      const { key, selections } = levelUpChoices.feat;
+      console.log("Neues Talent gewählt:", key);
+      newFeats.push(key);
+      
+      // Wenn das Talent Entscheidungen hatte (z.B. Zauber), speichern wir diese auch
+      if (selections) {
+          newFeatChoices[key] = selections;
+      }
+  }
+
   // --- Subklasse anwenden ---
   const newSubclassKey = levelUpChoices?.subclassKey || character.subclassKey;
 
@@ -501,7 +516,9 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
   const updatedCharacter = {
     ...restOfCharacter,
     level: newLevel,
-    abilities: newAbilities, 
+    abilities: newAbilities,
+    feats: newFeats,
+    feat_choices: newFeatChoices, 
     subclassKey: newSubclassKey,
     stats: {
       ...character.stats,
