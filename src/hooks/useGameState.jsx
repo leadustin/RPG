@@ -652,6 +652,18 @@ export const useGameState = () => {
     });
   }, []);
 
+  // +++ NEU: Generisches Update für den Charakter (z.B. für Zauberbuch) +++
+  const handleUpdateCharacter = useCallback((updatedCharacter) => {
+    setGameState((prevState) => {
+      // Sicherheitshalber prüfen, ob IDs übereinstimmen, falls wir in einer Party sind
+      // (Aktuell ist character eh der Main Char, aber für die Zukunft)
+      return {
+        ...prevState,
+        character: updatedCharacter
+      };
+    });
+  }, []);
+
   return {
     gameState,
     setGameState, 
@@ -674,6 +686,7 @@ export const useGameState = () => {
     handleShortRest,
     handleLongRest,
     handleShopTransaction,
+    handleUpdateCharacter,
     rollDiceFormula,
   };
 };

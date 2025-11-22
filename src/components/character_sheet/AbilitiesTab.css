@@ -1,0 +1,188 @@
+/* src/components/character_sheet/AbilitiesTab.css */
+
+.abilities-tab {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    overflow: hidden;
+}
+
+/* --- HEADER / RESOURCES --- */
+.abilities-controls {
+    padding: 15px;
+    background: #252525;
+    border-bottom: 1px solid #444;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.resource-bar {
+    display: flex;
+    align-items: center;
+    background: #333;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid #555;
+}
+
+.resource-label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.resource-value {
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.resource-pills {
+    display: flex;
+    gap: 4px;
+}
+
+.pill {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #555;
+}
+
+.pill.filled {
+    background-color: #d32f2f; /* Rot für Wut/Kampf */
+    box-shadow: 0 0 5px rgba(211, 47, 47, 0.6);
+}
+
+.pill.empty {
+    background-color: #111;
+}
+
+/* --- GRID CONTAINER --- */
+.ability-grid-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.ability-section {
+    margin-bottom: 30px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    color: #d4af37;
+    border-bottom: 1px solid #444;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.count-badge {
+    margin-left: 10px;
+    font-size: 0.8rem;
+    background: #333;
+    color: #888;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.ability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 15px;
+}
+
+/* --- ABILITY CARD --- */
+.ability-icon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: help; /* Cursor zeigt an, dass es Infos gibt */
+    transition: transform 0.1s;
+    position: relative;
+}
+
+.ability-icon-card:hover {
+    transform: translateY(-2px);
+}
+
+.ability-icon-frame {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    border: 2px solid #444;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+    transition: border-color 0.2s ease;
+}
+
+.ability-icon-card:hover .ability-icon-frame {
+    border-color: #aaa;
+}
+
+.ability-icon-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ability-card-name {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    text-align: center;
+    color: #ccc;
+    line-height: 1.2;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- TOOLTIP STYLES --- */
+.ability-tooltip-content {
+    max-width: 250px;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.ability-tooltip-header {
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.ability-tooltip-name {
+    font-weight: bold;
+    color: #d4af37;
+    font-size: 1rem;
+}
+
+.ability-tooltip-type {
+    font-size: 0.75rem;
+    color: #888;
+    font-style: italic;
+}
+
+.ability-tooltip-meta {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+.ability-tooltip-description {
+    line-height: 1.4;
+    color: #ddd;
+}

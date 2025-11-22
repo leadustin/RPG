@@ -36,7 +36,8 @@ function App() {
     handleConfirmLevelUp,
     handleShortRest,
     handleLongRest,
-    handleShopTransaction
+    handleShopTransaction,
+    handleUpdateCharacter
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -49,6 +50,11 @@ function App() {
   const autoSaveExists = loadAutoSave() !== undefined;
   const manualSaveExists = getSaveSlots().some((slot) => slot !== null);
   const saveFileExists = autoSaveExists || manualSaveExists;
+
+    // +++ NEU: Erstelle die Party für die Props +++
+    // Falls du in Zukunft echte Party-Mitglieder in gameState.party hast, nutze das.
+    // Aktuell wrappen wir nur den einzelnen Charakter in ein Array.
+  const party = gameState.character ? [gameState.character] : [];
 
   const renderScreen = () => {
     // +++ KORREKTUR: Der Block, der TileMap direkt gerendert hat, ist weg! +++
@@ -115,7 +121,9 @@ function App() {
           {showCharacterSheet && (
             <CharacterSheet
               character={gameState.character}
+              party={party}
               onClose={toggleCharacterSheet}
+              onUpdateCharacter={handleUpdateCharacter}
               handleEquipItem={handleEquipItem}
               handleUnequipItem={handleUnequipItem}
               handleToggleTwoHanded={handleToggleTwoHanded}

@@ -1,8 +1,11 @@
-import React, { useState, useMemo } from 'react';
+// src/components/character_sheet/SpellbookTab.jsx
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDrag, useDrop } from 'react-dnd';
 import './SpellbookTab.css';
 import spellsEngine from '../../engine/spellsEngine';
-import { getFeatSpells } from '../../engine/rulesEngine';
+import { ItemTypes } from '../../dnd/itemTypes';
+import { getAbilityModifier, getRacialAbilityBonus } from '../../engine/characterEngine';
 import Tooltip from '../tooltip/Tooltip';
 
 // --- ICONS LADEN ---
@@ -13,228 +16,271 @@ for (const path in iconModules) {
   spellIcons[fileName] = iconModules[path].default;
 }
 
-// --- TOOLTIP CONTENT KOMPONENTE ---
-const SpellTooltipContent = ({ spell, t }) => (
-  <div className="spell-tooltip-content">
-    <div className="spell-tooltip-header">
-      <span className="spell-tooltip-name">{spell.name}</span>
-      <span className="spell-tooltip-school">{t(`magicSchools.${spell.school}`, spell.school)}</span>
-    </div>
-    
-    <div className="spell-tooltip-meta-grid">
-      <div className="meta-item">
-        <span className="label">Zeit:</span>
-        <span className="value">{spell.ui_casting_time || spell.casting_time}</span>
-      </div>
-      <div className="meta-item">
-        <span className="label">RW:</span>
-        <span className="value">{spell.ui_range || spell.range}</span>
-      </div>
-      <div className="meta-item">
-        <span className="label">Dauer:</span>
-        <span className="value">{spell.ui_duration || spell.duration}</span>
-      </div>
-      <div className="meta-item">
-        <span className="label">Komp:</span>
-        <span className="value">{spell.components?.join(', ')}</span>
-      </div>
-    </div>
+// --- DRAGGABLE SPELL ICON (Quelle: Liste unten) ---
+const DraggableSpell = ({ spell, isPrepared, onToggle }) => {
+    const [{ isDragging }, drag] = useDrag(() => ({
+        type: ItemTypes.SPELL,
+        item: { spell, origin: 'book' }, // Origin hilft uns zu wissen, woher er kommt
+        collect: (monitor) => ({
+            isDragging: !!monitor.isDragging(),
+        }),
+    }));
 
-    <div className="spell-tooltip-description">
-      {spell.ui_description || spell.description}
-    </div>
+    const iconSrc = spellIcons[spell.icon] || spellIcons['skill_placeholder.png'];
 
-    {spell.ui_scaling && (
-      <div className="spell-tooltip-scaling">
-        <strong>Auf höheren Graden:</strong> {spell.ui_scaling}
-      </div>
-    )}
-    
-    <div className="spell-tooltip-footer">
-      {spell.level === 0 ? t('common.cantrip') : `${t('common.level')} ${spell.level}`}
-      {spell.ritual && <span className="tag ritual">Ritual</span>}
-      {(spell.duration || "").toLowerCase().includes("konz") && <span className="tag concentration">Konz.</span>}
+    return (
+        <div ref={drag} className={`spell-item-wrapper ${isDragging ? 'dragging' : ''}`}>
+            <Tooltip content={<SpellTooltipContent spell={spell} />}>
+                <div 
+                    className={`spell-card ${isPrepared ? 'prepared-in-book' : ''}`}
+                    onClick={() => onToggle && onToggle(spell)} 
+                >
+                    <img src={iconSrc} alt={spell.name} />
+                    {isPrepared && <div className="prepared-marker">✓</div>}
+                </div>
+            </Tooltip>
+        </div>
+    );
+};
+
+// --- PREPARED SLOT (Ziel: Oben) ---
+// Auch draggable, um Zauber innerhalb der Leiste zu verschieben (Optional, hier als Drop Target)
+const PreparedSlot = ({ spell, index, onDrop, onRemove }) => {
+    const [{ isOver }, drop] = useDrop(() => ({
+        accept: ItemTypes.SPELL,
+        drop: (item) => onDrop(item.spell, index),
+        collect: (monitor) => ({
+            isOver: !!monitor.isOver(),
+        }),
+    }));
+
+    const iconSrc = spell ? (spellIcons[spell.icon] || spellIcons['skill_placeholder.png']) : null;
+
+    return (
+        <div ref={drop} className={`prepared-slot ${isOver ? 'is-over' : ''} ${spell ? 'filled' : 'empty'}`}>
+            {spell ? (
+                <Tooltip content={<SpellTooltipContent spell={spell} />}>
+                    <div className="slot-content">
+                        <img src={iconSrc} alt={spell.name} />
+                        <div className="remove-overlay" onClick={(e) => { e.stopPropagation(); onRemove(index); }}>✕</div>
+                    </div>
+                </Tooltip>
+            ) : (
+                <div className="slot-placeholder"></div>
+            )}
+        </div>
+    );
+};
+
+// --- TOOLTIP CONTENT ---
+const SpellTooltipContent = ({ spell }) => (
+    <div className="spell-tooltip">
+        <h4>{spell.name}</h4>
+        <div className="spell-meta">
+            <span>{spell.level === 0 ? 'Zaubertrick' : `Grad ${spell.level}`}</span>
+            <span>• {spell.school}</span>
+        </div>
+        <p>{spell.ui_description || spell.description}</p>
+        <div className="spell-stats">
+            {spell.casting_time && <div>Zeit: {spell.casting_time}</div>}
+            {spell.range && <div>RW: {spell.range}</div>}
+            {spell.duration && <div>Dauer: {spell.duration}</div>}
+        </div>
     </div>
-  </div>
 );
 
 const SpellbookTab = ({ character, onUpdateCharacter }) => {
-  const { t } = useTranslation();
-  const [searchTerm, setSearchTerm] = useState("");
+    const { t } = useTranslation();
 
-  // 1. Slots berechnen
-  const spellSlots = useMemo(() => {
-    if (!character?.class?.spellcasting?.spell_slots_by_level) return [];
-    const levelIndex = (character.level || 1) - 1;
-    return character.class.spellcasting.spell_slots_by_level[levelIndex] || [];
-  }, [character]);
+    // 1. Maximale vorbereitete Zauber berechnen
+    const maxPrepared = useMemo(() => {
+        if (!character) return 1;
+        const level = character.level || 1;
+        let abilityKey = 'int'; // Standard Wizard
+        if (character.class?.key === 'cleric' || character.class?.key === 'druid') abilityKey = 'wis';
+        if (character.class?.key === 'paladin') abilityKey = 'cha';
+        // Sorcerer, Bard, Warlock, Ranger bereiten nicht vor (Known Spells), aber wir nutzen die Logik hier generisch
+        
+        const score = character.abilities[abilityKey] + getRacialAbilityBonus(character, abilityKey);
+        const mod = getAbilityModifier(score);
+        
+        const levelFactor = character.class?.key === 'paladin' ? Math.floor(level / 2) : level;
+        return Math.max(1, levelFactor + mod);
+    }, [character]);
 
-  // 2. Alle Zauber sammeln
-  const allCharacterSpells = useMemo(() => {
-    if (!character) return [];
+    // 2. Aktuell vorbereitete Zauber laden (mit fester Array-Größe und 'null' für Lücken)
+    const preparedSpells = useMemo(() => {
+        const rawList = character.spells_prepared || [];
+        // Wir erstellen ein Array der Länge 'maxPrepared'.
+        // Wenn rawList kleiner ist, füllen wir auf. Wenn größer (durch Level Down?), schneiden wir ab.
+        // WICHTIG: Wir müssen sicherstellen, dass 'rawList' auch 'null' enthalten darf, 
+        // um Lücken zu repräsentieren.
+        
+        const slots = new Array(maxPrepared).fill(null);
+        
+        rawList.slice(0, maxPrepared).forEach((key, i) => {
+            if (key) {
+                slots[i] = spellsEngine.getSpell(key);
+            }
+        });
+        return slots;
+    }, [character.spells_prepared, maxPrepared]);
 
-    const uniqueSpells = new Map();
+    // 3. Alle verfügbaren Zauber (Zauberbuch) laden
+    const knownSpells = useMemo(() => {
+        const bookKeys = character.spellbook || character.spells_known || [];
+        const uniqueKeys = [...new Set(bookKeys)];
+        return uniqueKeys.map(key => spellsEngine.getSpell(key)).filter(Boolean);
+    }, [character.spellbook, character.spells_known]);
 
-    // Helper
-    const add = (key, source, prepared = false) => {
-      if (!key) return;
-      const data = spellsEngine.getSpell(key);
-      if (data && !uniqueSpells.has(key)) {
-        uniqueSpells.set(key, { ...data, source, prepared });
-      } else if (data && uniqueSpells.has(key) && prepared) {
-        // Wenn er schon da ist, aber jetzt prepared status hat, update
-        const existing = uniqueSpells.get(key);
-        uniqueSpells.set(key, { ...existing, prepared: true });
-      }
+    const cantrips = useMemo(() => {
+        const keys = character.cantrips_known || [];
+        return keys.map(key => spellsEngine.getSpell(key)).filter(Boolean);
+    }, [character.cantrips_known]);
+
+
+    // --- ACTIONS ---
+
+    // Wird aufgerufen, wenn ein Zauber auf einen Slot (targetIndex) gezogen wird
+    const handlePrepareSpell = (spell, targetIndex) => {
+        if (!onUpdateCharacter) return;
+        if (spell.level === 0) return; 
+
+        // Kopie der aktuellen Liste (oder erstelle neue mit nulls)
+        let newPreparedList = [...(character.spells_prepared || [])];
+        
+        // Sicherstellen, dass das Array groß genug ist
+        if (newPreparedList.length < maxPrepared) {
+            const diff = maxPrepared - newPreparedList.length;
+            for(let i=0; i<diff; i++) newPreparedList.push(null);
+        }
+
+        // Prüfen, ob der Zauber schon woanders liegt -> dort entfernen (verschieben)
+        const existingIndex = newPreparedList.indexOf(spell.key);
+        if (existingIndex !== -1) {
+            newPreparedList[existingIndex] = null;
+        }
+
+        // An neuer Position einfügen (überschreibt was auch immer dort war)
+        // Wenn kein targetIndex übergeben wurde (z.B. durch Klick), suchen wir den ersten freien Slot
+        if (typeof targetIndex !== 'number') {
+            const freeIndex = newPreparedList.indexOf(null);
+            if (freeIndex !== -1) {
+                newPreparedList[freeIndex] = spell.key;
+            } else {
+                console.log("Keine freien Slots mehr.");
+                return; 
+            }
+        } else {
+            // Gezieltes Drop
+            newPreparedList[targetIndex] = spell.key;
+        }
+
+        // Bereinigen: Wir speichern 'null' in der DB, damit die Positionen erhalten bleiben?
+        // Ja, für dieses UI-Verhalten ist das notwendig.
+        onUpdateCharacter({ ...character, spells_prepared: newPreparedList });
     };
 
-    // A. Zauberbuch (Wizard) oder Bekannt (Sorcerer/Bard)
-    // Wir gehen davon aus, dass `character.spells_prepared` eine Liste von Keys ist
-    const preparedSet = new Set(character.spells_prepared || []);
-
-    (character.spellbook || []).forEach(k => add(k, 'spellbook', preparedSet.has(k)));
-    (character.spells_known || []).forEach(k => add(k, 'known', true)); // Bekannte sind immer "bereit"
-    (character.cantrips_known || []).forEach(k => add(k, 'cantrip', true));
-
-    // B. Talente
-    const featSpells = getFeatSpells(character);
-    (featSpells.cantrips || []).forEach(k => add(k, 'feat', true));
-    (featSpells.level1 || []).forEach(k => add(k, 'feat', true));
-
-    return Array.from(uniqueSpells.values());
-  }, [character]);
-
-  // 3. Filtern und Gruppieren
-  const filteredAndGroupedSpells = useMemo(() => {
-    const lowerSearch = searchTerm.toLowerCase();
-    
-    const filtered = allCharacterSpells.filter(spell => {
-      return (
-        spell.name.toLowerCase().includes(lowerSearch) ||
-        (spell.ui_description || "").toLowerCase().includes(lowerSearch) ||
-        spell.school.toLowerCase().includes(lowerSearch)
-      );
-    });
-
-    const grouped = {};
-    filtered.forEach(spell => {
-      if (!grouped[spell.level]) grouped[spell.level] = [];
-      grouped[spell.level].push(spell);
-    });
-
-    return grouped;
-  }, [allCharacterSpells, searchTerm]);
-
-  // --- ACTIONS ---
-
-  const togglePrepareSpell = (spell) => {
-    // Cantrips und 'Known' Zauber (Sorcerer) müssen meist nicht vorbereitet werden.
-    // Wir erlauben das Umschalten nur für Zauberbuch-Zauber oder wenn Logik dies verlangt.
-    if (spell.source === 'known' || spell.source === 'feat' || spell.level === 0) return;
-
-    // Hier müssten wir den Character state updaten. 
-    // Da ich keinen direkten Setter habe, simuliere ich das Log:
-    console.log(`Toggling preparation for: ${spell.name}`);
-    
-    if (onUpdateCharacter) {
-        const currentPrepared = character.spells_prepared || [];
-        let newPrepared;
-        if (currentPrepared.includes(spell.key)) {
-            newPrepared = currentPrepared.filter(k => k !== spell.key);
-        } else {
-            newPrepared = [...currentPrepared, spell.key];
+    // Entfernen aus einem spezifischen Slot
+    const handleUnprepareSpell = (indexToRemove) => {
+        if (!onUpdateCharacter) return;
+        let newPreparedList = [...(character.spells_prepared || [])];
+        
+        // Sicherstellen dass Index existiert
+        if (indexToRemove < newPreparedList.length) {
+            newPreparedList[indexToRemove] = null;
+            onUpdateCharacter({ ...character, spells_prepared: newPreparedList });
         }
-        // Update des Charakters auslösen
-        onUpdateCharacter({ ...character, spells_prepared: newPrepared });
-    }
-  };
+    };
 
-  // --- RENDER HELPER ---
-  const renderSpellIcon = (spell) => {
-    const iconSrc = spellIcons[spell.icon] || spellIcons['skill_placeholder.png'];
-    
-    // Prüfen ob vorbereitet oder immer verfügbar (Cantrips/Known)
-    const isAlwaysPrepared = spell.level === 0 || spell.source === 'known' || spell.source === 'feat';
-    const isPrepared = spell.prepared || isAlwaysPrepared;
-    
-    // Visueller Status
-    const statusClass = isPrepared ? 'prepared' : 'unprepared';
-    const clickAction = isAlwaysPrepared ? null : () => togglePrepareSpell(spell);
+    // --- GROUPING ---
+    const spellsByLevel = useMemo(() => {
+        const grouped = {};
+        knownSpells.forEach(s => {
+            if (!grouped[s.level]) grouped[s.level] = [];
+            grouped[s.level].push(s);
+        });
+        return grouped;
+    }, [knownSpells]);
+
+    // Zähle tatsächliche Zauber (nicht nulls)
+    const preparedCount = preparedSpells.filter(Boolean).length;
 
     return (
-      <Tooltip 
-        key={spell.key} 
-        content={<SpellTooltipContent spell={spell} t={t} />}
-      >
-        <div 
-            className={`spell-icon-card ${statusClass} ${isAlwaysPrepared ? 'fixed' : 'toggleable'}`}
-            onClick={clickAction}
-        >
-            <div className="spell-icon-frame">
-                <img src={iconSrc} alt={spell.name} />
-                {/* Kleines Badge für Konzentration oder Ritual */}
-                <div className="spell-card-badges">
-                    {spell.ritual && <span className="badge-icon">R</span>}
-                    {(spell.duration||"").includes("Kon") && <span className="badge-icon">C</span>}
+        <div className="spellbook-tab-bg3">
+            
+            {/* OBERER BEREICH: CANTRIPS */}
+            {cantrips.length > 0 && (
+                <div className="sb-section cantrips-section">
+                    <h3 className="sb-header">Zaubertricks <span className="sb-subinfo">(Immer verfügbar)</span></h3>
+                    <div className="sb-grid">
+                        {cantrips.map(spell => (
+                             <DraggableSpell key={spell.key} spell={spell} isPrepared={true} />
+                        ))}
+                    </div>
                 </div>
-            </div>
-            <div className="spell-card-name">{spell.name}</div>
-        </div>
-      </Tooltip>
-    );
-  };
-
-  return (
-    <div className="spellbook-tab">
-      {/* OBERE LEISTE: Suche & Slots */}
-      <div className="spellbook-controls">
-        <div className="search-wrapper">
-            <input 
-                type="text" 
-                placeholder="Zauber suchen..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="spell-search-input"
-            />
-            {searchTerm && (
-                <button className="clear-search" onClick={() => setSearchTerm("")}>✕</button>
             )}
-        </div>
 
-        {spellSlots.length > 0 && (
-            <div className="spell-slots-display">
-                {spellSlots.map((count, i) => count > 0 && (
-                    <div key={i} className="slot-pill" title={`Grad ${i + 1} Slots`}>
-                        <span className="lvl">{i + 1}</span>
-                        <span className="amt">{count}</span>
-                    </div>
-                ))}
-            </div>
-        )}
-      </div>
-
-      {/* SCROLLBEREICH: Grid */}
-      <div className="spell-grid-container">
-        {Object.keys(filteredAndGroupedSpells).length === 0 ? (
-            <div className="empty-state">Keine Zauber gefunden.</div>
-        ) : (
-            Object.keys(filteredAndGroupedSpells)
-                .sort((a, b) => parseInt(a) - parseInt(b))
-                .map(level => (
-                <div key={level} className="spell-level-section">
-                    <h3 className="level-header">
-                        {level === "0" ? t('common.cantrips') : `${t('common.level')} ${level}`}
-                        <span className="spell-count-badge">{filteredAndGroupedSpells[level].length}</span>
-                    </h3>
-                    <div className="spell-grid">
-                        {filteredAndGroupedSpells[level].map(renderSpellIcon)}
+            {/* MITTLERER BEREICH: VORBEREITUNG (Slots) */}
+            <div className="sb-section preparation-section">
+                <div className="preparation-header">
+                    <h3>Vorbereitete Zauber</h3>
+                    <div className="prep-counter">
+                        <span className={`count ${preparedCount >= maxPrepared ? 'full' : ''}`}>
+                            {preparedCount}
+                        </span>
+                        <span className="divider">/</span>
+                        <span className="max">{maxPrepared}</span>
                     </div>
                 </div>
-            ))
-        )}
-      </div>
-    </div>
-  );
+                
+                <div className="prepared-slots-row">
+                    {/* Wir iterieren über das vorberechnete Array (das nulls enthält) */}
+                    {preparedSpells.map((spell, i) => (
+                        <PreparedSlot 
+                            key={i} 
+                            index={i} 
+                            spell={spell} 
+                            onDrop={handlePrepareSpell} 
+                            onRemove={handleUnprepareSpell}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* UNTERER BEREICH: ZAUBERBUCH LISTE */}
+            <div className="sb-section spellbook-list-section">
+                <h3 className="sb-header">Zauberbuch</h3>
+                <div className="spellbook-scroll-area">
+                    {Object.keys(spellsByLevel).sort((a, b) => a - b).map(level => (
+                        <div key={level} className="level-group">
+                            <h4 className="level-header">
+                                <span className="roman-level">Grad {level}</span>
+                                <span className="line"></span>
+                            </h4>
+                            <div className="sb-grid">
+                                {spellsByLevel[level].map(spell => {
+                                    // Prüfen ob der Key IRGENDWO im Prepared Array ist
+                                    const isPrep = (character.spells_prepared || []).includes(spell.key);
+                                    return (
+                                        <DraggableSpell 
+                                            key={spell.key} 
+                                            spell={spell} 
+                                            isPrepared={isPrep} 
+                                            onToggle={(s) => handlePrepareSpell(s)} // Klick füllt ersten freien Slot
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                    {knownSpells.length === 0 && (
+                        <div className="empty-book-msg">Keine Zauber im Zauberbuch.</div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default SpellbookTab;
