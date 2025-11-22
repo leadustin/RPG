@@ -220,10 +220,14 @@ const LevelUpSpellSelection = ({ character, cantripsCount, spellsCount, onSelect
     );
 };
 
-// --- REST DER DATEI (AbilityScore, Subclass, Main Screen) BLEIBT GLEICH ---
 
 const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) => {
   const handleIncrease = (key) => {
+    const currentVal = finalAbilities[key] + (choices[key] || 0);
+    
+    // REGEL-CHECK: Maximal 20
+    if (currentVal >= 20) return;
+
     if (points > 0 && (choices[key] || 0) < 2) {
       const currentPointsUsed = Object.values(choices).reduce((a, b) => a + b, 0);
       if (currentPointsUsed < 2) {
@@ -243,15 +247,31 @@ const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) 
   return (
     <div className="asi-selection">
       <h4>Attributswerte erhöhen</h4>
-      <p className="small-text">Verteile +2 auf ein Attribut oder +1 auf zwei Attribute.</p>
-      {Object.keys(finalAbilities).map((key) => (
-        <div key={key} className="asi-row">
-          <span className="asi-label">{key.toUpperCase()} ({finalAbilities[key]})</span>
-          <button onClick={() => handleDecrease(key)} disabled={!choices[key]}>-</button>
-          <span className="asi-choice">{choices[key] || 0}</span>
-          <button onClick={() => handleIncrease(key)} disabled={points === 0 || choices[key] >= 2}>+</button>
-        </div>
-      ))}
+      <p className="small-text">Verteile +2 auf ein Attribut oder +1 auf zwei Attribute (Max. 20).</p>
+      {Object.keys(finalAbilities).map((key) => {
+        const currentBonus = choices[key] || 0;
+        const currentTotal = finalAbilities[key] + currentBonus;
+        // Button deaktivieren, wenn: Keine Punkte ODER Limit (+2) erreicht ODER Attribut >= 20
+        const isMaxed = currentTotal >= 20;
+
+        return (
+          <div key={key} className="asi-row">
+            <span className="asi-label">{key.toUpperCase()} ({finalAbilities[key]})</span>
+            
+            <button onClick={() => handleDecrease(key)} disabled={!currentBonus}>-</button>
+            
+            <span className="asi-choice">{currentTotal} {currentBonus > 0 && <span style={{fontSize:'0.8em', color:'#d4af37'}}>(+{currentBonus})</span>}</span>
+            
+            <button 
+                onClick={() => handleIncrease(key)} 
+                disabled={points === 0 || currentBonus >= 2 || isMaxed}
+                title={isMaxed ? "Maximum von 20 erreicht" : ""}
+            >
+                +
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 };
