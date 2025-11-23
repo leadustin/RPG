@@ -227,7 +227,7 @@ const CharacterSheet = ({
     }));
   };
 
-  const maxHp = displayCharacter.stats.maxHp || calculateInitialHP(displayCharacter);
+  const maxHp = displayCharacter.stats.maxHp;
   const currentHp = displayCharacter.stats.hp !== undefined ? displayCharacter.stats.hp : maxHp;
   const armorClass = calculateAC(displayCharacter);
   const finalDexForInit = displayCharacter.abilities.dex + getRacialAbilityBonus(displayCharacter, 'dex');

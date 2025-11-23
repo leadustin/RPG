@@ -2705,7 +2705,7 @@
   {
     "key": "tough",
     "name": "Zäh",
-    "description": "Deine Trefferpunkte erhöhen sich um das Doppelte deines Charakterlevels. Immer wenn du ein Level aufsteigst, erhältst du 2 zusätzliche Trefferpunkte.",
+    "description": "Deine maximalen Trefferpunkte erhöhen sich sofort um 2 pro Charakterstufe. Bei jedem weiteren Level-Up erhältst du zusätzlich 2 Trefferpunkte.",
     "feature_type": "feat",
     "source": "PHB2024",
     "mechanics": {

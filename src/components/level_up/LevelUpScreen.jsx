@@ -1,8 +1,12 @@
 // src/components/level_up/LevelUpScreen.jsx
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next'; // Für Tooltip-Texte
+import { useTranslation } from 'react-i18next';
 import DiceBox from "@3d-dice/dice-box"; 
+
+// Engines & Data
 import { getRacialAbilityBonus } from '../../engine/characterEngine';
+import { getAbilityModifier } from '../../engine/rulesEngine';
+import { calculateFeatHpBonus } from '../../engine/featsEngine';
 import allClassData from '../../data/classes.json'; 
 import featuresData from '../../data/features.json'; 
 import spellsData from '../../data/spells.json'; 
@@ -11,7 +15,7 @@ import './LevelUpScreen.css';
 // Importe
 import { WeaponMasterySelection } from '../character_creation/WeaponMasterySelection';
 import { FeatSelection } from '../character_creation/FeatSelection'; 
-import Tooltip from '../tooltip/Tooltip'; // WICHTIG: Tooltip importieren
+import Tooltip from '../tooltip/Tooltip'; 
 import '../character_creation/SkillSelection.css'; 
 import '../character_creation/PanelDetails.css'; 
 
@@ -23,7 +27,80 @@ for (const path in iconModules) {
   spellIcons[fileName] = iconModules[path].default;
 }
 
-// --- TOOLTIP CONTENT (Kopie aus SpellbookTab für Konsistenz) ---
+// --- HELPER: ZUSAMMENFASSUNG BERECHNEN ---
+const getSummaryData = (character, levelUpChoices, hpRollResult, newLevel) => {
+  if (!character || !levelUpChoices) return null;
+
+  // 1. Attribute (inkl. ASI)
+  const raceBonuses = {
+    con: getRacialAbilityBonus(character, 'con'),
+  };
+
+  const currentCon = character.abilities.con + (raceBonuses.con || 0);
+  const asiCon = levelUpChoices.asi?.con || 0;
+  const finalCon = currentCon + asiCon;
+  
+  const oldConMod = getAbilityModifier(currentCon);
+  const newConMod = getAbilityModifier(finalCon);
+
+  // 2. HP Analyse
+  // A. Status VOR dem Level Up
+  const oldFeatBonus = calculateFeatHpBonus(character);
+  
+  // B. Simulierter Status NACH dem Level Up (für Talent-Berechnung)
+  let tempFeats = [...(character.feats || [])];
+  if (levelUpChoices.feat) tempFeats.push(levelUpChoices.feat.key);
+  
+  const tempChar = { ...character, level: newLevel, feats: tempFeats, background: character.background };
+  const newFeatBonus = calculateFeatHpBonus(tempChar);
+  
+  // Differenz ist der Gewinn durch Talente (z.B. Zäh: +2 pro Level)
+  const featHpGain = newFeatBonus - oldFeatBonus;
+  
+  // C. Rückwirkende HP durch CON-Erhöhung
+  let retroactiveConHp = 0;
+  if (newConMod > oldConMod) {
+    retroactiveConHp = (newConMod - oldConMod) * (newLevel - 1);
+  }
+
+  // D. Fester Zwergen-Bonus
+  const dwarfBonus = character.race?.key === 'dwarf' ? 1 : 0;
+
+  // Gesamter HP Anstieg
+  const diceRollValue = hpRollResult?.total || 0;
+  
+  const totalHpIncrease = diceRollValue + newConMod + featHpGain + retroactiveConHp + dwarfBonus;
+
+  // 3. Waffenmeisterschaften Filtern (Nur NEUE anzeigen)
+  const oldMasteries = character.weapon_mastery_choices || [];
+  const selectedMasteries = levelUpChoices.weapon_mastery_choices || [];
+  
+  // Filtere alle Masteries heraus, die der Charakter vorher schon hatte.
+  // Das zeigt nur neu hinzugewählte oder geänderte Masteries an.
+  const newMasteriesToShow = selectedMasteries.filter(m => !oldMasteries.includes(m));
+
+  return {
+    hp: {
+      total: totalHpIncrease,
+      breakdown: [
+        { label: "Trefferwürfel (Basis)", value: diceRollValue },
+        { label: "Konstitution", value: newConMod },
+        featHpGain > 0 ? { label: "Talente (z.B. Zäh)", value: featHpGain } : null,
+        retroactiveConHp > 0 ? { label: "Rückwirkend (CON Anstieg)", value: retroactiveConHp } : null,
+        dwarfBonus > 0 ? { label: "Zwergenzähigkeit", value: dwarfBonus } : null,
+      ].filter(Boolean)
+    },
+    newConMod,
+    oldConMod,
+    asi: levelUpChoices.asi,
+    feat: levelUpChoices.feat,
+    newSpells: levelUpChoices.newSpells,
+    newMasteries: newMasteriesToShow, // Hier nutzen wir jetzt die gefilterte Liste
+    subclass: levelUpChoices.subclassKey ? allClassData.find(c => c.key === character.class.key)?.subclasses.find(s => s.key === levelUpChoices.subclassKey) : null
+  };
+};
+
+// --- TOOLTIP CONTENT ---
 const SpellTooltipContent = ({ spell, t }) => (
   <div className="spell-tooltip-content">
     <div className="spell-tooltip-header">
@@ -75,20 +152,12 @@ const getRacialHpBonus = (character) => {
 };
 
 const rollDiceFormula = (formula, results) => {
-  let bonus = 0;
-  if (formula.includes('+')) {
-    bonus = parseInt(formula.split('+')[1] || 0);
-  } else if (formula.includes('-')) {
-    bonus = -parseInt(formula.split('-')[1] || 0);
-  }
-  
+  // Berechnet nur den Würfelwert, Boni machen wir separat für die Anzeige
   const diceValues = results.map(r => r.value);
   const diceSum = diceValues.reduce((a, b) => a + b, 0);
-
   return {
-    total: diceSum + bonus,
+    total: diceSum, // NUR DER WÜRFEL
     dice: diceValues,
-    bonus: bonus
   };
 };
 
@@ -224,8 +293,6 @@ const LevelUpSpellSelection = ({ character, cantripsCount, spellsCount, onSelect
 const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) => {
   const handleIncrease = (key) => {
     const currentVal = finalAbilities[key] + (choices[key] || 0);
-    
-    // REGEL-CHECK: Maximal 20
     if (currentVal >= 20) return;
 
     if (points > 0 && (choices[key] || 0) < 2) {
@@ -251,17 +318,13 @@ const AbilityScoreImprovement = ({ finalAbilities, points, choices, onChange }) 
       {Object.keys(finalAbilities).map((key) => {
         const currentBonus = choices[key] || 0;
         const currentTotal = finalAbilities[key] + currentBonus;
-        // Button deaktivieren, wenn: Keine Punkte ODER Limit (+2) erreicht ODER Attribut >= 20
         const isMaxed = currentTotal >= 20;
 
         return (
           <div key={key} className="asi-row">
             <span className="asi-label">{key.toUpperCase()} ({finalAbilities[key]})</span>
-            
             <button onClick={() => handleDecrease(key)} disabled={!currentBonus}>-</button>
-            
             <span className="asi-choice">{currentTotal} {currentBonus > 0 && <span style={{fontSize:'0.8em', color:'#d4af37'}}>(+{currentBonus})</span>}</span>
-            
             <button 
                 onClick={() => handleIncrease(key)} 
                 disabled={points === 0 || currentBonus >= 2 || isMaxed}
@@ -298,6 +361,7 @@ const SubclassSelection = ({ classKey, onSelect, selectedKey }) => {
 };
 
 export const LevelUpScreen = ({ character, onConfirm }) => {
+  const { t } = useTranslation();
   const { newLevel } = character.pendingLevelUp;
   
   const [step, setStep] = useState(0); 
@@ -387,19 +451,18 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
     if (diceInstanceRef.current) {
       try {
         const results = await diceInstanceRef.current.roll(hpRollFormula);
+        // rollDiceFormula gibt jetzt nur { total, dice } zurück (reiner Würfelwert)
         const formulaResult = rollDiceFormula(hpRollFormula, results); 
-        setRollResult({ ...formulaResult, racialBonus: racialHpBonus });
+        setRollResult({ ...formulaResult }); 
       } catch (e) {
         console.error("Dice roll error:", e);
         const fallbackRoll = Math.floor(Math.random() * parseInt(hpRollFormula.split('d')[1] || 8)) + 1;
-        setRollResult({ total: fallbackRoll, dice: [fallbackRoll], bonus: 0, racialBonus: racialHpBonus });
+        setRollResult({ total: fallbackRoll, dice: [fallbackRoll] });
       }
     } else {
       console.warn("DiceBox nicht bereit. Nutze Fallback.");
       const fallbackRoll = Math.floor(Math.random() * parseInt(hpRollFormula.split('d')[1] || 8)) + 1;
-      let bonus = 0;
-      if (hpRollFormula.includes('+')) bonus = parseInt(hpRollFormula.split('+')[1] || 0);
-      setRollResult({ total: fallbackRoll + bonus, dice: [fallbackRoll], bonus, racialBonus: racialHpBonus });
+      setRollResult({ total: fallbackRoll, dice: [fallbackRoll] });
     }
   };
 
@@ -439,15 +502,18 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
   };
 
   const handleConfirmAll = () => {
-    const choices = {
-      asi: levelUpMode === 'asi' ? asiChoices : null,
-      feat: levelUpMode === 'feat' ? { key: selectedFeatKey, selections: featSelections[selectedFeatKey] } : null,
-      subclassKey: selectedSubclass,
-      weapon_mastery_choices: masteryChoices,
-      newSpells: spellChoices
-    };
-    onConfirm(rollResult.total, choices);
+  const choices = {
+    asi: levelUpMode === 'asi' ? asiChoices : null,
+    feat: levelUpMode === 'feat' ? { key: selectedFeatKey, selections: featSelections[selectedFeatKey] } : null,
+    subclassKey: selectedSubclass,
+    weapon_mastery_choices: masteryChoices,
+    newSpells: spellChoices
   };
+  
+  // Übergib den totalen HP-Gewinn aus der Summary
+  const totalHpGain = summaryData.hp.total;
+  onConfirm(totalHpGain, choices);
+};
 
   const handleAsiChange = (newChoices, newPoints) => {
     setAsiChoices(newChoices);
@@ -462,6 +528,143 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
 
   const selectedFeat = featuresData.find(f => f.key === selectedFeatKey);
 
+  // --- SUMMARY DATA (Memoized) ---
+  const summaryData = useMemo(() => {
+    if (step !== 5) return null;
+    const choices = {
+      asi: Object.keys(asiChoices).length > 0 ? asiChoices : null,
+      feat: selectedFeat ? { key: selectedFeat.key, name: selectedFeat.name } : null,
+      subclassKey: selectedSubclass,
+      newSpells: spellChoices,
+      weapon_mastery_choices: masteryChoices
+    };
+    return getSummaryData(character, choices, rollResult, newLevel);
+  }, [step, character, asiChoices, selectedFeat, selectedSubclass, spellChoices, masteryChoices, rollResult, newLevel]);
+
+  // --- RENDER SUMMARY ---
+  const renderSummaryStep = () => {
+    if (!summaryData) return <div>Lade Daten...</div>;
+
+    return (
+      <div className="levelup-section summary-section">
+        <h3>Zusammenfassung: Stufe {newLevel}</h3>
+        <div className="summary-grid">
+          
+          {/* 1. HP Karte */}
+          <div className="summary-card hp-card">
+            <div className="card-header">
+              <h4>❤️ Trefferpunkte</h4>
+              <span className="hp-total-badge">+{summaryData.hp.total}</span>
+            </div>
+            <ul className="breakdown-list">
+              {summaryData.hp.breakdown.map((item, idx) => (
+                <li key={idx}>
+                  <span className="label">{item.label}</span>
+                  <span className="value">+{item.value}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="total-row">
+              <span>Neues Maximum:</span>
+              <strong>{character.stats.maxHp + summaryData.hp.total} TP</strong>
+            </div>
+          </div>
+
+          {/* 2. Subklasse */}
+          {summaryData.subclass && (
+            <div className="summary-card">
+              <h4>🛡️ Neuer Archetyp</h4>
+              <div className="highlight-box">
+                <strong>{summaryData.subclass.name}</strong>
+                <p className="small-desc">Deine Spezialisierung beginnt.</p>
+              </div>
+            </div>
+          )}
+
+          {/* 3. Entwicklung (ASI/Feat) */}
+          {(summaryData.asi || summaryData.feat) && (
+            <div className="summary-card">
+              <h4>💪 Entwicklung</h4>
+              {summaryData.asi ? (
+                <ul className="simple-list">
+                  {Object.entries(summaryData.asi).map(([key, val]) => (
+                    <li key={key}>
+                      <span className="attr-name">{t(`stats.${key}`)}</span> 
+                      <span className="attr-val">+{val}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="feat-preview">
+                  <strong>{summaryData.feat.name}</strong>
+                  <span className="tag">Talent</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 4. Magie */}
+          {(summaryData.newSpells.cantrips.length > 0 || summaryData.newSpells.spells.length > 0) && (
+            <div className="summary-card wide-card">
+              <h4>✨ Neue Magie</h4>
+              <div className="spells-summary-container">
+                {summaryData.newSpells.cantrips.length > 0 && (
+                  <div className="spell-group">
+                    <h5>Zaubertricks</h5>
+                    <div className="spell-icons-row">
+                      {summaryData.newSpells.cantrips.map(id => {
+                        const spell = spellsData.find(s => s.key === id);
+                        return (
+                          <div key={id} className="mini-spell-chip">
+                            {spell?.name || id}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                {summaryData.newSpells.spells.length > 0 && (
+                  <div className="spell-group">
+                    <h5>Zauber</h5>
+                    <div className="spell-icons-row">
+                      {summaryData.newSpells.spells.map(id => {
+                        const spell = spellsData.find(s => s.key === id);
+                        return (
+                          <div key={id} className="mini-spell-chip spell-level-1">
+                            {spell?.name || id}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 5. Masteries */}
+          {summaryData.newMasteries && summaryData.newMasteries.length > 0 && (
+            <div className="summary-card">
+              <h4>⚔️ Neue Waffenmeisterschaft</h4>
+              <div className="mastery-tags">
+                {summaryData.newMasteries.map(key => (
+                  <span key={key} className="mastery-tag">{t(`items.${key}`, key)}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
+
+        <div className="summary-actions">
+          <button onClick={handleConfirmAll} className="confirm-button final-confirm">
+            Levelaufstieg abschließen
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="levelup-screen">
       <div className="levelup-sidebar">
@@ -469,7 +672,7 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
         <p className="levelup-subtitle">{character.name} &rarr; Stufe {newLevel}</p>
         
         <div className="levelup-summary-preview">
-            <p>TP: {character.stats.hp} {rollResult && ` + ${rollResult.total + (rollResult.racialBonus || 0)}`}</p>
+            <p>TP: {character.stats.hp} {rollResult && ` + ${(rollResult.total || 0) + racialHpBonus + getAbilityModifier(character.abilities.con + getRacialAbilityBonus(character, 'con'))}`}</p>
             <div className="ability-grid-preview">
                 {Object.keys(finalAbilities).map((key) => {
                     const bonus = levelUpMode === 'asi' ? (asiChoices[key] || 0) : 0;
@@ -508,14 +711,15 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
               
               {!rollResult ? (
                 <button onClick={handleRollHP} className="roll-button">
-                  Würfeln ({hpRollFormula}{racialHpBonus > 0 ? ` + ${racialHpBonus}` : ''})
+                  Würfeln ({hpRollFormula})
                 </button>
               ) : (
                 <div className="hp-result">
                   <p>Gewürfelt: {rollResult.dice.join(' + ')}</p>
-                  <p>Modifikator: {rollResult.bonus}</p>
+                  {/* Anzeige des vorläufigen CON Mods (aktuell) */}
+                  <p>Konstitution: +{getAbilityModifier(character.abilities.con + getRacialAbilityBonus(character, 'con'))}</p>
                   {racialHpBonus > 0 && <p>Rassenbonus (Zwerg): {racialHpBonus}</p>}
-                  <p className="hp-total">Gesamt-Zuwachs: {rollResult.total + racialHpBonus}</p>
+                  <p className="hp-total">Vorläufiger Zuwachs: {rollResult.total + getAbilityModifier(character.abilities.con + getRacialAbilityBonus(character, 'con')) + racialHpBonus}</p>
                   <button onClick={handleConfirmHP} className="confirm-button">Weiter</button>
                 </div>
               )}
@@ -570,7 +774,6 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
              <div className="levelup-section choices-section">
                <div className="choice-block">
                   <h3>Magisches Wissen erweitert</h3>
-                  {/* HIER die neue Komponente */}
                   <LevelUpSpellSelection 
                     character={character} 
                     cantripsCount={newCantripsToLearn} 
@@ -594,19 +797,11 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
           )}
 
           {/* 5: Summary */}
-          {step === 5 && (
-            <div className="levelup-section summary-section">
-              <h3>Zusammenfassung</h3>
-              <p>TP +{rollResult.total + (rollResult.racialBonus || 0)}</p>
-              {isAbilityIncrease && levelUpMode === 'asi' && <p>Attribute erhöht.</p>}
-              {isAbilityIncrease && levelUpMode === 'feat' && selectedFeat && <p>Neues Talent: <strong>{selectedFeat.name}</strong></p>}
-              {isSubclassChoice && selectedSubclass && <p>Archetyp gewählt.</p>}
-              {hasSpellChoice && <p>Neue Zauber gelernt.</p>}
-              <button onClick={handleConfirmAll} className="confirm-button final-confirm">Aufstieg bestätigen</button>
-            </div>
-          )}
+          {step === 5 && renderSummaryStep()}
         </div>
       </div>
     </div>
   );
 };
+
+export default LevelUpScreen;
