@@ -411,6 +411,10 @@ const getCantripsKnownCount = (classData, level) => {
 };
 
 
+// src/engine/characterEngine.jsx
+
+// ... (Importe bleiben gleich)
+
 export const checkForLevelUp = (character) => {
   const level = character.level || 1;
   const experience = character.experience || 0;
@@ -427,38 +431,64 @@ export const checkForLevelUp = (character) => {
 
     const classData = allClassData.find(c => c.key === character.class.key);
 
-    const isAbilityIncrease = classData?.features.some(f =>
-      f.level === nextLevel && f.name.toLowerCase().includes("fähigkeitspunkte")
+    // 1. PRÜFUNG: Steht es in der JSON? (Legacy Support)
+    let isAbilityIncrease = classData?.features.some(f =>
+      f.level === nextLevel && (
+        f.name.toLowerCase().includes("higkeitspunkte") || 
+        f.name.toLowerCase().includes("ability score") ||
+        f.name.toLowerCase().includes("attribut")
+      )
     );
 
+    // 2. PRÜFUNG: Automatische Regel (Falls nicht in JSON)
+    // D&D 5e Standard: 4, 8, 12, 16, 19
+    // Kämpfer: + 6, 14
+    // Schurke: + 10
+    if (!isAbilityIncrease) {
+        const asiLevels = [4, 8, 12, 16, 19];
+        if (character.class.key === 'fighter') asiLevels.push(6, 14);
+        if (character.class.key === 'rogue') asiLevels.push(10);
+        
+        if (asiLevels.includes(nextLevel)) {
+            console.log(`> Automatischer ASI-Trigger für Level ${nextLevel} erkannt.`);
+            isAbilityIncrease = true;
+        }
+    }
+
+    // Subklassen Check
     const isSubclassChoice = classData?.features.some(f =>
-      f.level === nextLevel && (f.name.includes("Archetyp") || f.name.includes("Tradition") || f.name.includes("Zirkel") || f.name.includes("Pfad") || f.name.includes("Eid") || f.name.includes("Ursprung") || f.name.includes("Schutzpatron"))
+      f.level === nextLevel && (
+        f.name.includes("Archetyp") || 
+        f.name.includes("Tradition") || 
+        f.name.includes("Zirkel") || 
+        f.name.includes("Pfad") || 
+        f.name.includes("Eid") || 
+        f.name.includes("Ursprung") || 
+        f.name.includes("Schutzpatron") ||
+        f.name.includes("Domäne") ||
+        f.name.includes("Kolleg")
+      )
     );
 
     const currentMastery = getMasteryCountForLevel(classData?.weapon_mastery, level);
     const newMastery = getMasteryCountForLevel(classData?.weapon_mastery, nextLevel);
     const isMasteryIncrease = newMastery > currentMastery;
 
-    // +++ NEU: Datengetriebene Zauber-Berechnung +++
+    // Zauber Logik
     let newCantripsToLearn = 0;
     let newSpellsToLearn = 0;
     const isWizard = character.class.key === 'wizard';
 
     if (classData) {
-      // Cantrips
       const currentCantrips = getCantripsKnownCount(classData, level);
       const nextCantrips = getCantripsKnownCount(classData, nextLevel);
       newCantripsToLearn = Math.max(0, nextCantrips - currentCantrips);
 
-      // Known Spells (Datengetrieben)
       const currentKnown = getSpellsKnownCount(classData, level);
       const nextKnown = getSpellsKnownCount(classData, nextLevel);
       newSpellsToLearn = Math.max(0, nextKnown - currentKnown);
 
-      // Magier Sonderregel (immer +2 ins Buch)
-      if (isWizard) {
-        newSpellsToLearn = 2;
-      }
+      if (isWizard) newSpellsToLearn = 2;
     }
 
     return {
@@ -470,8 +500,6 @@ export const checkForLevelUp = (character) => {
         isSubclassChoice: isSubclassChoice && !character.subclassKey,
         isMasteryIncrease,
         newMasteryCount: newMastery,
-
-        // Zauber-Infos
         newCantripsToLearn,
         newSpellsToLearn,
         isWizard

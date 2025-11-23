@@ -15,6 +15,7 @@ import {
   performShortRest,
   performLongRest
 } from "../engine/characterEngine";
+import spellsData from "../data/spells.json";
 import allRaceData from "../data/races.json";
 import locationsData from "../data/locations.json";
 import { rollDiceFormula } from "../utils/helpers";
@@ -640,6 +641,55 @@ export const useGameState = () => {
     });
   }, []);
 
+  const handleCastSpell = useCallback((spellKey, castLevel) => {
+    setGameState((prevState) => {
+      const char = { ...prevState.character };
+      const spell = spellsData.find(s => s.key === spellKey);
+      
+      if (!spell) return prevState;
+      let logMsg = "";
+
+      // 1. CANTRIP (Level 0) - Kostet nichts
+      if (spell.level === 0) {
+           logMsg = `${char.name} wirkt den Zaubertrick ${spell.name}.`;
+      } 
+      // 2. LEVEL SPELL - Kostet Slot
+      else {
+          // Initialisiere Slots falls nicht vorhanden (volle Slots)
+          const maxSlots = calculateMaxSpellSlots(char);
+          const currentSlots = char.currentSpellSlots ? { ...char.currentSpellSlots } : { ...maxSlots };
+          
+          // Warlock Sonderfall (Pact Magic): Slots haben immer denselben (höchsten) Level
+          // Vereinfachung: Wir schauen auf den angeforderten Slot.
+          
+          if (!currentSlots[castLevel] || currentSlots[castLevel] <= 0) {
+              // Darf eigentlich nicht passieren, wenn UI Buttons deaktiviert
+              return {
+                  ...prevState,
+                  logEntries: [...prevState.logEntries, createLogEntry(`Fehler: Kein Zauberplatz von Grad ${castLevel} verfügbar!`, "error")]
+              };
+          }
+
+          // Slot abziehen
+          currentSlots[castLevel] -= 1;
+          char.currentSpellSlots = currentSlots;
+
+          // Info für Log
+          const isUpcast = castLevel > spell.level;
+          logMsg = `${char.name} wirkt ${spell.name} auf Grad ${castLevel}. ${isUpcast ? '(Verstärkt!)' : ''}`;
+      }
+      
+      // Hier könnte man spellsEngine.executeSpell() aufrufen, wenn man ein Zielsystem hätte.
+      // Vorerst loggen wir nur den Verbrauch.
+
+      return {
+          ...prevState,
+          character: char,
+          logEntries: [...prevState.logEntries, createLogEntry(logMsg, "magic")]
+      };
+    });
+  }, []);
+
   // +++ NEU: Shop Handler +++
   const handleShopTransaction = useCallback((newCharacter, logMessage) => {
     setGameState((prevState) => {
@@ -687,6 +737,7 @@ export const useGameState = () => {
     handleLongRest,
     handleShopTransaction,
     handleUpdateCharacter,
+    handleCastSpell,
     rollDiceFormula,
   };
 };

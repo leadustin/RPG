@@ -37,7 +37,8 @@ function App() {
     handleShortRest,
     handleLongRest,
     handleShopTransaction,
-    handleUpdateCharacter
+    handleUpdateCharacter,
+    handleCastSpell
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -124,6 +125,7 @@ function App() {
               party={party}
               onClose={toggleCharacterSheet}
               onUpdateCharacter={handleUpdateCharacter}
+              onCastSpell={handleCastSpell}
               handleEquipItem={handleEquipItem}
               handleUnequipItem={handleUnequipItem}
               handleToggleTwoHanded={handleToggleTwoHanded}

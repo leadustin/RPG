@@ -356,7 +356,7 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
             container: "#dice-box",
             assetPath: "/assets/dice-box/",
             theme: "default",
-            scale: 6,
+            scale: 12,
           });
 
           box.init().then(() => {

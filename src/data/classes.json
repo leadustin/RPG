@@ -1,50 +1,50 @@
 [
   {
   "key": "barbarian",
-  "name": "Barbar",
-  "icon": "Class_Barbarian_Icon.png",
-  "description": "Ein wilder Krieger aus der zivilisationsfernen Wildnis, der im Kampf von unbändiger Wut angetrieben wird.",
-  "hit_die": 12,
-  "saving_throws": ["strength", "constitution"],
-  "proficiencies": {
-    "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
-    "weapons": ["Einfache Waffen", "Kriegswaffen"],
-    "skills": {
-      "choose": 2,
-      "from": ["animal_handling", "athletics", "intimidation", "nature", "perception", "survival"]
-    }
-  },
-  "weapon_mastery": {
-    "level_1_count": 2,
-    "level_4_count": 3,
-    "level_10_count": 4,
-    "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
-  },
-  "features": [
-    { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Konstitutionsmodifikator." },
-    { "level": 1, "name": "Kampfrausch", "description": "Als Bonusaktion kannst du in einen Kampfrausch verfallen. Du erhältst Vorteil auf Stärke-Würfe und -Rettungswürfe, einen Bonus auf Nahkampfschaden und Resistenz gegen Hieb-, Stich- und Wuchtschaden. Dauer: 1 Minute." },
-    { "level": 2, "name": "Tollkühner Angriff", "description": "Du kannst bei deinem ersten Angriff in einem Zug Vorteil erhalten. Bis zu deinem nächsten Zug haben jedoch alle Angriffswürfe gegen dich Vorteil." },
-    { "level": 2, "name": "Gefahrensinn", "description": "Du hast Vorteil bei Geschicklichkeits-Rettungswürfen gegen Effekte, die du sehen kannst, wie Fallen oder Zauber, solange du nicht blind, taub oder handlungsunfähig bist." },
-    { "level": 3, "name": "Urtümlicher Pfad", "description": "Du wählst einen urtümlichen Pfad, der die Natur deiner Wut bestimmt. Die Wahl verleiht dir zusätzliche Fähigkeiten auf höheren Stufen." },
-    { "level": 5, "name": "Zusätzlicher Angriff", "description": "Wenn du die Angriffsaktion nutzt, kannst du zweimal anstatt einmal angreifen." },
-    { "level": 5, "name": "Schnelle Bewegung", "description": "Deine Bewegungsrate erhöht sich um 3 Meter, solange du keine schwere Rüstung trägst." },
-    { "level": 7, "name": "Instinktives Zuschlagen", "description": "Du hast Vorteil auf Initiativewürfe. Wenn du überrascht wirst, kannst du deinen Kampfrausch sofort einsetzen, wenn du nicht handlungsunfähig bist." },
-    { "level": 9, "name": "Brutaler Kritischer Treffer", "description": "Du kannst einen zusätzlichen Waffenschadenswürfel zu dem zusätzlichen Schaden eines kritischen Treffers addieren. Dies erhöht sich auf Level 13 und 17 weiter." },
-    { "level": 11, "name": "Unnachgiebiger Zorn", "description": "Wenn deine Trefferpunkte auf 0 fallen, während du im Kampfrausch bist, kannst du einen Konstitutions-Rettungswurf (SG 10) machen, um stattdessen auf 1 Trefferpunkt zu bleiben." },
-    { "level": 15, "name": "Beharrlicher Zorn", "description": "Dein Kampfrausch endet nur, wenn du bewusstlos wirst oder ihn freiwillig beendest." },
-    { "level": 18, "name": "Unbezwingbare Stärke", "description": "Wenn dein Stärkewurf unter deinem Stärkewert liegt, kannst du stattdessen deinen Stärkewert verwenden." },
-    { "level": 20, "name": "Urtümlicher Champion", "description": "Dein Stärkewert und dein Konstitutionswert steigen um 4 (max. 24)." }
-  ],
-  "rage_progression": [
-    { "level": 1, "uses": 2, "damage_bonus": 2 },
-    { "level": 3, "uses": 3, "damage_bonus": 2 },
-    { "level": 6, "uses": 4, "damage_bonus": 2 },
-    { "level": 9, "uses": 4, "damage_bonus": 3 },
-    { "level": 12, "uses": 5, "damage_bonus": 3 },
-    { "level": 15, "uses": 5, "damage_bonus": 3 },
-    { "level": 17, "uses": 6, "damage_bonus": 4 },
-    { "level": 20, "uses": "∞", "damage_bonus": 4 }
-  ],
+    "name": "Barbar",
+    "icon": "Class_Barbarian_Icon.png",
+    "description": "Ein wilder Krieger aus der zivilisationsfernen Wildnis, der im Kampf von unbändiger Wut angetrieben wird.",
+    "hit_die": 12,
+    "saving_throws": ["strength", "constitution"],
+    "proficiencies": {
+      "armor": ["Leichte Rüstung", "Mittelschwere Rüstung", "Schilde"],
+      "weapons": ["Einfache Waffen", "Kriegswaffen"],
+      "skills": {
+        "choose": 2,
+        "from": ["animal_handling", "athletics", "intimidation", "nature", "perception", "survival"]
+      }
+    },
+    "weapon_mastery": {
+      "level_1_count": 2,
+      "level_4_count": 3,
+      "level_10_count": 4,
+      "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
+    },
+    "features": [
+      { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Konstitutionsmodifikator." },
+      { "level": 1, "name": "Kampfrausch", "description": "Als Bonusaktion kannst du in einen Kampfrausch verfallen. Du erhältst Vorteil auf Stärke-Würfe und -Rettungswürfe, einen Bonus auf Nahkampfschaden und Resistenz gegen Hieb-, Stich- und Wuchtschaden. Dauer: 1 Minute." },
+      { "level": 2, "name": "Tollkühner Angriff", "description": "Du kannst bei deinem ersten Angriff in einem Zug Vorteil erhalten. Bis zu deinem nächsten Zug haben jedoch alle Angriffswürfe gegen dich Vorteil." },
+      { "level": 2, "name": "Gefahrensinn", "description": "Du hast Vorteil bei Geschicklichkeits-Rettungswürfen gegen Effekte, die du sehen kannst, wie Fallen oder Zauber, solange du nicht blind, taub oder handlungsunfähig bist." },
+      { "level": 3, "name": "Urtümlicher Pfad", "description": "Du wählst einen urtümlichen Pfad, der die Natur deiner Wut bestimmt. Die Wahl verleiht dir zusätzliche Fähigkeiten auf höheren Stufen." },
+      { "level": 5, "name": "Zusätzlicher Angriff", "description": "Wenn du die Angriffsaktion nutzt, kannst du zweimal anstatt einmal angreifen." },
+      { "level": 5, "name": "Schnelle Bewegung", "description": "Deine Bewegungsrate erhöht sich um 3 Meter, solange du keine schwere Rüstung trägst." },
+      { "level": 7, "name": "Instinktives Zuschlagen", "description": "Du hast Vorteil auf Initiativewürfe. Wenn du überrascht wirst, kannst du deinen Kampfrausch sofort einsetzen, wenn du nicht handlungsunfähig bist." },
+      { "level": 9, "name": "Brutaler Kritischer Treffer", "description": "Du kannst einen zusätzlichen Waffenschadenswürfel zu dem zusätzlichen Schaden eines kritischen Treffers addieren. Dies erhöht sich auf Level 13 und 17 weiter." },
+      { "level": 11, "name": "Unnachgiebiger Zorn", "description": "Wenn deine Trefferpunkte auf 0 fallen, während du im Kampfrausch bist, kannst du einen Konstitutions-Rettungswurf (SG 10) machen, um stattdessen auf 1 Trefferpunkt zu bleiben." },
+      { "level": 15, "name": "Beharrlicher Zorn", "description": "Dein Kampfrausch endet nur, wenn du bewusstlos wirst oder ihn freiwillig beendest." },
+      { "level": 18, "name": "Unbezwingbare Stärke", "description": "Wenn dein Stärkewurf unter deinem Stärkewert liegt, kannst du stattdessen deinen Stärkewert verwenden." },
+      { "level": 20, "name": "Urtümlicher Champion", "description": "Dein Stärkewert und dein Konstitutionswert steigen um 4 (max. 24)." }
+    ],
+    "rage_progression": [
+      { "level": 1, "uses": 2, "damage_bonus": 2 },
+      { "level": 3, "uses": 3, "damage_bonus": 2 },
+      { "level": 6, "uses": 4, "damage_bonus": 2 },
+      { "level": 9, "uses": 4, "damage_bonus": 3 },
+      { "level": 12, "uses": 5, "damage_bonus": 3 },
+      { "level": 15, "uses": 5, "damage_bonus": 3 },
+      { "level": 17, "uses": 6, "damage_bonus": 4 },
+      { "level": 20, "uses": "∞", "damage_bonus": 4 }
+    ],
   "subclasses": [
     {
       "key": "path_of_the_berserker",
