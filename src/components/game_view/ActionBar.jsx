@@ -4,6 +4,8 @@ import './ActionBar.css';
 import OptionsMenu from './OptionsMenu';
 import Tooltip from '../tooltip/Tooltip';
 import spellsEngine from '../../engine/spellsEngine';
+// NEU: Import für Warlock Logik
+import { WarlockLogic } from '../../engine/logic/classes/WarlockLogic';
 
 // --- ICONS LADEN ---
 const iconModules = import.meta.glob('../../assets/images/icons/*.(png|webp|jpg|svg)', { eager: true });
@@ -116,13 +118,36 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
         }
 
         const spells = [];
+        
+        // 1. Zaubertricks
         (character?.cantrips_known || []).forEach(key => {
             const spell = spellsEngine.getSpell(key);
             if (spell) spells.push({ ...spell, uiType: 'Zaubertrick', iconSrc: getIconSrc(spell.icon) || PLACEHOLDER_ICON });
         });
-        const prepared = (character?.spells_prepared && character.spells_prepared.some(k => k !== null)) 
+
+        // 2. Normale Zauber (Prepared oder Known)
+        // Wir nutzen Spread [...], um das Array zu kopieren, damit wir es modifizieren können
+        let prepared = (character?.spells_prepared && character.spells_prepared.some(k => k !== null)) 
             ? character.spells_prepared.filter(k => k !== null) 
-            : (character?.spells_known || []);
+            : [...(character?.spells_known || [])];
+
+        // 3. NEU: Warlock Patron Zauber (PHB 2024) hinzufügen
+        if (character?.class?.key === 'warlock') {
+            try {
+                const warlockLogic = new WarlockLogic(character);
+                const patronSpells = warlockLogic.getAlwaysPreparedPatronSpells();
+                patronSpells.forEach(key => {
+                    // Nur hinzufügen, wenn noch nicht vorhanden (vermeidet Duplikate)
+                    if (!prepared.includes(key)) {
+                        prepared.push(key);
+                    }
+                });
+            } catch (e) {
+                console.error("Fehler beim Laden der Hexenmeister Patron-Zauber:", e);
+            }
+        }
+
+        // 4. Alle Zauber in UI-Objekte umwandeln
         prepared.forEach(key => {
             const spell = spellsEngine.getSpell(key);
             if (spell) spells.push({ ...spell, uiType: `Zauber (${spell.level})`, iconSrc: getIconSrc(spell.icon) || PLACEHOLDER_ICON });

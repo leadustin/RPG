@@ -316,7 +316,8 @@
     "damage": "3d6",
     "damage_type": "fire",
     "saving_throw": "dexterity",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_fiend", "level": 1 }
   },
   {
     "key": "charm_person",
@@ -438,7 +439,8 @@
     "scaling": "Erhöht die temporären TP um 5 für jeden Zaubergrad über 1.",
     "damage": "1d4+4",
     "damage_type": "healing_temp",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_undead", "level": 1 }
   },
   {
     "key": "feather_fall",
@@ -596,7 +598,8 @@
     "duration": "1 Runde",
     "description": "Eine unsichtbare Barriere gibt dir +5 auf die Rüstungsklasse (AC) bis zum Beginn deines nächsten Zuges (auch gegen den auslösenden Angriff). Du nimmst keinen Schaden durch 'Magisches Geschoss'.",
     "scaling": null,
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_hexblade", "level": 1 }
   },
   {
     "key": "silent_image",
@@ -626,7 +629,8 @@
     "scaling": "Erhöht die Würfel um 2W8 für jeden Zaubergrad über 1.",
     "damage": "5d8",
     "damage_type": "effect",
-    "classes": ["bard", "sorcerer", "wizard"]
+    "classes": ["bard", "sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_archfey", "level": 1 }
   },
   {
     "key": "tashas_hideous_laughter",
@@ -640,8 +644,12 @@
     "duration": "Konzentration, bis zu 1 Minute",
     "description": "Ziel muss WE-Rettungswurf bestehen oder verfällt in Lachen, stürzt (prone) und ist handlungsunfähig. Am Ende seines Zuges oder wenn es Schaden nimmt, darf es den Rettungswurf wiederholen.",
     "saving_throw": "wisdom",
-    "classes": ["bard", "wizard"]
-  },
+    "classes": ["bard", "wizard"],
+    "patron_spell": {
+        "patron": "the_great_old_one",
+        "level": 1
+    }
+ },
   {
     "key": "tensers_floating_disk",
     "name": "Tensers Schwebende Scheibe",
@@ -672,7 +680,8 @@
     "damage": "2d8",
     "damage_type": "thunder",
     "saving_throw": "constitution",
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
+    "classes": ["bard", "druid", "sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 1 }
   },
   {
     "key": "unseen_servant",
@@ -764,7 +773,8 @@
     "description": "Ein Ziel muss KO-Rettungswurf bestehen oder wird (deiner Wahl) blind oder taub. Am Ende jedes seiner Züge darf es den Rettungswurf wiederholen, um den Effekt zu beenden.",
     "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 2.",
     "saving_throw": "constitution",
-    "classes": ["bard", "cleric", "sorcerer", "wizard"]
+    "classes": ["bard", "cleric", "sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_fiend", "the_undead"], "level": 2 }
   },
   {
     "key": "blur",
@@ -778,7 +788,8 @@
     "duration": "Konzentration, bis zu 1 Minute",
     "description": "Dein Körper verschwimmt. Jede Kreatur hat Nachteil auf Angriffswürfe gegen dich. (Wird aufgehoben, wenn du nicht sehen kannst oder angreifst).",
     "scaling": null,
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_hexblade", "level": 2 }
   },
   {
     "key": "cloud_of_daggers",
@@ -866,7 +877,8 @@
     "description": "Du nimmst denkende Kreaturen wahr. Als Aktion kannst du ihre oberflächlichen Gedanken lesen. Als Aktion kannst du tiefer sondieren (WE-Rettungswurf).",
     "scaling": null,
     "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "wizard"]
+    "classes": ["bard", "sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_great_old_one", "level": 2 }
   },
   {
     "key": "enlarge_reduce",
@@ -898,7 +910,8 @@
     "damage": "2d6",
     "damage_type": "fire",
     "saving_throw": "dexterity",
-    "classes": ["wizard", "druid"]
+    "classes": ["wizard", "druid"],
+    "patron_spell": { "patron": "the_celestial", "level": 2 }
   },
   {
     "key": "gentle_repose",
@@ -928,7 +941,8 @@
     "description": "Eine 18m lange, 3m breite Linie aus starkem Wind entsteht. Kreaturen im Bereich müssen ST-Rettungswurf bestehen oder werden 4,5m weggestoßen. Bereich ist schwieriges Gelände.",
     "scaling": null,
     "saving_throw": "strength",
-    "classes": ["druid", "wizard"]
+    "classes": ["druid", "wizard"],
+    "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 2 }
   },
   {
     "key": "hold_person",
@@ -1088,7 +1102,8 @@
     "saving_throw": "intelligence",
     "damage": "1d6",
     "damage_type": "psychic",
-    "classes": ["bard", "sorcerer", "wizard"]
+    "classes": ["bard", "sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_archfey", "the_great_old_one", "the_undead"], "level": 2 }
   },
   {
     "key": "ray_of_enfeeblement",
@@ -1135,7 +1150,8 @@
     "damage": "6d6",
     "damage_type": "fire",
     "attack_roll": "ranged_spell",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_fiend", "level": 2 }
   },
   {
     "key": "see_invisibility",
@@ -1253,7 +1269,8 @@
     "duration": "1 Minute",
     "description": "Am Ende deines Zuges, würfle W20. Bei 11+ verschwindest du in die Ätherebene bis zum Beginn deines nächsten Zuges. Dort kannst du nur andere Kreaturen auf der Ätherebene sehen und beeinflussen.",
     "scaling": null,
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_archfey", "the_hexblade"], "level": 3 }
   },
   {
     "key": "clairvoyance",
@@ -1268,7 +1285,8 @@
     "duration": "Konzentration, bis zu 10 Minuten",
     "description": "Du erschaffst einen unsichtbaren Sensor an einem dir bekannten oder offensichtlichen Ort in Reichweite. Du kannst wählen, ob du durch ihn hören oder sehen willst (als wärst du dort).",
     "scaling": null,
-    "classes": ["bard", "cleric", "sorcerer", "wizard"]
+    "classes": ["bard", "cleric", "sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_great_old_one", "level": 3 }
   },
   {
     "key": "counterspell",
@@ -1343,7 +1361,8 @@
     "damage": "8d6",
     "damage_type": "fire",
     "saving_throw": "dexterity",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_fiend", "the_genie"], "level": 3 }
   },
   {
     "key": "fly",
@@ -1449,7 +1468,8 @@
     "damage": "8d6",
     "damage_type": "lightning",
     "saving_throw": "dexterity",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_fathomless", "level": 3 }
   },
   {
     "key": "magic_circle",
@@ -1506,7 +1526,8 @@
     "duration": "1 Stunde",
     "description": "Erschafft ein quasi-reales, pferdeähnliches Reittier. Es hat Bewegungsrate 30m und kann 20km pro Stunde (max 2 Std.) reisen. Es verschwindet bei 0 TP oder nach 1 Stunde.",
     "scaling": null,
-    "classes": ["wizard"]
+    "classes": ["wizard"],
+    "patron_spell": { "patron": "the_undead", "level": 2 }
   },
   {
     "key": "protection_from_energy",
@@ -1548,7 +1569,8 @@
     "duration": "1 Runde",
     "description": "Sendet eine Botschaft (max 25 Wörter) an eine Kreatur, die du kennst. Sie hört die Botschaft mental, erkennt dich und kann 1 Runde lang mental antworten (max 25 Wörter).",
     "scaling": null,
-    "classes": ["bard", "cleric", "wizard"]
+    "classes": ["bard", "cleric", "wizard"],
+    "patron_spell": { "patron": "the_great_old_one", "level": 3 }
   },
   {
     "key": "sleet_storm",
@@ -1563,7 +1585,8 @@
     "description": "Erschafft einen Zylinder (12m hoch, 6m Radius) aus Eisregen und Graupel. Bereich ist stark sichtbehindert. Boden ist schwieriges Gelände. Kreaturen im Bereich (oder die eintreten) müssen GE-Rettungswurf bestehen oder stürzen (prone). Konzentrationswürfe für Zauber im Bereich haben Nachteil.",
     "scaling": null,
     "saving_throw": "dexterity",
-    "classes": ["druid", "sorcerer", "wizard"]
+    "classes": ["druid", "sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 3 }
   },
   {
     "key": "slow",
@@ -1593,7 +1616,8 @@
     "description": "Erschafft eine Wolke (6m Radius), die stark sichtbehindert ist. Kreaturen im Bereich müssen KO-Rettungswurf bestehen oder verbringen ihre Aktion würgend und hustend (handlungsunfähig).",
     "scaling": null,
     "saving_throw": "constitution",
-    "classes": ["bard", "sorcerer", "wizard"]
+    "classes": ["bard", "sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_fiend", "level": 3 }
   },
   {
     "key": "tongues",
@@ -1758,7 +1782,8 @@
     "duration": "Konzentration, bis zu 10 Minuten",
     "description": "Du kontrollierst Wasser in einem 30m-Würfel. Du kannst (als Aktion) das Wasser heben/senken, es teilen (z.B. ein Flussbett freilegen), es umleiten oder einen 15m hohen Wasserstrudel erzeugen.",
     "scaling": null,
-    "classes": ["cleric", "druid", "wizard"]
+    "classes": ["cleric", "druid", "wizard"],
+    "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 4 }
   },
   {
     "key": "dimension_door",
@@ -1802,7 +1827,8 @@
     "scaling": null,
     "damage": "2d8",
     "damage_type": "fire_or_cold",
-    "classes": ["wizard"]
+    "classes": ["wizard"],
+    "patron_spell": { "patron": ["the_fiend", "the_genie"], "level": 4 }
   },
   {
     "key": "greater_invisibility",
@@ -1816,7 +1842,8 @@
     "duration": "Konzentration, bis zu 1 Minute",
     "description": "Ziel wird unsichtbar. Der Zauber endet NICHT, wenn das Ziel angreift oder Zauber wirkt.",
     "scaling": null,
-    "classes": ["bard", "sorcerer", "wizard"]
+    "classes": ["bard", "sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_archfey", "the_undead", "the_genie"], "level": 4 }
   },
   {
     "key": "hallucinatory_terrain",
@@ -1938,7 +1965,8 @@
     "damage": "4d10",
     "damage_type": "psychic",
     "saving_throw": "wisdom",
-    "classes": ["wizard"]
+    "classes": ["wizard"],
+    "patron_spell": { "patron": "the_hexblade", "level": 4 }
   },
   {
     "key": "polymorph",
@@ -1998,7 +2026,8 @@
     "damage": "5d8",
     "damage_type": "fire",
     "saving_throw": "dexterity",
-    "classes": ["druid", "sorcerer", "wizard"]
+    "classes": ["druid", "sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_fiend", "the_celestial", "the_genie"], "level": 4 }
   },
   {
     "key": "animate_objects",
@@ -2029,7 +2058,8 @@
     "damage": "4d8",
     "damage_type": "force",
     "attack_roll": "melee_spell",
-    "classes": ["wizard"]
+    "classes": ["wizard"],
+    "patron_spell": { "patron": "the_fathomless", "level": 5 }
   },
   {
     "key": "cloudkill",
@@ -2046,7 +2076,8 @@
     "damage": "5d8",
     "damage_type": "poison",
     "saving_throw": "constitution",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_undead", "level": 5 }
   },
   {
     "key": "cone_of_cold",
@@ -2063,7 +2094,8 @@
     "damage": "8d8",
     "damage_type": "cold",
     "saving_throw": "constitution",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_hexblade", "the_fathomless", "the_genie"], "level": 5 }
   },
   {
     "key": "conjure_elemental",
@@ -2124,7 +2156,8 @@
     "description": "Ein Humanoid muss WE-Rettungswurf bestehen oder ist 'bezaubert' (charmed) und wird von dir telepathisch kontrolliert (als Aktion). Du hast Vorteil auf den RW, wenn du im Kampf bist. Wenn das Ziel Schaden nimmt, darf es den RW wiederholen.",
     "scaling": "Mit Grad 6: Dauer 10 Min. Mit Grad 7: Dauer 1 Std. Mit Grad 8: Dauer 8 Std.",
     "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "wizard"]
+    "classes": ["bard", "sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_archfey", "the_great_old_one"], "level": 5 }
   },
   {
     "key": "dream",
@@ -2289,7 +2322,8 @@
     "duration": "8 Stunden",
     "description": "Du veränderst das Aussehen (inkl. Kleidung) einer beliebigen Anzahl von Kreaturen in Reichweite. Die Illusion hält 8 Stunden und wird nicht durch physische Interaktion gebrochen (nur durch INT-Wurf).",
     "scaling": null,
-    "classes": ["bard", "sorcerer", "wizard"]
+    "classes": ["bard", "sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_archfey", "level": 5 }
   },
   {
     "key": "telekinesis",
@@ -2304,7 +2338,8 @@
     "description": "Du kontrollierst (als Aktion) eine Kreatur oder ein Objekt (bis 500kg). Objekt: Kannst du 9m bewegen. Kreatur: Muss ST-Rettungswurf (Attributswurf-Wettstreit mit deinem INT) bestehen oder wird 9m bewegt (auch in die Luft).",
     "scaling": null,
     "saving_throw": "strength_contest",
-    "classes": ["sorcerer", "wizard"]
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_great_old_one", "level": 5 }
   },
   {
     "key": "teleportation_circle",
@@ -3333,7 +3368,8 @@
     "description": "Bis zu 3 Kreaturen müssen CH-Rettungswurf bestehen oder 1W4 von ihren Angriffswürfen und Rettungswürfen abziehen, solange der Zauber wirkt.",
     "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 1.",
     "saving_throw": "charisma",
-    "classes": ["bard", "cleric"]
+    "classes": ["bard", "cleric"],
+    "patron_spell": { "patron": "the_undead", "level": 1 }
   },
   {
     "key": "bless",
@@ -3362,7 +3398,8 @@
     "description": "Du sprichst ein Ein-Wort-Befehl (z.B. 'Flieh', 'Fall', 'Nähere dich'). Ziel muss WE-Rettungswurf bestehen oder gehorcht dem Befehl in seinem nächsten Zug.",
     "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 1.",
     "saving_throw": "wisdom",
-    "classes": ["bard", "cleric", "paladin"]
+    "classes": ["bard", "cleric", "paladin"],
+    "patron_spell": { "patron": "the_fiend", "level": 1 }
   },
   {
     "key": "create_or_destroy_water",
@@ -3376,7 +3413,8 @@
     "duration": "Sofort",
     "description": "Erschaffe oder vernichte bis zu 40 Liter Wasser in einem Behälter oder als Regen (9m-Würfel).",
     "scaling": "Erhöht Wassermenge um 40 Liter pro Zaubergrad über 1.",
-    "classes": ["cleric", "druid"]
+    "classes": ["cleric", "druid"],
+    "patron_spell": { "patron": "the_fathomless", "level": 1 }
   },
   {
     "key": "cure_wounds",
@@ -3392,7 +3430,8 @@
     "scaling": "Heilung erhöht sich um 1W8 pro Zaubergrad über 1.",
     "damage": "1d8",
     "damage_type": "healing",
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
+    "classes": ["bard", "cleric", "druid", "paladin", "ranger"],
+    "patron_spell": { "patron": "the_celestial", "level": 1 }
   },
   {
     "key": "detect_evil_and_good",
@@ -3438,7 +3477,8 @@
     "damage": "4d6",
     "damage_type": "radiant",
     "attack_roll": "ranged_spell",
-    "classes": ["cleric"]
+    "classes": ["cleric"],
+    "patron_spell": { "patron": "the_celestial", "level": 1 }
   },
   {
     "key": "healing_word",
@@ -3575,7 +3615,8 @@
     "description": "Du versuchst, Emotionen in einer 6m-Radius-Kugel zu unterdrücken. Jede Kreatur im Bereich muss einen CH-Rettungswurf bestehen oder wird (deiner Wahl) immun gegen 'Bezaubert'/'Verängstigt' ODER du beendest diese Zustände bei ihr.",
     "scaling": null,
     "saving_throw": "charisma",
-    "classes": ["bard", "cleric"]
+    "classes": ["bard", "cleric"],
+    "patron_spell": { "patron": "the_archfey", "level": 2 }
   },
   {
     "key": "enhance_ability",
@@ -3617,7 +3658,8 @@
     "duration": "Sofort",
     "description": "Du beendest einen Zustand beim Ziel. Wähle: 'Blind', 'Taub', 'Gelähmt' (Paralyzed) oder 'Vergiftet' (Poisoned).",
     "scaling": null,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger"]
+    "classes": ["bard", "cleric", "druid", "paladin", "ranger"],
+    "patron_spell": { "patron": "the_celestial", "level": 2 }
   },
   {
     "key": "prayer_of_healing",
@@ -3662,7 +3704,8 @@
     "duration": "Konzentration, bis zu 10 Minuten",
     "description": "Erschafft eine Kugel (6m Radius), in der kein Geräusch entstehen oder eindringen kann. Kreaturen im Bereich sind 'Taub' (Deafened) und immun gegen Donnerschaden. Zauber mit verbalen (V) Komponenten können darin nicht gewirkt werden.",
     "scaling": null,
-    "classes": ["bard", "cleric", "ranger"]
+    "classes": ["bard", "cleric", "ranger"],
+    "patron_spell": { "patron": "the_fathomless", "level": 2 }
   },
   {
     "key": "spiritual_weapon",
@@ -3736,7 +3779,8 @@
     "duration": "1 Stunde",
     "description": "Eine Kugel (18m Radius) aus hellem Licht entsteht an einem Punkt in Reichweite. (Vertreibt magische Dunkelheit von Grad 3 oder niedriger).",
     "scaling": null,
-    "classes": ["cleric", "druid", "paladin", "ranger", "sorcerer"]
+    "classes": ["cleric", "druid", "paladin", "ranger", "sorcerer"],
+    "patron_spell": { "patron": "the_celestial", "level": 3 }
   },
   {
     "key": "mass_healing_word",
@@ -3781,7 +3825,8 @@
     "duration": "Sofort",
     "description": "Du bringst eine Kreatur, die innerhalb der letzten Minute gestorben ist, mit 1 TP ins Leben zurück.",
     "scaling": null,
-    "classes": ["cleric", "paladin"]
+    "classes": ["cleric", "paladin"],
+    "patron_spell": { "patron": "the_celestial", "level": 3 }
   },
   {
     "key": "speak_with_dead",
@@ -3795,7 +3840,8 @@
     "duration": "10 Minuten",
     "description": "Du gibst einer Leiche den Anschein von Leben. Sie kann (oft kryptisch) 5 Fragen beantworten, basierend auf dem Wissen, das sie im Leben hatte. (Funktioniert nicht bei Untoten oder wenn kein Mund vorhanden).",
     "scaling": null,
-    "classes": ["bard", "cleric"]
+    "classes": ["bard", "cleric"],
+    "patron_spell": { "patron": "the_undead", "level": 3 }
   },
   {
     "key": "spirit_guardians",
@@ -3826,7 +3872,8 @@
     "duration": "8 Stunden",
     "description": "Du schützt eine Kreatur 8 Stunden lang. Wenn das Ziel das erste Mal auf 0 TP fällt, fällt es stattdessen auf 1 TP und der Zauber endet. Wenn das Ziel durch einen Effekt sofort getötet wird (ohne Schaden), wird der Effekt stattdessen negiert und der Zauber endet.",
     "scaling": null,
-    "classes": ["cleric", "paladin"]
+    "classes": ["cleric", "paladin"],
+    "patron_spell": { "patron": "the_undead", "level": 4 }
   },
   {
     "key": "divination",
@@ -3872,7 +3919,8 @@
     "damage": "20",
     "damage_type": "radiant",
     "saving_throw": "dexterity",
-    "classes": ["cleric"]
+    "classes": ["cleric"],
+    "patron_spell": { "patron": "the_celestial", "level": 4 }
   },
   {
     "key": "commune",
@@ -3935,7 +3983,8 @@
     "damage": "8d6",
     "damage_type": "fire_and_radiant",
     "saving_throw": "dexterity",
-    "classes": ["cleric"]
+    "classes": ["cleric"],
+    "patron_spell": { "patron": ["the_fiend", "the_celestial", "the_genie"], "level": 5 }
   },
   {
     "key": "greater_restoration",
@@ -3949,7 +3998,8 @@
     "duration": "Sofort",
     "description": "Du beendest einen Effekt beim Ziel. Wähle: 1. 1 Stufe Erschöpfung. 2. 1 Effekt, der das Ziel 'Bezaubert' oder 'Versteinert' (Petrified). 3. 1 Fluch (inkl. verfluchte Gegenstände). 4. Jede Reduzierung von Attributswerten. 5. 1 Effekt, der die TP-Maximalwerte reduziert.",
     "scaling": null,
-    "classes": ["bard", "cleric", "druid", "ranger", "paladin"]
+    "classes": ["bard", "cleric", "druid", "ranger", "paladin"],
+    "patron_spell": { "patron": "the_celestial", "level": 5 }
   },
   {
     "key": "hallow",
@@ -3963,7 +4013,8 @@
     "duration": "Bis gebannt",
     "description": "Du berührst einen Punkt und weihst einen Bereich (18m Radius) permanent. Kreaturtypen (Himmlische, Elementare, Feen, Unholde, Untote) können den Bereich nicht betreten oder sind 'Verängstigt'/'Bezaubert'. Du kannst zusätzliche Effekte (Mut, Dunkelheit, Ewige Ruhe, Furcht, Stille etc.) hinzufügen.",
     "scaling": null,
-    "classes": ["cleric", "paladin"]
+    "classes": ["cleric", "paladin"],
+    "patron_spell": { "patron": "the_fiend", "level": 5 }
   },
   {
     "key": "insect_plague",
@@ -4385,7 +4436,8 @@
     "description": "Objekte und Kreaturen in einem 6m-Würfel leuchten (blau, grün oder violett). Jede Kreatur muss GE-Rettungswurf bestehen oder leuchtet. Leuchtende Ziele können nicht unsichtbar werden und Angriffswürfe gegen sie haben Vorteil.",
     "scaling": null,
     "saving_throw": "dexterity",
-    "classes": ["bard", "druid"]
+    "classes": ["bard", "druid"],
+    "patron_spell": { "patron": "the_archfey", "level": 1 }
   },
   {
     "key": "goodberry",
@@ -4601,7 +4653,8 @@
     "duration": "Sofort",
     "description": "1 Aktion: Pflanzen in einem 30m-Radius werden extrem dicht. Kreaturen, die sich durch den Bereich bewegen, benötigen 4x Bewegung (schwieriges Gelände x4). 8 Stunden: Bereich (bis 800m Radius) wird permanent fruchtbar und ertragreich.",
     "scaling": null,
-    "classes": ["bard", "druid", "ranger"]
+    "classes": ["bard", "druid", "ranger"],
+    "patron_spell": { "patron": "the_archfey", "level": 3 }
   },
   {
     "key": "speak_with_plants",
@@ -4658,7 +4711,8 @@
     "description": "Ein Tier (Beast) muss WE-Rettungswurf bestehen oder ist 'Bezaubert' (charmed) und wird von dir telepathisch kontrolliert (als Aktion). Wenn das Ziel Schaden nimmt, darf es den RW wiederholen.",
     "scaling": "Dauer erhöht sich mit höheren Graden.",
     "saving_throw": "wisdom",
-    "classes": ["druid", "sorcerer"]
+    "classes": ["druid", "sorcerer"],
+    "patron_spell": { "patron": ["the_archfey", "the_great_old_one"], "level": 4 }
   },
   {
     "key": "giant_insect",
@@ -4701,7 +4755,8 @@
     "duration": "Konzentration, bis zu 1 Stunde",
     "description": "Erschafft eine unbewegliche Barriere (3m Radius), die lebende Kreaturen blockiert. Untote und Konstrukte sind immun. Lebende Kreaturen können sie nicht passieren oder Zauber/Angriffe hindurchwirken.",
     "scaling": null,
-    "classes": ["druid"]
+    "classes": ["druid"],
+    "patron_spell": { "patron": "the_undead", "level": 5 }
   },
   {
     "key": "awaken",
@@ -4941,7 +4996,8 @@
     "damage": "3d6",
     "damage_type": "psychic",
     "saving_throw": "wisdom",
-    "classes": ["bard"]
+    "classes": ["bard"],
+    "patron_spell": { "patron": "the_great_old_one", "level": 1 }
   },
   {
     "key": "heroism",
@@ -5180,7 +5236,8 @@
     "damage": "1d6",
     "damage_type": "psychic",
     "saving_throw": "wisdom",
-    "classes": ["paladin"]
+    "classes": ["paladin"],
+    "patron_spell": { "patron": "the_hexblade", "level": 1 }
   },
   {
     "key": "branding_smite",
@@ -5196,7 +5253,8 @@
     "scaling": "Erhöht Schaden um 1W6 pro Zaubergrad über 2.",
     "damage": "2d6",
     "damage_type": "radiant",
-    "classes": ["paladin"]
+    "classes": ["paladin"],
+    "patron_spell": { "patron": "the_hexblade", "level": 2 }
   },
   {
     "key": "find_steed",
@@ -5275,7 +5333,8 @@
     "scaling": "Mit Grad 5+: Bonus +2, Schaden 2W4. Mit Grad 7+: Bonus +3, Schaden 3W4.",
     "damage": "1d4",
     "damage_type": "variable",
-    "classes": ["paladin", "ranger"]
+    "classes": ["paladin", "ranger"],
+    "patron_spell": { "patron": "the_hexblade", "level": 3 }
   },
   {
     "key": "aura_of_life",
@@ -5320,7 +5379,8 @@
     "damage": "4d6",
     "damage_type": "psychic",
     "saving_throw": "wisdom",
-    "classes": ["paladin"]
+    "classes": ["paladin"],
+    "patron_spell": { "patron": "the_hexblade", "level": 4 }
   },
   {
     "key": "banishing_smite",
@@ -5337,7 +5397,8 @@
     "damage": "5d10",
     "damage_type": "force",
     "saving_throw": "charisma",
-    "classes": ["paladin"]
+    "classes": ["paladin"],
+    "patron_spell": { "patron": "the_hexblade", "level": 5 }
   },
   {
     "key": "circle_of_power",

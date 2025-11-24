@@ -1,3 +1,4 @@
+// src/engine/logic/classes/WarlockLogic.js
 import { getModifier, getProficiencyBonus } from '../../../utils/helpers';
 import spells from '../../../data/spells.json';
 import allFeatures from '../../../data/features.json'; 
@@ -5,19 +6,19 @@ import allFeatures from '../../../data/features.json';
 export class WarlockLogic {
   
   /**
-   * Erstellt eine Instanz der Hexenmeister-Logik, die an einen bestimmten Charakter gebunden ist.
-   * @param {object} character - Das Charakterobjekt, das diese Logik verwendet.
+   * Erstellt eine Instanz der Hexenmeister-Logik.
+   * @param {object} character - Das Charakterobjekt.
    */
   constructor(character) {
     this.character = character;
-    // Paktmagie-Plätze werden direkt auf dem Charakterobjekt verwaltet
-    // (z.B. character.resources.pact_magic_slots)
+    // Sicherheitsnetz: Features als Array garantieren
+    if (!this.character.features) {
+        this.character.features = [];
+    }
   }
 
   /**
-   * Prüft schnell, ob der Charakter ein bestimmtes Feature besitzt.
-   * @param {string} featureKey - Der Schlüssel des Features.
-   * @returns {boolean}
+   * Prüft, ob der Charakter ein bestimmtes Feature besitzt.
    */
   hasFeature(featureKey) {
     return this.character.features.includes(featureKey);
@@ -26,7 +27,6 @@ export class WarlockLogic {
   // --- Grundlegende Klassen-Informationen ---
 
   getSavingThrowProficiencies() {
-    // Hexenmeister sind in Weisheit und Charisma geübt.
     return ['wisdom', 'charisma'];
   }
 
@@ -48,13 +48,9 @@ export class WarlockLogic {
     return profBonus + chaMod;
   }
 
-  /**
-   * Ruft die Anzahl der bekannten Zauber des Hexenmeisters ab.
-   * @returns {number}
-   */
   getKnownSpellsCount() {
     const level = this.character.level;
-    // Standard Hexenmeister-Zauberprogression
+    // PHB 2024 / 5e Standard Progression
     if (level === 1) return 2;
     if (level === 2) return 3;
     if (level === 3) return 4;
@@ -73,51 +69,56 @@ export class WarlockLogic {
     return 0;
   }
 
+  // --- NEU (PHB 2024): PATRON ZAUBER ---
+
   /**
-   * Ruft die *gesamte* Liste der Zauber ab, aus denen der Hexenmeister
-   * beim Stufenaufstieg wählen kann.
-   * @returns {string[]} Array von Zauberschlüsseln.
+   * Gibt die Patron-Zauber zurück, die AUTOMATISCH vorbereitet/bekannt sind.
+   * Diese zählen nicht gegen das Limit der bekannten Zauber.
+   */
+  getAlwaysPreparedPatronSpells() {
+    const maxLevel = this.getPactSlotLevel();
+    return this.getPatronExpandedSpells(maxLevel);
+  }
+
+  /**
+   * Ruft die *wählbare* Liste der Zauber ab.
+   * Automatische Patron-Zauber werden hier herausgefiltert.
    */
   getLearnableSpells() {
-    const maxLevel = this.getPactSlotLevel(); // Hexenmeister können nur bis zu ihrem Pakt-Grad lernen
+    const maxLevel = this.getPactSlotLevel();
     
-    // 1. Standard-Hexenmeister-Liste
     const warlockSpells = spells
       .filter(s => s.classes.includes('warlock') && s.level > 0 && s.level <= maxLevel)
       .map(s => s.key);
       
-    // 2. Erweiterte Zauberliste des Schutzpatrons
-    const patronSpells = this.getPatronExpandedSpells(maxLevel);
+    const autoSpells = this.getAlwaysPreparedPatronSpells();
     
-    // Duplikate entfernen und zurückgeben
-    return [...new Set([...warlockSpells, ...patronSpells])];
+    // Entferne die automatischen Zauber aus der "Zu lernen"-Liste
+    return warlockSpells.filter(key => !autoSpells.includes(key));
   }
 
   /**
-   * Ruft die erweiterten Zauber des Schutzpatrons ab.
-   * ANNAHME: spells.json enthält Einträge wie:
-   * { "key": "burning_hands", ..., "patron_spell": { "patron": "the_fiend", "level": 1 } }
-   * @param {number} maxLevel - Der maximale Zaubergrad, den der Hexenmeister wirken kann.
-   * @returns {string[]}
+   * Hilfsmethode: Findet Patron-Zauber. Unterstützt Array-Patrons (z.B. ["the_fiend", "the_genie"]).
    */
   getPatronExpandedSpells(maxLevel) {
-    if (!this.character.subclass) return [];
+    // Bevorzugt subclassKey, Fallback auf subclass
+    const patronKey = this.character.subclassKey || this.character.subclass;
+
+    if (!patronKey) return [];
     
     return spells
-      .filter(s => 
-        s.patron_spell &&
-        s.patron_spell.patron === this.character.subclass &&
-        s.patron_spell.level <= maxLevel
-      )
+      .filter(s => {
+        if (!s.patron_spell || s.patron_spell.level > maxLevel) return false;
+        const p = s.patron_spell.patron;
+        if (Array.isArray(p)) return p.includes(patronKey);
+        return p === patronKey;
+      })
       .map(s => s.key);
   }
 
-  // --- PAKTMAGIE-LOGIK ---
 
-  /**
-   * Ruft die Anzahl der Paktmagie-Plätze ab.
-   * @returns {number}
-   */
+  // --- PAKTMAGIE-SLOTS ---
+
   getPactSlotCount() {
     const level = this.character.level;
     if (level === 1) return 1;
@@ -127,10 +128,6 @@ export class WarlockLogic {
     return 0;
   }
 
-  /**
-   * Ruft den Grad (Level) der Paktmagie-Plätze ab.
-   * @returns {number}
-   */
   getPactSlotLevel() {
     const level = this.character.level;
     if (level <= 2) return 1;
@@ -141,43 +138,80 @@ export class WarlockLogic {
     return 1;
   }
 
-  /**
-   * Wird aufgerufen, wenn der Hexenmeister eine kurze Rast beendet.
-   * Füllt alle Paktmagie-Plätze auf.
-   */
   onShortRest() {
-    // Paktmagie auffüllen
-    // (Annahme: character.resources.pact_magic_slots)
     if (this.character.resources) {
       this.character.resources.pact_magic_slots = this.getPactSlotCount();
     }
   }
 
-  // --- MYSTISCHE ANRUFUNGEN (Eldritch Invocations) ---
+  // --- NEU: MYSTISCHE ANRUFUNGEN (Eldritch Invocations) ---
 
   /**
-   * Ruft alle "Mystischen Anrufungen" ab, die der Charakter gelernt hat.
-   * (Wird von der UI/Kampf-Engine aufgerufen)
-   * @returns {object[]} Array von Feature-Objekten.
+   * Gibt die Anzahl der Anrufungen zurück, die der Charakter auf seinem Level haben darf.
+   */
+  getInvocationCount() {
+    const level = this.character.level;
+    if (level < 2) return 0;
+    if (level <= 4) return 2;
+    if (level <= 6) return 3;
+    if (level <= 8) return 4;
+    if (level <= 11) return 5;
+    if (level <= 14) return 6;
+    if (level <= 17) return 7;
+    return 8;
+  }
+
+  /**
+   * Ruft alle Anrufungen aus der Datenbank ab.
+   */
+  getAllInvocations() {
+    return allFeatures.filter(f => f.feature_type === 'invocation');
+  }
+
+  /**
+   * Prüft Voraussetzungen für eine Anrufung (Level, Pakt, Zauber).
+   * @param {object} invocation - Das Feature-Objekt
+   * @param {string[]} currentFeats - Temporäre Liste der gewählten Features (für Live-Check im UI)
+   */
+  checkInvocationPrerequisite(invocation, currentFeats = []) {
+    if (!invocation.prerequisites) return true;
+    
+    const req = invocation.prerequisites;
+    const charLevel = this.character.level;
+
+    // 1. Level Check
+    if (req.level && charLevel < req.level) return false;
+
+    // 2. Pakt / Feature Check (z.B. "Pact of the Blade")
+    if (req.feature) {
+      // Prüfe im Charakter ODER in der aktuellen Auswahl
+      const hasFeature = this.character.features.includes(req.feature) || currentFeats.includes(req.feature);
+      if (!hasFeature) return false;
+    }
+
+    // 3. Zauber Check (z.B. "Eldritch Blast" für Agonizing Blast)
+    if (req.spell) {
+      const hasSpell = (this.character.cantrips_known || []).includes(req.spell) || 
+                       (this.character.spells_known || []).includes(req.spell);
+      if (!hasSpell) return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Ruft die bereits gelernten Anrufungen des Charakters ab.
    */
   getAvailableInvocations() {
-    // Filtert alle gelernten Features, die vom Typ 'invocation' sind
     return this.character.features
       .map(key => allFeatures.find(f => f.key === key))
       .filter(feature => feature && feature.feature_type === 'invocation');
   }
 
-  // --- SUBKLASSEN-LOGIK ---
+  // --- SUBKLASSEN-SPEZIFISCH ---
 
-  /**
-   * Prüft auf 'Segen des Dunklen' (Dark One's Blessing) und gibt die Temp-TP zurück.
-   * (Wird von der Kampf-Engine aufgerufen, WENN der Hexenmeister eine Kreatur auf 0 TP bringt)
-   * @returns {number} - Die Höhe der temporären TP.
-   */
   getDarkOnesBlessingTempHp() {
-    // Liest 'the_fiend_dark_ones_blessing' aus features.json
     if (this.hasFeature('the_fiend_dark_ones_blessing')) {
-      // Regel: CHA-Mod + Hexenmeister-Level
       const chaMod = getModifier(this.character.abilities.charisma);
       return chaMod + this.character.level;
     }

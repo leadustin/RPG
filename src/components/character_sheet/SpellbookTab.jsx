@@ -6,6 +6,7 @@ import './SpellbookTab.css';
 import spellsEngine from '../../engine/spellsEngine';
 import { ItemTypes } from '../../dnd/itemTypes';
 import { getAbilityModifier, getRacialAbilityBonus } from '../../engine/characterEngine';
+import { WarlockLogic } from '../../engine/logic/classes/WarlockLogic';
 import Tooltip from '../tooltip/Tooltip';
 
 // --- ICONS LADEN ---
@@ -16,11 +17,11 @@ for (const path in iconModules) {
   spellIcons[fileName] = iconModules[path].default;
 }
 
-// --- DRAGGABLE SPELL ICON (Quelle: Liste unten) ---
-const DraggableSpell = ({ spell, isPrepared, onToggle }) => {
+// --- DRAGGABLE SPELL ICON ---
+const DraggableSpell = ({ spell, isPrepared, onToggle, isAlwaysPrepared }) => {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: ItemTypes.SPELL,
-        item: { spell, origin: 'book' }, // Origin hilft uns zu wissen, woher er kommt
+        item: { spell, origin: 'book' },
         collect: (monitor) => ({
             isDragging: !!monitor.isDragging(),
         }),
@@ -28,12 +29,16 @@ const DraggableSpell = ({ spell, isPrepared, onToggle }) => {
 
     const iconSrc = spellIcons[spell.icon] || spellIcons['skill_placeholder.png'];
 
+    // Visuelles Feedback für Hexenmeister oder "Always Prepared" Zauber
+    const cardClass = `spell-card ${isPrepared ? 'prepared-in-book' : ''} ${isAlwaysPrepared ? 'always-known' : ''}`;
+
     return (
         <div ref={drag} className={`spell-item-wrapper ${isDragging ? 'dragging' : ''}`}>
             <Tooltip content={<SpellTooltipContent spell={spell} />}>
                 <div 
-                    className={`spell-card ${isPrepared ? 'prepared-in-book' : ''}`}
+                    className={cardClass}
                     onClick={() => onToggle && onToggle(spell)} 
+                    style={{ cursor: onToggle ? 'pointer' : 'default' }}
                 >
                     <img src={iconSrc} alt={spell.name} />
                     {isPrepared && <div className="prepared-marker">✓</div>}
@@ -43,8 +48,20 @@ const DraggableSpell = ({ spell, isPrepared, onToggle }) => {
     );
 };
 
-// --- PREPARED SLOT (Ziel: Oben) ---
-// Auch draggable, um Zauber innerhalb der Leiste zu verschieben (Optional, hier als Drop Target)
+// --- INVOCATION CARD (Nicht draggable, nur Info) ---
+const InvocationCard = ({ invocation }) => {
+    const iconSrc = spellIcons[invocation.icon] || spellIcons['skill_placeholder.png'];
+
+    return (
+        <Tooltip content={<InvocationTooltipContent invocation={invocation} />}>
+            <div className="spell-card always-known" style={{ borderColor: '#9c27b0' }}>
+                <img src={iconSrc} alt={invocation.name} />
+            </div>
+        </Tooltip>
+    );
+};
+
+// --- PREPARED SLOT ---
 const PreparedSlot = ({ spell, index, onDrop, onRemove }) => {
     const [{ isOver }, drop] = useDrop(() => ({
         accept: ItemTypes.SPELL,
@@ -72,7 +89,17 @@ const PreparedSlot = ({ spell, index, onDrop, onRemove }) => {
     );
 };
 
-// --- TOOLTIP CONTENT ---
+// --- PACT SLOT TOKEN (Für Warlock) ---
+const PactSlotToken = ({ isUsed, level }) => (
+    <div className={`pact-slot-token ${isUsed ? 'used' : 'available'}`}>
+        <div className="token-inner">
+            <span className="slot-level-text">{level}</span>
+        </div>
+        <span className="token-label">{isUsed ? 'Verbraucht' : 'Bereit'}</span>
+    </div>
+);
+
+// --- TOOLTIP CONTENT (ZAUBER) ---
 const SpellTooltipContent = ({ spell }) => (
     <div className="spell-tooltip">
         <h4>{spell.name}</h4>
@@ -89,46 +116,36 @@ const SpellTooltipContent = ({ spell }) => (
     </div>
 );
 
+// --- TOOLTIP CONTENT (ANRUFUNG) ---
+const InvocationTooltipContent = ({ invocation }) => (
+    <div className="spell-tooltip">
+        <h4>{invocation.name}</h4>
+        <div className="spell-meta">
+            <span className="tag" style={{background: '#9c27b0', padding: '2px 6px', borderRadius: '4px', fontSize: '0.8em'}}>Anrufung</span>
+        </div>
+        <p style={{marginTop: '10px'}}>{invocation.description}</p>
+        {invocation.prerequisites && (
+             <div style={{marginTop: '10px', fontSize: '0.8em', color: '#aaa', borderTop: '1px solid #444', paddingTop: '4px'}}>
+                 <strong>Voraussetzungen:</strong>
+                 {invocation.prerequisites.level && <span> Level {invocation.prerequisites.level} </span>}
+                 {invocation.prerequisites.feature && <span> • {invocation.prerequisites.feature} </span>}
+                 {invocation.prerequisites.spell && <span> • {invocation.prerequisites.spell} </span>}
+             </div>
+        )}
+    </div>
+);
+
 const SpellbookTab = ({ character, onUpdateCharacter }) => {
     const { t } = useTranslation();
+    const isWarlock = character?.class?.key === 'warlock';
 
-    // 1. Maximale vorbereitete Zauber berechnen
-    const maxPrepared = useMemo(() => {
-        if (!character) return 1;
-        const level = character.level || 1;
-        let abilityKey = 'int'; // Standard Wizard
-        if (character.class?.key === 'cleric' || character.class?.key === 'druid') abilityKey = 'wis';
-        if (character.class?.key === 'paladin') abilityKey = 'cha';
-        // Sorcerer, Bard, Warlock, Ranger bereiten nicht vor (Known Spells), aber wir nutzen die Logik hier generisch
-        
-        const score = character.abilities[abilityKey] + getRacialAbilityBonus(character, abilityKey);
-        const mod = getAbilityModifier(score);
-        
-        const levelFactor = character.class?.key === 'paladin' ? Math.floor(level / 2) : level;
-        return Math.max(1, levelFactor + mod);
-    }, [character]);
-
-    // 2. Aktuell vorbereitete Zauber laden (mit fester Array-Größe und 'null' für Lücken)
-    const preparedSpells = useMemo(() => {
-        const rawList = character.spells_prepared || [];
-        // Wir erstellen ein Array der Länge 'maxPrepared'.
-        // Wenn rawList kleiner ist, füllen wir auf. Wenn größer (durch Level Down?), schneiden wir ab.
-        // WICHTIG: Wir müssen sicherstellen, dass 'rawList' auch 'null' enthalten darf, 
-        // um Lücken zu repräsentieren.
-        
-        const slots = new Array(maxPrepared).fill(null);
-        
-        rawList.slice(0, maxPrepared).forEach((key, i) => {
-            if (key) {
-                slots[i] = spellsEngine.getSpell(key);
-            }
-        });
-        return slots;
-    }, [character.spells_prepared, maxPrepared]);
-
-    // 3. Alle verfügbaren Zauber (Zauberbuch) laden
+    // --- LOGIC: COMMON ---
+    
     const knownSpells = useMemo(() => {
-        const bookKeys = character.spellbook || character.spells_known || [];
+        const spellbookSpells = character.spellbook || [];
+        const knownSpellsList = character.spells_known || [];
+        const bookKeys = [...spellbookSpells, ...knownSpellsList];
+        
         const uniqueKeys = [...new Set(bookKeys)];
         return uniqueKeys.map(key => spellsEngine.getSpell(key)).filter(Boolean);
     }, [character.spellbook, character.spells_known]);
@@ -138,62 +155,6 @@ const SpellbookTab = ({ character, onUpdateCharacter }) => {
         return keys.map(key => spellsEngine.getSpell(key)).filter(Boolean);
     }, [character.cantrips_known]);
 
-
-    // --- ACTIONS ---
-
-    // Wird aufgerufen, wenn ein Zauber auf einen Slot (targetIndex) gezogen wird
-    const handlePrepareSpell = (spell, targetIndex) => {
-        if (!onUpdateCharacter) return;
-        if (spell.level === 0) return; 
-
-        // Kopie der aktuellen Liste (oder erstelle neue mit nulls)
-        let newPreparedList = [...(character.spells_prepared || [])];
-        
-        // Sicherstellen, dass das Array groß genug ist
-        if (newPreparedList.length < maxPrepared) {
-            const diff = maxPrepared - newPreparedList.length;
-            for(let i=0; i<diff; i++) newPreparedList.push(null);
-        }
-
-        // Prüfen, ob der Zauber schon woanders liegt -> dort entfernen (verschieben)
-        const existingIndex = newPreparedList.indexOf(spell.key);
-        if (existingIndex !== -1) {
-            newPreparedList[existingIndex] = null;
-        }
-
-        // An neuer Position einfügen (überschreibt was auch immer dort war)
-        // Wenn kein targetIndex übergeben wurde (z.B. durch Klick), suchen wir den ersten freien Slot
-        if (typeof targetIndex !== 'number') {
-            const freeIndex = newPreparedList.indexOf(null);
-            if (freeIndex !== -1) {
-                newPreparedList[freeIndex] = spell.key;
-            } else {
-                console.log("Keine freien Slots mehr.");
-                return; 
-            }
-        } else {
-            // Gezieltes Drop
-            newPreparedList[targetIndex] = spell.key;
-        }
-
-        // Bereinigen: Wir speichern 'null' in der DB, damit die Positionen erhalten bleiben?
-        // Ja, für dieses UI-Verhalten ist das notwendig.
-        onUpdateCharacter({ ...character, spells_prepared: newPreparedList });
-    };
-
-    // Entfernen aus einem spezifischen Slot
-    const handleUnprepareSpell = (indexToRemove) => {
-        if (!onUpdateCharacter) return;
-        let newPreparedList = [...(character.spells_prepared || [])];
-        
-        // Sicherstellen dass Index existiert
-        if (indexToRemove < newPreparedList.length) {
-            newPreparedList[indexToRemove] = null;
-            onUpdateCharacter({ ...character, spells_prepared: newPreparedList });
-        }
-    };
-
-    // --- GROUPING ---
     const spellsByLevel = useMemo(() => {
         const grouped = {};
         knownSpells.forEach(s => {
@@ -203,82 +164,239 @@ const SpellbookTab = ({ character, onUpdateCharacter }) => {
         return grouped;
     }, [knownSpells]);
 
-    // Zähle tatsächliche Zauber (nicht nulls)
+    // --- LOGIC: PREPARED CASTERS ---
+    const maxPrepared = useMemo(() => {
+        if (!character || isWarlock) return 0;
+        const level = character.level || 1;
+        let abilityKey = 'int'; 
+        if (['cleric', 'druid', 'ranger'].includes(character.class?.key)) abilityKey = 'wis';
+        if (character.class?.key === 'paladin') abilityKey = 'cha';
+        
+        const score = character.abilities[abilityKey] + getRacialAbilityBonus(character, abilityKey);
+        const mod = getAbilityModifier(score);
+        
+        const levelFactor = character.class?.key === 'paladin' ? Math.floor(level / 2) : level;
+        return Math.max(1, levelFactor + mod);
+    }, [character, isWarlock]);
+
+    const preparedSpells = useMemo(() => {
+        if (isWarlock) return [];
+        const rawList = character.spells_prepared || [];
+        const slots = new Array(maxPrepared).fill(null);
+        rawList.slice(0, maxPrepared).forEach((key, i) => {
+            if (key) slots[i] = spellsEngine.getSpell(key);
+        });
+        return slots;
+    }, [character.spells_prepared, maxPrepared, isWarlock]);
+
     const preparedCount = preparedSpells.filter(Boolean).length;
 
+    // --- ACTIONS ---
+    const handlePrepareSpell = (spell, targetIndex) => {
+        if (!onUpdateCharacter || isWarlock) return;
+        if (spell.level === 0) return; 
+
+        let newPreparedList = [...(character.spells_prepared || [])];
+        if (newPreparedList.length < maxPrepared) {
+            const diff = maxPrepared - newPreparedList.length;
+            for(let i=0; i<diff; i++) newPreparedList.push(null);
+        }
+
+        const existingIndex = newPreparedList.indexOf(spell.key);
+        if (existingIndex !== -1) newPreparedList[existingIndex] = null;
+
+        if (typeof targetIndex !== 'number') {
+            const freeIndex = newPreparedList.indexOf(null);
+            if (freeIndex !== -1) newPreparedList[freeIndex] = spell.key;
+            else return; 
+        } else {
+            newPreparedList[targetIndex] = spell.key;
+        }
+        onUpdateCharacter({ ...character, spells_prepared: newPreparedList });
+    };
+
+    const handleUnprepareSpell = (indexToRemove) => {
+        if (!onUpdateCharacter) return;
+        let newPreparedList = [...(character.spells_prepared || [])];
+        if (indexToRemove < newPreparedList.length) {
+            newPreparedList[indexToRemove] = null;
+            onUpdateCharacter({ ...character, spells_prepared: newPreparedList });
+        }
+    };
+
+    // --- LOGIC: WARLOCK SPECIFIC (PHB 2024) ---
+    const warlockData = useMemo(() => {
+        if (!isWarlock) return null;
+        // Wichtig: Features übergeben, falls undefined im character objekt
+        const safeCharacter = { ...character, features: character.features || [] };
+        const logic = new WarlockLogic(safeCharacter);
+        
+        const pactLevel = logic.getPactSlotLevel();
+        const maxSlots = logic.getPactSlotCount();
+        const currentSlots = character.resources?.pact_magic_slots ?? maxSlots; 
+
+        // 1. Spells & Patron Spells
+        const manuallyLearnedSpells = knownSpells;
+        const patronSpellKeys = logic.getAlwaysPreparedPatronSpells();
+        const patronSpells = patronSpellKeys.map(key => spellsEngine.getSpell(key)).filter(Boolean);
+
+        const combinedSpells = [...manuallyLearnedSpells];
+        patronSpells.forEach(pSpell => {
+            if (!combinedSpells.find(s => s.key === pSpell.key)) {
+                combinedSpells.push(pSpell);
+            }
+        });
+
+        const mysticArcanumSpells = combinedSpells.filter(s => s.level >= 6);
+        const pactSpellsPool = combinedSpells.filter(s => s.level >= 1 && s.level <= 5);
+        
+        const patronSpellsToDisplay = pactSpellsPool.filter(s => patronSpellKeys.includes(s.key));
+        const learnedSpellsToDisplay = pactSpellsPool.filter(s => !patronSpellKeys.includes(s.key));
+
+        // 2. Invocations laden
+        const invocations = logic.getAvailableInvocations();
+
+        return { 
+            pactLevel, 
+            maxSlots, 
+            currentSlots, 
+            mysticArcanumSpells, 
+            patronSpellsToDisplay,
+            learnedSpellsToDisplay,
+            patronSpellKeys,
+            invocations // NEU
+        };
+    }, [character, isWarlock, knownSpells]);
+
+    // --- RENDER ---
     return (
         <div className="spellbook-tab-bg3">
             
-            {/* OBERER BEREICH: CANTRIPS */}
+            {/* 1. CANTRIPS */}
             {cantrips.length > 0 && (
                 <div className="sb-section cantrips-section">
                     <h3 className="sb-header">Zaubertricks <span className="sb-subinfo">(Immer verfügbar)</span></h3>
                     <div className="sb-grid">
                         {cantrips.map(spell => (
-                             <DraggableSpell key={spell.key} spell={spell} isPrepared={true} />
+                             <DraggableSpell key={spell.key} spell={spell} isPrepared={true} isAlwaysPrepared={true} />
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* MITTLERER BEREICH: VORBEREITUNG (Slots) */}
-            <div className="sb-section preparation-section">
-                <div className="preparation-header">
-                    <h3>Vorbereitete Zauber</h3>
-                    <div className="prep-counter">
-                        <span className={`count ${preparedCount >= maxPrepared ? 'full' : ''}`}>
-                            {preparedCount}
-                        </span>
-                        <span className="divider">/</span>
-                        <span className="max">{maxPrepared}</span>
-                    </div>
-                </div>
-                
-                <div className="prepared-slots-row">
-                    {/* Wir iterieren über das vorberechnete Array (das nulls enthält) */}
-                    {preparedSpells.map((spell, i) => (
-                        <PreparedSlot 
-                            key={i} 
-                            index={i} 
-                            spell={spell} 
-                            onDrop={handlePrepareSpell} 
-                            onRemove={handleUnprepareSpell}
-                        />
-                    ))}
-                </div>
-            </div>
-
-            {/* UNTERER BEREICH: ZAUBERBUCH LISTE */}
-            <div className="sb-section spellbook-list-section">
-                <h3 className="sb-header">Zauberbuch</h3>
-                <div className="spellbook-scroll-area">
-                    {Object.keys(spellsByLevel).sort((a, b) => a - b).map(level => (
-                        <div key={level} className="level-group">
-                            <h4 className="level-header">
-                                <span className="roman-level">Grad {level}</span>
-                                <span className="line"></span>
-                            </h4>
-                            <div className="sb-grid">
-                                {spellsByLevel[level].map(spell => {
-                                    // Prüfen ob der Key IRGENDWO im Prepared Array ist
-                                    const isPrep = (character.spells_prepared || []).includes(spell.key);
-                                    return (
-                                        <DraggableSpell 
-                                            key={spell.key} 
-                                            spell={spell} 
-                                            isPrepared={isPrep} 
-                                            onToggle={(s) => handlePrepareSpell(s)} // Klick füllt ersten freien Slot
-                                        />
-                                    );
-                                })}
+            {/* 2.a WARLOCK: PAKTMAGIE */}
+            {isWarlock && warlockData && (
+                <>
+                    <div className="sb-section pact-magic-section">
+                        <div className="preparation-header warlock-header">
+                            <div>
+                                <h3>Paktmagie</h3>
+                                <div className="sb-subinfo">Alle Paktzauber werden auf <strong>Grad {warlockData.pactLevel}</strong> gewirkt.</div>
+                            </div>
+                            <div className="pact-slots-container">
+                                {Array.from({ length: warlockData.maxSlots }).map((_, i) => (
+                                    <PactSlotToken 
+                                        key={i} 
+                                        level={warlockData.pactLevel} 
+                                        isUsed={i >= warlockData.currentSlots} 
+                                    />
+                                ))}
                             </div>
                         </div>
-                    ))}
-                    {knownSpells.length === 0 && (
-                        <div className="empty-book-msg">Keine Zauber im Zauberbuch.</div>
+                        
+                        <div className="spellbook-list-section">
+                            
+                            {/* Patron Zauber */}
+                            {warlockData.patronSpellsToDisplay.length > 0 && (
+                                <div className="warlock-spell-group" style={{ marginBottom: '20px' }}>
+                                    <h4 className="level-header"><span className="roman-level">Patron-Zauber</span><span className="line"></span></h4>
+                                    <div className="sb-grid">
+                                        {warlockData.patronSpellsToDisplay.map(spell => (
+                                            <DraggableSpell key={spell.key} spell={spell} isPrepared={true} isAlwaysPrepared={true} onToggle={null} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Gelernte Paktzauber */}
+                            <div className="warlock-spell-group">
+                                <h4 className="level-header"><span className="roman-level">Gelernte Paktzauber</span><span className="line"></span></h4>
+                                <div className="sb-grid">
+                                    {warlockData.learnedSpellsToDisplay.map(spell => (
+                                        <DraggableSpell key={spell.key} spell={spell} isPrepared={true} isAlwaysPrepared={false} onToggle={null} />
+                                    ))}
+                                    {warlockData.learnedSpellsToDisplay.length === 0 && <div className="empty-msg">Keine weiteren Zauber gelernt.</div>}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {/* WARLOCK: MYSTISCHE ANRUFUNGEN (NEU) */}
+                    {warlockData.invocations.length > 0 && (
+                        <div className="sb-section invocations-section">
+                            <h3 className="sb-header">Mystische Anrufungen</h3>
+                            <div className="sb-grid">
+                                {warlockData.invocations.map(inv => (
+                                    <InvocationCard key={inv.key} invocation={inv} />
+                                ))}
+                            </div>
+                        </div>
                     )}
-                </div>
-            </div>
+
+                    {/* WARLOCK: MYSTISCHES ARKANUM */}
+                    {warlockData.mysticArcanumSpells.length > 0 && (
+                        <div className="sb-section mystic-arcanum-section">
+                            <h3 className="sb-header">Mystisches Arkanum <span className="sb-subinfo">(1x pro Langer Rast)</span></h3>
+                            <div className="sb-grid">
+                                {warlockData.mysticArcanumSpells.map(spell => (
+                                    <DraggableSpell key={spell.key} spell={spell} isPrepared={true} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* 2.b STANDARD: VORBEREITUNG */}
+            {!isWarlock && (
+                <>
+                    <div className="sb-section preparation-section">
+                        <div className="preparation-header">
+                            <h3>Vorbereitete Zauber</h3>
+                            <div className="prep-counter">
+                                <span className={`count ${preparedCount >= maxPrepared ? 'full' : ''}`}>
+                                    {preparedCount}
+                                </span>
+                                <span className="divider">/</span>
+                                <span className="max">{maxPrepared}</span>
+                            </div>
+                        </div>
+                        <div className="prepared-slots-row">
+                            {preparedSpells.map((spell, i) => (
+                                <PreparedSlot key={i} index={i} spell={spell} onDrop={handlePrepareSpell} onRemove={handleUnprepareSpell} />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="sb-section spellbook-list-section">
+                        <h3 className="sb-header">Zauberbuch / Verfügbar</h3>
+                        <div className="spellbook-scroll-area">
+                            {Object.keys(spellsByLevel).sort((a, b) => a - b).map(level => (
+                                <div key={level} className="level-group">
+                                    <h4 className="level-header"><span className="roman-level">Grad {level}</span><span className="line"></span></h4>
+                                    <div className="sb-grid">
+                                        {spellsByLevel[level].map(spell => {
+                                            const isPrep = (character.spells_prepared || []).includes(spell.key);
+                                            return <DraggableSpell key={spell.key} spell={spell} isPrepared={isPrep} onToggle={(s) => handlePrepareSpell(s)} />;
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

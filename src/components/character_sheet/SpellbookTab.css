@@ -241,3 +241,65 @@
     padding-top: 8px;
     border-top: 1px dashed #444;
 }
+
+/* Warlock Specific Styles */
+.pact-slots-container {
+    display: flex;
+    gap: 15px;
+    margin-left: auto;
+}
+
+.pact-slot-token {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.token-inner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #d4af37; /* Gold */
+    background: rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.pact-slot-token.used .token-inner {
+    border-color: #555;
+    color: #555;
+    background: rgba(0,0,0,0.8);
+    box-shadow: none;
+}
+
+.token-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #aaa;
+}
+
+.warlock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.sb-subinfo {
+    font-size: 0.85rem;
+    color: #ccc;
+    font-style: italic;
+    margin-left: 10px;
+}
+
+/* Verhindern, dass Warlocks den "Prepared Checkmark" sehen, wenn es nicht nötig ist */
+.spell-card.always-known {
+    border-color: #9c27b0; /* Lila Rand für Paktmagie */
+}

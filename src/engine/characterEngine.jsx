@@ -6,7 +6,7 @@ import { LEVEL_XP_TABLE, rollDiceFormula } from "../utils/helpers";
 import { 
   calculateFeatHpBonus, 
   calculateFeatInitiativeBonus, 
-  calculateFeatSpeedBonus,
+  calculateFeatSpeedBonus, 
   calculateFeatPassiveBonus 
 } from "./featsEngine";
 
@@ -601,6 +601,27 @@ export const applyLevelUp = (character, totalHpGain, levelUpChoices) => {
     }
   }
 
+  // +++ NEU: INVOKATIONEN VERARBEITEN +++
+  // 1. Starten mit den bisherigen Features (als Basis)
+  let finalFeatures = [...(character.features || [])];
+
+  // 2. Entfernen (Tausch)
+  if (levelUpChoices?.invocations?.remove) {
+    finalFeatures = finalFeatures.filter(f => f !== levelUpChoices.invocations.remove);
+  }
+
+  // 3. Hinzufügen (Neu gewählt + Tausch-Ersatz)
+  if (levelUpChoices?.invocations?.add) {
+    finalFeatures = [...finalFeatures, ...levelUpChoices.invocations.add];
+  }
+
+  // 4. Automatische Klassen-Features hinzufügen
+  // (Wir fügen nur die Keys der Features hinzu, da `features` im Char nur ein String-Array ist)
+  finalFeatures = [...finalFeatures, ...allNewFeatures.map(f => f.key || f.name)]; // Fallback auf Name falls Key fehlt (Sicherheit)
+
+  // Duplikate entfernen
+  finalFeatures = [...new Set(finalFeatures)];
+
   const { pendingLevelUp, ...restOfCharacter } = character;
 
   const updatedCharacter = {
@@ -619,10 +640,7 @@ export const applyLevelUp = (character, totalHpGain, levelUpChoices) => {
       maxHp: newMaxHP,
       hp: newMaxHP,
     },
-    features: [
-      ...(character.features || []),
-      ...allNewFeatures
-    ],
+    features: finalFeatures, // Hier verwenden wir die berechnete Liste
   };
 
   return checkForLevelUp(updatedCharacter);
