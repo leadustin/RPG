@@ -12,6 +12,7 @@ export const ItemTypes = {
   CLOTH: 'cloth',       
   AMMO: 'ammo',
   QUIVER: 'quiver',
+  SPELL: 'spell',
 
   // --- Verbrauchsgüter & Sonstiges ---
   POTION: 'potion',

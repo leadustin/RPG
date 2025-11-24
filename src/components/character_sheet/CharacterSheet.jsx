@@ -22,8 +22,8 @@ import SpellbookTab from './SpellbookTab';
 import { ItemTypes } from "../../dnd/itemTypes"; 
 import InventoryFilter from "./InventoryFilter";
 import allClassData from "../../data/classes.json";
+import AbilitiesTab from './AbilitiesTab'; // Import sicherstellen
 
-// --- HELPER: Lade alle Klassen-Icons ---
 const classIconModules = import.meta.glob(
   '../../assets/images/classes/*.(png|webp|jpg|svg)', 
   { eager: true }
@@ -44,8 +44,10 @@ for (const [skillKey, attrKey] of Object.entries(SKILL_MAP)) {
 }
 
 const CharacterSheet = ({
-  character,
+  character: initialCharacter, 
+  party = [], 
   onClose,
+  onUpdateCharacter, // <--- WICHTIG: Hier empfangen wir die Funktion aus App.jsx
   handleEquipItem,
   handleUnequipItem,
   handleToggleTwoHanded,
@@ -53,67 +55,122 @@ const CharacterSheet = ({
   handleUnloadQuiver
 }) => {
   const { t } = useTranslation(); 
+  
+  const [displayCharacter, setDisplayCharacter] = useState(initialCharacter || party[0]);
   const [activeTab, setActiveTab] = useState("Inventory");
   const [activeStatTab, setActiveStatTab] = useState("Stats");
-  const [activePortrait, setActivePortrait] = useState("");
   const [collapsedInventories, setCollapsedInventories] = useState({});
   const [activeFilter, setActiveFilter] = useState("all");
 
+  useEffect(() => {
+    if (initialCharacter) {
+      setDisplayCharacter(initialCharacter);
+    }
+  }, [initialCharacter]);
+
+  const currentParty = party.length > 0 ? party : (displayCharacter ? [displayCharacter] : []);
+
+  // --- HELPER: Bestimme den Klassentyp für Tabs ---
+  const hasSpellcasting = useMemo(() => {
+      if (!displayCharacter?.class) return false;
+      const cls = allClassData.find(c => c.key === displayCharacter.class.key);
+      return !!cls?.spellcasting; 
+  }, [displayCharacter]);
+
+  // Thematische Tab-Namen
+  const getClassTabLabel = () => {
+    if (!displayCharacter?.class?.key) return "Fähigkeiten";
+    const key = displayCharacter.class.key;
+
+    if (hasSpellcasting) {
+        switch (key) {
+            case 'wizard': return "Zauberbuch";
+            case 'warlock': return "Paktmagie";
+            case 'cleric': return "Gebete";
+            case 'druid': return "Naturmagie";
+            case 'sorcerer': return "Arkane Macht";
+            case 'paladin': return "Göttliche Macht";
+            case 'ranger': return "Wildnismagie";
+            case 'bard': return "Lieder & Magie";
+            default: return "Zauber";
+        }
+    }
+    switch (key) {
+        case 'monk': return "Ki-Kräfte";
+        case 'barbarian': return "Zorn & Instinkt";
+        case 'fighter': return "Kampftechniken";
+        case 'rogue': return "Talente";
+        default: return "Fertigkeiten";
+    }
+  };
+
+  const classTabLabel = getClassTabLabel();
+  const classTabKey = hasSpellcasting ? "Spells" : "Abilities";
+
+  // Reset Tab wenn der Charakter gewechselt wird
+  useEffect(() => {
+      if (activeTab === "Spells" && !hasSpellcasting) {
+          setActiveTab("Abilities");
+      }
+      if (activeTab === "Abilities" && hasSpellcasting) {
+          setActiveTab("Spells");
+      }
+  }, [displayCharacter, hasSpellcasting, activeTab]);
+
+
   // --- useMemo Hooks ---
   const currentWeight = useMemo(() => {
-    if (!character) return 0;
+    if (!displayCharacter) return 0;
     let totalWeight = 0;
-    if (character.inventory) {
-      totalWeight += character.inventory.reduce((total, item) => {
+    if (displayCharacter.inventory) {
+      totalWeight += displayCharacter.inventory.reduce((total, item) => {
         if (item && typeof item.weight === "number") {
           return total + item.weight;
         }
         return total;
       }, 0);
     }
-    if (character.equipment) {
-      Object.values(character.equipment).forEach((item) => {
+    if (displayCharacter.equipment) {
+      Object.values(displayCharacter.equipment).forEach((item) => {
         if (item && typeof item.weight === "number") {
           totalWeight += item.weight;
         }
       });
     }
     return totalWeight;
-  }, [character]);
+  }, [displayCharacter]);
 
   const filteredInventory = useMemo(() => {
-    if (!character || !character.inventory) {
+    if (!displayCharacter || !displayCharacter.inventory) {
       return [];
     }
     if (activeFilter === "all") {
-      return character.inventory;
+      return displayCharacter.inventory;
     }
-
     if (activeFilter === "armor") {
-        return character.inventory.filter(item => 
+        return displayCharacter.inventory.filter(item => 
             ["armor", "shield", "head", "hands", "boots", "cloth", "belt", "cloak"].includes(item.type)
         );
     }
-
-    return character.inventory.filter(
+    return displayCharacter.inventory.filter(
       (item) => item && item.type === activeFilter
     );
-  }, [character, activeFilter]);
+  }, [displayCharacter, activeFilter]);
   
   const finalModifiers = useMemo(() => {
-    if (!character) return {};
+    if (!displayCharacter) return {};
     const modifiers = {};
     ATTRIBUTE_ORDER.forEach((key) => {
       const finalScore =
-        character.abilities[key] + getRacialAbilityBonus(character, key);
+        displayCharacter.abilities[key] + getRacialAbilityBonus(displayCharacter, key);
       modifiers[key] = getAbilityModifier(finalScore);
     });
     return modifiers;
-  }, [character]);
+  }, [displayCharacter]);
 
-  // --- Event Handlers & Logik ---
   const getTwoHandedDisplayItem = () => {
-    const mainHand = character.equipment["main-hand"];
+    if (!displayCharacter) return null;
+    const mainHand = displayCharacter.equipment["main-hand"];
     if (!mainHand || mainHand.type !== "weapon") return null;
 
     const isTwoHanded =
@@ -123,78 +180,15 @@ const CharacterSheet = ({
         (mainHand.properties.some((p) => p.startsWith("Vielseitig")) &&
           mainHand.isTwoHanded));
 
-    if (isTwoHanded && !character.equipment["off-hand"]) {
+    if (isTwoHanded && !displayCharacter.equipment["off-hand"]) {
       return { ...mainHand, isTwoHandedDisplay: true };
     }
-
     return null;
   };
 
   const enhancedHandleEquipItem = (item, slotType) => {
-    const mainHandWeapon = character.equipment["main-hand"];
-    const offHandItem = character.equipment["off-hand"];
-
-    if (slotType === "main-hand" && item.type === "weapon") {
-      const isTwoHanded =
-        item.properties &&
-        (item.properties.includes("Zweihändig") ||
-          item.properties.includes("Two-Handed") ||
-          (item.properties.some((p) => p.startsWith("Vielseitig")) &&
-            item.isTwoHanded));
-
-      if (isTwoHanded && offHandItem) {
-        handleUnequipItem(offHandItem, "off-hand");
-      }
-    }
-
-    if (slotType === "off-hand" && mainHandWeapon) {
-      const mainHandIsTwoHanded =
-        mainHandWeapon.properties &&
-        (mainHandWeapon.properties.includes("Zweihändig") ||
-          mainHandWeapon.properties.includes("Two-Handed") ||
-          (mainHandWeapon.properties.some((p) => p.startsWith("Vielseitig")) &&
-            mainHandWeapon.isTwoHanded));
-
-      if (mainHandIsTwoHanded) {
-        if (mainHandWeapon.properties.some((p) => p.startsWith("Vielseitig"))) {
-          handleToggleTwoHanded("main-hand");
-        } else {
-          console.warn(
-            "Kann nicht in Off-Hand ausrüsten - Main-Hand ist zweihändig besetzt"
-          );
-          return;
-        }
-      }
-    }
-    handleEquipItem(item, slotType);
+    handleEquipItem(item, slotType); 
   };
-
-  const canTwoWeaponFight = () => {
-    const mainHand = character.equipment["main-hand"];
-    const offHand = character.equipment["off-hand"];
-
-    if (!mainHand || !offHand) return false;
-    if (mainHand.type !== "weapon" || offHand.type !== "weapon") return false;
-
-    const mainHandLight =
-      mainHand.properties && mainHand.properties.includes("Leicht");
-    const offHandLight =
-      offHand.properties && offHand.properties.includes("Leicht");
-    const mainHandVersatile =
-      mainHand.properties &&
-      mainHand.properties.some((p) => p.startsWith("Vielseitig")) &&
-      !mainHand.isTwoHanded;
-
-    return (
-      (mainHandLight && offHandLight) || (mainHandVersatile && offHandLight)
-    );
-  };
-
-  useEffect(() => {
-    if (character) {
-      setActivePortrait(character.name);
-    }
-  }, [character]);
 
   useEffect(() => {
     const handleEsc = (event) => {
@@ -206,19 +200,7 @@ const CharacterSheet = ({
 
   const [, drop] = useDrop(
     () => ({
-      accept: [
-        ItemTypes.WEAPON,
-        ItemTypes.ARMOR,
-        ItemTypes.SHIELD,
-        ItemTypes.ACCESSORY,
-        ItemTypes.CLOTH,
-        ItemTypes.AMMO,    
-        ItemTypes.QUIVER,  
-        ItemTypes.HEAD,
-        ItemTypes.HANDS,
-        ItemTypes.BOOTS,
-        ItemTypes.BELT
-      ],
+      accept: [ItemTypes.WEAPON, ItemTypes.ARMOR, ItemTypes.SHIELD, ItemTypes.ACCESSORY, ItemTypes.CLOTH, ItemTypes.AMMO, ItemTypes.QUIVER, ItemTypes.HEAD, ItemTypes.HANDS, ItemTypes.BOOTS, ItemTypes.BELT],
       drop: (item) => handleUnequipItem(item, item.equippedIn),
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
@@ -229,41 +211,38 @@ const CharacterSheet = ({
   );
 
   const getClassIconSrc = () => {
-    if (!character || !character.class || !character.class.icon) {
-      return null;
-    }
-    const iconSrc = classIcons[character.class.icon];
-    return iconSrc;
+    if (!displayCharacter || !displayCharacter.class || !displayCharacter.class.icon) return null;
+    return classIcons[displayCharacter.class.icon];
   };
 
-  if (!character) {
-    return null;
-  }
+  if (!displayCharacter) return null;
 
-  const finalStrForWeight = character.abilities.str + getRacialAbilityBonus(character, 'str');
+  const finalStrForWeight = displayCharacter.abilities.str + getRacialAbilityBonus(displayCharacter, 'str');
   const maxWeight = finalStrForWeight * 15;
+  
   const toggleInventory = (characterName) => {
     setCollapsedInventories((prevState) => ({
       ...prevState,
       [characterName]: !prevState[characterName],
     }));
   };
-  const maxHp = character.stats.maxHp || calculateInitialHP(character);
-  const currentHp = character.stats.hp || maxHp;
-  const armorClass = calculateAC(character);
-  const finalDexForInit = character.abilities.dex + getRacialAbilityBonus(character, 'dex');
+
+  const maxHp = displayCharacter.stats.maxHp;
+  const currentHp = displayCharacter.stats.hp !== undefined ? displayCharacter.stats.hp : maxHp;
+  const armorClass = calculateAC(displayCharacter);
+  const finalDexForInit = displayCharacter.abilities.dex + getRacialAbilityBonus(displayCharacter, 'dex');
   const initiative = getAbilityModifier(finalDexForInit);
-  const meleeDamage = calculateMeleeDamage(character);
-  const currentExp = character.experience || 0;
-  const nextLevel = (character.level || 1) + 1;
+  const meleeDamage = calculateMeleeDamage(displayCharacter);
+  const currentExp = displayCharacter.experience || 0;
+  const nextLevel = (displayCharacter.level || 1) + 1;
   const expForNextLevel = nextLevel <= 20 ? LEVEL_XP_TABLE[nextLevel] : "MAX";
-  const classData = character.class.key ? allClassData.find((c) => c.key === character.class.key) : null;
-  const subclassData =
-    classData && character.subclassKey
-      ? classData.subclasses.find((sc) => sc.key === character.subclassKey)
+  
+  const classData = displayCharacter.class.key ? allClassData.find((c) => c.key === displayCharacter.class.key) : null;
+  const subclassData = classData && displayCharacter.subclassKey
+      ? classData.subclasses.find((sc) => sc.key === displayCharacter.subclassKey)
       : null;
   const subclassName = subclassData?.name;
-  const raceInfo = character.subrace || character.race;
+  const raceInfo = displayCharacter.subrace || displayCharacter.race;
   const classIconSrc = getClassIconSrc();
 
   return (
@@ -271,57 +250,52 @@ const CharacterSheet = ({
       {/* --- HEADER --- */}
       <header>
         <nav className="main-nav">
-          <button
-            className={`nav-btn ${activeTab === "Inventory" ? "active" : ""}`}
-            onClick={() => setActiveTab("Inventory")}
-          >
+          <button className={`nav-btn ${activeTab === "Inventory" ? "active" : ""}`} onClick={() => setActiveTab("Inventory")}>
             Ausrüstung
           </button>
-          <button
-            className={`nav-btn ${activeTab === "Spells" ? "active" : ""}`}
-            onClick={() => setActiveTab("Spells")}
-          >
-            Zauberbuch
+          {/* Dynamischer Button Label */}
+          <button className={`nav-btn ${activeTab === classTabKey ? "active" : ""}`} onClick={() => setActiveTab(classTabKey)}>
+            {classTabLabel}
           </button>
-          <button
-            className={`nav-btn ${activeTab === "Alchemy" ? "active" : ""}`}
-            onClick={() => setActiveTab("Alchemy")}
-          >
+          <button className={`nav-btn ${activeTab === "Alchemy" ? "active" : ""}`} onClick={() => setActiveTab("Alchemy")}>
             Alchemie
           </button>
         </nav>
         <div className="party-gold">
           <span>Party Gold</span>
-          <span className="gold-amount">{character.wallet?.gold || character.gold || 0}</span>
+          <span className="gold-amount">{displayCharacter.wallet?.gold || displayCharacter.gold || 0}</span>
         </div>
-        <button onClick={onClose} className="close-btn">
-          X
-        </button>
+        <button onClick={onClose} className="close-btn">X</button>
       </header>
 
       {/* --- MAIN CONTENT --- */}
       <main className="main-content">
-        {/* --- LEFT SIDEBAR --- */}
+        
+        {/* --- LEFT SIDEBAR (PARTY) --- */}
         <aside className="left-sidebar">
-          <div
-            className={`character-portrait ${
-              activePortrait === character.name ? "active" : ""
-            }`}
-            onClick={() => setActivePortrait(character.name)}
-          >
-            {character.portrait ? (
-                <img src={character.portrait} alt={`${character.name} Portrait`} />
-            ) : (
-                <div className="portrait-placeholder">?</div>
-            )}
-            <div className="hp-bar-wrapper">
+          {currentParty.map((member) => {
+             const isSelected = member.id === displayCharacter.id || (member.name === displayCharacter.name);
+             const memMaxHp = member.stats.maxHp || calculateInitialHP(member);
+             const memCurHp = member.stats.hp !== undefined ? member.stats.hp : memMaxHp;
+
+             return (
               <div
-                className="hp-current"
-                style={{ width: `${(currentHp / maxHp) * 100}%` }}
-              ></div>
-              <span className="hp-text">{`${currentHp} / ${maxHp}`}</span>
-            </div>
-          </div>
+                key={member.id || member.name}
+                className={`character-portrait ${isSelected ? "active" : ""}`}
+                onClick={() => setDisplayCharacter(member)} 
+              >
+                {member.portrait ? (
+                    <img src={member.portrait} alt={`${member.name} Portrait`} />
+                ) : (
+                    <div className="portrait-placeholder">?</div>
+                )}
+                <div className="hp-bar-wrapper">
+                  <div className="hp-current" style={{ width: `${(memCurHp / memMaxHp) * 100}%` }}></div>
+                  <span className="hp-text">{`${memCurHp} / ${memMaxHp}`}</span>
+                </div>
+              </div>
+             );
+          })}
         </aside>
 
         {/* --- INVENTORY TAB --- */}
@@ -330,31 +304,15 @@ const CharacterSheet = ({
             <div className="inventory-header">
               <h2>Inventory</h2>
             </div>
-            <InventoryFilter
-              activeFilter={activeFilter}
-              onFilterChange={setActiveFilter}
-            />
-            <div
-              className={`character-inventory ${
-                collapsedInventories[character.name] ? "collapsed" : ""
-              }`}
-            >
-              <div
-                className="inventory-owner toggle-inventory"
-                onClick={() => toggleInventory(character.name)}
-              >
-                <h3>{character.name}</h3>
+            <InventoryFilter activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+            <div className={`character-inventory ${collapsedInventories[displayCharacter.name] ? "collapsed" : ""}`}>
+              <div className="inventory-owner toggle-inventory" onClick={() => toggleInventory(displayCharacter.name)}>
+                <h3>{displayCharacter.name}</h3>
                 <div className="inventory-details">
-                  <div
-                    className={`weight-display ${
-                      currentWeight > maxWeight ? "encumbered" : ""
-                    }`}
-                  >
+                  <div className={`weight-display ${currentWeight > maxWeight ? "encumbered" : ""}`}>
                     Gewicht: {currentWeight.toFixed(1)} / {maxWeight} kg
                   </div>
-                  <span className="toggle-icon">
-                    {collapsedInventories[character.name] ? "+" : "-"}
-                  </span>
+                  <span className="toggle-icon">{collapsedInventories[displayCharacter.name] ? "+" : "-"}</span>
                 </div>
               </div>
               <div className="inventory-grid">
@@ -366,50 +324,53 @@ const CharacterSheet = ({
           </section>
         )}
         
-        {/* --- SPELLS TAB --- */}
-        {activeTab === "Spells" && (
-          <SpellbookTab character={character} />
+        {/* --- DYNAMISCHE TABS --- */}
+        {activeTab === "Spells" && hasSpellcasting && (
+          <SpellbookTab 
+             character={displayCharacter} 
+             onUpdateCharacter={onUpdateCharacter} // <--- WICHTIG: Weiterleitung an SpellbookTab!
+          />
         )}
 
-        {/* --- RIGHT PANEL --- */}
+        {activeTab === "Abilities" && !hasSpellcasting && (
+          <AbilitiesTab character={displayCharacter} />
+        )}
+
+        {/* --- RIGHT PANEL (Equipment & Stats) --- */}
         {activeTab === "Inventory" && (
           <aside className="right-panel-character-sheet">
             <div className="equipment-column-left">
               <p className="slot-label">Ausrüstung</p>
               <div className="two-column-grid">
-                <EquipmentSlot slotType="head" currentItem={character.equipment.head} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="amulet" currentItem={character.equipment.amulet} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="armor" currentItem={character.equipment.armor} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="cloth" currentItem={character.equipment.cloth} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="cloak" currentItem={character.equipment.cloak} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="gloves" currentItem={character.equipment.gloves} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="belt" currentItem={character.equipment.belt} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="boots" currentItem={character.equipment.boots} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="ring1" currentItem={character.equipment.ring1} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="ring2" currentItem={character.equipment.ring2} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="head" currentItem={displayCharacter.equipment.head} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="amulet" currentItem={displayCharacter.equipment.amulet} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="armor" currentItem={displayCharacter.equipment.armor} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="cloth" currentItem={displayCharacter.equipment.cloth} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="cloak" currentItem={displayCharacter.equipment.cloak} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="gloves" currentItem={displayCharacter.equipment.gloves} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="belt" currentItem={displayCharacter.equipment.belt} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="boots" currentItem={displayCharacter.equipment.boots} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="ring1" currentItem={displayCharacter.equipment.ring1} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="ring2" currentItem={displayCharacter.equipment.ring2} onEquipItem={enhancedHandleEquipItem} />
               </div>
               <p className="slot-label">Nahkampf</p>
               <div className="two-column-grid">
-                <EquipmentSlot slotType="main-hand" currentItem={character.equipment["main-hand"]} onEquipItem={enhancedHandleEquipItem} />
-                <EquipmentSlot slotType="off-hand" currentItem={getTwoHandedDisplayItem() || character.equipment["off-hand"]} onEquipItem={enhancedHandleEquipItem} isTwoHandedDisplay={!!getTwoHandedDisplayItem()} />
+                <EquipmentSlot slotType="main-hand" currentItem={displayCharacter.equipment["main-hand"]} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="off-hand" currentItem={getTwoHandedDisplayItem() || displayCharacter.equipment["off-hand"]} onEquipItem={enhancedHandleEquipItem} isTwoHandedDisplay={!!getTwoHandedDisplayItem()} />
               </div>
-              {character.equipment["main-hand"] && character.equipment["main-hand"].properties?.some((p) => p.startsWith("Vielseitig")) && (
-                <button 
-                    onClick={() => handleToggleTwoHanded("main-hand")} 
-                    className="toggle-btn" 
-                    // +++ FIX: disabled-Attribut entfernt, damit der Klick die Off-Hand leeren kann +++
-                >
-                  {character.equipment["main-hand"].isTwoHanded ? "Einhändig" : "Zweihändig"}
-                  {!character.equipment["main-hand"].isTwoHanded && character.equipment["off-hand"] ? " (Off-Hand räumen)" : ""}
+              {displayCharacter.equipment["main-hand"] && displayCharacter.equipment["main-hand"].properties?.some((p) => p.startsWith("Vielseitig")) && (
+                <button onClick={() => handleToggleTwoHanded("main-hand")} className="toggle-btn">
+                  {displayCharacter.equipment["main-hand"].isTwoHanded ? "Einhändig" : "Zweihändig"}
+                  {!displayCharacter.equipment["main-hand"].isTwoHanded && displayCharacter.equipment["off-hand"] ? " (Off-Hand räumen)" : ""}
                 </button>
               )}
               
               <p className="slot-label">Fernkampf</p>
               <div className="two-column-grid">
-                <EquipmentSlot slotType="ranged" currentItem={character.equipment.ranged} onEquipItem={enhancedHandleEquipItem} />
+                <EquipmentSlot slotType="ranged" currentItem={displayCharacter.equipment.ranged} onEquipItem={enhancedHandleEquipItem} />
                 <EquipmentSlot 
                     slotType="ammo" 
-                    currentItem={character.equipment.ammo} 
+                    currentItem={displayCharacter.equipment.ammo} 
                     onEquipItem={enhancedHandleEquipItem}
                     onFillQuiver={handleFillQuiver}
                     onUnloadQuiver={handleUnloadQuiver}
@@ -419,7 +380,7 @@ const CharacterSheet = ({
 
             <div className="character-model-column">
               <div className="character-viewer">
-                <img src={character.model || "https://placeholder.pics/svg/160x300"} alt="Character Model" />
+                <img src={displayCharacter.model || "https://placeholder.pics/svg/160x300"} alt="Character Model" />
               </div>
             </div>
 
@@ -436,13 +397,13 @@ const CharacterSheet = ({
                     <div className="character-info-centered">
                       <Tooltip text={raceInfo.description || raceInfo.name}>
                         <p className="char-race-centered tooltip-hover">
-                          {character.subrace ? character.subrace.name : character.race.name}
+                          {displayCharacter.subrace ? displayCharacter.subrace.name : displayCharacter.race.name}
                         </p>
                       </Tooltip>
-                      <Tooltip text={character.class.name}>
+                      <Tooltip text={displayCharacter.class.name}>
                         <div className="class-icon-wrapper-centered tooltip-hover">
                           <div className="class-icon">
-                             {classIconSrc && <img src={classIconSrc} alt={`${character.class.name} icon`} />}
+                             {classIconSrc && <img src={classIconSrc} alt={`${displayCharacter.class.name} icon`} />}
                           </div>
                         </div>
                       </Tooltip>
@@ -451,17 +412,17 @@ const CharacterSheet = ({
                           <p className="char-subclass-centered tooltip-hover">{subclassName}</p>
                         </Tooltip>
                       )}
-                      <Tooltip text={character.class.description || character.class.name}>
+                      <Tooltip text={displayCharacter.class.description || displayCharacter.class.name}>
                         <p className="char-class-centered tooltip-hover">
-                          Lv {character.level || 1} {character.class.name}
+                          Lv {displayCharacter.level || 1} {displayCharacter.class.name}
                         </p>
                       </Tooltip>
-                      <p className="char-background-centered">{character.background.name}</p>
+                      <p className="char-background-centered">{displayCharacter.background.name}</p>
                     </div>
 
                     <div className="primary-stats">
-                      {Object.keys(character.abilities).map((key) => {
-                        const finalScore = character.abilities[key] + getRacialAbilityBonus(character, key);
+                      {Object.keys(displayCharacter.abilities).map((key) => {
+                        const finalScore = displayCharacter.abilities[key] + getRacialAbilityBonus(displayCharacter, key);
                         return (
                           <Tooltip key={key} text={ABILITY_DESCRIPTIONS_DE[key] || t(`abilities.descriptions.${key}`)}>
                             <div className="stat-block">
@@ -481,7 +442,7 @@ const CharacterSheet = ({
                     <div className="combat-stat"><span>Attack Bonus</span><span>+0</span></div>
                     <div className="combat-stat"><span>Hit Points</span><span>{currentHp}/{maxHp}</span></div>
                     <div className="combat-stat"><span>Armour Class</span><span>{armorClass}</span></div>
-                    <div className="combat-stat"><span>Bewegungsgeschw.</span><span>{character.race.speed}m</span></div>
+                    <div className="combat-stat"><span>Bewegungsgeschw.</span><span>{displayCharacter.race.speed}m</span></div>
                     <div className="combat-stat"><span>Initiative</span><span>{initiative >= 0 ? `+${initiative}` : initiative}</span></div>
                     <div className="combat-stat"><span>Erfahrung</span><span>{currentExp}{expForNextLevel !== "MAX" ? `/${expForNextLevel}` : " (MAX)"}</span></div>
                   </div>
@@ -499,7 +460,7 @@ const CharacterSheet = ({
                           {t(`abilities.${attrKey}`)} ({modifier >= 0 ? "+" : ""}{modifier})
                         </div>
                         {skills.map((skillKey) => {
-                          const bonus = calculateSkillBonus(character, skillKey);
+                          const bonus = calculateSkillBonus(displayCharacter, skillKey);
                           const name = t(`skills.${skillKey}`, skillKey);
                           const description = SKILL_DESCRIPTIONS_DE[skillKey] || "Keine Beschreibung verfügbar.";
                           return (
@@ -523,9 +484,6 @@ const CharacterSheet = ({
           </aside>
         )}
         
-        {activeTab === "spellbook" && (
-          <SpellbookTab character={character} />
-        )}
       </main>
     </div>
   );

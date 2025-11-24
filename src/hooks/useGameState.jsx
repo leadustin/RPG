@@ -12,7 +12,10 @@ import {
   calculateAC,
   grantXpToCharacter,
   applyLevelUp,
+  performShortRest,
+  performLongRest
 } from "../engine/characterEngine";
+import spellsData from "../data/spells.json";
 import allRaceData from "../data/races.json";
 import locationsData from "../data/locations.json";
 import { rollDiceFormula } from "../utils/helpers";
@@ -40,7 +43,6 @@ const allItems = [
   ...headsData,
 ];
 
-// --- HELPER-FUNKTION FÜR LOG-EINTRÄGE ---
 const createLogEntry = (message, type = "general") => ({
   id: Date.now() + Math.random(),
   timestamp: new Date(),
@@ -55,7 +57,6 @@ export const useGameState = () => {
     logEntries: [], 
   });
 
-  // Autosave
   useEffect(() => {
     if (gameState.screen === "game" && gameState.character) {
       saveAutoSave(gameState); 
@@ -156,7 +157,6 @@ export const useGameState = () => {
       }
     });
 
-    // Inventar hydrieren
     const rawInventory = finalizedCharacter.inventory || [];
     const characterInventory = rawInventory.map(rawItem => {
         const itemDef = allItems.find(i => i.id === rawItem.itemId);
@@ -277,26 +277,54 @@ export const useGameState = () => {
     });
   }, []);
 
+  // --- HIER WURDE GEÄNDERT ---
   const handleEnterLocation = useCallback((locationId, currentPosition) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
-      const character = { ...prevState.character };
+      let character = { ...prevState.character };
+      let logEntries = [...prevState.logEntries];
+
+      // 1. Position aktualisieren
       character.worldMapPosition = currentPosition;
       character.currentLocation = locationId;
 
       const locationData = locationsData.find((loc) => loc.id === locationId);
-      const newLogEntry = createLogEntry(
+      
+      // 2. PRÜFEN: Ist der Ort schon entdeckt? Wenn nein -> XP geben
+      const isDiscovered = character.discoveredLocations && character.discoveredLocations.includes(locationId);
+      
+      if (!isDiscovered && locationData) {
+          // Ort zur Liste hinzufügen
+          const newDiscovered = [...(character.discoveredLocations || []), locationId];
+          character.discoveredLocations = newDiscovered;
+
+          logEntries.push(createLogEntry(`Neuer Ort entdeckt: ${locationData.name}`, "general"));
+
+          // XP vergeben
+          if (locationData.xp > 0) {
+              character = grantXpToCharacter(character, locationData.xp);
+              logEntries.push(createLogEntry(`Du erhältst ${locationData.xp} EP für das Entdecken von ${locationData.name}.`, "xp"));
+              
+              if (character.pendingLevelUp && !prevState.character.pendingLevelUp) {
+                  logEntries.push(createLogEntry(`${character.name} ist bereit für ein Level Up!`, "level"));
+              }
+          }
+      }
+
+      // 3. Log für das Betreten
+      logEntries.push(createLogEntry(
         `Betritt ${locationData?.name || "einen Ort"}.`,
         "general"
-      );
+      ));
 
       return {
         ...prevState,
         character,
-        logEntries: [...prevState.logEntries, newLogEntry],
+        logEntries,
       };
     });
   }, []);
+  // ---------------------------
 
   const handleLeaveLocation = useCallback(() => {
     setGameState((prevState) => {
@@ -337,7 +365,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  // +++ GEÄNDERT: UNEQUIP ZUERST DEFINIEREN +++
   const handleUnequipItem = useCallback((item, sourceSlot) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -366,7 +393,6 @@ export const useGameState = () => {
       };
     });
   }, []);
-  // +++ ENDE +++
 
   const handleEquipItem = useCallback((item, targetSlot) => {
     setGameState((prevState) => {
@@ -399,7 +425,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  // +++ KÖCHER LOGIK (Hinzugefügt) +++
   const handleFillQuiver = useCallback((ammoItem) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -471,6 +496,7 @@ export const useGameState = () => {
 
       const inventory = [...character.inventory];
       const ammoToReturn = quiver.content;
+      
       const existingStackIndex = inventory.findIndex(i => i.itemId === ammoToReturn.itemId);
 
       if (existingStackIndex > -1) {
@@ -501,9 +527,7 @@ export const useGameState = () => {
       };
     });
   }, []);
-  // +++ ENDE KÖCHER +++
 
-  // +++ FIXED: Toggle 2H mit korrekter Mutation +++
   const handleToggleTwoHanded = useCallback((slotId) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -514,7 +538,6 @@ export const useGameState = () => {
       const originalWeapon = equipment[slotId];
       if (!originalWeapon) return prevState;
 
-      // Kopie erstellen!
       const weapon = { ...originalWeapon }; 
       
       let logEntries = [...prevState.logEntries];
@@ -539,7 +562,6 @@ export const useGameState = () => {
           logEntries.push(createLogEntry(`${weapon.name} wird jetzt einhändig geführt.`, "item"));
         }
 
-        // Zurückschreiben
         equipment[slotId] = weapon;
         character.equipment = equipment;
 
@@ -552,7 +574,6 @@ export const useGameState = () => {
       return prevState;
     });
   }, []);
-  // +++ ENDE FIX +++
 
   const handleUpdatePosition = useCallback((newPosition) => {
     setGameState((prevState) => {
@@ -592,6 +613,107 @@ export const useGameState = () => {
     });
   }, []);
 
+  const handleShortRest = useCallback((diceToSpend) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const result = performShortRest(prevState.character, diceToSpend);
+      
+      if (!result.success) return prevState;
+
+      return {
+          ...prevState,
+          character: result.character,
+          logEntries: [...prevState.logEntries, createLogEntry(result.message, "general")]
+      };
+    });
+  }, []);
+
+  const handleLongRest = useCallback((diceToSpend) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const result = performLongRest(prevState.character);
+      
+      return {
+          ...prevState,
+          character: result.character,
+          logEntries: [...prevState.logEntries, createLogEntry(result.message, "general")]
+      };
+    });
+  }, []);
+
+  const handleCastSpell = useCallback((spellKey, castLevel) => {
+    setGameState((prevState) => {
+      const char = { ...prevState.character };
+      const spell = spellsData.find(s => s.key === spellKey);
+      
+      if (!spell) return prevState;
+      let logMsg = "";
+
+      // 1. CANTRIP (Level 0) - Kostet nichts
+      if (spell.level === 0) {
+           logMsg = `${char.name} wirkt den Zaubertrick ${spell.name}.`;
+      } 
+      // 2. LEVEL SPELL - Kostet Slot
+      else {
+          // Initialisiere Slots falls nicht vorhanden (volle Slots)
+          const maxSlots = calculateMaxSpellSlots(char);
+          const currentSlots = char.currentSpellSlots ? { ...char.currentSpellSlots } : { ...maxSlots };
+          
+          // Warlock Sonderfall (Pact Magic): Slots haben immer denselben (höchsten) Level
+          // Vereinfachung: Wir schauen auf den angeforderten Slot.
+          
+          if (!currentSlots[castLevel] || currentSlots[castLevel] <= 0) {
+              // Darf eigentlich nicht passieren, wenn UI Buttons deaktiviert
+              return {
+                  ...prevState,
+                  logEntries: [...prevState.logEntries, createLogEntry(`Fehler: Kein Zauberplatz von Grad ${castLevel} verfügbar!`, "error")]
+              };
+          }
+
+          // Slot abziehen
+          currentSlots[castLevel] -= 1;
+          char.currentSpellSlots = currentSlots;
+
+          // Info für Log
+          const isUpcast = castLevel > spell.level;
+          logMsg = `${char.name} wirkt ${spell.name} auf Grad ${castLevel}. ${isUpcast ? '(Verstärkt!)' : ''}`;
+      }
+      
+      // Hier könnte man spellsEngine.executeSpell() aufrufen, wenn man ein Zielsystem hätte.
+      // Vorerst loggen wir nur den Verbrauch.
+
+      return {
+          ...prevState,
+          character: char,
+          logEntries: [...prevState.logEntries, createLogEntry(logMsg, "magic")]
+      };
+    });
+  }, []);
+
+  // +++ NEU: Shop Handler +++
+  const handleShopTransaction = useCallback((newCharacter, logMessage) => {
+    setGameState((prevState) => {
+      const newLogEntry = createLogEntry(logMessage, "item");
+      return {
+        ...prevState,
+        character: newCharacter,
+        logEntries: [...prevState.logEntries, newLogEntry],
+      };
+    });
+  }, []);
+
+  // +++ NEU: Generisches Update für den Charakter (z.B. für Zauberbuch) +++
+  const handleUpdateCharacter = useCallback((updatedCharacter) => {
+    setGameState((prevState) => {
+      // Sicherheitshalber prüfen, ob IDs übereinstimmen, falls wir in einer Party sind
+      // (Aktuell ist character eh der Main Char, aber für die Zukunft)
+      return {
+        ...prevState,
+        character: updatedCharacter
+      };
+    });
+  }, []);
+
   return {
     gameState,
     setGameState, 
@@ -604,13 +726,18 @@ export const useGameState = () => {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
-    handleFillQuiver, // <-- Jetzt da
-    handleUnloadQuiver, // <-- Jetzt da
+    handleFillQuiver, 
+    handleUnloadQuiver, 
     handleEnterLocation,
     handleLeaveLocation,
     handleUpdatePosition,
     handleDiscoverLocation,
     handleConfirmLevelUp,
+    handleShortRest,
+    handleLongRest,
+    handleShopTransaction,
+    handleUpdateCharacter,
+    handleCastSpell,
     rollDiceFormula,
   };
 };

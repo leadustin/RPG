@@ -8,10 +8,10 @@ import { CharacterCreationScreen } from "./components/character_creation/Charact
 import GameView from "./components/game_view/GameView";
 import { LevelUpScreen } from "./components/level_up/LevelUpScreen";
 import CharacterSheet from "./components/character_sheet/CharacterSheet";
-import { TileMap } from "./components/maps/TileMap";
+// TileMap Import hier nicht mehr nötig, da GameView das macht, aber schadet nicht
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
 import { loadAutoSave, getSaveSlots } from "./utils/persistence";
-import locationsData from "./data/locations.json";
+// locationsData Import hier nicht mehr nötig für die Logik
 import { EventLog } from "./components/event_log/EventLog";
 import "./App.css";
 
@@ -27,15 +27,18 @@ function App() {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
-    // +++ NEU: Köcher-Handler importieren +++
     handleFillQuiver,
     handleUnloadQuiver,
-    // +++ ENDE NEU +++
     handleEnterLocation,
     handleLeaveLocation,
     handleUpdatePosition,
     handleDiscoverLocation,
-    handleConfirmLevelUp
+    handleConfirmLevelUp,
+    handleShortRest,
+    handleLongRest,
+    handleShopTransaction,
+    handleUpdateCharacter,
+    handleCastSpell
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -49,32 +52,14 @@ function App() {
   const manualSaveExists = getSaveSlots().some((slot) => slot !== null);
   const saveFileExists = autoSaveExists || manualSaveExists;
 
+    // +++ NEU: Erstelle die Party für die Props +++
+    // Falls du in Zukunft echte Party-Mitglieder in gameState.party hast, nutze das.
+    // Aktuell wrappen wir nur den einzelnen Charakter in ein Array.
+  const party = gameState.character ? [gameState.character] : [];
+
   const renderScreen = () => {
-    const currentLocationId = gameState.character?.currentLocation;
-    if (currentLocationId && currentLocationId !== "worldmap") {
-      const location = locationsData.find(
-        (loc) => loc.id === currentLocationId
-      );
-
-      if (location && location.mapFile) {
-        return (
-          <TileMap
-            mapFile={location.mapFile}
-            character={gameState.character}
-            onLeaveLocation={handleLeaveLocation}
-            onUpdatePosition={handleUpdatePosition}
-          />
-        );
-      }
-
-      return (
-        <div>
-          <h1>{location?.name || "Unbekannter Ort"}</h1>
-          <p>{location?.description || "Keine Beschreibung verfügbar."}</p>
-          <button onClick={handleLeaveLocation}>Zurück zur Weltkarte</button>
-        </div>
-      );
-    }
+    // +++ KORREKTUR: Der Block, der TileMap direkt gerendert hat, ist weg! +++
+    // Wir verlassen uns jetzt voll auf GameView -> LocationView -> TileMap
 
     switch (gameState.screen) {
       case "start":
@@ -107,6 +92,9 @@ function App() {
             onUpdatePosition={handleUpdatePosition}
             onDiscoverLocation={handleDiscoverLocation}
             saveFileExists={saveFileExists}
+            onShortRest={handleShortRest}
+            onLongRest={handleLongRest}
+            onShopTransaction={handleShopTransaction}
           />
         );
       default:
@@ -130,26 +118,28 @@ function App() {
       <div className="App">
         <div className="game-container">
           {renderScreen()}
+          
           {showCharacterSheet && (
             <CharacterSheet
               character={gameState.character}
+              party={party}
               onClose={toggleCharacterSheet}
+              onUpdateCharacter={handleUpdateCharacter}
+              onCastSpell={handleCastSpell}
               handleEquipItem={handleEquipItem}
               handleUnequipItem={handleUnequipItem}
               handleToggleTwoHanded={handleToggleTwoHanded}
-              // +++ NEU: Handler an CharacterSheet übergeben +++
               handleFillQuiver={handleFillQuiver}
               handleUnloadQuiver={handleUnloadQuiver}
-              // +++ ENDE NEU +++
             />
           )}
 
           {gameState.character && gameState.character.pendingLevelUp && (
-          <LevelUpScreen
-            character={gameState.character}
-            onConfirm={handleConfirmLevelUp}
-          />
-        )}
+            <LevelUpScreen
+              character={gameState.character}
+              onConfirm={handleConfirmLevelUp}
+            />
+          )}
 
           {saveManagerMode && (
             <SaveSlotManager
@@ -168,11 +158,9 @@ function App() {
           )}
         </div>
 
-        {/* --- LOG-SYSTEM --- */}
         {gameState.screen === "game" && (
           <EventLog entries={gameState.logEntries} />
         )}
-        
       </div>
     </DndProvider>
   );

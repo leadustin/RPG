@@ -1,9 +1,11 @@
-// src/components/game_view/GameView.js
-
-import React, { useState, useEffect } from "react"; 
+// src/components/game_view/GameView.jsx
+import React, { useState, useEffect } from "react";
 import { PartyPortraits } from "./PartyPortraits";
 import ActionBar from "./ActionBar";
 import { WorldMap } from "../worldmap/WorldMap";
+import RestMenu from "./RestMenu";
+import LocationView from "../location_view/LocationView";
+import locationsData from "../../data/locations.json";
 import "./GameView.css";
 
 function GameView({
@@ -15,69 +17,82 @@ function GameView({
   onUpdatePosition,
   onDiscoverLocation,
   saveFileExists,
+  onShortRest,
+  onLongRest,
+  // +++ NEU: Prop empfangen +++
+  onShopTransaction
 }) {
 
-  // --- KORREKTUR: Hooks an den Anfang verschoben ---
-  // Initialisiere den State mit der ID des Charakters (falls vorhanden) oder einem Fallback.
   const [activeCharacterId, setActiveCharacterId] = useState(character?.id || 'player');
+  const [showRestMenu, setShowRestMenu] = useState(false);
 
-  // Effekt, um die aktive ID zu aktualisieren, wenn der Hauptcharakter wechselt
-  // (z.B. beim Laden eines neuen Spiels).
   useEffect(() => {
-    // Synchronisiere die activeCharacterId mit der ID des Hauptcharakters.
     const mainCharacterId = character?.id || 'player';
     setActiveCharacterId(mainCharacterId);
-  }, [character?.id]); // Abhängig nur von der ID des Hauptcharakters
+  }, [character?.id]);
 
-  // --- FRÜHERER RETURN (BLEIBT GLEICH) ---
-  // Diese Prüfung ist jetzt sicher, da die Hooks davor aufgerufen wurden.
-  if (!character || !character.stats) {
-    return <div>Lade Charakterdaten...</div>;
-  }
+  const isAtLocation = character?.currentLocation && character.currentLocation !== "worldmap";
 
-  // --- Party-Erstellung (Bleibt gleich) ---
-  const playerCharacter = { ...character, id: character.id || 'player' };
-  const party = [
-    playerCharacter,
-    // Zukünftige Partymitglieder kommen hierhin
-  ];
-  
-  // --- Aktiven Charakter finden (Bleibt gleich) ---
-  // Wir können activeCharacterId sicher verwenden, da es durch useState/useEffect verwaltet wird.
-  const activeCharacter = party.find(m => m.id === activeCharacterId) || playerCharacter;
-
+  const party = character ? [character] : [];
+  const activeCharacter = party.find(c => (c.id || 'player') === activeCharacterId) || character;
 
   return (
     <div className="game-view-container">
       <div className="top-section">
         <div className="party-portraits-area">
-          <PartyPortraits 
-            party={party} 
-            activeCharacterId={activeCharacterId} // Benutze die State-ID
-            onSelectCharacter={setActiveCharacterId} // Erlaube Klicks, dies zu ändern
+          <PartyPortraits
+            party={party}
+            activeCharacterId={activeCharacterId}
+            onSelectCharacter={setActiveCharacterId}
           />
         </div>
+        
         <div className="world-map-area">
-          <WorldMap
-            character={character} 
-            onEnterLocation={onEnterLocation}
-            onUpdatePosition={onUpdatePosition}
-            onDiscoverLocation={onDiscoverLocation}
-          />
+           {isAtLocation ? (
+              <LocationView 
+                  locationId={character.currentLocation}
+                  character={character}
+                  onLeaveLocation={() => onEnterLocation("worldmap", character.worldMapPosition)}
+                  // +++ NEU: Weitergabe an LocationView +++
+                  onShopTransaction={onShopTransaction}
+              />
+           ) : (
+              <WorldMap
+                character={character}
+                onEnterLocation={onEnterLocation}
+                onUpdatePosition={onUpdatePosition}
+                onDiscoverLocation={onDiscoverLocation}
+              />
+           )}
         </div>
       </div>
 
       <div className="bottom-section">
         <div className="action-bar-area">
           <ActionBar
-            character={activeCharacter} 
+            character={activeCharacter}
             onToggleCharacterSheet={onToggleCharacterSheet}
             onSaveGame={onSaveGame}
             onLoadGame={onLoadGame}
             saveFileExists={saveFileExists}
+            onRestClick={() => setShowRestMenu(true)} 
           />
         </div>
       </div>
+
+      {showRestMenu && (
+        <RestMenu
+          character={activeCharacter}
+          onShortRest={(dice) => {
+            onShortRest(dice);
+          }}
+          onLongRest={() => {
+            onLongRest();
+            setShowRestMenu(false);
+          }}
+          onClose={() => setShowRestMenu(false)}
+        />
+      )}
     </div>
   );
 }

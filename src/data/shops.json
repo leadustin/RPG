@@ -1,0 +1,29 @@
+[
+  {
+    "id": "general_store_elfenwacht",
+    "name": "Elfenwacht Gemischtwaren",
+    "type": "general",
+    "description": "Ein gut sortierter Laden für Abenteurer.",
+    "inventory": [
+      { "itemId": "potion-of-healing", "quantity": 10 },
+      { "itemId": "arrows", "quantity": 100 },
+      { "itemId": "bolts", "quantity": 100 },
+      { "itemId": "rope_silk", "quantity": 5 },
+      { "itemId": "torch", "quantity": 20 },
+      { "itemId": "bedroll", "quantity": 2 }
+    ]
+  },
+  {
+    "id": "blacksmith_elfenwacht",
+    "name": "Schmiede 'Eiserne Flamme'",
+    "type": "blacksmith",
+    "description": "Waffen und Rüstungen von solider Qualität.",
+    "inventory": [
+      { "itemId": "longsword", "quantity": 2 },
+      { "itemId": "dagger", "quantity": 5 },
+      { "itemId": "shortsword", "quantity": 2 },
+      { "itemId": "shield", "quantity": 3 },
+      { "itemId": "chain-mail", "quantity": 1 }
+    ]
+  }
+]

@@ -1,0 +1,103 @@
+// src/engine/shopEngine.js
+import { calculateItemPriceForCharacter } from './characterEngine';
+import allItems from '../data/items/items.json'; // Und andere Item-Dateien, besser wäre eine zentrale 'itemLoader' utility
+import weapons from '../data/items/weapons.json';
+import armor from '../data/items/armor.json';
+import clothes from '../data/items/clothes.json';
+
+// Helper: Alle Items in einer Map oder Liste für schnellen Zugriff
+const globalItemDatabase = [...allItems, ...weapons, ...armor, ...clothes];
+
+const getItemDef = (itemId) => globalItemDatabase.find(i => i.id === itemId);
+
+/**
+ * Berechnet den Verkaufspreis (Spieler an Händler).
+ * Regel: Spieler erhalten meist 50% des Wertes.
+ */
+export const getSellPrice = (item, character) => {
+    const baseValue = item.value || 0;
+    return Math.floor(baseValue / 2);
+};
+
+/**
+ * Berechnet den Kaufpreis (Händler an Spieler).
+ * Berücksichtigt 'Crafter'-Rabatt aus characterEngine.
+ */
+export const getBuyPrice = (item, character) => {
+    const baseValue = item.value || 0;
+    return calculateItemPriceForCharacter(character, baseValue);
+};
+
+/**
+ * Führt einen Kauf aus.
+ */
+export const buyItem = (character, itemDef, quantity = 1) => {
+    const pricePerUnit = getBuyPrice(itemDef, character);
+    const totalPrice = pricePerUnit * quantity;
+    const currentGold = character.wallet?.gold || 0;
+
+    if (currentGold < totalPrice) {
+        return { success: false, message: "Nicht genügend Gold." };
+    }
+
+    // Gold abziehen
+    const newWallet = { ...character.wallet, gold: currentGold - totalPrice };
+
+    // Item zum Inventar hinzufügen
+    const inventory = [...character.inventory];
+    // Prüfen auf Stacking (nur bei Munition, Potions, Loot)
+    const stackableTypes = ['ammo', 'potion', 'scroll', 'loot', 'food', 'resource'];
+    const existingItemIndex = inventory.findIndex(i => i.itemId === itemDef.id && stackableTypes.includes(itemDef.type));
+
+    if (existingItemIndex >= 0) {
+        const existingItem = { ...inventory[existingItemIndex] };
+        existingItem.quantity = (existingItem.quantity || 1) + quantity;
+        inventory[existingItemIndex] = existingItem;
+    } else {
+        inventory.push({
+            ...itemDef,
+            itemId: itemDef.id,
+            instanceId: Date.now() + Math.random(), // Unique ID
+            quantity: quantity
+        });
+    }
+
+    return {
+        success: true,
+        newCharacter: { ...character, wallet: newWallet, inventory },
+        message: `${quantity}x ${itemDef.name} für ${totalPrice} GM gekauft.`
+    };
+};
+
+/**
+ * Führt einen Verkauf aus.
+ */
+export const sellItem = (character, itemInstance, quantity = 1) => {
+    const sellPrice = getSellPrice(itemInstance, character);
+    const totalGain = sellPrice * quantity;
+
+    // Item aus Inventar entfernen/reduzieren
+    const inventory = [...character.inventory];
+    const itemIndex = inventory.findIndex(i => i.id === itemInstance.id || (i.itemId === itemInstance.itemId && i.instanceId === itemInstance.instanceId));
+
+    if (itemIndex === -1) return { success: false, message: "Item nicht gefunden." };
+
+    const currentItem = inventory[itemIndex];
+    
+    if (currentItem.quantity > quantity) {
+        // Reduzieren
+        inventory[itemIndex] = { ...currentItem, quantity: currentItem.quantity - quantity };
+    } else {
+        // Entfernen
+        inventory.splice(itemIndex, 1);
+    }
+
+    // Gold hinzufügen
+    const newWallet = { ...character.wallet, gold: (character.wallet?.gold || 0) + totalGain };
+
+    return {
+        success: true,
+        newCharacter: { ...character, wallet: newWallet, inventory },
+        message: `${quantity}x ${currentItem.name} für ${totalGain} GM verkauft.`
+    };
+};

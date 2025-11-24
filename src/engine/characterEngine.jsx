@@ -2,18 +2,26 @@
 import allClassData from "../data/classes.json";
 import { LEVEL_XP_TABLE, rollDiceFormula } from "../utils/helpers";
 
-// Import der RulesEngine für ausgelagerte Mechaniken
+// +++ NEU: Import aus der neuen featsEngine +++
 import { 
-  getFeatHpBonus, 
-  checkFeatProficiency, 
+  calculateFeatHpBonus, 
+  calculateFeatInitiativeBonus, 
+  calculateFeatSpeedBonus, 
+  calculateFeatPassiveBonus 
+} from "./featsEngine";
+
+// Import der RulesEngine für ausgelagerte Mechaniken
+// 'getFeatHpBonus' wurde hier ENTFERNT, da es nun in featsEngine liegt
+import {
+  checkFeatProficiency,
   getInitiativeBonusFromFeats,
   getUnarmedDamageDie,
   hasSavageAttacker,
   hasHealerStabilizeBonus,
   getHealerFeatHealingFormula,
   hasLuckyFeat,
-  getCrafterDiscount
-} from "./rulesEngine"; 
+  getCrafterDiscount,
+} from "./rulesEngine";
 
 /**
  * Berechnet den Modifikator für einen Attributswert.
@@ -40,7 +48,7 @@ export const getRacialAbilityBonus = (character, abilityKey) => {
   if (!character) return 0;
 
   if (character.background_options?.bonuses) {
-     return character.background_options.bonuses[abilityKey] || 0;
+    return character.background_options.bonuses[abilityKey] || 0;
   }
 
   if (
@@ -53,23 +61,25 @@ export const getRacialAbilityBonus = (character, abilityKey) => {
   return 0;
 };
 
+
 /**
  * Berechnet die maximalen Lebenspunkte auf Stufe 1 (oder Basis).
  */
 export const calculateInitialHP = (character) => {
-  if (!character.class) return 0; 
+  if (!character.class) return 0;
 
   const finalCon =
     character.abilities.con + getRacialAbilityBonus(character, "con");
   const conModifier = getAbilityModifier(finalCon);
-  
+
   let hp = character.class.hit_die + conModifier;
 
   if (character.race?.key === "dwarf") {
     hp += 1;
   }
 
-  hp += getFeatHpBonus(character);
+  // +++ UPDATE: Nutzung der neuen featsEngine Funktion +++
+  hp += calculateFeatHpBonus(character);
 
   return hp;
 };
@@ -79,7 +89,7 @@ export const calculateInitialHP = (character) => {
  */
 export const calculateAC = (character) => {
   if (!character || !character.abilities || !character.class) {
-    return 10; 
+    return 10;
   }
 
   const finalDex =
@@ -89,10 +99,14 @@ export const calculateAC = (character) => {
   const equippedArmorData = character.equipment?.armor;
 
   let shieldBonus = 0;
-  const offHand = character.equipment?.["off-hand"] || character.equipment?.shield;
-  
-  if (offHand && (offHand.type === "shield" || (offHand.ac && offHand.ac > 0))) {
-      shieldBonus = offHand.ac || 2;
+  const offHand =
+    character.equipment?.["off-hand"] || character.equipment?.shield;
+
+  if (
+    offHand &&
+    (offHand.type === "shield" || (offHand.ac && offHand.ac > 0))
+  ) {
+    shieldBonus = offHand.ac || 2;
   }
 
   if (equippedArmorData) {
@@ -133,7 +147,7 @@ export const calculateAC = (character) => {
       const wisModifier = getAbilityModifier(finalWis);
       unarmoredAC = Math.max(unarmoredAC, 10 + dexModifier + wisModifier);
     }
-    
+
     return unarmoredAC + shieldBonus;
   }
 };
@@ -163,18 +177,15 @@ export const SKILL_MAP = {
  * Prüft, ob ein Charakter in einer Fertigkeit geübt ist.
  */
 export const isProficientInSkill = (character, skillKey) => {
-  const {
-    race,
-    background,
-    skill_proficiencies_choice,
-  } = character;
+  const { race, background, skill_proficiencies_choice } = character;
 
   if (background?.skills && background.skills.includes(skillKey)) {
     return true;
   }
 
   if (
-    race && race.traits &&
+    race &&
+    race.traits &&
     race.traits.some(
       (trait) => trait.name === "Geschärfte Sinne" && skillKey === "perception"
     )
@@ -188,9 +199,9 @@ export const isProficientInSkill = (character, skillKey) => {
   ) {
     return true;
   }
-  
+
   if (checkFeatProficiency(character, skillKey)) {
-      return true;
+    return true;
   }
 
   return false;
@@ -219,13 +230,14 @@ export const calculateSkillBonus = (character, skillKey) => {
  * Berechnet die Initiative.
  */
 export const calculateInitiative = (character) => {
-    const finalDex = character.abilities.dex + getRacialAbilityBonus(character, "dex");
-    let initBonus = getAbilityModifier(finalDex);
-    
-    const pb = getProficiencyBonus(character.level || 1);
-    initBonus += getInitiativeBonusFromFeats(character, pb);
-    
-    return initBonus;
+  const finalDex =
+    character.abilities.dex + getRacialAbilityBonus(character, "dex");
+  let initBonus = getAbilityModifier(finalDex);
+
+  const pb = getProficiencyBonus(character.level || 1);
+  initBonus += getInitiativeBonusFromFeats(character, pb);
+
+  return initBonus;
 };
 
 /**
@@ -237,7 +249,7 @@ export const calculateMeleeDamage = (character) => {
   const strModifier = getAbilityModifier(strScore);
 
   const modifierString =
-      strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
+    strModifier >= 0 ? `+${strModifier}` : strModifier.toString();
 
   const mainHandWeapon = character.equipment?.["main-hand"];
 
@@ -257,10 +269,10 @@ export const calculateMeleeDamage = (character) => {
     return `${damage} ${modifierString}`;
   } else {
     // Prüfe auf Tavern Brawler
-    const upgradedDie = getUnarmedDamageDie(character); 
+    const upgradedDie = getUnarmedDamageDie(character);
 
     if (upgradedDie) {
-        return `${upgradedDie} ${modifierString}`;
+      return `${upgradedDie} ${modifierString}`;
     }
 
     const unarmedDamage = 1 + strModifier;
@@ -273,30 +285,30 @@ export const calculateMeleeDamage = (character) => {
  */
 export const performMeleeDamageRoll = (character, isCritical = false) => {
   const damageString = calculateMeleeDamage(character);
-  
-  if (!damageString.includes('d')) {
-      const staticDmg = parseInt(damageString);
-      return {
-          total: staticDmg,
-          rolls: [],
-          formula: damageString,
-          isSavageAttacker: false,
-          logMessage: `Schaden: ${staticDmg} (Fest)`
-      };
+
+  if (!damageString.includes("d")) {
+    const staticDmg = parseInt(damageString);
+    return {
+      total: staticDmg,
+      rolls: [],
+      formula: damageString,
+      isSavageAttacker: false,
+      logMessage: `Schaden: ${staticDmg} (Fest)`,
+    };
   }
 
-  const parts = damageString.split(' ');
-  const dicePart = parts[0]; 
-  const modPart = parts.length > 1 ? parts[1] : "+0"; 
+  const parts = damageString.split(" ");
+  const dicePart = parts[0];
+  const modPart = parts.length > 1 ? parts[1] : "+0";
 
   let rollDice = dicePart;
   if (isCritical) {
-    const [count, type] = dicePart.split('d');
+    const [count, type] = dicePart.split("d");
     rollDice = `${parseInt(count) * 2}d${type}`;
   }
 
   const hasSavage = hasSavageAttacker(character);
-  
+
   let result1 = rollDiceFormula(rollDice);
   let finalDiceTotal = result1;
   let msg = `Würfelt ${rollDice}: [${result1}]`;
@@ -307,7 +319,7 @@ export const performMeleeDamageRoll = (character, isCritical = false) => {
     msg = `Wilder Angreifer (${rollDice}): Würfelt [${result1}] und [${result2}]. Nutze [${finalDiceTotal}].`;
   }
 
-  const modifier = parseInt(modPart.replace('+', '')); 
+  const modifier = parseInt(modPart.replace("+", ""));
   const totalDamage = finalDiceTotal + modifier;
 
   if (modifier !== 0) {
@@ -321,7 +333,7 @@ export const performMeleeDamageRoll = (character, isCritical = false) => {
     rolls: hasSavage ? [result1, finalDiceTotal] : [result1],
     formula: damageString,
     isSavageAttacker: hasSavage,
-    logMessage: msg
+    logMessage: msg,
   };
 };
 
@@ -333,7 +345,8 @@ export const performHealerKitHealingRoll = (character) => {
 
   const diceResult = rollDiceFormula("1d6");
   const pb = getProficiencyBonus(character.level || 1);
-  const wisScore = character.abilities.wis + getRacialAbilityBonus(character, "wis");
+  const wisScore =
+    character.abilities.wis + getRacialAbilityBonus(character, "wis");
   const wisMod = getAbilityModifier(wisScore);
 
   const totalHeal = diceResult + pb + wisMod;
@@ -341,7 +354,7 @@ export const performHealerKitHealingRoll = (character) => {
   return {
     total: totalHeal,
     breakdown: `1d6 (${diceResult}) + PB (${pb}) + WIS (${wisMod})`,
-    isStabilizeBonus: hasHealerStabilizeBonus(character) 
+    isStabilizeBonus: hasHealerStabilizeBonus(character),
   };
 };
 
@@ -351,7 +364,7 @@ export const calculateMaxLuckyPoints = (character) => {
 };
 
 export const calculateItemPriceForCharacter = (character, basePrice) => {
-  const discountPercent = getCrafterDiscount(character); 
+  const discountPercent = getCrafterDiscount(character);
   if (discountPercent > 0) {
     const discount = Math.floor(basePrice * discountPercent);
     return Math.max(0, basePrice - discount);
@@ -362,7 +375,7 @@ export const calculateItemPriceForCharacter = (character, basePrice) => {
 // --- LEVEL UP LOGIK ---
 
 const getHpRollFormula = (character) => {
-  const hitDie = character.class.hit_die || 8; 
+  const hitDie = character.class.hit_die || 8;
   const conMod = getAbilityModifier(
     character.abilities.con + getRacialAbilityBonus(character, "con")
   );
@@ -379,7 +392,7 @@ const getMasteryCountForLevel = (masteryData, level) => {
 
   for (const key in masteryData) {
     if (key.startsWith("level_") && key.endsWith("_count")) {
-      const levelKey = parseInt(key.split('_')[1]);
+      const levelKey = parseInt(key.split("_")[1]);
       if (level >= levelKey && levelKey > bestLevel) {
         bestLevel = levelKey;
         currentMax = masteryData[key];
@@ -393,12 +406,17 @@ const getMasteryCountForLevel = (masteryData, level) => {
 const getSpellsKnownCount = (classData, level) => {
   // 1. Warlock (Pact Magic)
   if (classData.pact_magic_progression) {
-    const prog = classData.pact_magic_progression.find(p => p.level === level);
+    const prog = classData.pact_magic_progression.find(
+      (p) => p.level === level
+    );
     return prog ? prog.spells_known : 0;
   }
 
   // 2. Standard Spellcasting (Bard, Ranger, Sorcerer)
-  if (classData.spellcasting && classData.spellcasting.spells_known_progression) {
+  if (
+    classData.spellcasting &&
+    classData.spellcasting.spells_known_progression
+  ) {
     return classData.spellcasting.spells_known_progression[level - 1] || 0;
   }
 
@@ -409,7 +427,6 @@ const getCantripsKnownCount = (classData, level) => {
   if (!classData?.spellcasting?.cantrip_progression) return 0;
   return classData.spellcasting.cantrip_progression[level - 1] || 0;
 };
-
 
 export const checkForLevelUp = (character) => {
   const level = character.level || 1;
@@ -423,42 +440,78 @@ export const checkForLevelUp = (character) => {
   const xpForNextLevel = LEVEL_XP_TABLE[nextLevel];
 
   if (experience >= xpForNextLevel) {
-    console.log(`STUFENAUFSTIEG ANSTEHEND: ${character.name} -> Stufe ${nextLevel}`);
-
-    const classData = allClassData.find(c => c.key === character.class.key);
-    
-    const isAbilityIncrease = classData?.features.some(f =>
-      f.level === nextLevel && f.name.toLowerCase().includes("fähigkeitspunkte")
-    );
-    
-    const isSubclassChoice = classData?.features.some(f => 
-      f.level === nextLevel && (f.name.includes("Archetyp") || f.name.includes("Tradition") || f.name.includes("Zirkel") || f.name.includes("Pfad") || f.name.includes("Eid") || f.name.includes("Ursprung") || f.name.includes("Schutzpatron"))
+    console.log(
+      `STUFENAUFSTIEG ANSTEHEND: ${character.name} -> Stufe ${nextLevel}`
     );
 
-    const currentMastery = getMasteryCountForLevel(classData?.weapon_mastery, level);
-    const newMastery = getMasteryCountForLevel(classData?.weapon_mastery, nextLevel);
+    const classData = allClassData.find((c) => c.key === character.class.key);
+
+    // 1. PRÜFUNG: Steht es in der JSON? (Legacy Support)
+    let isAbilityIncrease = classData?.features.some(
+      (f) =>
+        f.level === nextLevel &&
+        (f.name.toLowerCase().includes("higkeitspunkte") ||
+          f.name.toLowerCase().includes("ability score") ||
+          f.name.toLowerCase().includes("attribut"))
+    );
+
+    // 2. PRÜFUNG: Automatische Regel (Falls nicht in JSON)
+    // D&D 5e Standard: 4, 8, 12, 16, 19
+    // Kämpfer: + 6, 14
+    // Schurke: + 10
+    if (!isAbilityIncrease) {
+      const asiLevels = [4, 8, 12, 16, 19];
+      if (character.class.key === "fighter") asiLevels.push(6, 14);
+      if (character.class.key === "rogue") asiLevels.push(10);
+
+      if (asiLevels.includes(nextLevel)) {
+        console.log(
+          `> Automatischer ASI-Trigger für Level ${nextLevel} erkannt.`
+        );
+        isAbilityIncrease = true;
+      }
+    }
+
+    // Subklassen Check
+    const isSubclassChoice = classData?.features.some(
+      (f) =>
+        f.level === nextLevel &&
+        (f.name.includes("Archetyp") ||
+          f.name.includes("Tradition") ||
+          f.name.includes("Zirkel") ||
+          f.name.includes("Pfad") ||
+          f.name.includes("Eid") ||
+          f.name.includes("Ursprung") ||
+          f.name.includes("Schutzpatron") ||
+          f.name.includes("Domäne") ||
+          f.name.includes("Kolleg"))
+    );
+
+    const currentMastery = getMasteryCountForLevel(
+      classData?.weapon_mastery,
+      level
+    );
+    const newMastery = getMasteryCountForLevel(
+      classData?.weapon_mastery,
+      nextLevel
+    );
     const isMasteryIncrease = newMastery > currentMastery;
 
-    // +++ NEU: Datengetriebene Zauber-Berechnung +++
+    // Zauber Logik
     let newCantripsToLearn = 0;
     let newSpellsToLearn = 0;
-    const isWizard = character.class.key === 'wizard';
+    const isWizard = character.class.key === "wizard";
 
-    if (classData) { 
-        // Cantrips
-        const currentCantrips = getCantripsKnownCount(classData, level);
-        const nextCantrips = getCantripsKnownCount(classData, nextLevel);
-        newCantripsToLearn = Math.max(0, nextCantrips - currentCantrips);
+    if (classData) {
+      const currentCantrips = getCantripsKnownCount(classData, level);
+      const nextCantrips = getCantripsKnownCount(classData, nextLevel);
+      newCantripsToLearn = Math.max(0, nextCantrips - currentCantrips);
 
-        // Known Spells (Datengetrieben)
-        const currentKnown = getSpellsKnownCount(classData, level);
-        const nextKnown = getSpellsKnownCount(classData, nextLevel);
-        newSpellsToLearn = Math.max(0, nextKnown - currentKnown);
-        
-        // Magier Sonderregel (immer +2 ins Buch)
-        if (isWizard) {
-            newSpellsToLearn = 2; 
-        }
+      const currentKnown = getSpellsKnownCount(classData, level);
+      const nextKnown = getSpellsKnownCount(classData, nextLevel);
+      newSpellsToLearn = Math.max(0, nextKnown - currentKnown);
+
+      if (isWizard) newSpellsToLearn = 2;
     }
 
     return {
@@ -466,15 +519,13 @@ export const checkForLevelUp = (character) => {
       pendingLevelUp: {
         newLevel: nextLevel,
         hpRollFormula: getHpRollFormula(character),
-        isAbilityIncrease, 
-        isSubclassChoice: isSubclassChoice && !character.subclassKey, 
+        isAbilityIncrease,
+        isSubclassChoice: isSubclassChoice && !character.subclassKey,
         isMasteryIncrease,
         newMasteryCount: newMastery,
-        
-        // Zauber-Infos
         newCantripsToLearn,
         newSpellsToLearn,
-        isWizard
+        isWizard,
       },
     };
   }
@@ -482,8 +533,7 @@ export const checkForLevelUp = (character) => {
   return character;
 };
 
-
-export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
+export const applyLevelUp = (character, totalHpGain, levelUpChoices) => {
   if (!character.pendingLevelUp) return character;
 
   const { newLevel } = character.pendingLevelUp;
@@ -501,87 +551,96 @@ export const applyLevelUp = (character, hpRollResult, levelUpChoices) => {
     }
   }
   if (levelUpChoices?.feat) {
-      newFeats.push(levelUpChoices.feat.key);
-      if (levelUpChoices.feat.selections) {
-          newFeatChoices[levelUpChoices.feat.key] = levelUpChoices.feat.selections;
-      }
+    newFeats.push(levelUpChoices.feat.key);
+    if (levelUpChoices.feat.selections) {
+      newFeatChoices[levelUpChoices.feat.key] = levelUpChoices.feat.selections;
+    }
   }
 
   // --- Subklasse ---
   const newSubclassKey = levelUpChoices?.subclassKey || character.subclassKey;
 
-  // --- NEU: Zauber speichern ---
+  // --- Zauber ---
   let newCantripsKnown = [...(character.cantrips_known || [])];
   let newSpellsKnown = [...(character.spells_known || [])];
   let newSpellbook = [...(character.spellbook || [])];
 
   if (levelUpChoices?.newSpells) {
-      if (levelUpChoices.newSpells.cantrips) {
-          newCantripsKnown = [...newCantripsKnown, ...levelUpChoices.newSpells.cantrips];
+    if (levelUpChoices.newSpells.cantrips) {
+      newCantripsKnown = [...newCantripsKnown, ...levelUpChoices.newSpells.cantrips];
+    }
+    if (levelUpChoices.newSpells.spells) {
+      if (character.class.key === 'wizard') {
+        newSpellbook = [...newSpellbook, ...levelUpChoices.newSpells.spells];
+      } else {
+        newSpellsKnown = [...newSpellsKnown, ...levelUpChoices.newSpells.spells];
       }
-      
-      if (levelUpChoices.newSpells.spells) {
-          if (character.class.key === 'wizard') {
-              // Magier: Ins Zauberbuch
-              newSpellbook = [...newSpellbook, ...levelUpChoices.newSpells.spells];
-          } else {
-              // Andere: Zu bekannten Zaubern
-              newSpellsKnown = [...newSpellsKnown, ...levelUpChoices.newSpells.spells];
-          }
-      }
+    }
   }
 
   // --- Waffenmeisterschaften ---
   let newMasteries = character.weapon_mastery_choices || [];
   if (levelUpChoices?.weapon_mastery_choices) {
-      newMasteries = levelUpChoices.weapon_mastery_choices;
+    newMasteries = levelUpChoices.weapon_mastery_choices;
   }
 
-  // --- Features & HP ---
+  // --- HP: EINFACH DEN BERECHNETEN WERT NUTZEN ---
   const oldMaxHP = character.stats.maxHp;
-  let finalHpGain = hpRollResult;
-  if (character.race.key === "dwarf") {
-    finalHpGain += 1;
-  }
-  const newMaxHP = oldMaxHP + finalHpGain;
+  const newMaxHP = oldMaxHP + totalHpGain;
 
+  // --- Features ---
   const classData = allClassData.find(c => c.key === character.class.key);
-  let allNewFeatures = []; 
+  let allNewFeatures = [];
   if (classData) {
-     allNewFeatures = classData.features.filter(f => f.level === newLevel);
-     if (newSubclassKey && classData.subclasses) {
-        const sc = classData.subclasses.find(s => s.key === newSubclassKey);
-        if (sc) {
-            allNewFeatures = [...allNewFeatures, ...sc.features.filter(f => f.level === newLevel)];
-        }
-     }
+    allNewFeatures = classData.features.filter(f => f.level === newLevel);
+    if (newSubclassKey && classData.subclasses) {
+      const sc = classData.subclasses.find(s => s.key === newSubclassKey);
+      if (sc) {
+        allNewFeatures = [...allNewFeatures, ...sc.features.filter(f => f.level === newLevel)];
+      }
+    }
   }
+
+  // +++ NEU: INVOKATIONEN VERARBEITEN +++
+  // 1. Starten mit den bisherigen Features (als Basis)
+  let finalFeatures = [...(character.features || [])];
+
+  // 2. Entfernen (Tausch)
+  if (levelUpChoices?.invocations?.remove) {
+    finalFeatures = finalFeatures.filter(f => f !== levelUpChoices.invocations.remove);
+  }
+
+  // 3. Hinzufügen (Neu gewählt + Tausch-Ersatz)
+  if (levelUpChoices?.invocations?.add) {
+    finalFeatures = [...finalFeatures, ...levelUpChoices.invocations.add];
+  }
+
+  // 4. Automatische Klassen-Features hinzufügen
+  // (Wir fügen nur die Keys der Features hinzu, da `features` im Char nur ein String-Array ist)
+  finalFeatures = [...finalFeatures, ...allNewFeatures.map(f => f.key || f.name)]; // Fallback auf Name falls Key fehlt (Sicherheit)
+
+  // Duplikate entfernen
+  finalFeatures = [...new Set(finalFeatures)];
 
   const { pendingLevelUp, ...restOfCharacter } = character;
 
   const updatedCharacter = {
     ...restOfCharacter,
     level: newLevel,
-    abilities: newAbilities, 
+    abilities: newAbilities,
     subclassKey: newSubclassKey,
     feats: newFeats,
     feat_choices: newFeatChoices,
     weapon_mastery_choices: newMasteries,
-    
-    // Zauberlisten updaten
     cantrips_known: newCantripsKnown,
     spells_known: newSpellsKnown,
     spellbook: newSpellbook,
-
     stats: {
       ...character.stats,
       maxHp: newMaxHP,
       hp: newMaxHP,
     },
-    features: [
-      ...(character.features || []), 
-      ...allNewFeatures             
-    ],
+    features: finalFeatures, // Hier verwenden wir die berechnete Liste
   };
 
   return checkForLevelUp(updatedCharacter);
@@ -605,29 +664,50 @@ export const COMBAT_STATS_DESCRIPTIONS_DE = {
 };
 
 export const SKILL_DESCRIPTIONS_DE = {
-  acrobatics: "Akrobatik (Geschicklichkeit): Die Fähigkeit, auf den Beinen zu bleiben, Sprünge zu meistern und akrobatische Manöver auszuführen.",
-  animal_handling: "Tierkunde (Weisheit): Die Fähigkeit, Tiere zu beruhigen, zu verstehen und zu kontrollieren.",
-  arcana: "Arkanum (Intelligenz): Das Wissen über Magie, magische Kreaturen, Zauber und arkane Symbole.",
-  athletics: "Athletik (Stärke): Die Fähigkeit, zu klettern, springen, schwimmen und körperliche Kraft anzuwenden.",
-  deception: "Täuschung (Charisma): Die Fähigkeit, die Wahrheit zu verbergen, sei es durch Lügen, Verkleidung oder Ablenkung.",
-  history: "Geschichte (Intelligenz): Das Wissen über historische Ereignisse, legendäre Personen und vergangene Zivilisationen.",
-  insight: "Einblick (Weisheit): Die Fähigkeit, die wahren Absichten einer Kreatur durch Körpersprache und Verhalten zu erkennen.",
-  intimidation: "Einschüchtern (Charisma): Die Fähigkeit, andere durch Drohungen, feindselige Handlungen und körperliche Präsenz zu beeinflussen.",
-  investigation: "Nachforschungen (Intelligenz): Die Fähigkeit, nach Hinweisen zu suchen, Schlussfolgerungen zu ziehen und Details zu analysieren.",
-  medicine: "Medizin (Weisheit): Die Fähigkeit, Verletzungen zu stabilisieren, Krankheiten zu diagnostizieren und Wunden zu behandeln.",
-  nature: "Naturkunde (Intelligenz): Das Wissen über Gelände, Pflanzen, Tiere und das Wetter.",
-  perception: "Wahrnehmung (Weisheit): Die Fähigkeit, etwas zu sehen, zu hören, zu riechen oder auf andere Weise wahrzunehmen.",
-  performance: "Darbietung (Charisma): Die Fähigkeit, ein Publikum durch Musik, Tanz, Schauspiel oder eine andere Form der Unterhaltung zu fesseln.",
-  persuasion: "Überzeugen (Charisma): Die Fähigkeit, andere durch Takt, Freundlichkeit und gute Argumente zu beeinflussen.",
-  religion: "Religion (Intelligenz): Das Wissen über Gottheiten, religiöse Riten, heilige Symbole und die Ebenen der Existenz.",
-  sleight_of_hand: "Fingerfertigkeit (Geschicklichkeit): Die Fähigkeit, Taschendiebstahl zu begehen, Schlösser zu knacken und andere manuelle Tricks auszuführen.",
-  stealth: "Heimlichkeit (Geschicklichkeit): Die Fähigkeit, sich ungesehen und ungehört an anderen vorbeizuschleichen.",
-  survival: "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden.",
+  acrobatics:
+    "Akrobatik (Geschicklichkeit): Die Fähigkeit, auf den Beinen zu bleiben, Sprünge zu meistern und akrobatische Manöver auszuführen.",
+  animal_handling:
+    "Tierkunde (Weisheit): Die Fähigkeit, Tiere zu beruhigen, zu verstehen und zu kontrollieren.",
+  arcana:
+    "Arkanum (Intelligenz): Das Wissen über Magie, magische Kreaturen, Zauber und arkane Symbole.",
+  athletics:
+    "Athletik (Stärke): Die Fähigkeit, zu klettern, springen, schwimmen und körperliche Kraft anzuwenden.",
+  deception:
+    "Täuschung (Charisma): Die Fähigkeit, die Wahrheit zu verbergen, sei es durch Lügen, Verkleidung oder Ablenkung.",
+  history:
+    "Geschichte (Intelligenz): Das Wissen über historische Ereignisse, legendäre Personen und vergangene Zivilisationen.",
+  insight:
+    "Einblick (Weisheit): Die Fähigkeit, die wahren Absichten einer Kreatur durch Körpersprache und Verhalten zu erkennen.",
+  intimidation:
+    "Einschüchtern (Charisma): Die Fähigkeit, andere durch Drohungen, feindselige Handlungen und körperliche Präsenz zu beeinflussen.",
+  investigation:
+    "Nachforschungen (Intelligenz): Die Fähigkeit, nach Hinweisen zu suchen, Schlussfolgerungen zu ziehen und Details zu analysieren.",
+  medicine:
+    "Medizin (Weisheit): Die Fähigkeit, Verletzungen zu stabilisieren, Krankheiten zu diagnostizieren und Wunden zu behandeln.",
+  nature:
+    "Naturkunde (Intelligenz): Das Wissen über Gelände, Pflanzen, Tiere und das Wetter.",
+  perception:
+    "Wahrnehmung (Weisheit): Die Fähigkeit, etwas zu sehen, zu hören, zu riechen oder auf andere Weise wahrzunehmen.",
+  performance:
+    "Darbietung (Charisma): Die Fähigkeit, ein Publikum durch Musik, Tanz, Schauspiel oder eine andere Form der Unterhaltung zu fesseln.",
+  persuasion:
+    "Überzeugen (Charisma): Die Fähigkeit, andere durch Takt, Freundlichkeit und gute Argumente zu beeinflussen.",
+  religion:
+    "Religion (Intelligenz): Das Wissen über Gottheiten, religiöse Riten, heilige Symbole und die Ebenen der Existenz.",
+  sleight_of_hand:
+    "Fingerfertigkeit (Geschicklichkeit): Die Fähigkeit, Taschendiebstahl zu begehen, Schlösser zu knacken und andere manuelle Tricks auszuführen.",
+  stealth:
+    "Heimlichkeit (Geschicklichkeit): Die Fähigkeit, sich ungesehen und ungehört an anderen vorbeizuschleichen.",
+  survival:
+    "Überlebenskunst (Weisheit): Die Fähigkeit, Spuren zu lesen, in der Wildnis zu jagen, Gefahren zu vermeiden und den Weg zu finden.",
 };
 
 // Weiterleitungs-Funktionen
 export const grantExperienceToParty = (party, defeatedEnemies) => {
-  const totalXp = defeatedEnemies.reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
+  const totalXp = defeatedEnemies.reduce(
+    (sum, enemy) => sum + (enemy.xp || 0),
+    0
+  );
   if (totalXp === 0) return party;
   const partySize = party.length;
   if (partySize === 0) return party;
@@ -635,7 +715,10 @@ export const grantExperienceToParty = (party, defeatedEnemies) => {
   if (xpPerMember === 0) return party;
   console.log(`Die Gruppe erhält ${totalXp} EP (${xpPerMember} pro Mitglied).`);
   return party.map((character) => {
-    const updatedChar = { ...character, experience: (character.experience || 0) + xpPerMember };
+    const updatedChar = {
+      ...character,
+      experience: (character.experience || 0) + xpPerMember,
+    };
     return checkForLevelUp(updatedChar);
   });
 };
@@ -643,6 +726,143 @@ export const grantExperienceToParty = (party, defeatedEnemies) => {
 export const grantXpToCharacter = (character, xpAmount) => {
   if (!xpAmount || xpAmount <= 0) return character;
   console.log(`${character.name} erhält ${xpAmount} EP.`);
-  const updatedChar = { ...character, experience: (character.experience || 0) + xpAmount };
+  const updatedChar = {
+    ...character,
+    experience: (character.experience || 0) + xpAmount,
+  };
   return checkForLevelUp(updatedChar);
+};
+
+// --- RAST-SYSTEM (Short/Long Rest) ---
+
+export const calculateMaxHitDice = (character) => {
+  return character.level || 1;
+};
+
+export const calculateMaxSpellSlots = (character) => {
+  const classData = allClassData.find((c) => c.key === character.class.key);
+  if (!classData) return {};
+
+  const slotsObj = {};
+
+  // 1. Standard Spellcasting
+  if (classData.spellcasting && classData.spellcasting.spell_slots_by_level) {
+    const levelIndex = (character.level || 1) - 1;
+    const slots = classData.spellcasting.spell_slots_by_level[levelIndex];
+    if (slots) {
+      slots.forEach((count, index) => {
+        if (count > 0) {
+          slotsObj[index + 1] = count;
+        }
+      });
+    }
+  }
+
+  // 2. Warlock Pact Magic
+  if (classData.pact_magic_progression) {
+    const prog = classData.pact_magic_progression.find(
+      (p) => p.level === (character.level || 1)
+    );
+    if (prog) {
+      // Warlock Slots sind immer auf dem höchsten verfügbaren Level
+      // Wir speichern sie unter diesem Level
+      slotsObj[prog.slot_level] = (slotsObj[prog.slot_level] || 0) + prog.slots;
+    }
+  }
+
+  return slotsObj;
+};
+
+export const performShortRest = (character, diceToSpend) => {
+  const maxHitDice = calculateMaxHitDice(character);
+  // Wenn undefined, gehen wir davon aus, dass sie voll sind (Kompatibilität)
+  let currentHitDice =
+    character.currentHitDice !== undefined
+      ? character.currentHitDice
+      : maxHitDice;
+
+  if (diceToSpend > currentHitDice) {
+    return {
+      success: false,
+      message: "Nicht genügend Trefferwürfel verfügbar.",
+    };
+  }
+
+  let totalHealed = 0;
+  const conMod = getAbilityModifier(
+    character.abilities.con + getRacialAbilityBonus(character, "con")
+  );
+  const hitDieValue = character.class.hit_die;
+  const rolls = [];
+
+  for (let i = 0; i < diceToSpend; i++) {
+    const roll = Math.floor(Math.random() * hitDieValue) + 1;
+    const heal = Math.max(0, roll + conMod);
+    totalHealed += heal;
+    rolls.push(roll);
+  }
+
+  const newHp = Math.min(
+    character.stats.maxHp,
+    character.stats.hp + totalHealed
+  );
+  currentHitDice -= diceToSpend;
+
+  // Warlock: Slots zurücksetzen bei Short Rest
+  let newSpellSlots = character.currentSpellSlots
+    ? { ...character.currentSpellSlots }
+    : calculateMaxSpellSlots(character);
+  if (character.class.key === "warlock") {
+    newSpellSlots = calculateMaxSpellSlots(character);
+  }
+
+  const updatedCharacter = {
+    ...character,
+    stats: { ...character.stats, hp: newHp },
+    currentHitDice,
+    currentSpellSlots: newSpellSlots,
+  };
+
+  return {
+    success: true,
+    character: updatedCharacter,
+    healed: totalHealed,
+    rolls,
+    message: `${character.name} nutzt ${diceToSpend} TW und heilt ${totalHealed} TP.`,
+  };
+};
+
+export const performLongRest = (character) => {
+  const maxHitDice = calculateMaxHitDice(character);
+  let currentHitDice =
+    character.currentHitDice !== undefined
+      ? character.currentHitDice
+      : maxHitDice;
+
+  // PHB: Regain half of max Hit Dice (min 1)
+  const regainedDice = Math.max(1, Math.floor(maxHitDice / 2));
+  currentHitDice = Math.min(maxHitDice, currentHitDice + regainedDice);
+
+  // Full HP
+  const newHp = character.stats.maxHp;
+
+  // Reset Spell Slots
+  const newSpellSlots = calculateMaxSpellSlots(character);
+
+  // Reset Abilities (Placeholder for future feature tracking)
+  // ...
+
+  const updatedCharacter = {
+    ...character,
+    stats: { ...character.stats, hp: newHp },
+    currentHitDice,
+    currentSpellSlots: newSpellSlots,
+  };
+
+  return {
+    success: true,
+    character: updatedCharacter,
+    regainedHitDice: regainedDice,
+    message: `Lange Rast beendet. TP und Zauberplätze vollständig erholt.`,
+  };
 };

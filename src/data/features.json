@@ -2705,7 +2705,7 @@
   {
     "key": "tough",
     "name": "Zäh",
-    "description": "Deine Trefferpunkte erhöhen sich um das Doppelte deines Charakterlevels. Immer wenn du ein Level aufsteigst, erhältst du 2 zusätzliche Trefferpunkte.",
+    "description": "Deine maximalen Trefferpunkte erhöhen sich sofort um 2 pro Charakterstufe. Bei jedem weiteren Level-Up erhältst du zusätzlich 2 Trefferpunkte.",
     "feature_type": "feat",
     "source": "PHB2024",
     "mechanics": {
@@ -2799,6 +2799,351 @@
       "type": "damage_reroll_advantage",
       "trigger": "weapon_damage_roll",
       "frequency": "once_per_turn"
+    }
+  },
+  {
+    "key": "actor",
+    "name": "Schauspieler",
+    "description": "Du hast Vorteil bei Täuschung- und Darbietung-Würfen, wenn du dich als eine andere Person ausgibst. Du kannst die Sprache anderer Personen oder Kreaturen imitieren (nach 1 Minute Zuhören).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "skill_advantage_condition",
+      "skills": ["deception", "performance"],
+      "condition": "impersonating",
+      "utility": "mimicry"
+    }
+  },
+  {
+    "key": "athlete",
+    "name": "Athlet",
+    "description": "Du kannst mit 1,5m Bewegung aufstehen. Klettern kostet keine zusätzliche Bewegung. Du kannst einen Weitsprung nach nur 1,5m Anlauf machen.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "movement_buff",
+      "stand_up_cost": 1.5,
+      "climb_speed": "normal",
+      "jump_run_up": 1.5
+    }
+  },
+  {
+    "key": "charger",
+    "name": "Stürmer",
+    "description": "Wenn du die Spurt-Aktion nutzt, kannst du als Bonusaktion einen Nahkampfangriff machen oder jemanden wegstoßen (+5 Bonus auf Schaden oder 3m Stoß, wenn du dich mind. 3m bewegt hast).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "dash_bonus_action": true,
+      "charge_bonus": { "damage": 5, "push": 3, "min_move": 3 }
+    }
+  },
+  {
+    "key": "crossbow_expert",
+    "name": "Armbrustexperte",
+    "description": "Du ignorierst die Ladeeigenschaft von Armbrüsten. Kein Nachteil bei Fernkampfangriffen im Nahkampf. Wenn du mit einer Einhandwaffe angreifst, kannst du als Bonusaktion mit einer Handarmbrust schießen.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "ignore_loading": true,
+      "no_disadvantage_melee": true,
+      "bonus_attack": "hand_crossbow"
+    }
+  },
+  {
+    "key": "defensive_duelist",
+    "name": "Defensiver Duellant",
+    "description": "Wenn du eine Finesse-Waffe führst und im Nahkampf angegriffen wirst, kannst du als Reaktion deinen Übungsbonus zu deiner RK addieren (potenziell, um den Angriff abzuwehren).",
+    "feature_type": "feat",
+    "action_type": "reaction",
+    "mechanics": {
+      "type": "reaction_ac_bonus",
+      "value": "proficiency_bonus",
+      "condition": "wielding_finesse_weapon"
+    }
+  },
+  {
+    "key": "dual_wielder",
+    "name": "Beidhändiger Kämpfer",
+    "description": "Du erhältst +1 auf RK, wenn du zwei Nahkampfwaffen führst. Du kannst zwei Waffen ziehen/wegstecken. Du kannst zwei Waffen führen, auch wenn sie nicht 'Leicht' sind.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "ac_bonus": 1,
+      "dual_wield_non_light": true,
+      "draw_stow_two": true
+    }
+  },
+  {
+    "key": "durable",
+    "name": "Widerstandsfähig",
+    "description": "Wenn du Trefferwürfel zur Heilung nutzt, ist das Minimum der regenerierten TP gleich deinem doppelten Konstitutions-Modifikator (min. 2).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "heal_buff",
+      "hit_die_min_roll": "2x_con_mod"
+    }
+  },
+  {
+    "key": "elemental_adept",
+    "name": "Elementadept",
+    "description": "Wähle einen Schadenstyp (Säure, Kälte, Feuer, Blitz, Donner). Zauber dieses Typs ignorieren Resistenz. 1en auf Schadenswürfeln werden als 2en behandelt.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "magic_buff",
+      "choice": "elemental_damage_type",
+      "ignore_resistance": true,
+      "min_damage_die": 2
+    }
+  },
+  {
+    "key": "great_weapon_master",
+    "name": "Meister der schweren Waffen",
+    "description": "Bei kritischem Treffer oder Kill: Bonusaktion Angriff. Du kannst -5 auf Angriff nehmen für +10 Schaden (bei schweren Waffen).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "bonus_action_trigger": ["crit", "kill"],
+      "power_attack": { "penalty": -5, "bonus": 10, "weapon_prop": "heavy" }
+    }
+  },
+  {
+    "key": "heavily_armored",
+    "name": "Schwer gerüstet",
+    "description": "Du erhältst Übung mit schwerer Rüstung.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "grant_proficiency",
+      "armor": ["heavy_armor"]
+    }
+  },
+  {
+    "key": "heavy_armor_master",
+    "name": "Meister schwerer Rüstung",
+    "description": "Während du schwere Rüstung trägst, wird nicht-magischer Hieb-, Stich- und Wuchtschaden um 3 reduziert.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "damage_reduction",
+      "value": 3,
+      "damage_types": ["bludgeoning", "piercing", "slashing"],
+      "condition": "wearing_heavy_armor_non_magical_damage"
+    }
+  },
+  {
+    "key": "inspiring_leader",
+    "name": "Inspirierender Anführer",
+    "description": "Du kannst 10 Minuten verbringen, um 6 Kreaturen zu inspirieren. Sie erhalten temporäre TP (Level + CHA-Mod).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "group_buff",
+      "effect": "temp_hp",
+      "value_formula": "level_plus_cha_mod",
+      "targets": 6,
+      "refresh": "short_or_long_rest"
+    }
+  },
+  {
+    "key": "keen_mind",
+    "name": "Scharfer Verstand",
+    "description": "Du weißt immer, wo Norden ist und wie spät es ist. Du kannst dich an alles erinnern, was du im letzten Monat gesehen oder gehört hast.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "utility",
+      "perfect_recall_days": 30,
+      "compass": true
+    }
+  },
+  {
+    "key": "mage_slayer",
+    "name": "Magier-Schlächter",
+    "description": "Reaktion: Angriff auf Kreatur in 1,5m, die zaubert. Du hast Vorteil bei RW gegen Zauber von Kreaturen in 1,5m. Wenn du einen zaubernden Gegner triffst, hat er Nachteil auf den Konzentrations-RW.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "reaction_attack_on_cast": true,
+      "advantage_save_vs_adjacent": true,
+      "disadvantage_concentration_on_hit": true
+    }
+  },
+  {
+    "key": "martial_adept",
+    "name": "Kampfspezialist",
+    "description": "Du lernst zwei Manöver des Kampfmeisters und erhältst einen Überlegenheitswürfel (W6).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "gain_maneuvers",
+      "count": 2,
+      "dice_count": 1,
+      "dice_type": "1d6"
+    }
+  },
+  {
+    "key": "medium_armor_master",
+    "name": "Meister mittelschwerer Rüstung",
+    "description": "Kein Nachteil bei Heimlichkeit in mittelschwerer Rüstung. Dein DEX-Bonus zur RK in mittelschwerer Rüstung ist max. +3 (statt +2).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "armor_buff",
+      "remove_stealth_disadvantage": "medium_armor",
+      "max_dex_bonus": 3
+    }
+  },
+  {
+    "key": "mobile",
+    "name": "Beweglich",
+    "description": "Bewegungsrate +3m. Spurt über schwieriges Gelände kostet keine extra Bewegung. Wenn du jemanden angreifst, provozierst du für den Rest des Zuges keine Gelegenheitsangriffe von ihm.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "movement_buff",
+      "speed_bonus": 3,
+      "ignore_opportunity_attack_on_attack": true
+    }
+  },
+  {
+    "key": "moderately_armored",
+    "name": "Mittelschwer gerüstet",
+    "description": "Du erhältst Übung mit mittelschwerer Rüstung und Schilden.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "grant_proficiency",
+      "armor": ["medium_armor", "shields"]
+    }
+  },
+  {
+    "key": "mounted_combatant",
+    "name": "Berittener Kämpfer",
+    "description": "Vorteil bei Nahkampfangriffen gegen unberittene Kreaturen, die kleiner als dein Reittier sind. Du kannst Angriffe auf dein Reittier auf dich umlenken. Dein Reittier hat 'Entrinnen' (Evasion).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "advantage_vs_smaller_unmounted": true,
+      "redirect_attack_from_mount": true,
+      "mount_evasion": true
+    }
+  },
+  {
+    "key": "observant",
+    "name": "Aufmerksam",
+    "description": "+5 Bonus auf passive Wahrnehmung und passive Untersuchung. Du kannst Lippen lesen.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "skill_bonus",
+      "passive_perception": 5,
+      "passive_investigation": 5,
+      "utility": "lip_reading"
+    }
+  },
+  {
+    "key": "polearm_master",
+    "name": "Stangenwaffenmeister",
+    "description": "Angriff mit Gleife/Hellebarde/Stab/Speer erlaubt Bonus-Angriff (W4 Wuchtschaden). Gegner provozieren Gelegenheitsangriffe, wenn sie in deine Reichweite eintreten.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "bonus_attack": { "dice": "1d4", "type": "bludgeoning" },
+      "opportunity_attack_on_enter": true
+    }
+  },
+  {
+    "key": "resilient",
+    "name": "Widerstandsfähigkeit",
+    "description": "Wähle ein Attribut. Du erhältst +1 darauf und wirst geübt in Rettungswürfen mit diesem Attribut.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "asi_and_save_proficiency",
+      "choice": "any_ability",
+      "increase": 1
+    }
+  },
+  {
+    "key": "ritual_caster",
+    "name": "Ritualwirker",
+    "description": "Du erhältst ein Ritualbuch mit 2 Ritualen (Grad 1) einer Klasse deiner Wahl. Du kannst Rituale dieser Klasse wirken und neue finden.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "ritual_casting",
+      "initial_spells": 2,
+      "level": 1
+    }
+  },
+  {
+    "key": "sentinel",
+    "name": "Wächter",
+    "description": "Treffer bei Gelegenheitsangriff setzt Geschwindigkeit auf 0. Gelegenheitsangriffe auch bei 'Rückzug'. Reaktion: Angriff, wenn Feind in 1,5m jemand anderen angreift.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "stop_movement_on_oa": true,
+      "ignore_disengage": true,
+      "reaction_attack_on_ally_hit": true
+    }
+  },
+  {
+    "key": "sharpshooter",
+    "name": "Scharfschütze",
+    "description": "Kein Nachteil bei hoher Reichweite. Fernkampfangriffe ignorieren 1/2 und 3/4 Deckung. Du kannst -5 auf Angriff nehmen für +10 Schaden.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "ignore_long_range_disadvantage": true,
+      "ignore_cover": true,
+      "power_attack": { "penalty": -5, "bonus": 10, "type": "ranged" }
+    }
+  },
+  {
+    "key": "shield_master",
+    "name": "Schildmeister",
+    "description": "Bonusaktion: Stoßen (Shove) nach Angriffsaktion. Addiere Schild-AC zu DEX-RW gegen Zauber, die nur dich treffen. Reaktion: Kein Schaden bei erfolgreichem DEX-RW (statt halb).",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_feat",
+      "bonus_action_shove": true,
+      "shield_bonus_to_dex_save": true,
+      "evasion_like_effect": true
+    }
+  },
+  {
+    "key": "skulker",
+    "name": "Schleicher",
+    "description": "Du kannst dich verstecken, wenn du nur leicht verschleiert bist. Verfehlte Fernkampfangriffe aus dem Verborgenen verraten deine Position nicht. Dämmriges Licht gibt keinen Nachteil auf Wahrnehmung.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "stealth_buff",
+      "hide_lightly_obscured": true,
+      "miss_reveals_position": false,
+      "dim_light_perception_penalty": false
+    }
+  },
+  {
+    "key": "spell_sniper",
+    "name": "Zauberschütze",
+    "description": "Verdoppelt Reichweite von Angriffszaubern. Ignoriert 1/2 und 3/4 Deckung. Du lernst einen Angriffs-Zaubertrick.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "magic_buff",
+      "range_multiplier": 2,
+      "ignore_cover": true,
+      "learn_cantrip": { "type": "attack_roll", "count": 1 }
+    }
+  },
+  {
+    "key": "war_caster",
+    "name": "Kriegszauberer",
+    "description": "Vorteil bei KON-RW für Konzentration. Du kannst Zauber mit Komponenten wirken, auch wenn du Waffen/Schild in beiden Händen hältst. Reaktion: Zauber wirken statt Gelegenheitsangriff.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "combat_caster",
+      "advantage_concentration": true,
+      "ignore_somatic_components_with_hands_full": true,
+      "spell_opportunity_attack": true
+    }
+  },
+  {
+    "key": "weapon_master",
+    "name": "Waffenmeister",
+    "description": "Du erhältst Übung mit 4 Waffen deiner Wahl.",
+    "feature_type": "feat",
+    "mechanics": {
+      "type": "grant_proficiency",
+      "weapons_count": 4
     }
   }
 ]

@@ -1,0 +1,58 @@
+{
+  "width": 10,
+  "height": 10,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "layers": [
+    {
+      "id": 1,
+      "name": "Boden & Mauern",
+      "type": "tilelayer",
+      "width": 10,
+      "height": 10,
+      "visible": true,
+      "opacity": 1,
+      "x": 0,
+      "y": 0,
+      "data": [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 2, 0, 0, 0, 0, 3, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "basis",
+      "tilewidth": 32,
+      "tileheight": 32,
+      "tilecount": 4,
+      "columns": 2,
+      "image": "placeholder.png"
+    }
+  ],
+  "events": [
+    {
+      "x": 2,
+      "y": 2,
+      "type": "shop",
+      "shopId": "general_store_elfenwacht",
+      "trigger": "touch"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "type": "shop",
+      "shopId": "blacksmith_elfenwacht",
+      "trigger": "touch"
+    }
+  ]
+}
