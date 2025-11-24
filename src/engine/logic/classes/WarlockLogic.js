@@ -50,7 +50,13 @@ export class WarlockLogic {
 
   getKnownSpellsCount() {
     const level = this.character.level;
-    // PHB 2024 / 5e Standard Progression
+    // Wir versuchen, die Daten aus der classes.json zu lesen, falls vorhanden
+    const progression = this.character.class?.pact_magic_progression?.find(p => p.level === level);
+    if (progression && progression.spells_known) {
+        return progression.spells_known;
+    }
+
+    // Fallback (5e Standard/2024 Mix)
     if (level === 1) return 2;
     if (level === 2) return 3;
     if (level === 3) return 4;
@@ -69,11 +75,10 @@ export class WarlockLogic {
     return 0;
   }
 
-  // --- NEU (PHB 2024): PATRON ZAUBER ---
+  // --- PATRON ZAUBER ---
 
   /**
    * Gibt die Patron-Zauber zurück, die AUTOMATISCH vorbereitet/bekannt sind.
-   * Diese zählen nicht gegen das Limit der bekannten Zauber.
    */
   getAlwaysPreparedPatronSpells() {
     const maxLevel = this.getPactSlotLevel();
@@ -82,7 +87,6 @@ export class WarlockLogic {
 
   /**
    * Ruft die *wählbare* Liste der Zauber ab.
-   * Automatische Patron-Zauber werden hier herausgefiltert.
    */
   getLearnableSpells() {
     const maxLevel = this.getPactSlotLevel();
@@ -93,17 +97,11 @@ export class WarlockLogic {
       
     const autoSpells = this.getAlwaysPreparedPatronSpells();
     
-    // Entferne die automatischen Zauber aus der "Zu lernen"-Liste
     return warlockSpells.filter(key => !autoSpells.includes(key));
   }
 
-  /**
-   * Hilfsmethode: Findet Patron-Zauber. Unterstützt Array-Patrons (z.B. ["the_fiend", "the_genie"]).
-   */
   getPatronExpandedSpells(maxLevel) {
-    // Bevorzugt subclassKey, Fallback auf subclass
     const patronKey = this.character.subclassKey || this.character.subclass;
-
     if (!patronKey) return [];
     
     return spells
@@ -121,6 +119,13 @@ export class WarlockLogic {
 
   getPactSlotCount() {
     const level = this.character.level;
+    // Daten aus classes.json bevorzugen
+    const progression = this.character.class?.pact_magic_progression?.find(p => p.level === level);
+    if (progression && progression.slots) {
+        return progression.slots;
+    }
+
+    // Fallback
     if (level === 1) return 1;
     if (level <= 10) return 2;
     if (level <= 16) return 3;
@@ -130,6 +135,11 @@ export class WarlockLogic {
 
   getPactSlotLevel() {
     const level = this.character.level;
+    const progression = this.character.class?.pact_magic_progression?.find(p => p.level === level);
+    if (progression && progression.slot_level) {
+        return progression.slot_level;
+    }
+
     if (level <= 2) return 1;
     if (level <= 4) return 2;
     if (level <= 6) return 3;
@@ -148,21 +158,27 @@ export class WarlockLogic {
 
   /**
    * Gibt die Anzahl der Anrufungen zurück, die der Charakter auf seinem Level haben darf.
-   * UPDATE PHB 2024: Warlocks starten mit 1 Invocation auf Level 1.
+   * KORREKTUR: Liest nun direkt aus der Klassendefinition (classes.json), um Konflikte zu vermeiden.
    */
   getInvocationCount() {
     const level = this.character.level;
     
-    // PHB 2024 Änderung: Level 1 Warlock hat 1 Invocation
+    // 1. Versuch: Daten aus der Klasse lesen (BEST PRACTICE)
+    const progression = this.character.class?.pact_magic_progression?.find(p => p.level === level);
+    if (progression && progression.invocations_known !== undefined) {
+        return progression.invocations_known;
+    }
+
+    // 2. Fallback (falls classes.json Daten fehlen) - an 2024 JSON angepasst
     if (level === 1) return 1;
-    
-    if (level <= 4) return 2;
-    if (level <= 6) return 3;
-    if (level <= 8) return 4;
-    if (level <= 11) return 5;
-    if (level <= 14) return 6;
-    if (level <= 17) return 7;
-    return 8;
+    if (level <= 4) return 3; // Level 2, 3, 4 haben 3 Invocations
+    if (level <= 6) return 5; // Level 5, 6 haben 5
+    if (level <= 8) return 6;
+    if (level <= 10) return 7;
+    if (level <= 12) return 8; // Level 11, 12
+    if (level <= 14) return 8; // Level 13, 14
+    if (level <= 17) return 9;
+    return 10; // Level 18-20
   }
 
   /**
@@ -173,9 +189,7 @@ export class WarlockLogic {
   }
 
   /**
-   * Prüft Voraussetzungen für eine Anrufung (Level, Pakt, Zauber).
-   * @param {object} invocation - Das Feature-Objekt
-   * @param {string[]} currentFeats - Temporäre Liste der gewählten Features (für Live-Check im UI)
+   * Prüft Voraussetzungen für eine Anrufung.
    */
   checkInvocationPrerequisite(invocation, currentFeats = []) {
     if (!invocation.prerequisites) return true;
@@ -186,14 +200,13 @@ export class WarlockLogic {
     // 1. Level Check
     if (req.level && charLevel < req.level) return false;
 
-    // 2. Pakt / Feature Check (z.B. "Pact of the Blade")
+    // 2. Pakt / Feature Check
     if (req.feature) {
-      // Prüfe im Charakter ODER in der aktuellen Auswahl
       const hasFeature = this.character.features.includes(req.feature) || currentFeats.includes(req.feature);
       if (!hasFeature) return false;
     }
 
-    // 3. Zauber Check (z.B. "Eldritch Blast" für Agonizing Blast)
+    // 3. Zauber Check
     if (req.spell) {
       const hasSpell = (this.character.cantrips_known || []).includes(req.spell) || 
                        (this.character.spells_known || []).includes(req.spell);
@@ -211,8 +224,6 @@ export class WarlockLogic {
       .map(key => allFeatures.find(f => f.key === key))
       .filter(feature => feature && feature.feature_type === 'invocation');
   }
-
-  // --- SUBKLASSEN-SPEZIFISCH ---
 
   getDarkOnesBlessingTempHp() {
     if (this.hasFeature('the_fiend_dark_ones_blessing')) {
