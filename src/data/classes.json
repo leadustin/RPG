@@ -1635,6 +1635,7 @@
     "icon": "Class_Warlock_Icon.png",
     "description": "Ein Zauberwirker mit einem Pakt.",
     "hit_die": 8,
+    "subclass_level": 3,
     "saving_throws": ["wisdom", "charisma"],
     "spellcasting": {
       "type": "PACT",

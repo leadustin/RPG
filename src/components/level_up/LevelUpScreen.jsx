@@ -219,7 +219,11 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
 
   const navigateToNextStep = (currentStep) => {
     if (currentStep < 1 && isAbilityIncrease) setStep(1);
-    else if (currentStep < 2 && isSubclassChoice) setStep(2);
+    
+    // ÄNDERUNG HIER: Subklasse erzwingen, wenn isSubclassChoice (Engine) true ist 
+    // ODER wenn es ein Warlock auf Level 3 ist (unser manueller Override)
+    else if (currentStep < 2 && (isSubclassChoice || (isWarlock && newLevel === 3))) setStep(2);
+    
     else if (currentStep < 2.5 && hasInvocationChoice) setStep(2.5);
     else if (currentStep < 3 && hasSpellChoice) setStep(3);
     else if (currentStep < 4 && isMasteryIncrease) setStep(4);

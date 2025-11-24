@@ -148,10 +148,14 @@ export class WarlockLogic {
 
   /**
    * Gibt die Anzahl der Anrufungen zurück, die der Charakter auf seinem Level haben darf.
+   * UPDATE PHB 2024: Warlocks starten mit 1 Invocation auf Level 1.
    */
   getInvocationCount() {
     const level = this.character.level;
-    if (level < 2) return 0;
+    
+    // PHB 2024 Änderung: Level 1 Warlock hat 1 Invocation
+    if (level === 1) return 1;
+    
     if (level <= 4) return 2;
     if (level <= 6) return 3;
     if (level <= 8) return 4;
