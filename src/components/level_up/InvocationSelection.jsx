@@ -49,35 +49,41 @@ export const InvocationSelection = ({ character, targetCount, onSelectionChange 
 
     // DATA LOADING
     const allInvocations = useMemo(() => logic.getAllInvocations(), [logic]);
-    const existingKeys = character.features || [];
+    const allCharacterFeatures = character.features || [];
 
     // 1. BEREITS BEKANNTE (Basis-Liste zum Tauschen)
+    // WICHTIG: Wir filtern hier, damit nur Features angezeigt werden, die WIRKLICH Invocations sind.
     const knownList = useMemo(() => {
-        return existingKeys
+        return allCharacterFeatures
             .map(key => allInvocations.find(i => i.key === key))
-            .filter(Boolean);
-    }, [existingKeys, allInvocations]);
+            .filter(Boolean); // Entfernt undefined (also Features, die keine Invocations sind)
+    }, [allCharacterFeatures, allInvocations]);
 
     // 2. VERFÜGBARE (Pool zum Lernen)
     const availableList = useMemo(() => {
-        const tempFeatures = [...existingKeys.filter(k => k !== toRemove), ...toAdd];
+        // Simulierte Features für den Prerequisite-Check (Alte minus Zu-Entfernende plus Neue)
+        const tempFeatures = [...allCharacterFeatures.filter(k => k !== toRemove), ...toAdd];
 
         return allInvocations.filter(inv => {
-            if (existingKeys.includes(inv.key)) return false;
+            if (allCharacterFeatures.includes(inv.key)) return false; // Bereits gelernt
             return true;
         }).map(inv => {
             const isValid = logic.checkInvocationPrerequisite(inv, tempFeatures);
             return { ...inv, isValid, reason: isValid ? null : 'Voraussetzung nicht erfüllt' };
         });
-    }, [allInvocations, existingKeys, toRemove, toAdd, logic]);
+    }, [allInvocations, allCharacterFeatures, toRemove, toAdd, logic]);
+
+    // BUGFIX: Zähle nur Features, die auch in der Invocation-Liste stehen!
+    const currentKnownCount = knownList.length;
+    
+    const slotsFilled = currentKnownCount - (toRemove ? 1 : 0) + toAdd.length;
 
     // HANDLERS
     const handleToggleAvailable = (key) => {
         if (toAdd.includes(key)) {
             setToAdd(toAdd.filter(k => k !== key));
         } else {
-            const currentCount = existingKeys.length - (toRemove ? 1 : 0) + toAdd.length;
-            if (currentCount < targetCount) {
+            if (slotsFilled < targetCount) {
                 setToAdd([...toAdd, key]);
             }
         }
@@ -93,15 +99,12 @@ export const InvocationSelection = ({ character, targetCount, onSelectionChange 
 
     // UPDATE PARENT
     useEffect(() => {
-        const currentCount = existingKeys.length - (toRemove ? 1 : 0) + toAdd.length;
         onSelectionChange({
             remove: toRemove,
             add: toAdd,
-            isValid: currentCount === targetCount
+            isValid: slotsFilled === targetCount
         });
-    }, [toRemove, toAdd, existingKeys, targetCount]);
-
-    const slotsFilled = existingKeys.length - (toRemove ? 1 : 0) + toAdd.length;
+    }, [toRemove, toAdd, slotsFilled, targetCount, onSelectionChange]); // Dependencies korrigiert
 
     return (
         <div className="invocation-ui-vertical">
@@ -113,7 +116,7 @@ export const InvocationSelection = ({ character, targetCount, onSelectionChange 
 
             <div className="inv-scroll-container">
                 
-                {/* SECTION 1: NEUE SKILLS (VERFÜGBAR) */}
+                {/* SECTION 1: NEUE SKILLS (VERFÜGBARE) */}
                 <div className="inv-section">
                     <h5 className="inv-section-title">Verfügbare Anrufungen</h5>
                     <div className="inv-grid">
@@ -121,6 +124,7 @@ export const InvocationSelection = ({ character, targetCount, onSelectionChange 
                             const iconSrc = icons[inv.icon] || icons['skill_placeholder.png'];
                             const isSelected = toAdd.includes(inv.key);
                             const isLocked = !inv.isValid;
+                            // Dimmen wenn voll und nicht ausgewählt und nicht gelockt
                             const isDimmed = !isSelected && slotsFilled >= targetCount && !isLocked;
 
                             return (
@@ -130,7 +134,6 @@ export const InvocationSelection = ({ character, targetCount, onSelectionChange 
                                         onClick={() => !isLocked && handleToggleAvailable(inv.key)}
                                     >
                                         <img src={iconSrc} alt={inv.name} />
-                                        {/* Name entfernt für reines Icon-Grid */}
                                         {isSelected && <div className="check-marker">+</div>}
                                     </div>
                                 </Tooltip>
