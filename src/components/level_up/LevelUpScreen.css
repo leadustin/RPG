@@ -712,3 +712,90 @@
   box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
   transform: scale(1.02);
 }
+
+/* NEUES GRID FÜR ICON-ONLY */
+.inv-grid {
+    display: grid;
+    /* Kleinere Mindestbreite für Icons (ca. 60px) statt 180px */
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+}
+
+/* KOMPAKTE KARTE (Icon Only) */
+.inv-compact-card {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Zentriert das Icon */
+    background: rgba(40, 40, 40, 0.9);
+    border: 1px solid #555;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    height: 60px; /* Quadratischer Look */
+}
+
+.inv-compact-card:hover {
+    background: rgba(60, 60, 60, 1);
+    border-color: #888;
+    transform: scale(1.05); /* Leichter Zoom Effekt */
+}
+
+.inv-compact-card img {
+    width: 50px; /* Etwas größeres Icon */
+    height: 50px;
+    border-radius: 4px;
+    margin-right: 0; /* Kein Margin mehr nötig da kein Text */
+    background: #000;
+}
+
+/* MARKER ANPASSUNG */
+.check-marker {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    /* Kleinerer, runder Marker in der Ecke */
+    background: rgba(0,0,0,0.7);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transform: none; /* Reset center transform */
+}
+
+.selected-add .check-marker { color: #4caf50; border: 1px solid #4caf50; }
+.selected-remove .check-marker { color: #f44336; border: 1px solid #f44336; }
+
+/* Level Badge Anpassung für Icon-Only Cards */
+.level-badge {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #666;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin: 0; /* Reset margin */
+    z-index: 2;
+    pointer-events: none;
+}
+
+.inv-compact-card.selected-swap {
+    border-color: #e0b0ff;
+    background: rgba(224, 176, 255, 0.15);
+}
+
+.selected-swap .check-marker {
+    color: #e0b0ff;
+    border-color: #e0b0ff;
+}
