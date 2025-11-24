@@ -2,69 +2,68 @@
 import React, { useMemo } from 'react';
 import { WarlockLogic } from '../../engine/logic/classes/WarlockLogic';
 import Tooltip from '../tooltip/Tooltip';
-// Wir nutzen das existierende CSS vom LevelUp Screen für das Karten-Design
 import '../level_up/LevelUpScreen.css'; 
 
-// --- Icon Loader (Vite Glob) ---
 const iconModules = import.meta.glob('../../assets/images/icons/*.(png|webp|jpg|svg)', { eager: true });
 const icons = {};
 for (const path in iconModules) {
   icons[path.split('/').pop()] = iconModules[path].default;
 }
 
-// --- Tooltip Komponente ---
-const InvocationTooltip = ({ feat }) => (
-    <div className="spell-tooltip-content">
-        <div className="spell-tooltip-header">
-            <span className="spell-tooltip-name">{feat.name}</span>
-            <span className="tag" style={{background: '#9c27b0'}}>Anrufung / Pakt</span>
-        </div>
-        <div className="spell-tooltip-description" style={{marginTop: '10px'}}>
-            {feat.description}
-        </div>
-        {feat.prerequisites && (
-            <div className="spell-tooltip-footer" style={{marginTop: '10px', borderTop: '1px solid #444', paddingTop: '5px', fontSize: '0.85em', color:'#ccc'}}>
-                <strong>Voraussetzungen:</strong>
-                <ul>
-                    {feat.prerequisites.level && <li>Level {feat.prerequisites.level}</li>}
-                    {feat.prerequisites.feature && <li>Benötigt: {feat.prerequisites.feature}</li>}
-                    {feat.prerequisites.spell && <li>Zauber: {feat.prerequisites.spell}</li>}
-                </ul>
-            </div>
-        )}
-    </div>
-);
+const InvocationTooltip = ({ feat }) => {
+    // BEREINIGT: Nur noch Zugriff auf 'prerequisite'
+    const req = feat.prerequisite;
 
-// --- Hauptkomponente ---
+    return (
+        <div className="spell-tooltip-content">
+            <div className="spell-tooltip-header">
+                <span className="spell-tooltip-name">{feat.name}</span>
+                <span className="tag" style={{background: '#9c27b0'}}>Anrufung / Pakt</span>
+            </div>
+            <div className="spell-tooltip-description" style={{marginTop: '10px'}}>
+                {feat.description}
+            </div>
+            {req && (
+                <div className="spell-tooltip-footer" style={{marginTop: '10px', borderTop: '1px solid #444', paddingTop: '5px', fontSize: '0.85em', color:'#ccc'}}>
+                    <strong>Voraussetzungen:</strong>
+                    <ul>
+                        {req.level && <li>Level {req.level}</li>}
+                        {req.feature && <li>Benötigt: {req.feature}</li>}
+                        {req.spell && <li>Zauber: {req.spell}</li>}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export const CreationInvocationSelection = ({ character, updateCharacter }) => {
     const logic = useMemo(() => new WarlockLogic(character), [character]);
     
     // Alle Invocations laden
     const allInvocations = useMemo(() => logic.getAllInvocations(), [logic]);
     
-    // Filtern: Zeige nur Invocations, deren Voraussetzungen erfüllt sind (Level 1 Logik)
+    // Filtern: Nur was für Level 1 verfügbar ist
     const availableList = useMemo(() => {
         return allInvocations.filter(inv => {
             return logic.checkInvocationPrerequisite(inv, character.features || []);
         });
     }, [allInvocations, logic, character.features]);
 
-    // Prüfen, welche Invocation bereits gewählt ist
+    // Aktuell gewählte Invocation finden
     const selectedInvocationKey = (character.features || []).find(f => 
         allInvocations.some(i => i.key === f)
     );
 
     const handleSelect = (key) => {
-        // Bereinige Features: Entferne alle anderen Invocations (Single Select für Level 1)
+        // Bereinige Features von anderen Invocations
         const otherFeatures = (character.features || []).filter(f => 
             !allInvocations.some(i => i.key === f)
         );
 
         if (selectedInvocationKey === key) {
-            // Wenn bereits gewählt -> Abwählen
             updateCharacter({ features: otherFeatures });
         } else {
-            // Neu wählen -> Hinzufügen
             updateCharacter({ features: [...otherFeatures, key] });
         }
     };
@@ -72,8 +71,8 @@ export const CreationInvocationSelection = ({ character, updateCharacter }) => {
     return (
         <div className="invocation-ui-vertical" style={{height: 'auto', maxHeight: '600px'}}>
             <div className="inv-status-bar">
-                <span>Wähle deine <strong>Eldritch Invocation</strong> (oder Pakt):</span>
-                <span style={{marginLeft:'auto', color: selectedInvocationKey ? '#4caf50' : '#ccc'}}>
+                <span>Wähle deine <strong>Eldritch Invocation</strong>:</span>
+                <span style={{marginLeft:'10px', color: selectedInvocationKey ? '#4caf50' : '#ccc'}}>
                     {selectedInvocationKey ? '1 / 1 gewählt' : '0 / 1 gewählt'}
                 </span>
             </div>

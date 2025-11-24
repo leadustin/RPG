@@ -1672,7 +1672,7 @@
   "features": [
   { "level": 1, "name": "Außerweltlicher Pakt", "description": "Du hast einen Pakt mit einer Entität geschlossen, um magische Kräfte zu erlangen." },
   { "level": 1, "name": "Paktmagie", "description": "Deine Zauberplätze sind begrenzt, regenerieren sich aber nach einer kurzen Rast und skalieren in ihrer Stufe. Du lernst auf dieser Stufe 2 Hexenmeister-Cantrips." },
-  { "level": 1, "name": "Mystische Anrufungen (Beginn)", "description": "Du lernst 1 Mystische Anrufung, die eine dauerhafte magische Fähigkeit verleiht. Die ehemaligen Pakt-Segen (Kette, Klinge, Wälzer, Talisman) sind jetzt Anrufungen, die du wählen kannst." },
+  { "level": 1, "name": "Mystische Anrufungen", "description": "Du lernst 1 Mystische Anrufung, die eine dauerhafte magische Fähigkeit verleiht. Die ehemaligen Pakt-Segen (Kette, Klinge, Wälzer, Talisman) sind jetzt Anrufungen, die du wählen kannst." },
   { "level": 2, "name": "Magische Gerissenheit", "description": "Einmal pro langer Rast kannst du 1 Minute lang ein Ritual durchführen, um die Hälfte deiner maximalen Hexenmeister-Zauberplätze (aufgerundet) wiederherzustellen." },
   { "level": 2, "name": "Mystische Anrufungen (Erhöhung)", "description": "Du lernst eine zusätzliche Anrufung deiner Wahl. Die Anzahl der Anrufungen steigt mit deinem Level." },
   { "level": 3, "name": "Schutzpatron (Unterklasse)", "description": "Du wählst deinen Außerweltlichen Schutzpatron. Er gewährt dir auf dieser Stufe eine Fähigkeit und eine Liste stets vorbereiteter Zauber." },
