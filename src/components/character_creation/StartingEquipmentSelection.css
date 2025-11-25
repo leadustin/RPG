@@ -1,0 +1,209 @@
+/* Container für das gesamte Panel */
+.starting-equipment-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  color: #e0e0e0;
+  overflow-y: auto; /* Scrollen erlauben bei kleinen Bildschirmen */
+}
+
+/* Header Bereich */
+.equipment-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.panel-title {
+  margin: 0 0 10px 0;
+  color: #fff;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid #444;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.description-text {
+  color: #aaa;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Container für die beiden Karten (Nebeneinander) */
+.options-container {
+  display: flex;
+  gap: 30px; /* Abstand zwischen den Karten */
+  justify-content: center;
+  align-items: flex-start; /* Oben bündig */
+  flex-wrap: wrap; /* Umbruch bei sehr kleinen Fenstern */
+}
+
+/* --- DESIGN DER KARTEN --- */
+.option-card {
+  flex: 1; /* Beide Karten nehmen gleich viel Platz ein */
+  min-width: 300px; /* Mindestbreite */
+  max-width: 450px;
+  background-color: rgba(30, 30, 35, 0.9); /* Dunkler, fast deckender Hintergrund */
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 0; /* Innenabstand wird in children geregelt */
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hover Effekt */
+.option-card:hover {
+  transform: translateY(-5px);
+  border-color: #aaa;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.6);
+}
+
+/* Ausgewählter Zustand (Goldener Rahmen) */
+.option-card.selected {
+  border: 2px solid #d4af37; /* RPG Gold */
+  background-color: rgba(40, 40, 45, 0.95);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+/* Überschrift der Karte (Option A / B) */
+.option-card h3 {
+  background: rgba(255, 255, 255, 0.05);
+  margin: 0;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #555;
+  color: #fff;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.option-card.selected h3 {
+  color: #d4af37;
+  border-bottom-color: #d4af37;
+}
+
+/* Inhalt der Karte */
+.option-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-grow: 1;
+}
+
+/* --- OPTION A DETAILS --- */
+.gold-bonus {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Item Listen */
+.item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item-list li {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #ccc;
+  display: flex;
+  align-items: center;
+}
+
+.item-list li:last-child {
+  border-bottom: none;
+}
+
+.qty {
+  background: #222;
+  color: #aaa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 0.9rem;
+  font-family: monospace;
+}
+
+/* Dropdown Bereich für Pakete */
+.sub-selection {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #444;
+  border-radius: 5px;
+  padding: 15px;
+  margin-top: 10px;
+}
+
+.sub-selection label {
+  display: block;
+  margin-bottom: 8px;
+  color: #aaa;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+/* --- OPTION B DETAILS (Zentriert) --- */
+.centered-content {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 200px;
+}
+
+.big-gold-icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.gold-display {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.7);
+  font-family: serif;
+}
+
+.hint-text {
+  color: #888;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.divider-small {
+  width: 40px;
+  height: 2px;
+  background: #555;
+  margin: 20px 0;
+}
+
+/* Grüner Haken Badge */
+.check-badge {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 30px;
+  height: 30px;
+  background-color: #d4af37;
+  color: #000;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
