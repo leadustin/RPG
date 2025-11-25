@@ -37,7 +37,8 @@ function App() {
     handleShopTransaction,
     handleUpdateCharacter,
     handleCastSpell,
-    handleUnpackItem 
+    handleUnpackItem,
+    handleDestroyItem
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -124,8 +125,8 @@ function App() {
               handleToggleTwoHanded={handleToggleTwoHanded}
               handleFillQuiver={handleFillQuiver}
               handleUnloadQuiver={handleUnloadQuiver}
-              // HIER WURDE DIE ZEILE HINZUGEFÜGT:
-              handleUnpackItem={handleUnpackItem} 
+              handleUnpackItem={handleUnpackItem}
+              handleDestroyItem={handleDestroyItem}
             />
           )}
 

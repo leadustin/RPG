@@ -17,7 +17,6 @@ import {
 } from "../engine/characterEngine";
 import spellsData from "../data/spells.json";
 import allRaceData from "../data/races.json";
-// NEU: Importe für Klassen und Hintergründe, um Objekte wiederherzustellen
 import allClassData from "../data/classes.json";
 import allBackgroundData from "../data/backgrounds.json";
 
@@ -277,6 +276,37 @@ export const useGameState = () => {
         character: updatedCharacter,
         logEntries: newLogEntries,
       };
+    });
+  }, []);
+
+  const handleDestroyItem = useCallback((itemToDestroy) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      const inventory = [...character.inventory];
+
+      // Wir suchen das Item anhand der eindeutigen instanceId (oder id als Fallback)
+      const index = inventory.findIndex(i => 
+          (i.instanceId && i.instanceId === itemToDestroy.instanceId) || 
+          i.id === itemToDestroy.id
+      );
+
+      if (index > -1) {
+          // Item aus dem Array entfernen
+          inventory.splice(index, 1);
+          
+          const newLogEntries = [
+              ...prevState.logEntries, 
+              createLogEntry(`${itemToDestroy.name} wurde zerstört.`, "item")
+          ];
+
+          return {
+              ...prevState,
+              character: { ...character, inventory },
+              logEntries: newLogEntries
+          };
+      }
+      return prevState;
     });
   }, []);
 
@@ -788,6 +818,7 @@ export const useGameState = () => {
     handleToggleTwoHanded,
     handleFillQuiver,
     handleUnpackItem,
+    handleDestroyItem,
     handleUnloadQuiver, 
     handleEnterLocation,
     handleLeaveLocation,

@@ -1,6 +1,6 @@
 [
   {
-    "id": "leather-armor",
+    "id": "leather_armor",
     "name": "Lederrüstung",
     "type": "armor",
     "armor_type": "light",
@@ -13,7 +13,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "studded-leather",
+    "id": "studded_leather_armor",
     "name": "Beschlagenes Lederwams",
     "type": "armor",
     "slot": "armor",
@@ -57,7 +57,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "half-plate",
+    "id": "half_plate",
     "name": "Halbplattenrüstung",
     "type": "armor",
     "slot": "armor",
@@ -68,7 +68,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "ring-mail",
+    "id": "ring_mail",
     "name": "Ringpanzer",
     "type": "armor",
     "slot": "armor",
@@ -79,7 +79,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "chain-mail",
+    "id": "chain_mail",
     "name": "Kettenpanzer",
     "type": "armor",
     "slot": "armor",
@@ -90,7 +90,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "splint-armor",
+    "id": "splint_armor",
     "name": "Schienenpanzer",
     "type": "armor",
     "slot": "armor",
@@ -101,7 +101,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "plate-armor",
+    "id": "plate_armor",
     "name": "Plattenpanzer",
     "type": "armor",
     "slot": "armor",
@@ -112,7 +112,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "elven-chain",
+    "id": "elven_chain",
     "name": "Elfen-Kettenrüstung",
     "type": "armor",
     "slot": "armor",
@@ -124,7 +124,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "dwarven-plate",
+    "id": "dwarven_plate",
     "name": "Zwergen-Plattenpanzer",
     "type": "armor",
     "slot": "armor",
@@ -136,7 +136,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "dragon-scale-mail",
+    "id": "dragon_scale_mail",
     "name": "Drachenschuppenpanzer",
     "type": "armor",
     "slot": "armor",
@@ -209,7 +209,7 @@
     "icon": "placeholder_armor.webp"
   },
   {
-    "id": "shadow-leather",
+    "id": "shadow_leather",
     "name": "Schattenleder",
     "type": "armor",
     "slot": "armor",

@@ -16,13 +16,12 @@ import {
   SKILL_DESCRIPTIONS_DE,
 } from "../../engine/characterEngine";
 import { LEVEL_XP_TABLE } from "../../utils/helpers";
-// InventoryItem und InventoryFilter hier entfernt, da sie jetzt im InventoryPanel sind
 import EquipmentSlot from "./EquipmentSlot";
 import SpellbookTab from './SpellbookTab';
 import { ItemTypes } from "../../dnd/itemTypes"; 
 import allClassData from "../../data/classes.json";
 import AbilitiesTab from './AbilitiesTab'; 
-import InventoryPanel from "./InventoryPanel"; // <--- NEU: Import
+import InventoryPanel from "./InventoryPanel";
 
 const classIconModules = import.meta.glob(
   '../../assets/images/classes/*.(png|webp|jpg|svg)', 
@@ -53,7 +52,8 @@ const CharacterSheet = ({
   handleToggleTwoHanded,
   handleFillQuiver,
   handleUnloadQuiver,
-  handleUnpackItem // <--- NEU: Prop für Auspack-Funktion
+  handleUnpackItem,
+  handleDestroyItem
 }) => {
   const { t } = useTranslation(); 
   
@@ -69,14 +69,12 @@ const CharacterSheet = ({
 
   const currentParty = party.length > 0 ? party : (displayCharacter ? [displayCharacter] : []);
 
-  // --- HELPER: Bestimme den Klassentyp für Tabs ---
   const hasSpellcasting = useMemo(() => {
       if (!displayCharacter?.class) return false;
       const cls = allClassData.find(c => c.key === displayCharacter.class.key);
       return !!cls?.spellcasting; 
   }, [displayCharacter]);
 
-  // Thematische Tab-Namen
   const getClassTabLabel = () => {
     if (!displayCharacter?.class?.key) return "Fähigkeiten";
     const key = displayCharacter.class.key;
@@ -106,7 +104,6 @@ const CharacterSheet = ({
   const classTabLabel = getClassTabLabel();
   const classTabKey = hasSpellcasting ? "Spells" : "Abilities";
 
-  // Reset Tab wenn der Charakter gewechselt wird
   useEffect(() => {
       if (activeTab === "Spells" && !hasSpellcasting) {
           setActiveTab("Abilities");
@@ -116,10 +113,6 @@ const CharacterSheet = ({
       }
   }, [displayCharacter, hasSpellcasting, activeTab]);
 
-  // --- useMemo Hooks ---
-  // Gewichtsberechnung könnte man auch ins InventoryPanel auslagern oder als Prop übergeben, 
-  // falls du die Anzeige dort wieder haben möchtest. Aktuell habe ich es hier belassen, 
-  // falls du es für andere Logik brauchst, aber es wird im UI nicht mehr angezeigt.
   const currentWeight = useMemo(() => {
     if (!displayCharacter) return 0;
     let totalWeight = 0;
@@ -170,7 +163,26 @@ const CharacterSheet = ({
     return null;
   };
 
+  // +++ SMARTE AUSRÜST-FUNKTION +++
   const enhancedHandleEquipItem = (item, slotType) => {
+    // 1. Check: Ist es Munition?
+    if (item.type === 'ammo') {
+        const currentAmmoSlot = displayCharacter.equipment.ammo;
+
+        // 2. Check: Haben wir einen Köcher ausgerüstet?
+        if (currentAmmoSlot && currentAmmoSlot.type === 'quiver') {
+            // Ja -> In den Köcher füllen!
+            handleFillQuiver(item);
+        } else {
+            // Nein -> Fehler / Blockieren
+            // (Pfeile können nicht ohne Köcher ausgerüstet werden)
+            console.warn("Kein Köcher ausgerüstet! Pfeile können nicht ausgerüstet werden.");
+            // Optional: Hier könnte man eine Toast-Notification auslösen
+        }
+        return; // Stopp, nicht normal ausrüsten!
+    }
+
+    // Standard-Verhalten für alles andere (Waffen, Rüstung, Köcher selbst)
     handleEquipItem(item, slotType); 
   };
 
@@ -221,13 +233,11 @@ const CharacterSheet = ({
 
   return (
     <div className="game-ui">
-      {/* --- HEADER --- */}
       <header>
         <nav className="main-nav">
           <button className={`nav-btn ${activeTab === "Inventory" ? "active" : ""}`} onClick={() => setActiveTab("Inventory")}>
             Ausrüstung
           </button>
-          {/* Dynamischer Button Label */}
           <button className={`nav-btn ${activeTab === classTabKey ? "active" : ""}`} onClick={() => setActiveTab(classTabKey)}>
             {classTabLabel}
           </button>
@@ -242,10 +252,8 @@ const CharacterSheet = ({
         <button onClick={onClose} className="close-btn">X</button>
       </header>
 
-      {/* --- MAIN CONTENT --- */}
       <main className="main-content">
         
-        {/* --- LEFT SIDEBAR (PARTY) --- */}
         <aside className="left-sidebar">
           {currentParty.map((member) => {
              const isSelected = member.id === displayCharacter.id || (member.name === displayCharacter.name);
@@ -272,20 +280,19 @@ const CharacterSheet = ({
           })}
         </aside>
 
-        {/* --- INVENTORY TAB (NEU MIT INVENTORY PANEL) --- */}
         {activeTab === "Inventory" && (
           <section ref={drop} className="inventory-section">
             <InventoryPanel 
               inventory={displayCharacter.inventory}
               currency={displayCharacter.wallet}
-              onEquip={enhancedHandleEquipItem}
+              onEquip={enhancedHandleEquipItem} // Hier übergeben wir die smarte Funktion
               onUnequip={handleUnequipItem}
-              handleUnpackItem={handleUnpackItem} // WICHTIG: Weitergeben
+              handleUnpackItem={handleUnpackItem}
+              handleDestroyItem={handleDestroyItem}
             />
           </section>
         )}
         
-        {/* --- DYNAMISCHE TABS --- */}
         {activeTab === "Spells" && hasSpellcasting && (
           <SpellbookTab 
              character={displayCharacter} 
@@ -297,7 +304,6 @@ const CharacterSheet = ({
           <AbilitiesTab character={displayCharacter} />
         )}
 
-        {/* --- RIGHT PANEL (Equipment & Stats) --- */}
         {activeTab === "Inventory" && (
           <aside className="right-panel-character-sheet">
             <div className="equipment-column-left">

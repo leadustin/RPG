@@ -5,25 +5,27 @@ import InventoryFilter from './InventoryFilter';
 import InventoryItem from './InventoryItem';
 import { useTranslation } from 'react-i18next';
 
-const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackItem }) => {
+const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackItem, handleDestroyItem }) => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState('all');
   
   // State für Einklappen
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // State für das Kontextmenü (inkl. Ziel-Koordinaten relativ zum Item)
+  // State für Kontextmenü
   const [contextMenu, setContextMenu] = useState({ 
       visible: false, 
       x: 0, 
       y: 0, 
       item: null,
-      itemId: null // ID speichern, um Tooltip beim Item zu deaktivieren
+      itemId: null
   });
+
+  // +++ NEU: State für das Zerstören-Modal +++
+  const [destroyModal, setDestroyModal] = useState({ visible: false, item: null });
   
   const menuRef = useRef(null);
 
-  // Schließt Menü bei Klick woanders hin
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -31,7 +33,6 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
       }
     };
     document.addEventListener("click", handleClickOutside);
-    // Auch bei Scrollen schließen, damit Menü nicht "schwebt"
     document.addEventListener("scroll", closeContextMenu, true); 
     return () => {
         document.removeEventListener("click", handleClickOutside);
@@ -43,12 +44,8 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
       setContextMenu({ visible: false, x: 0, y: 0, item: null, itemId: null });
   };
 
-  // Handler für Rechtsklick auf Item
   const handleContextMenu = (e, item) => {
-    e.preventDefault(); // Browser-Menü unterdrücken
-    
-    // Position berechnen: Rechts neben dem Mauszeiger oder dem Item
-    // Wir nehmen hier Mauszeiger + kleiner Offset, damit es sich wie ein "Smart Tooltip" anfühlt
+    e.preventDefault();
     const xPos = e.clientX + 10; 
     const yPos = e.clientY + 5;
 
@@ -57,7 +54,7 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
       x: xPos,
       y: yPos,
       item: item,
-      itemId: item.instanceId || item.id // Eindeutige ID für Tooltip-Deaktivierung
+      itemId: item.instanceId || item.id
     });
   };
 
@@ -74,10 +71,24 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
                 handleUnpackItem(contextMenu.item);
             }
             break;
+        case 'destroy':
+            if (handleDestroyItem) {
+                // +++ NEU: Statt window.confirm öffnen wir unser Modal +++
+                setDestroyModal({ visible: true, item: contextMenu.item });
+            }
+            break;
         default:
             break;
     }
     closeContextMenu();
+  };
+
+  // +++ NEU: Bestätigungshandler +++
+  const confirmDestroy = () => {
+      if (handleDestroyItem && destroyModal.item) {
+          handleDestroyItem(destroyModal.item);
+      }
+      setDestroyModal({ visible: false, item: null });
   };
 
   const safeInventory = inventory || [];
@@ -88,13 +99,11 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
     return item.type === filter;
   });
 
-  // Berechnung des Gesamtgewichts für die Anzeige im Header
   const currentWeight = safeInventory.reduce((acc, i) => acc + (i.weight || 0) * (i.quantity || 1), 0);
 
   return (
     <div className={`inventory-panel ${isCollapsed ? 'collapsed' : ''}`}>
       
-      {/* --- HEADER (Collapsible) --- */}
       <div className="inventory-header" onClick={() => setIsCollapsed(!isCollapsed)}>
         <div className="header-title-row">
             <h3>{t('inventory.title', 'Inventar')}</h3>
@@ -104,7 +113,6 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
             </div>
         </div>
         
-        {/* Währung zeigen wir immer an, auch wenn eingeklappt (oder man schiebt es in den Body) */}
         <div className="currency-display">
            <span title="Gold" className="coin gold">{currency?.gold || 0}</span>
            <span title="Silber" className="coin silver">{currency?.silver || 0}</span>
@@ -112,7 +120,6 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
         </div>
       </div>
 
-      {/* --- BODY (Wird ausgeblendet) --- */}
       {!isCollapsed && (
         <>
           <InventoryFilter currentFilter={filter} onFilterChange={setFilter} />
@@ -122,9 +129,7 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
               <div className="empty-inventory">{t('inventory.empty', 'Leer')}</div>
             ) : (
               filteredInventory.map((item, index) => {
-                // Prüfen ob dies das Item ist, dessen Kontextmenü offen ist
                 const isCtxOpen = contextMenu.visible && contextMenu.itemId === (item.instanceId || item.id);
-                
                 return (
                     <div 
                         key={item.instanceId || item.id || index} 
@@ -134,7 +139,7 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
                         <InventoryItem 
                           item={item} 
                           onEquip={onEquip} 
-                          isContextMenuOpen={isCtxOpen} // Prop weitergeben!
+                          isContextMenuOpen={isCtxOpen} 
                         />
                     </div>
                 );
@@ -144,33 +149,52 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
         </>
       )}
 
-      {/* --- KONTEXT MENÜ (PORTAL-ARTIG) --- */}
+      {/* --- KONTEXT MENÜ --- */}
       {contextMenu.visible && (
         <div 
             ref={menuRef}
             className="inventory-context-menu"
-            style={{ 
-                top: contextMenu.y, 
-                left: contextMenu.x,
-            }}
+            style={{ top: contextMenu.y, left: contextMenu.x }}
         >
             <div className="menu-header">{contextMenu.item.name}</div>
             
-            {/* Dynamische Aktionen */}
             <div className="menu-actions">
                 {!contextMenu.item.equipped && (contextMenu.item.slot || ['weapon','armor','shield'].includes(contextMenu.item.type)) && (
                     <button onClick={() => executeAction('equip')}>⚔️ Ausrüsten</button>
                 )}
-
                 {contextMenu.item.type === 'pack' && (
                     <button onClick={() => executeAction('unpack')}>🎒 Auspacken</button>
                 )}
                 
-                {/* Platzhalter für später: Wegwerfen, Ansehen, etc. */}
+                {/* Zerstören Button */}
+                <button className="destroy-btn" onClick={() => executeAction('destroy')}>🗑️ Zerstören</button>
                 <button className="info-only">Gewicht: {contextMenu.item.weight} kg</button>
             </div>
         </div>
       )}
+
+      {/* +++ NEU: Zerstören MODAL (Overlay) +++ */}
+      {destroyModal.visible && (
+        <div className="inventory-modal-overlay">
+            <div className="inventory-modal">
+                <h3>Gegenstand zerstören?</h3>
+                <p>
+                    Möchtest du <strong>{destroyModal.item?.name}</strong> wirklich wegwerfen/zerstören?
+                </p>
+                <p className="modal-warning">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                
+                <div className="modal-actions">
+                    <button className="btn-cancel" onClick={() => setDestroyModal({ visible: false, item: null })}>
+                        Abbrechen
+                    </button>
+                    <button className="btn-confirm-destroy" onClick={confirmDestroy}>
+                        🗑️ Weg damit!
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
+
     </div>
   );
 };

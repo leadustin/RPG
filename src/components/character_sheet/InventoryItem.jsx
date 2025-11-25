@@ -3,75 +3,153 @@ import React from 'react';
 import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../../dnd/itemTypes';
 import Tooltip from '../tooltip/Tooltip';
-import './InventoryItem.css'; // Stelle sicher, dass diese Datei existiert oder Styles inline sind
+import './InventoryItem.css';
 
 const InventoryItem = ({ item, onEquip, isContextMenuOpen }) => {
   
-  // Drag-Logik (zum Ausrüsten via Drag & Drop)
   const [{ isDragging }, drag] = useDrag(() => ({
     type: getDragType(item),
-    item: { ...item, equippedIn: null }, // Kommt aus Inventar -> kein Slot
+    item: { ...item, equippedIn: null }, 
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }), [item]);
 
-  // Doppelklick zum Ausrüsten
   const handleDoubleClick = () => {
     if (onEquip) onEquip(item, item.slot || 'main-hand');
   };
 
-  // Tooltip-Text zusammenbauen
-  // NEU: Name wird jetzt explizit als Titel im Tooltip angezeigt
+  // --- ERWEITERTER TOOLTIP INHALT ---
   const tooltipContent = (
     <div className="item-tooltip-content">
-      <div className="item-tooltip-title">{item.name}</div>
-      <div className="item-tooltip-stats">
-         Gewicht: {item.weight} kg <br/>
-         Wert: {item.value} GM
+      {/* Header */}
+      <div className="item-tooltip-header">
+        <span className="item-tooltip-title">{item.name}</span>
+        {item.quantity > 1 && <span className="item-tooltip-qty">x{item.quantity}</span>}
       </div>
+      
+      <div className="item-tooltip-type">
+        {item.rarity && <span className={`rarity-${item.rarity}`}>{item.rarity} </span>}
+        {item.category ? `${t_type(item.category)} ` : ''}{t_type(item.type)}
+      </div>
+
+      <div className="tooltip-divider"></div>
+
+      {/* Stats Grid */}
+      <div className="item-tooltip-stats-grid">
+         
+         {/* Waffe: Schaden */}
+         {item.damage && (
+            <div className="stat-row">
+                <span className="label">Schaden:</span>
+                <span className="value highlight">{item.damage} {t_type(item.damage_type)}</span>
+            </div>
+         )}
+
+         {/* Rüstung / Schild: AC */}
+         {(item.ac || item.ac_bonus) && (
+            <div className="stat-row">
+                <span className="label">Rüstungsklasse:</span>
+                <span className="value highlight">
+                    {item.ac ? item.ac : `+${item.ac_bonus}`}
+                </span>
+            </div>
+         )}
+
+         {/* Eigenschaften (Leicht, Finesse, etc.) */}
+         {item.properties && item.properties.length > 0 && (
+            <div className="stat-row">
+                <span className="label">Eigenschaften:</span>
+                <span className="value">{item.properties.join(', ')}</span>
+            </div>
+         )}
+
+         {/* Waffen-Meisterschaft */}
+         {item.mastery && (
+            <div className="stat-row">
+                <span className="label mastery">Meisterschaft:</span>
+                <span className="value mastery">{item.mastery}</span>
+            </div>
+         )}
+
+         {/* Reichweite */}
+         {item.range && (
+            <div className="stat-row">
+                <span className="label">Reichweite:</span>
+                <span className="value">{item.range} ft</span>
+            </div>
+         )}
+      </div>
+
+      <div className="tooltip-divider"></div>
+
+      {/* Beschreibung & Effekt */}
       {item.description && <div className="item-tooltip-desc">{item.description}</div>}
-      {/* Hier könnten weitere Stats stehen (Schaden, RK etc.) */}
+      {item.effect && <div className="item-tooltip-effect">Effekt: {item.effect}</div>}
+
+      {/* Footer (Gewicht/Wert) */}
+      <div className="item-tooltip-footer">
+         <span>⚖️ {item.weight} kg</span>
+         <span>💰 {item.value} GM</span>
+      </div>
     </div>
   );
 
-  return (
-    // WICHTIG: Wenn Kontextmenü offen ist (isContextMenuOpen), rendern wir KEINEN Tooltip,
-    // sondern nur das Item-Div. Das verhindert überlappende Popups.
-    isContextMenuOpen ? (
-      <div 
-        ref={drag}
-        className={`inventory-item ${isDragging ? 'dragging' : ''} context-active`}
-        onDoubleClick={handleDoubleClick}
-      >
-        <div className="item-icon-wrapper">
-           {/* Pfad-Logik für Icon (vereinfacht, nutze deinen bestehenden Image-Loader wenn nötig) */}
-           <img src={`/assets/images/icons/${item.icon || 'placeholder_item.webp'}`} alt={item.name} className="item-icon" />
-           {item.quantity > 1 && <span className="item-qty">{item.quantity}</span>}
+  // Rendern
+  if (isContextMenuOpen) {
+      return (
+        <div 
+            ref={drag}
+            className={`inventory-item ${isDragging ? 'dragging' : ''} context-active`}
+            onDoubleClick={handleDoubleClick}
+        >
+            <div className="item-icon-wrapper">
+                <img src={getIconPath(item.icon)} alt={item.name} className="item-icon" />
+                {item.quantity > 1 && <span className="item-qty">{item.quantity}</span>}
+            </div>
         </div>
-      </div>
-    ) : (
-      <Tooltip content={tooltipContent}>
+      );
+  }
+
+  return (
+    <Tooltip content={tooltipContent}>
         <div 
           ref={drag}
           className={`inventory-item ${isDragging ? 'dragging' : ''}`}
           onDoubleClick={handleDoubleClick}
         >
           <div className="item-icon-wrapper">
-             {/* Hier nutzen wir direkten Pfad oder importierte Bilder. 
-                 Falls du den glob-Import nutzt, müsste der hier rein oder durchgereicht werden. 
-                 Der Einfachheit halber gehe ich davon aus, dass item.icon korrekt aufgelöst wird oder Pfad stimmt. */}
-             <img src={item.icon.includes('/') ? item.icon : `/src/assets/images/icons/${item.icon}`} alt={item.name} className="item-icon" onError={(e) => e.target.src = 'https://placehold.co/50x50?text=?'} />
-             
+             <img 
+                src={getIconPath(item.icon)} 
+                alt={item.name} 
+                className="item-icon" 
+                onError={(e) => e.target.src = 'https://placehold.co/50x50?text=?'} 
+             />
              {item.quantity > 1 && <span className="item-qty">{item.quantity}</span>}
           </div>
         </div>
-      </Tooltip>
-    )
+    </Tooltip>
   );
 };
 
-// Hilfsfunktion für DragType
+// Helper für Icon Pfade
+const getIconPath = (iconName) => {
+    if (!iconName) return null;
+    if (iconName.includes('/') || iconName.startsWith('http')) return iconName;
+    return `/src/assets/images/icons/${iconName}`;
+};
+
+// Einfache Übersetzung (kann später via i18n ersetzt werden)
+const t_type = (key) => {
+    const map = {
+        'simple': 'Einfache', 'martial': 'Kriegs', 'weapon': 'Waffe', 
+        'armor': 'Rüstung', 'shield': 'Schild', 'slashing': 'Hieb', 
+        'piercing': 'Stich', 'bludgeoning': 'Wucht', 'light': 'Leichte', 
+        'medium': 'Mittlere', 'heavy': 'Schwere'
+    };
+    return map[key] || key;
+};
+
 const getDragType = (item) => {
     if (!item) return ItemTypes.ITEM;
     switch (item.type) {
@@ -79,7 +157,14 @@ const getDragType = (item) => {
         case 'armor': return ItemTypes.ARMOR;
         case 'shield': return ItemTypes.SHIELD;
         case 'head': return ItemTypes.HEAD;
-        // ... weitere Typen ...
+        case 'hands': return ItemTypes.HANDS;
+        case 'boots': return ItemTypes.BOOTS;
+        case 'belt': return ItemTypes.BELT;
+        case 'accessory': return ItemTypes.ACCESSORY;
+        case 'cloth': return ItemTypes.CLOTH;
+        case 'cloak': return ItemTypes.CLOAK;
+        case 'ammo': return ItemTypes.AMMO;
+        case 'quiver': return ItemTypes.QUIVER;
         default: return ItemTypes.ITEM;
     }
 };

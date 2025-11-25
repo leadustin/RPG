@@ -169,3 +169,116 @@
     background: none;
     color: #666;
 }
+
+/* Spezifischer Style für den Zerstören-Button */
+.inventory-context-menu button.destroy-btn {
+    color: #aaa; /* Etwas dezenter im Normalzustand */
+    border-top: 1px solid #444; /* Trennlinie nach oben */
+    margin-top: 4px;
+    padding-top: 8px;
+}
+
+.inventory-context-menu button.destroy-btn:hover {
+    background-color: rgba(255, 50, 50, 0.15); /* Roter Hintergrund */
+    color: #ff5555; /* Rote Schrift */
+}
+
+/* --- MODAL OVERLAY --- */
+.inventory-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000; /* Über allem */
+    backdrop-filter: blur(2px);
+}
+
+/* --- MODAL BOX --- */
+.inventory-modal {
+    background-color: #2a2a2e;
+    border: 1px solid #d4af37;
+    border-radius: 8px;
+    padding: 20px;
+    width: 350px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    animation: modalPopIn 0.2s ease-out;
+}
+
+@keyframes modalPopIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.inventory-modal h3 {
+    margin-top: 0;
+    color: #e0e0e0;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.inventory-modal p {
+    color: #ccc;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.inventory-modal strong {
+    color: #fff;
+    font-weight: bold;
+}
+
+.modal-warning {
+    font-size: 0.85rem;
+    color: #ff6b6b;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+/* --- MODAL BUTTONS --- */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.modal-actions button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    border: 1px solid #555;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-cancel {
+    background-color: #333;
+    color: #ccc;
+}
+
+.btn-cancel:hover {
+    background-color: #444;
+    color: #fff;
+}
+
+.btn-confirm-destroy {
+    background-color: rgba(150, 30, 30, 0.8);
+    color: #ffdada;
+    border-color: #8a2020;
+}
+
+.btn-confirm-destroy:hover {
+    background-color: rgba(180, 40, 40, 1);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}

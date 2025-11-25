@@ -1,5 +1,6 @@
 // src/engine/inventoryEngine.js
 import backgroundsData from '../data/backgrounds.json';
+
 // Wir importieren items.json NICHT mehr, da sie gelöscht wurde.
 // Die IDs reichen uns hier. Die UI lädt die Details später über den itemLoader.
 
@@ -27,19 +28,25 @@ export const initializeInventory = (character, classStartingEquipment) => {
   }
 
   // 2. Hintergrund-Ausrüstung hinzufügen (aus backgrounds.json)
-  // D&D 2024: Hintergründe geben spezifische Items + 50 GP
   if (character && character.background) {
     const bgList = Array.isArray(backgroundsData) ? backgroundsData : Object.values(backgroundsData);
     const backgroundDef = bgList.find(bg => bg.key === character.background.key);
 
     if (backgroundDef) {
-      // A) Ausrüstung aus dem Hintergrund laden
-      if (backgroundDef.equipment) {
-        backgroundDef.equipment.forEach(bgItem => {
-          // Falls in backgrounds.json "id" oder "item_id" steht, hier abfangen:
-          const itemId = bgItem.id || bgItem.item_id; 
+      // FIX: Wir müssen "equipment_options" nutzen, nicht "equipment"
+      
+      // Welche Option hat der User gewählt? (Standard: 'a')
+      // Falls du im Background-Screen noch keine Wahl eingebaut hast, ist 'a' der Default (Items).
+      const selectedOptionId = character.background_choices?.equipmentOption || 'a'; 
+      
+      const equipmentOption = backgroundDef.equipment_options?.find(opt => opt.id === selectedOptionId);
+
+      if (equipmentOption && equipmentOption.items) {
+        equipmentOption.items.forEach(bgItem => {
+          // In backgrounds.json heißt der Key "item_id"
+          const itemId = bgItem.item_id || bgItem.id;
           const qty = bgItem.quantity || 1;
-          
+
           if (itemId === 'gold') {
              totalGold += qty;
           } else {
@@ -48,7 +55,7 @@ export const initializeInventory = (character, classStartingEquipment) => {
         });
       }
 
-      // B) Startgold des Hintergrunds (D&D 2024 gibt meist 50 GP)
+      // Falls es noch ein festes "starting_gold" Feld im Root gibt (D&D 2024 oft 50gp bei Option B, aber hier ist es in den Options)
       if (backgroundDef.starting_gold) {
         totalGold += backgroundDef.starting_gold;
       }
