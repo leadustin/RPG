@@ -1,220 +1,224 @@
-/* Container für das gesamte Panel */
+/* src/components/character_creation/StartingEquipmentSelection.css */
 
-
-/* --- HEADER BEREICH KOMPAKT --- */
-.equipment-header {
-  text-align: center;
-  margin-bottom: 10px; /* Drastisch reduziert (war vorher oft 30px) */
-  flex-shrink: 0;
-}
-
-.panel-title {
-  margin: 0;
-  color: #fff;
-  font-size: 1.6rem;
-  text-transform: uppercase;
-  font-family: serif;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-
-.description-text {
-  color: #aaa;
-  font-size: 0.9rem;
-  font-style: italic;
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* --- CONTAINER FÜR DIE KARTEN --- */
-.options-container {
+/* --- HAUPT-LAYOUT (Reset) --- */
+.ses-container {
   display: flex;
-  gap: 20px;
-  justify-content: center;
-  align-items: stretch; /* Karten gleich hoch */
-  flex-wrap: wrap;
-  width: 100%;
+  flex-direction: column;
+  height: 100%;
+  /* Wir erzwingen Padding und Box-Sizing, um Layout-Fehler zu vermeiden */
+  padding: 10px 15px !important; 
+  box-sizing: border-box;
+  overflow: hidden; /* Scrollen passiert im Grid, falls nötig */
+  color: #e0e0e0;
+}
+
+/* --- HEADER (Kompakt) --- */
+.ses-header {
+  flex-shrink: 0; /* Darf nicht kleiner werden */
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 5px;
+}
+
+.ses-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-family: serif;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.ses-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #aaa;
+  font-style: italic;
+}
+
+/* --- GRID FÜR DIE KARTEN --- */
+.ses-options-grid {
+  display: flex;
+  gap: 15px;
+  /* Füllt den restlichen Platz */
+  flex-grow: 1; 
+  /* Richtet Inhalt OBEN aus */
+  align-items: flex-start; 
+  overflow-y: auto; /* Scrollbar nur hier wenn Inhalt zu lang */
   padding-bottom: 10px;
 }
 
-/* --- DESIGN DER KARTEN --- */
-.option-card {
-  flex: 1;
-  min-width: 300px;
-  max-width: 450px;
-  background-color: rgba(30, 30, 35, 0.9);
-  border: 1px solid #555;
-  border-radius: 6px;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  position: relative;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+/* --- KARTE (BASE) --- */
+.ses-card {
+  flex: 1; /* Beide Karten teilen sich den Platz 50/50 */
   display: flex;
   flex-direction: column;
+  
+  /* Eigener Hintergrund (dunkelgrau), unabhängig vom Panel */
+  background-color: rgba(30, 30, 35, 0.8);
+  border: 1px solid #555;
+  border-radius: 6px;
+  
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  position: relative;
+  
+  /* Maximale Höhe begrenzen, damit sie nicht unnötig lang werden */
+  max-height: 100%; 
 }
 
-.option-card:hover {
-  transform: translateY(-3px);
+.ses-card:hover {
+  background-color: rgba(40, 40, 45, 0.9);
   border-color: #aaa;
-  box-shadow: 0 8px 15px rgba(0,0,0,0.6);
+  transform: translateY(-2px);
 }
 
-.option-card.selected {
-  border: 2px solid #d4af37;
-  background-color: rgba(40, 40, 45, 0.95);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+/* --- KARTE (SELECTED) --- */
+.ses-card.ses-selected {
+  border: 2px solid #d4af37; /* RPG Gold */
+  background-color: rgba(45, 45, 50, 0.95);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
 }
 
-/* Überschrift der Karte */
-.option-card h3 {
-  background: rgba(255, 255, 255, 0.05);
-  margin: 0;
-  padding: 10px; /* Kompakteres Padding */
+/* Header innerhalb der Karte */
+.ses-card-header {
+  background: rgba(0,0,0,0.4);
+  padding: 10px;
   text-align: center;
-  border-bottom: 1px solid #555;
-  color: #fff;
-  font-size: 1.1rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.option-card.selected h3 {
+.ses-card-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #eee;
+  text-transform: uppercase;
+}
+
+.ses-selected .ses-card-header h3 {
   color: #d4af37;
-  border-bottom-color: #d4af37;
 }
 
 /* Inhalt der Karte */
-.option-content {
+.ses-card-body {
   padding: 15px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  flex-grow: 1;
+  overflow-y: auto; /* Scrollbar innerhalb der Karte, falls Liste sehr lang */
 }
 
-/* --- OPTION A DETAILS --- */
-.gold-bonus {
-  color: #ffd700;
-  font-weight: bold;
-  font-size: 1rem;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 5px;
-}
-
-.item-list {
+/* --- ITEM LISTEN STYLING --- */
+.ses-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  overflow-y: auto;
-  max-height: 250px; /* Scrollbar bei sehr vielen Items, damit Layout nicht springt */
 }
 
-.item-list li {
+.ses-list li {
+  display: flex;
+  align-items: flex-start; /* Oben bündig bei mehrzeiligem Text */
   padding: 4px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.9rem;
   color: #ccc;
+}
+
+.ses-qty {
+  font-family: monospace;
+  color: #888;
+  margin-right: 8px;
+  min-width: 20px; /* Damit Zahlen untereinander stehen */
+}
+
+.ses-name {
+  color: #e0e0e0;
+}
+
+/* --- GOLD ANZEIGE (Option A) --- */
+.ses-gold-row {
   display: flex;
   align-items: center;
-  font-size: 0.9rem;
+  gap: 8px;
+  color: #ffd700;
+  font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
 }
 
-.item-list li:last-child {
-  border-bottom: none;
-}
-
-.qty {
-  background: #222;
-  color: #aaa;
-  padding: 1px 5px;
-  border-radius: 3px;
-  margin-right: 8px;
-  font-size: 0.85rem;
-  font-family: monospace;
-}
-
-/* Dropdown Bereich */
-.sub-selection {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid #444;
+/* --- DROPDOWN BEREICH --- */
+.ses-choice-block {
+  background: rgba(0,0,0,0.2);
+  padding: 8px;
   border-radius: 4px;
-  padding: 10px;
-  margin-top: auto; /* Drückt Dropdown nach unten, wenn Platz da ist */
+  border: 1px solid #444;
 }
 
-.sub-selection label {
-  display: block;
-  margin-bottom: 5px;
-  color: #aaa;
+.ses-choice-block label {
   font-size: 0.8rem;
-  text-transform: uppercase;
+  color: #aaa;
+  display: block;
+  margin-bottom: 4px;
 }
 
-/* Styles für das Select-Element (falls PanelDetails.css nicht greift) */
-.panel-select {
+.ses-select {
   width: 100%;
-  background-color: #1a1a1a;
-  color: white;
+  background: #222;
+  color: #fff;
   border: 1px solid #555;
-  padding: 5px;
+  padding: 6px;
   border-radius: 3px;
+  margin-bottom: 8px;
 }
 
-/* --- OPTION B DETAILS --- */
-.centered-content {
+.ses-sublist li {
+  font-size: 0.85rem;
+  padding: 2px 0;
+}
+
+/* --- OPTION B (Zentriert) --- */
+.ses-center {
   align-items: center;
   justify-content: center;
   text-align: center;
-  height: 100%; /* Füllt die Karte aus */
-  display: flex;
-  flex-direction: column;
+  height: 100%; /* Füllt den vertikalen Raum */
+  min-height: 200px;
 }
 
-.big-gold-icon {
-  font-size: 3.5rem;
-  margin-bottom: 5px;
-  opacity: 0.9;
+.ses-big-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
 }
 
-.gold-display {
+.ses-gold-value {
   font-size: 2.5rem;
-  font-weight: bold;
   color: #ffd700;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.7);
+  font-weight: bold;
   font-family: serif;
-  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.hint-text {
-  color: #888;
+.ses-hint {
+  margin-top: 15px;
   font-size: 0.9rem;
+  color: #999;
   line-height: 1.4;
-  margin-top: 10px;
 }
 
-.divider-small {
-  width: 40px;
-  height: 2px;
-  background: #555;
-  margin: 15px 0;
-}
-
-/* Check Badge */
-.check-badge {
+/* --- CHECK MARK --- */
+.ses-check {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 28px;
-  height: 28px;
-  background-color: #d4af37;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  background: #d4af37;
   color: #000;
   border-radius: 50%;
-  border: 2px solid #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
   z-index: 10;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }

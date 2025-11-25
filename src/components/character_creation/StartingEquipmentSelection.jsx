@@ -1,6 +1,8 @@
 // src/components/character_creation/StartingEquipmentSelection.jsx
 import React, { useState, useEffect } from 'react';
 import { getItem } from '../../utils/itemLoader';
+// Wir importieren PanelDetails.css nur für globale Variablen, falls nötig,
+// verlassen uns aber für das Layout auf unser eigenes CSS.
 import './PanelDetails.css'; 
 import './StartingEquipmentSelection.css';
 
@@ -46,79 +48,78 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
   };
 
   if (!equipmentData) {
-    // Auch hier ui-panel nutzen für Konsistenz
-    return <div className="selection-panel ui-panel">Keine Startausrüstung definiert.</div>;
+    return <div className="ui-panel ses-container">Keine Startausrüstung definiert.</div>;
   }
 
   return (
-    // HIER KORRIGIERT: 'ui-panel' statt 'class-summary-box'
-    // 'ui-panel' bringt den braunen Hintergrund und den Rahmen mit.
-    <div className="selection-panel ui-panel starting-equipment-panel">
+    // 'ui-panel' liefert NUR den Rahmen/Hintergrund. 
+    // 'ses-container' kontrolliert das Layout komplett neu.
+    <div className="ui-panel ses-container">
       
-      {/* Header Bereich */}
-      <div className="equipment-header">
-        <h2 className="panel-title">Startausrüstung wählen</h2>
-        <div className="details-divider"></div>
-        <p className="description-text">
-          Wie möchtest du dein Abenteuer beginnen? Mit der bewährten Ausrüstung deiner Klasse oder mit Gold?
-        </p>
+      <div className="ses-header">
+        <h2 className="ses-title">Startausrüstung</h2>
+        <p className="ses-subtitle">Wähle deine Ausstattung</p>
       </div>
 
-      <div className="options-container">
+      <div className="ses-options-grid">
         
-        {/* --- OPTION A: AUSRÜSTUNG --- */}
+        {/* --- OPTION A --- */}
         <div 
-          className={`option-card ${choiceType === 'equipment' ? 'selected' : ''}`}
+          className={`ses-card ${choiceType === 'equipment' ? 'ses-selected' : ''}`}
           onClick={() => setChoiceType('equipment')}
         >
-          {choiceType === 'equipment' && <div className="check-badge">✓</div>}
-          <h3>Option A: Ausrüstung</h3>
+          {choiceType === 'equipment' && <div className="ses-check">✓</div>}
           
-          <div className="option-content">
-            {/* Gold-Bonus */}
+          <div className="ses-card-header">
+            <h3>Klassenausrüstung</h3>
+          </div>
+          
+          <div className="ses-card-body">
+            {/* Gold Bonus */}
             {equipmentData.default_gold > 0 && (
-               <div className="gold-bonus">
-                 <span className="icon">💰</span> {equipmentData.default_gold} GM Startgold
+               <div className="ses-gold-row">
+                 <span className="ses-icon">💰</span> 
+                 <span>+ {equipmentData.default_gold} GM</span>
                </div>
             )}
 
             {/* Feste Items */}
             {equipmentData.items && equipmentData.items.length > 0 && (
-              <ul className="item-list">
+              <ul className="ses-list">
                 {equipmentData.items.map((itemRef, idx) => {
                   const item = getItem(itemRef.id);
                   return (
                     <li key={idx}>
-                      {itemRef.quantity > 1 ? <span className="qty">{itemRef.quantity}x</span> : ''}
-                      <span className="item-name">{item ? item.name : itemRef.id}</span>
+                      <span className="ses-qty">{itemRef.quantity}x</span>
+                      <span className="ses-name">{item ? item.name : itemRef.id}</span>
                     </li>
                   );
                 })}
               </ul>
             )}
 
-            {/* Paket-Auswahl */}
+            {/* Auswahl (Dropdown) */}
             {equipmentData.choices && equipmentData.choices.length > 0 && (
-              <div className="sub-selection">
-                <label>Wähle dein Paket:</label>
+              <div className="ses-choice-block">
+                <label>Paket wählen:</label>
                 <select 
+                  className="ses-select"
                   value={selectedPackage} 
                   onChange={(e) => setSelectedPackage(Number(e.target.value))}
                   onClick={(e) => e.stopPropagation()}
-                  className="panel-select" // Nutzt jetzt den Style aus PanelDetails.css
                 >
                   {equipmentData.choices.map((choice, index) => (
                     <option key={index} value={index}>{choice.label}</option>
                   ))}
                 </select>
                 
-                <ul className="item-list sub-list">
+                <ul className="ses-list ses-sublist">
                   {equipmentData.choices[selectedPackage].items.map((itemRef, idx) => {
                     const item = getItem(itemRef.id);
                     return (
                       <li key={`pack-${idx}`}>
-                        {itemRef.quantity > 1 ? <span className="qty">{itemRef.quantity}x</span> : ''}
-                        <span className="item-name">{item ? item.name : itemRef.id}</span>
+                        <span className="ses-qty">{itemRef.quantity}x</span>
+                        <span className="ses-name">{item ? item.name : itemRef.id}</span>
                       </li>
                     );
                   })}
@@ -128,21 +129,22 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
           </div>
         </div>
 
-        {/* --- OPTION B: GOLD --- */}
+        {/* --- OPTION B --- */}
         <div 
-          className={`option-card ${choiceType === 'gold' ? 'selected' : ''}`}
+          className={`ses-card ${choiceType === 'gold' ? 'ses-selected' : ''}`}
           onClick={() => setChoiceType('gold')}
         >
-          {choiceType === 'gold' && <div className="check-badge">✓</div>}
-          <h3>Option B: Reichtum</h3>
+          {choiceType === 'gold' && <div className="ses-check">✓</div>}
           
-          <div className="option-content centered-content">
-            <div className="big-gold-icon">💰</div>
-            <span className="gold-display">{equipmentData.gold_alternative} GM</span>
-            <div className="divider-small"></div>
-            <p className="hint-text">
-              Du startest <strong>ohne Ausrüstung</strong>. <br/>
-              Nutze das Gold, um vor dem Abenteuer im Laden genau das zu kaufen, was du brauchst.
+          <div className="ses-card-header">
+            <h3>Startgold</h3>
+          </div>
+          
+          <div className="ses-card-body ses-center">
+            <div className="ses-big-icon">💰</div>
+            <span className="ses-gold-value">{equipmentData.gold_alternative} GM</span>
+            <p className="ses-hint">
+              Du erhältst keine Gegenstände, dafür aber Gold, um selbst einzukaufen.
             </p>
           </div>
         </div>
