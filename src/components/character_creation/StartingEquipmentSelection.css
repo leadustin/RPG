@@ -1,46 +1,71 @@
-/* src/components/character_creation/StartingEquipmentSelection.css */
-
-/* Hauptcontainer */
+/* Container für das gesamte Panel */
 .starting-equipment-panel {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 10px; /* Minimales Padding zum Rand */
+  padding: 15px 20px; /* Weniger Padding oben/unten */
   color: #e0e0e0;
   overflow-y: auto;
+  justify-content: flex-start; /* Wichtig: Inhalt oben halten */
 }
 
-/* Container für die Karten */
+/* --- HEADER BEREICH KOMPAKT --- */
+.equipment-header {
+  text-align: center;
+  margin-bottom: 10px; /* Drastisch reduziert (war vorher oft 30px) */
+  flex-shrink: 0;
+}
+
+.panel-title {
+  margin: 0;
+  color: #fff;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  font-family: serif;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Überschreibt den globalen Divider-Abstand NUR in diesem Panel */
+.equipment-header .details-divider {
+  margin: 8px 0; /* Viel kleiner als der Standard (oft 20px) */
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #555, transparent);
+}
+
+.description-text {
+  color: #aaa;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* --- CONTAINER FÜR DIE KARTEN --- */
 .options-container {
   display: flex;
   gap: 20px;
   justify-content: center;
-  align-items: flex-start; /* WICHTIG: Richtet Karten oben aus */
+  align-items: stretch; /* Karten gleich hoch */
   flex-wrap: wrap;
   width: 100%;
-  height: 100%; /* Nutzt die volle Höhe */
+  padding-bottom: 10px;
 }
 
-/* --- KARTEN DESIGN --- */
+/* --- DESIGN DER KARTEN --- */
 .option-card {
   flex: 1;
   min-width: 300px;
   max-width: 450px;
-  /* Dunkler Hintergrund für Kontrast */
-  background-color: rgba(20, 20, 25, 0.8); 
+  background-color: rgba(30, 30, 35, 0.9);
   border: 1px solid #555;
   border-radius: 6px;
   padding: 0;
   cursor: pointer;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease-in-out;
   position: relative;
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
-  
-  /* Stellt sicher, dass die Karte nicht unnötig riesig wird, aber Platz füllt */
-  height: auto; 
-  max-height: 100%;
 }
 
 .option-card:hover {
@@ -49,18 +74,17 @@
   box-shadow: 0 8px 15px rgba(0,0,0,0.6);
 }
 
-/* Selected State */
 .option-card.selected {
   border: 2px solid #d4af37;
-  background-color: rgba(40, 40, 45, 0.9);
+  background-color: rgba(40, 40, 45, 0.95);
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
 }
 
-/* Karten Header */
+/* Überschrift der Karte */
 .option-card h3 {
   background: rgba(255, 255, 255, 0.05);
   margin: 0;
-  padding: 12px;
+  padding: 10px; /* Kompakteres Padding */
   text-align: center;
   border-bottom: 1px solid #555;
   color: #fff;
@@ -74,17 +98,16 @@
   border-bottom-color: #d4af37;
 }
 
-/* Content Bereich */
+/* Inhalt der Karte */
 .option-content {
   padding: 15px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   flex-grow: 1;
-  overflow-y: auto; /* Falls Liste zu lang wird */
 }
 
-/* --- OPTION A ITEMS --- */
+/* --- OPTION A DETAILS --- */
 .gold-bonus {
   color: #ffd700;
   font-weight: bold;
@@ -98,6 +121,8 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  overflow-y: auto;
+  max-height: 250px; /* Scrollbar bei sehr vielen Items, damit Layout nicht springt */
 }
 
 .item-list li {
@@ -109,9 +134,13 @@
   font-size: 0.9rem;
 }
 
+.item-list li:last-child {
+  border-bottom: none;
+}
+
 .qty {
-  background: #333;
-  color: #fff;
+  background: #222;
+  color: #aaa;
   padding: 1px 5px;
   border-radius: 3px;
   margin-right: 8px;
@@ -119,13 +148,13 @@
   font-family: monospace;
 }
 
-/* Dropdown */
+/* Dropdown Bereich */
 .sub-selection {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid #444;
   border-radius: 4px;
   padding: 10px;
-  margin-top: 10px;
+  margin-top: auto; /* Drückt Dropdown nach unten, wenn Platz da ist */
 }
 
 .sub-selection label {
@@ -136,17 +165,30 @@
   text-transform: uppercase;
 }
 
-/* --- OPTION B ZENTRIERT --- */
+/* Styles für das Select-Element (falls PanelDetails.css nicht greift) */
+.panel-select {
+  width: 100%;
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #555;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+/* --- OPTION B DETAILS --- */
 .centered-content {
   align-items: center;
   justify-content: center;
   text-align: center;
-  height: 100%;
+  height: 100%; /* Füllt die Karte aus */
+  display: flex;
+  flex-direction: column;
 }
 
 .big-gold-icon {
   font-size: 3.5rem;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  opacity: 0.9;
 }
 
 .gold-display {
@@ -155,12 +197,14 @@
   color: #ffd700;
   text-shadow: 0 2px 5px rgba(0,0,0,0.7);
   font-family: serif;
+  line-height: 1;
 }
 
 .hint-text {
-  color: #999;
+  color: #888;
   font-size: 0.9rem;
   line-height: 1.4;
+  margin-top: 10px;
 }
 
 .divider-small {
@@ -170,7 +214,7 @@
   margin: 15px 0;
 }
 
-/* Badge */
+/* Check Badge */
 .check-badge {
   position: absolute;
   top: -10px;
