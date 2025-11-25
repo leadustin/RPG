@@ -1,20 +1,19 @@
 /* src/components/character_creation/StartingEquipmentSelection.css */
 
-/* --- HAUPT-LAYOUT (Reset) --- */
+/* --- HAUPT-LAYOUT --- */
 .ses-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  /* Wir erzwingen Padding und Box-Sizing, um Layout-Fehler zu vermeiden */
   padding: 10px 15px !important; 
   box-sizing: border-box;
-  overflow: hidden; /* Scrollen passiert im Grid, falls nötig */
+  overflow: hidden; 
   color: #e0e0e0;
 }
 
-/* --- HEADER (Kompakt) --- */
+/* --- HEADER --- */
 .ses-header {
-  flex-shrink: 0; /* Darf nicht kleiner werden */
+  flex-shrink: 0; 
   margin-bottom: 10px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   padding-bottom: 5px;
@@ -39,21 +38,18 @@
 .ses-options-grid {
   display: flex;
   gap: 15px;
-  /* Füllt den restlichen Platz */
   flex-grow: 1; 
-  /* Richtet Inhalt OBEN aus */
   align-items: flex-start; 
-  overflow-y: auto; /* Scrollbar nur hier wenn Inhalt zu lang */
+  overflow-y: auto; 
   padding-bottom: 10px;
 }
 
 /* --- KARTE (BASE) --- */
 .ses-card {
-  flex: 1; /* Beide Karten teilen sich den Platz 50/50 */
+  flex: 1; 
   display: flex;
   flex-direction: column;
   
-  /* Eigener Hintergrund (dunkelgrau), unabhängig vom Panel */
   background-color: rgba(30, 30, 35, 0.8);
   border: 1px solid #555;
   border-radius: 6px;
@@ -62,14 +58,13 @@
   transition: all 0.15s ease-in-out;
   position: relative;
   
-  /* Maximale Höhe begrenzen, damit sie nicht unnötig lang werden */
   max-height: 100%; 
 }
 
 .ses-card:hover {
   background-color: rgba(40, 40, 45, 0.9);
   border-color: #aaa;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px);  <-- ENTFERNT */
 }
 
 /* --- KARTE (SELECTED) --- */
@@ -104,7 +99,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  overflow-y: auto; /* Scrollbar innerhalb der Karte, falls Liste sehr lang */
+  overflow-y: auto; 
 }
 
 /* --- ITEM LISTEN STYLING --- */
@@ -116,7 +111,7 @@
 
 .ses-list li {
   display: flex;
-  align-items: flex-start; /* Oben bündig bei mehrzeiligem Text */
+  align-items: flex-start; 
   padding: 4px 0;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   font-size: 0.9rem;
@@ -127,7 +122,7 @@
   font-family: monospace;
   color: #888;
   margin-right: 8px;
-  min-width: 20px; /* Damit Zahlen untereinander stehen */
+  min-width: 20px; 
 }
 
 .ses-name {
@@ -180,7 +175,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  height: 100%; /* Füllt den vertikalen Raum */
+  height: 100%; 
   min-height: 200px;
 }
 
@@ -202,23 +197,4 @@
   font-size: 0.9rem;
   color: #999;
   line-height: 1.4;
-}
-
-/* --- CHECK MARK --- */
-.ses-check {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 24px;
-  height: 24px;
-  background: #d4af37;
-  color: #000;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-  z-index: 10;
 }

@@ -1,8 +1,6 @@
 // src/components/character_creation/StartingEquipmentSelection.jsx
 import React, { useState, useEffect } from 'react';
 import { getItem } from '../../utils/itemLoader';
-// Wir importieren PanelDetails.css nur für globale Variablen, falls nötig,
-// verlassen uns aber für das Layout auf unser eigenes CSS.
 import './PanelDetails.css'; 
 import './StartingEquipmentSelection.css';
 
@@ -52,8 +50,6 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
   }
 
   return (
-    // 'ui-panel' liefert NUR den Rahmen/Hintergrund. 
-    // 'ses-container' kontrolliert das Layout komplett neu.
     <div className="ui-panel ses-container">
       
       <div className="ses-header">
@@ -68,7 +64,7 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
           className={`ses-card ${choiceType === 'equipment' ? 'ses-selected' : ''}`}
           onClick={() => setChoiceType('equipment')}
         >
-          {choiceType === 'equipment' && <div className="ses-check">✓</div>}
+          {/* HIER WURDE DER HAKEN ENTFERNT */}
           
           <div className="ses-card-header">
             <h3>Klassenausrüstung</h3>
@@ -134,7 +130,7 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
           className={`ses-card ${choiceType === 'gold' ? 'ses-selected' : ''}`}
           onClick={() => setChoiceType('gold')}
         >
-          {choiceType === 'gold' && <div className="ses-check">✓</div>}
+          {/* HIER WURDE DER HAKEN ENTFERNT */}
           
           <div className="ses-card-header">
             <h3>Startgold</h3>
