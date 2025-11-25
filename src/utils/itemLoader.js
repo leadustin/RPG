@@ -1,40 +1,41 @@
-// src/utils/itemLoader.js
-import itemsData from '../data/items/items.json';
-import weaponsData from '../data/items/weapons.json';
-import armorData from '../data/items/armor.json';
-import backgroundItemsData from '../data/items/background_items.json';
+import weapons from '../data/items/weapons.json';
+import armor from '../data/items/armor.json';
+import tools from '../data/items/tools.json';
+import adventuringGear from '../data/items/adventuring_gear.json';
+import magicItems from '../data/items/magic_items.json';
+import loot from '../data/items/loot.json';
+import packs from '../data/items/packs.json';
 
-// Alle Items in eine Map laden für schnellen Zugriff
+// Wir führen alle Listen zu einer großen "Master-Liste" zusammen
 const allItems = [
-  ...itemsData,
-  ...weaponsData,
-  ...armorData,
-  ...backgroundItemsData
+  ...weapons,
+  ...armor,
+  ...tools,
+  ...adventuringGear,
+  ...magicItems,
+  ...loot,
+  ...packs
 ];
 
-export const getItemById = (id) => {
-  if (!id) return null;
+// Erstellt eine Map für schnellen Zugriff per ID (z.B. itemsMap.get('dagger'))
+export const itemsMap = new Map(allItems.map(item => [item.id, item]));
 
-  // 1. Direkter Treffer
-  let found = allItems.find(i => i.id === id);
-  if (found) return found;
-
-  // 2. Fallback: "_" vs "-" Austausch (z.B. background sagt "light_crossbow", weapon.json hat "light-crossbow")
-  const altId = id.includes('_') ? id.replace(/_/g, '-') : id.replace(/-/g, '_');
-  found = allItems.find(i => i.id === altId);
-
-  if (found) return found;
-
-  // 3. Nicht gefunden -> Platzhalter zurückgeben, damit die App nicht crasht
-  console.warn(`Item nicht gefunden: ${id}`);
-  return {
-    id: id,
-    name: `Unbekannt (${id})`,
-    type: "unknown",
-    icon: "placeholder_item.webp",
-    weight: 0,
-    value: 0
-  };
+/**
+ * Sucht ein Item anhand seiner ID.
+ * @param {string} id - Die ID des Items (z.B. "dagger").
+ * @returns {object|undefined} Das Item-Objekt oder undefined.
+ */
+export const getItem = (id) => {
+  return itemsMap.get(id);
 };
 
-export const getAllItems = () => allItems;
+/**
+ * Gibt alle Items einer bestimmten Kategorie zurück.
+ * @param {string} type - Der Typ (z.B. "weapon", "armor", "tool").
+ * @returns {array} Array von Items.
+ */
+export const getItemsByType = (type) => {
+  return allItems.filter(item => item.type === type);
+};
+
+export default allItems;

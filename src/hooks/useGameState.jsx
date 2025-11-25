@@ -20,28 +20,8 @@ import allRaceData from "../data/races.json";
 import locationsData from "../data/locations.json";
 import { rollDiceFormula } from "../utils/helpers";
 
-// Item-Daten importieren
-import armorData from "../data/items/armor.json";
-import weaponsData from "../data/items/weapons.json";
-import clothesData from "../data/items/clothes.json";
-import itemsData from "../data/items/items.json";
-import accessoriesData from "../data/items/accessories.json";
-import beltsData from "../data/items/belts.json";
-import bootsData from "../data/items/boots.json";
-import handsData from "../data/items/hands.json";
-import headsData from "../data/items/heads.json";
-
-const allItems = [
-  ...armorData,
-  ...weaponsData,
-  ...clothesData,
-  ...itemsData,
-  ...accessoriesData,
-  ...beltsData,
-  ...bootsData,
-  ...handsData,
-  ...headsData,
-];
+// FIX: Importiere allItems aus dem ItemLoader statt einzelner JSONs
+import allItems from "../utils/itemLoader";
 
 const createLogEntry = (message, type = "general") => ({
   id: Date.now() + Math.random(),
@@ -145,17 +125,10 @@ export const useGameState = () => {
       abilities: tempChar.abilities,
     };
 
-    const equipmentList = finalizedCharacter.class.starting_equipment || [];
+    // HINWEIS: Die alte Logik für "equipmentList" aus starting_equipment
+    // wurde hier entfernt/ignoriert, da das Inventar jetzt bereits
+    // vollständig in finalizedCharacter.inventory enthalten ist.
     const initialEquipment = {};
-    equipmentList.forEach((item) => {
-      const itemDetails = allItems.find((i) => i.name === item.item);
-      if (itemDetails && itemDetails.slot) {
-        initialEquipment[itemDetails.slot] = {
-          ...itemDetails,
-          id: `${itemDetails.name}-${Date.now()}`,
-        };
-      }
-    });
 
     const rawInventory = finalizedCharacter.inventory || [];
     const characterInventory = rawInventory.map(rawItem => {
@@ -176,7 +149,7 @@ export const useGameState = () => {
       stats: initialStats,
       inventory: characterInventory,
       equipment: initialEquipment,
-      wallet: finalizedCharacter.wallet || { gold: 0, silver: 0, copper: 0 },
+      wallet: finalizedCharacter.wallet || { gold: finalizedCharacter.gold || 0, silver: 0, copper: 0 },
       position: { x: 2048, y: 1536 },
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
@@ -277,7 +250,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  // --- HIER WURDE GEÄNDERT ---
   const handleEnterLocation = useCallback((locationId, currentPosition) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -324,7 +296,6 @@ export const useGameState = () => {
       };
     });
   }, []);
-  // ---------------------------
 
   const handleLeaveLocation = useCallback(() => {
     setGameState((prevState) => {
@@ -659,11 +630,7 @@ export const useGameState = () => {
           const maxSlots = calculateMaxSpellSlots(char);
           const currentSlots = char.currentSpellSlots ? { ...char.currentSpellSlots } : { ...maxSlots };
           
-          // Warlock Sonderfall (Pact Magic): Slots haben immer denselben (höchsten) Level
-          // Vereinfachung: Wir schauen auf den angeforderten Slot.
-          
           if (!currentSlots[castLevel] || currentSlots[castLevel] <= 0) {
-              // Darf eigentlich nicht passieren, wenn UI Buttons deaktiviert
               return {
                   ...prevState,
                   logEntries: [...prevState.logEntries, createLogEntry(`Fehler: Kein Zauberplatz von Grad ${castLevel} verfügbar!`, "error")]
@@ -679,9 +646,6 @@ export const useGameState = () => {
           logMsg = `${char.name} wirkt ${spell.name} auf Grad ${castLevel}. ${isUpcast ? '(Verstärkt!)' : ''}`;
       }
       
-      // Hier könnte man spellsEngine.executeSpell() aufrufen, wenn man ein Zielsystem hätte.
-      // Vorerst loggen wir nur den Verbrauch.
-
       return {
           ...prevState,
           character: char,
@@ -690,7 +654,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  // +++ NEU: Shop Handler +++
   const handleShopTransaction = useCallback((newCharacter, logMessage) => {
     setGameState((prevState) => {
       const newLogEntry = createLogEntry(logMessage, "item");
@@ -702,11 +665,8 @@ export const useGameState = () => {
     });
   }, []);
 
-  // +++ NEU: Generisches Update für den Charakter (z.B. für Zauberbuch) +++
   const handleUpdateCharacter = useCallback((updatedCharacter) => {
     setGameState((prevState) => {
-      // Sicherheitshalber prüfen, ob IDs übereinstimmen, falls wir in einer Party sind
-      // (Aktuell ist character eh der Main Char, aber für die Zukunft)
       return {
         ...prevState,
         character: updatedCharacter

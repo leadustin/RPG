@@ -1,64 +1,77 @@
 // src/engine/inventoryEngine.js
 import backgroundsData from '../data/backgrounds.json';
-import itemsData from '../data/items/items.json'; // Optional: Falls Sie Stats nachschlagen wollen
+// Wir importieren items.json NICHT mehr, da sie gelöscht wurde.
+// Die IDs reichen uns hier. Die UI lädt die Details später über den itemLoader.
 
 /**
- * Erstellt das Startinventar basierend auf den Entscheidungen des Spielers.
- * @param {Object} character - Das Charakter-Objekt aus der Erstellung
- * @returns {Object} { inventory: Array, wallet: Object }
+ * Erstellt das finale Inventar aus Klassen- und Hintergrund-Ausrüstung.
+ * @param {Object} character - Der Charakter mit gewählten Optionen
+ * @param {Object} classStartingEquipment - Die Auswahl aus dem Class-Screen { type, gold, items: [] }
+ * @returns {Object} { inventory: Array, gold: Number }
  */
-export const initializeInventory = (character) => {
+export const initializeInventory = (character, classStartingEquipment) => {
   const inventory = [];
-  const wallet = { gold: 0, silver: 0, copper: 0 };
+  let totalGold = 0;
 
-  if (!character || !character.background) {
-    return { inventory, wallet };
+  // 1. Klassen-Ausrüstung hinzufügen (aus deiner Auswahl im Screen)
+  if (classStartingEquipment) {
+    // Gold addieren
+    totalGold += (classStartingEquipment.gold || 0);
+
+    // Items addieren
+    if (classStartingEquipment.items) {
+      classStartingEquipment.items.forEach(item => {
+        addItemToInventory(inventory, item.id, item.quantity || 1);
+      });
+    }
   }
 
-  // 1. Hintergrund-Daten laden
-  const bgList = Array.isArray(backgroundsData) ? backgroundsData : Object.values(backgroundsData);
-  const backgroundDef = bgList.find(bg => bg.key === character.background.key);
+  // 2. Hintergrund-Ausrüstung hinzufügen (aus backgrounds.json)
+  // D&D 2024: Hintergründe geben spezifische Items + 50 GP
+  if (character && character.background) {
+    const bgList = Array.isArray(backgroundsData) ? backgroundsData : Object.values(backgroundsData);
+    const backgroundDef = bgList.find(bg => bg.key === character.background.key);
 
-  if (!backgroundDef) {
-    console.warn(`Hintergrund-Definition nicht gefunden für: ${character.background.key}`);
-    return { inventory, wallet };
-  }
-
-  // 2. Ausrüstungswahl ermitteln (Standard: 'a')
-  const optionId = character.background_options?.equipmentOption || 'a';
-  const equipmentOption = backgroundDef.equipment_options?.find(opt => opt.id === optionId);
-
-  // 3. Items hinzufügen
-  if (equipmentOption) {
-    equipmentOption.items.forEach(itemEntry => {
-      // Fall A: Gold
-      if (itemEntry.item_id === 'gold') {
-        wallet.gold += itemEntry.quantity;
-      } 
-      // Fall B: Gegenstände
-      else {
-        addItemToInventory(inventory, itemEntry.item_id, itemEntry.quantity);
+    if (backgroundDef) {
+      // A) Ausrüstung aus dem Hintergrund laden
+      if (backgroundDef.equipment) {
+        backgroundDef.equipment.forEach(bgItem => {
+          // Falls in backgrounds.json "id" oder "item_id" steht, hier abfangen:
+          const itemId = bgItem.id || bgItem.item_id; 
+          const qty = bgItem.quantity || 1;
+          
+          if (itemId === 'gold') {
+             totalGold += qty;
+          } else {
+             addItemToInventory(inventory, itemId, qty);
+          }
+        });
       }
-    });
+
+      // B) Startgold des Hintergrunds (D&D 2024 gibt meist 50 GP)
+      if (backgroundDef.starting_gold) {
+        totalGold += backgroundDef.starting_gold;
+      }
+    }
   }
 
-  // 4. (Optional) Klassen-Ausrüstung hier hinzufügen
-  // ...
-
-  return { inventory, wallet };
+  return { inventory, gold: totalGold };
 };
 
 /**
- * Hilfsfunktion: Fügt Item zum Inventar hinzu (oder stapelt es)
+ * Hilfsfunktion: Fügt Item zum Inventar hinzu oder stapelt es, wenn es schon existiert.
  */
 const addItemToInventory = (inventory, itemId, quantity) => {
+  // Prüfen, ob Item schon da ist
   const existingItem = inventory.find(i => i.itemId === itemId);
 
   if (existingItem) {
+    // Stapeln
     existingItem.quantity += quantity;
   } else {
+    // Neu hinzufügen
     inventory.push({
-      instanceId: crypto.randomUUID(), // Eindeutige ID für diese Instanz
+      instanceId: crypto.randomUUID(), // Eindeutige ID für diese Instanz im Rucksack
       itemId: itemId,
       quantity: quantity,
       equipped: false

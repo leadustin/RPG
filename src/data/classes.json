@@ -14,6 +14,15 @@
         "from": ["animal_handling", "athletics", "intimidation", "nature", "perception", "survival"]
       }
     },
+    "starting_equipment": {
+      "gold_alternative": 75,
+      "default_gold": 15,
+      "items": [
+        { "id": "greataxe", "quantity": 1 },
+        { "id": "handaxe", "quantity": 4 },
+        { "id": "explorers_pack", "quantity": 1 }
+      ]
+    },
     "weapon_mastery": {
       "level_1_count": 2,
       "level_4_count": 3,
@@ -176,6 +185,16 @@
     "tools": ["Drei Musikinstrumente deiner Wahl"],
     "skills": { "choose": 3, "from": "any" }
   },
+  "starting_equipment": {
+  "gold_alternative": 90,
+  "default_gold": 19,
+  "items": [
+    { "id": "longsword", "quantity": 1 },
+    { "id": "dagger", "quantity": 2 },
+    { "id": "musical_instrument", "quantity": 1 },
+    { "id": "entertainers_pack", "quantity": 1 }
+  ]
+},
   "features": [
     { "level": 1, "name": "Zauber wirken", "description": "Du lernst, Magie durch Musik, Worte und Bewegung zu kanalisieren. Siehe Bardenzaubertabelle für bekannte Zauber, Zauberplätze und Zauberattribute (Charisma ist dein Zauberattribut)." },
     { "level": 1, "name": "Bardische Inspiration (W6)", "description": "Als Bonusaktion kannst du eine Kreatur inspirieren. Sie kann einen W6 zu einem Attributs-, Angriffs- oder Rettungswurf addieren. Du kannst dies pro Langrast so oft einsetzen wie dein Charisma-Modifikator (mindestens einmal)." },
@@ -315,6 +334,17 @@
       "from": ["history", "persuasion", "insight", "medicine", "religion"]
     }
   },
+  "starting_equipment": {
+  "gold_alternative": 110,
+  "default_gold": 7,
+  "items": [
+    { "id": "chain_shirt", "quantity": 1 },
+    { "id": "shield", "quantity": 1 },
+    { "id": "mace", "quantity": 1 },
+    { "id": "holy_symbol", "quantity": 1 },
+    { "id": "priests_pack", "quantity": 1 }
+  ]
+},
   "features": [
     { "level": 1, "name": "Zauber wirken", "description": "Du kannst Klerikerzauber wirken. (Weisheit ist dein Zauberattribut)." },
     { "level": 1, "name": "Göttliche Domäne", "description": "Wähle eine Domäne, die mit deiner Gottheit verbunden ist. Dies gewährt dir Domänenzauber und andere Fähigkeiten." },
@@ -557,6 +587,18 @@
       "from": ["animal_handling", "arcana", "insight", "medicine", "nature", "perception", "religion", "survival"]
     }
   },
+  "starting_equipment": {
+  "gold_alternative": 50,
+  "default_gold": 9,
+  "items": [
+    { "id": "leather_armor", "quantity": 1 },
+    { "id": "shield", "quantity": 1 },
+    { "id": "sickle", "quantity": 1 },
+    { "id": "druidic_focus", "quantity": 1 },
+    { "id": "explorers_pack", "quantity": 1 },
+    { "id": "herbalism_kit", "quantity": 1 }
+  ]
+},
   "features": [
     { "level": 1, "name": "Druidisch", "description": "Du kennst Druidisch, die Geheimsprache der Druiden." },
     { "level": 1, "name": "Zauber wirken", "description": "Du kannst Druidenzauber wirken. (Weisheit ist dein Zauberattribut)." },
@@ -677,6 +719,34 @@
       "level_1_count": 3, "level_4_count": 4, "level_10_count": 5, "level_16_count": 6,
       "available_weapons": ["Handaxt", "Streitaxt","Großaxt","Großschwert","Großkeule","Hellebarde","Glefe","Pike","Lanze","Langschwert","Kurzschwert","Krummsäbel","Rapier","Morgenstern","Kriegshammer","Dreizack","Wurfspeer"]
     },
+    "starting_equipment": {
+  "gold_alternative": 155,
+  "default_gold": 4,
+  "choices": [
+    {
+      "label": "Option A (Stärke)",
+      "items": [
+        { "id": "chain_mail", "quantity": 1 },
+        { "id": "greatsword", "quantity": 1 },
+        { "id": "flail", "quantity": 1 },
+        { "id": "javelin", "quantity": 8 },
+        { "id": "dungeoneers_pack", "quantity": 1 }
+      ]
+    },
+    {
+      "label": "Option B (Geschicklichkeit)",
+      "items": [
+        { "id": "studded_leather_armor", "quantity": 1 },
+        { "id": "scimitar", "quantity": 1 },
+        { "id": "shortsword", "quantity": 1 },
+        { "id": "longbow", "quantity": 1 },
+        { "id": "arrow", "quantity": 20 },
+        { "id": "quiver", "quantity": 1 },
+        { "id": "dungeoneers_pack", "quantity": 1 }
+      ]
+    }
+  ]
+},
   "features": [
     { "level": 1, "name": "Kampfstil", "description": "Du nimmst einen besonderen Kampfstil als deine Spezialität an (z.B. Bogenschießen, Verteidigung, Duellieren, Zwei-Waffen-Kampf)." },
     { "level": 1, "name": "Zweite Luft", "description": "Du kannst eine Bonusaktion verwenden, um Trefferpunkte in Höhe von 1W10 + deinem Kämpferlevel zurückzugewinnen." },
@@ -849,6 +919,16 @@
       { "level": 1, "dice": "1W4" }, { "level": 5, "dice": "1W6" },
       { "level": 11, "dice": "1W8" }, { "level": 17, "dice": "1W10" }
     ],
+    "starting_equipment": {
+  "gold_alternative": 50,
+  "default_gold": 11,
+  "items": [
+    { "id": "spear", "quantity": 1 },
+    { "id": "dagger", "quantity": 5 },
+    { "id": "musical_instrument", "quantity": 1 },
+    { "id": "explorers_pack", "quantity": 1 }
+  ]
+},
   "features": [
     { "level": 1, "name": "Ungepanzerte Verteidigung", "description": "Solange du keine Rüstung oder Schild trägst, ist deine Rüstungsklasse 10 + dein Geschicklichkeitsmodifikator + dein Weisheitsmodifikator." },
     { "level": 1, "name": "Kampfkunst", "description": "Du kannst Geschicklichkeit anstelle von Stärke für Angriffe mit unbewaffneten Schlägen und Mönchswaffen verwenden. Dein Schadenswürfel für diese Angriffe skaliert mit deinem Level (beginnend mit 1W4). Wenn du angreifst, kannst du einen unbewaffneten Schlag als Bonusaktion ausführen." },
@@ -1021,6 +1101,18 @@
   "level_1_count": 2,
   "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
 },
+"starting_equipment": {
+  "gold_alternative": 150,
+  "default_gold": 9,
+  "items": [
+    { "id": "chain_mail", "quantity": 1 },
+    { "id": "shield", "quantity": 1 },
+    { "id": "longsword", "quantity": 1 },
+    { "id": "javelin", "quantity": 6 },
+    { "id": "holy_symbol", "quantity": 1 },
+    { "id": "priests_pack", "quantity": 1 }
+  ]
+},
   "features": [
     { "level": 1, "name": "Göttliches Gespür", "description": "Du kannst deine Aktion verwenden, um die Anwesenheit von starkem Bösen oder Gutem sowie von Himmlischen, Unholden oder Untoten zu spüren." },
     { "level": 1, "name": "Handauflegen", "description": "Du hast einen Vorrat an Heilkraft (Paladin-Level x 5), den du verwenden kannst, um Trefferpunkte wiederherzustellen oder Krankheiten/Gift zu heilen." },
@@ -1187,6 +1279,20 @@
   "level_1_count": 2,
   "available_weapons": ["Streitaxt", "Großaxt", "Großschwert", "Großkeule", "Hellebarde", "Lanze", "Langschwert", "Morgenstern", "Pike", "Rapier", "Krummsäbel", "Kurzschwert", "Dreizack", "Kriegshammer", "Glefe", "Wurfspeer", "Handaxt"]
 },
+"starting_equipment": {
+  "gold_alternative": 150,
+  "default_gold": 7,
+  "items": [
+    { "id": "studded_leather_armor", "quantity": 1 },
+    { "id": "scimitar", "quantity": 1 },
+    { "id": "shortsword", "quantity": 1 },
+    { "id": "longbow", "quantity": 1 },
+    { "id": "arrow", "quantity": 20 },
+    { "id": "quiver", "quantity": 1 },
+    { "id": "druidic_focus", "quantity": 1 },
+    { "id": "explorers_pack", "quantity": 1 }
+  ]
+},
   "features": [
     { 
       "level": 1, 
@@ -1350,6 +1456,20 @@
   "weapon_mastery": {
   "level_1_count": 2,
   "available_weapons": ["Rapier", "Krummsäbel", "Kurzschwert", "Handaxt", "Wurfspeer"]
+},
+"starting_equipment": {
+  "gold_alternative": 100,
+  "default_gold": 8,
+  "items": [
+    { "id": "leather_armor", "quantity": 1 },
+    { "id": "dagger", "quantity": 2 },
+    { "id": "shortsword", "quantity": 1 },
+    { "id": "shortbow", "quantity": 1 },
+    { "id": "arrow", "quantity": 20 },
+    { "id": "quiver", "quantity": 1 },
+    { "id": "thieves_tools", "quantity": 1 },
+    { "id": "burglars_pack", "quantity": 1 }
+  ]
 },
   "features": [
     { "level": 1, "name": "Expertise", "description": "Wähle zwei Fertigkeiten (oder eine Fertigkeit und Diebeswerkzeug). Dein Übungsbonus wird für diese verdoppelt." },
@@ -1525,6 +1645,16 @@
       "from": ["arcana", "deception", "insight", "intimidation", "persuasion", "religion"]
     }
   },
+  "starting_equipment": {
+  "gold_alternative": 50,
+  "default_gold": 28,
+  "items": [
+    { "id": "spear", "quantity": 1 },
+    { "id": "dagger", "quantity": 2 },
+    { "id": "arcane_focus", "quantity": 1 },
+    { "id": "dungeoneers_pack", "quantity": 1 }
+  ]
+},
   "features": [
     { "level": 1, "name": "Zauber wirken", "description": "Du kannst Zaubererzauber wirken. (Charisma ist dein Zauberattribut)." },
     { "level": 1, "name": "Zauberhafter Ursprung", "description": "Du wählst den Ursprung deiner magischen Kraft." },
@@ -1669,6 +1799,18 @@
       { "level": 19, "slots": 4, "slot_level": 5, "invocations_known": 10, "spells_known": 15 },
       { "level": 20, "slots": 4, "slot_level": 5, "invocations_known": 10, "spells_known": 15 }
     ],
+    "starting_equipment": {
+  "gold_alternative": 100,
+  "default_gold": 15,
+  "items": [
+    { "id": "leather_armor", "quantity": 1 },
+    { "id": "sickle", "quantity": 1 },
+    { "id": "dagger", "quantity": 2 },
+    { "id": "arcane_focus", "quantity": 1 },
+    { "id": "book_lore", "quantity": 1 },
+    { "id": "scholars_pack", "quantity": 1 }
+  ]
+},
   "features": [
   { "level": 1, "name": "Außerweltlicher Pakt", "description": "Du hast einen Pakt mit einer Entität geschlossen, um magische Kräfte zu erlangen." },
   { "level": 1, "name": "Paktmagie", "description": "Deine Zauberplätze sind begrenzt, regenerieren sich aber nach einer kurzen Rast und skalieren in ihrer Stufe. Du lernst auf dieser Stufe 2 Hexenmeister-Cantrips." },
@@ -1822,6 +1964,17 @@
       "from": ["arcana", "history", "insight", "investigation", "medicine", "religion"]
     }
   },
+  "starting_equipment": {
+  "gold_alternative": 55,
+  "default_gold": 5,
+  "items": [
+    { "id": "dagger", "quantity": 2 },
+    { "id": "arcane_focus", "quantity": 1 },
+    { "id": "robe", "quantity": 1 },
+    { "id": "spellbook", "quantity": 1 },
+    { "id": "scholars_pack", "quantity": 1 }
+  ]
+},
   "features": [
     { "level": 1, "name": "Zauber wirken", "description": "Du kannst Magierzauber wirken. (Intelligenz ist dein Zauberattribut). Du beginnst mit einem Zauberbuch." },
     { "level": 1, "name": "Arkane Erholung", "description": "Einmal pro Tag, wenn du eine kurze Rast beendest, kannst du eine Anzahl von Zauberplätzen zurückgewinnen (kombinierter Grad max. Hälfte deines Magier-Levels)." },

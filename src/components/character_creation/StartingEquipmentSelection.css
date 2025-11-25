@@ -1,0 +1,170 @@
+/* src/components/character_creation/StartingEquipmentSelection.css */
+
+.selection-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: #e0e0e0;
+}
+
+.description-text {
+  text-align: center;
+  font-style: italic;
+  color: #aaa;
+  margin-bottom: 1.5rem;
+}
+
+.options-container {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: stretch; /* Karten gleich hoch machen */
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+/* --- OPTION CARD BASE --- */
+.option-card {
+  background: rgba(30, 30, 35, 0.8);
+  border: 2px solid #444;
+  border-radius: 8px;
+  width: 300px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.option-card:hover {
+  border-color: #888;
+  transform: translateY(-2px);
+  background: rgba(40, 40, 45, 0.9);
+}
+
+/* --- SELECTED STATE --- */
+.option-card.selected {
+  border-color: #d4af37; /* RPG Gold */
+  background: rgba(212, 175, 55, 0.05);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+.option-card.selected h3 {
+  color: #d4af37;
+  border-bottom-color: #d4af37;
+}
+
+/* --- CARD HEADER --- */
+.option-card h3 {
+  margin-top: 0;
+  text-align: center;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 0.8rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+/* --- OPTION CONTENT --- */
+.option-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gold-display {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin: 1rem 0;
+}
+
+.hint-text {
+  font-size: 0.9rem;
+  color: #999;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* --- ITEM LIST --- */
+.option-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.option-content li {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.option-content li:last-child {
+  border-bottom: none;
+}
+
+.option-content li::before {
+  content: "•";
+  color: #d4af37;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+/* --- SUB-SELECTION (DROPDOWN) --- */
+.sub-selection {
+  margin-top: 1rem;
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+}
+
+.sub-selection label {
+  display: block;
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.sub-selection select {
+  width: 100%;
+  padding: 8px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sub-selection select:focus {
+  outline: none;
+  border-color: #d4af37;
+}
+
+/* --- CHECKMARK BADGE --- */
+.check-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #d4af37;
+  color: #000;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
