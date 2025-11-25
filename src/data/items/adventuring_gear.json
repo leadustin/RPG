@@ -1,0 +1,326 @@
+[
+  {
+    "id": "backpack",
+    "name": "Rucksack",
+    "type": "gear",
+    "weight": 2.3,
+    "value": 2,
+    "description": "Ein Rucksack aus Leder oder Hanf. Fassungsvermögen ca. 30 Liter.",
+    "icon": "backpack.webp"
+  },
+  {
+    "id": "ball_bearings",
+    "name": "Kugellager (1.000)",
+    "type": "consumable",
+    "weight": 0.9,
+    "value": 1,
+    "description": "Ein Beutel mit kleinen Metallkugeln. Kann verschüttet werden, um Gegner zu Fall zu bringen (SG 10 Geschicklichkeit).",
+    "icon": "ball_bearings.webp"
+  },
+  {
+    "id": "bedroll",
+    "name": "Bettrolle",
+    "type": "gear",
+    "weight": 3.2,
+    "value": 1,
+    "description": "Eine einfache Bettrolle für die Nacht.",
+    "icon": "bedroll.webp"
+  },
+  {
+    "id": "bell",
+    "name": "Glöckchen",
+    "type": "gear",
+    "weight": 0.05,
+    "value": 1,
+    "description": "Ein kleines Messingglöckchen mit klarem Ton.",
+    "icon": "bell.webp"
+  },
+  {
+    "id": "blanket",
+    "name": "Decke",
+    "type": "gear",
+    "weight": 1.4,
+    "value": 0.5,
+    "description": "Eine warme Wolldecke.",
+    "icon": "blanket.webp"
+  },
+  {
+    "id": "book",
+    "name": "Buch",
+    "type": "gear",
+    "weight": 2.3,
+    "value": 25,
+    "description": "Ein ledergebundenes Buch mit leeren oder beschriebenen Seiten.",
+    "icon": "book.webp"
+  },
+  {
+    "id": "caltrops",
+    "name": "Krähenfüße (20)",
+    "type": "consumable",
+    "weight": 0.9,
+    "value": 1,
+    "description": "Spitze Metallteile, die auf dem Boden verteilt werden, um Gegner zu verlangsamen und zu verletzen.",
+    "icon": "caltrops.webp"
+  },
+  {
+    "id": "candle",
+    "name": "Kerze",
+    "type": "consumable",
+    "weight": 0.01,
+    "value": 0.01,
+    "description": "Brenndauer 1 Stunde. Radius 1,5m helles Licht, 1,5m dämmriges Licht.",
+    "icon": "candle.webp"
+  },
+  {
+    "id": "chest",
+    "name": "Truhe",
+    "type": "gear",
+    "weight": 11.3,
+    "value": 5,
+    "description": "Eine schwere Holztruhe mit Schlossvorrichtung (Schloss separat).",
+    "icon": "chest.webp"
+  },
+  {
+    "id": "clothes_fine",
+    "name": "Kleidung, edel",
+    "type": "gear",
+    "weight": 2.7,
+    "value": 15,
+    "description": "Hochwertige Kleidung aus teuren Stoffen, geeignet für adelige Gesellschaft.",
+    "icon": "clothes_fine.webp"
+  },
+  {
+    "id": "costume",
+    "name": "Kostüm",
+    "type": "gear",
+    "weight": 1.8,
+    "value": 5,
+    "description": "Ein Outfit für eine bestimmte Rolle oder Verkleidung.",
+    "icon": "costume.webp"
+  },
+  {
+    "id": "crowbar",
+    "name": "Brecheisen",
+    "type": "gear",
+    "weight": 2.3,
+    "value": 2,
+    "description": "Gewährt Vorteil bei Stärkewürfen zum Aufbrechen von Dingen.",
+    "icon": "crowbar.webp"
+  },
+  {
+    "id": "flask_oil",
+    "name": "Öl (Fläschchen)",
+    "type": "consumable",
+    "weight": 0.5,
+    "value": 0.1,
+    "description": "Brennbares Öl für Lampen oder als Waffe.",
+    "icon": "oil.webp"
+  },
+  {
+    "id": "hammer",
+    "name": "Hammer",
+    "type": "gear",
+    "weight": 1.4,
+    "value": 1,
+    "description": "Ein Handwerkshammer, nützlich für Pitons (nicht als Kriegshammer geeignet).",
+    "icon": "hammer.webp"
+  },
+  {
+    "id": "holy_water",
+    "name": "Weihwasser (Fläschchen)",
+    "type": "consumable",
+    "weight": 0.5,
+    "value": 25,
+    "description": "Verursacht 2W6 gleißenden Schaden bei Untoten und Unholden.",
+    "icon": "holy_water.webp"
+  },
+  {
+    "id": "ink_bottle",
+    "name": "Tinte (Flasche)",
+    "type": "consumable",
+    "weight": 0.05,
+    "value": 10,
+    "description": "Eine Unze schwarze Tinte.",
+    "icon": "ink.webp"
+  },
+  {
+    "id": "ink_pen",
+    "name": "Schreibfeder",
+    "type": "gear",
+    "weight": 0.01,
+    "value": 0.02,
+    "description": "Eine Feder zum Schreiben.",
+    "icon": "pen.webp"
+  },
+  {
+    "id": "lamp",
+    "name": "Lampe",
+    "type": "gear",
+    "weight": 0.5,
+    "value": 0.5,
+    "description": "Brenndauer 6 Stunden pro Ölflasche. Radius 4,5m helles Licht, 9m dämmriges Licht.",
+    "icon": "lamp.webp"
+  },
+  {
+    "id": "lantern_bullseye",
+    "name": "Blendlanterne",
+    "type": "gear",
+    "weight": 0.9,
+    "value": 10,
+    "description": "Wirft Licht in einem Kegel. Radius 18m helles Licht, 18m dämmriges Licht.",
+    "icon": "lantern_bullseye.webp"
+  },
+  {
+    "id": "lantern_hooded",
+    "name": "Abblendlanterne",
+    "type": "gear",
+    "weight": 0.9,
+    "value": 5,
+    "description": "Radius 9m helles Licht, 9m dämmriges Licht. Kann abgeblendet werden.",
+    "icon": "lantern_hooded.webp"
+  },
+  {
+    "id": "map_case",
+    "name": "Karten-/Rollenhülle",
+    "type": "gear",
+    "weight": 0.5,
+    "value": 1,
+    "description": "Ein Leder- oder Holzbehälter zum Schutz von Papier.",
+    "icon": "map_case.webp"
+  },
+  {
+    "id": "mess_kit",
+    "name": "Essgeschirr",
+    "type": "gear",
+    "weight": 0.5,
+    "value": 0.2,
+    "description": "Eine kleine Blechdose mit Becher und Besteck.",
+    "icon": "mess_kit.webp"
+  },
+  {
+    "id": "mirror_steel",
+    "name": "Stahlspiegel",
+    "type": "gear",
+    "weight": 0.2,
+    "value": 5,
+    "description": "Ein polierter Metallspiegel.",
+    "icon": "mirror.webp"
+  },
+  {
+    "id": "paper",
+    "name": "Papier (Blatt)",
+    "type": "consumable",
+    "weight": 0.005,
+    "value": 0.2,
+    "description": "Ein Blatt Papier.",
+    "icon": "paper.webp"
+  },
+  {
+    "id": "parchment",
+    "name": "Pergament (Blatt)",
+    "type": "consumable",
+    "weight": 0.005,
+    "value": 0.1,
+    "description": "Ein Blatt aus Tierhaut.",
+    "icon": "parchment.webp"
+  },
+  {
+    "id": "perfume",
+    "name": "Parfüm (Fläschchen)",
+    "type": "consumable",
+    "weight": 0.05,
+    "value": 5,
+    "description": "Ein wohlriechender Duft.",
+    "icon": "perfume.webp"
+  },
+  {
+    "id": "piton",
+    "name": "Kletterhaken (Piton)",
+    "type": "gear",
+    "weight": 0.1,
+    "value": 0.05,
+    "description": "Ein Metallhaken mit Öse zum Klettern.",
+    "icon": "piton.webp"
+  },
+  {
+    "id": "ration",
+    "name": "Tagesration",
+    "type": "consumable",
+    "weight": 0.9,
+    "value": 0.5,
+    "description": "Trockennahrung für einen Tag.",
+    "icon": "ration.webp"
+  },
+  {
+    "id": "robe",
+    "name": "Robe",
+    "type": "gear",
+    "weight": 1.8,
+    "value": 1,
+    "description": "Ein einfaches Gewand, oft von Klerikern oder Magiern getragen.",
+    "icon": "robe.webp"
+  },
+  {
+    "id": "rope_hempen",
+    "name": "Seil (Hanf, 15m)",
+    "type": "gear",
+    "weight": 4.5,
+    "value": 1,
+    "description": "Robustes Hanfseil.",
+    "icon": "rope.webp"
+  },
+  {
+    "id": "sealing_wax",
+    "name": "Siegellack",
+    "type": "consumable",
+    "weight": 0.05,
+    "value": 0.5,
+    "description": "Zum Versiegeln von Briefen und Schriftrollen.",
+    "icon": "sealing_wax.webp"
+  },
+  {
+    "id": "soap",
+    "name": "Seife",
+    "type": "consumable",
+    "weight": 0.1,
+    "value": 0.02,
+    "description": "Ein Stück Seife.",
+    "icon": "soap.webp"
+  },
+  {
+    "id": "string",
+    "name": "Schnur (3m)",
+    "type": "gear",
+    "weight": 0.01,
+    "value": 0.01,
+    "description": "Dünne Schnur.",
+    "icon": "string.webp"
+  },
+  {
+    "id": "tinderbox",
+    "name": "Zunderkästchen",
+    "type": "gear",
+    "weight": 0.5,
+    "value": 0.5,
+    "description": "Zum Entzünden von Feuern.",
+    "icon": "tinderbox.webp"
+  },
+  {
+    "id": "torch",
+    "name": "Fackel",
+    "type": "gear",
+    "weight": 0.5,
+    "value": 0.01,
+    "description": "Brenndauer 1 Stunde.",
+    "icon": "torch.webp"
+  },
+  {
+    "id": "waterskin",
+    "name": "Wasserschlauch",
+    "type": "gear",
+    "weight": 2.3,
+    "value": 0.2,
+    "description": "Fasst ca. 2 Liter Wasser.",
+    "icon": "waterskin.webp"
+  }
+]
