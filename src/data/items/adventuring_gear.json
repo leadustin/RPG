@@ -5,8 +5,39 @@
     "type": "gear",
     "weight": 2.3,
     "value": 2,
-    "description": "Ein Rucksack aus Leder oder Hanf. Fassungsvermögen ca. 30 Liter.",
+    "description": "Ein Rucksack aus Leder oder Hanf. Fassungsvermögen ca. 30 Liter. Du kannst Ausrüstung auch außen festschnallen.",
     "icon": "backpack.webp"
+  },
+  {
+    "id": "quiver",
+    "name": "Köcher",
+    "type": "quiver",
+    "slot": "ammo",
+    "weight": 1,
+    "value": 1,
+    "capacity": 20,
+    "description": "Ein Behälter für Munition. Hält bis zu 20 Pfeile oder Bolzen griffbereit.",
+    "icon": "quiver.webp"
+  },
+  {
+    "id": "arrows",
+    "name": "Pfeile (20)",
+    "type": "ammo",
+    "slot": "ammo",
+    "weight": 1,
+    "value": 1,
+    "description": "Ein Bündel von 20 Pfeilen für Kurzbögen und Langbögen. Verursacht Stichschaden.",
+    "icon": "quiver.webp"
+  },
+  {
+    "id": "bolts",
+    "name": "Bolzen (20)",
+    "type": "ammo",
+    "slot": "ammo",
+    "weight": 1.5,
+    "value": 1,
+    "description": "Ein Bündel von 20 Bolzen für Armbrüste. Kürzer und dicker als Pfeile.",
+    "icon": "quiver.webp"
   },
   {
     "id": "ball_bearings",
@@ -14,7 +45,7 @@
     "type": "consumable",
     "weight": 0.9,
     "value": 1,
-    "description": "Ein Beutel mit kleinen Metallkugeln. Kann verschüttet werden, um Gegner zu Fall zu bringen (SG 10 Geschicklichkeit).",
+    "description": "Ein Beutel mit kleinen Metallkugeln. Kann als Aktion verschüttet werden, um eine 3x3m Fläche zu bedecken. Kreaturen müssen einen SG 10 Geschicklichkeitswurf bestehen oder fallen hin.",
     "icon": "ball_bearings.webp"
   },
   {
@@ -23,7 +54,7 @@
     "type": "gear",
     "weight": 3.2,
     "value": 1,
-    "description": "Eine einfache Bettrolle für die Nacht.",
+    "description": "Eine einfache Schlafunterlage aus Stoff und Wolle für die Nacht in der Wildnis.",
     "icon": "bedroll.webp"
   },
   {
@@ -32,7 +63,7 @@
     "type": "gear",
     "weight": 0.05,
     "value": 1,
-    "description": "Ein kleines Messingglöckchen mit klarem Ton.",
+    "description": "Ein kleines Messingglöckchen mit klarem Ton. Nützlich für Alarmsysteme (z.B. mit Schnur).",
     "icon": "bell.webp"
   },
   {
@@ -41,7 +72,7 @@
     "type": "gear",
     "weight": 1.4,
     "value": 0.5,
-    "description": "Eine warme Wolldecke.",
+    "description": "Eine warme Wolldecke, die zusätzlichen Schutz gegen Kälte bietet.",
     "icon": "blanket.webp"
   },
   {
@@ -50,7 +81,7 @@
     "type": "gear",
     "weight": 2.3,
     "value": 25,
-    "description": "Ein ledergebundenes Buch mit leeren oder beschriebenen Seiten.",
+    "description": "Ein ledergebundenes Buch mit leeren Seiten, bereit für Tagebucheinträge oder Notizen.",
     "icon": "book.webp"
   },
   {
@@ -59,7 +90,7 @@
     "type": "consumable",
     "weight": 0.9,
     "value": 1,
-    "description": "Spitze Metallteile, die auf dem Boden verteilt werden, um Gegner zu verlangsamen und zu verletzen.",
+    "description": "Spitze Metallteile, die auf dem Boden verteilt werden (1,5m Quadrat). Gegner erleiden 1 Stichschaden und werden verlangsamt, bis sie geheilt werden.",
     "icon": "caltrops.webp"
   },
   {
@@ -68,7 +99,7 @@
     "type": "consumable",
     "weight": 0.01,
     "value": 0.01,
-    "description": "Brenndauer 1 Stunde. Radius 1,5m helles Licht, 1,5m dämmriges Licht.",
+    "description": "Brenndauer 1 Stunde. Radius 1,5m helles Licht, weitere 1,5m dämmriges Licht.",
     "icon": "candle.webp"
   },
   {
@@ -77,8 +108,18 @@
     "type": "gear",
     "weight": 11.3,
     "value": 5,
-    "description": "Eine schwere Holztruhe mit Schlossvorrichtung (Schloss separat).",
+    "description": "Eine schwere Holztruhe mit Metallbeschlägen und einer Vorrichtung für ein Schloss. Fasst bis zu 300 Liter.",
     "icon": "chest.webp"
+  },
+  {
+    "id": "travelers_clothes",
+    "name": "Reisekleidung",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 2,
+    "value": 2,
+    "description": "Robuste Stiefel, eine Wollhose, ein stabiles Hemd und ein Umhang. Standard für Abenteurer.",
+    "icon": "clothes.webp"
   },
   {
     "id": "clothes_fine",
@@ -86,8 +127,18 @@
     "type": "gear",
     "weight": 2.7,
     "value": 15,
-    "description": "Hochwertige Kleidung aus teuren Stoffen, geeignet für adelige Gesellschaft.",
+    "description": "Teure Stoffe, Seide und Samt, oft mit Schmuckbesatz. Passend für adlige Gesellschaften.",
     "icon": "clothes_fine.webp"
+  },
+  {
+    "id": "fine_clothes",
+    "name": "Feine Kleidung",
+    "type": "cloth",
+    "slot": "cloth",
+    "weight": 3,
+    "value": 15,
+    "description": "Alias für 'Kleidung, edel'. Repräsentative Kleidung für diplomatische Anlässe.",
+    "icon": "clothes.webp"
   },
   {
     "id": "costume",
@@ -95,7 +146,7 @@
     "type": "gear",
     "weight": 1.8,
     "value": 5,
-    "description": "Ein Outfit für eine bestimmte Rolle oder Verkleidung.",
+    "description": "Ein Outfit für eine bestimmte Rolle oder Verkleidung, inklusive Accessoires.",
     "icon": "costume.webp"
   },
   {
@@ -104,7 +155,7 @@
     "type": "gear",
     "weight": 2.3,
     "value": 2,
-    "description": "Gewährt Vorteil bei Stärkewürfen zum Aufbrechen von Dingen.",
+    "description": "Eine Eisenstange mit Hebelwirkung. Gewährt Vorteil bei Stärkewürfen zum Aufbrechen von Dingen.",
     "icon": "crowbar.webp"
   },
   {
@@ -113,7 +164,7 @@
     "type": "consumable",
     "weight": 0.5,
     "value": 0.1,
-    "description": "Brennbares Öl für Lampen oder als Waffe.",
+    "description": "Brennbares Öl. Brennt 6 Stunden in einer Lampe. Als Waffe geworfen: 1W4 Feuerschaden + 5 Feuerschaden pro Runde für 2 Runden.",
     "icon": "oil.webp"
   },
   {
@@ -122,7 +173,7 @@
     "type": "gear",
     "weight": 1.4,
     "value": 1,
-    "description": "Ein Handwerkshammer, nützlich für Pitons (nicht als Kriegshammer geeignet).",
+    "description": "Ein Handwerkshammer, nützlich um Kletterhaken (Pitons) einzuschlagen oder Nägel zu befestigen.",
     "icon": "hammer.webp"
   },
   {
@@ -131,7 +182,7 @@
     "type": "consumable",
     "weight": 0.5,
     "value": 25,
-    "description": "Verursacht 2W6 gleißenden Schaden bei Untoten und Unholden.",
+    "description": "Von einem Priester geweihtes Wasser. Als Waffe geworfen: Verursacht 2W6 gleißenden Schaden bei Untoten und Unholden.",
     "icon": "holy_water.webp"
   },
   {
@@ -140,7 +191,7 @@
     "type": "consumable",
     "weight": 0.05,
     "value": 10,
-    "description": "Eine Unze schwarze Tinte.",
+    "description": "Eine Unze schwarze Tinte in einem kleinen Glasfläschchen. Reicht für ca. 100 Seiten.",
     "icon": "ink.webp"
   },
   {
@@ -149,7 +200,7 @@
     "type": "gear",
     "weight": 0.01,
     "value": 0.02,
-    "description": "Eine Feder zum Schreiben.",
+    "description": "Eine Feder (meist Gänsekiel) zum Schreiben mit Tinte.",
     "icon": "pen.webp"
   },
   {
@@ -158,7 +209,7 @@
     "type": "gear",
     "weight": 0.5,
     "value": 0.5,
-    "description": "Brenndauer 6 Stunden pro Ölflasche. Radius 4,5m helles Licht, 9m dämmriges Licht.",
+    "description": "Eine Öllampe. Brenndauer 6 Stunden pro Ölflasche. Radius 4,5m helles Licht, weitere 9m dämmriges Licht.",
     "icon": "lamp.webp"
   },
   {
@@ -167,7 +218,7 @@
     "type": "gear",
     "weight": 0.9,
     "value": 10,
-    "description": "Wirft Licht in einem Kegel. Radius 18m helles Licht, 18m dämmriges Licht.",
+    "description": "Wirft Licht in einem fokussierten Kegel. Radius 18m helles Licht, weitere 18m dämmriges Licht.",
     "icon": "lantern_bullseye.webp"
   },
   {
@@ -176,7 +227,7 @@
     "type": "gear",
     "weight": 0.9,
     "value": 5,
-    "description": "Radius 9m helles Licht, 9m dämmriges Licht. Kann abgeblendet werden.",
+    "description": "Radius 9m helles Licht, 9m dämmriges Licht. Kann abgeblendet werden auf 1,5m dämmriges Licht.",
     "icon": "lantern_hooded.webp"
   },
   {
@@ -185,7 +236,7 @@
     "type": "gear",
     "weight": 0.5,
     "value": 1,
-    "description": "Ein Leder- oder Holzbehälter zum Schutz von Papier.",
+    "description": "Ein zylindrischer Behälter aus Leder oder Holz zum Schutz von bis zu 10 Karten oder Schriftrollen.",
     "icon": "map_case.webp"
   },
   {
@@ -194,7 +245,7 @@
     "type": "gear",
     "weight": 0.5,
     "value": 0.2,
-    "description": "Eine kleine Blechdose mit Becher und Besteck.",
+    "description": "Eine kleine Blechdose mit Becher und einfachem Besteck. Die Dose dient auch als Pfanne.",
     "icon": "mess_kit.webp"
   },
   {
@@ -203,7 +254,7 @@
     "type": "gear",
     "weight": 0.2,
     "value": 5,
-    "description": "Ein polierter Metallspiegel.",
+    "description": "Ein polierter Metallspiegel. Nützlich, um um Ecken zu schauen oder Lichtsignale zu geben.",
     "icon": "mirror.webp"
   },
   {
@@ -212,7 +263,7 @@
     "type": "consumable",
     "weight": 0.005,
     "value": 0.2,
-    "description": "Ein Blatt Papier.",
+    "description": "Ein Blatt Papier aus Leinenfasern.",
     "icon": "paper.webp"
   },
   {
@@ -221,7 +272,7 @@
     "type": "consumable",
     "weight": 0.005,
     "value": 0.1,
-    "description": "Ein Blatt aus Tierhaut.",
+    "description": "Ein Blatt aus behandelter Tierhaut, haltbarer als Papier.",
     "icon": "parchment.webp"
   },
   {
@@ -230,7 +281,7 @@
     "type": "consumable",
     "weight": 0.05,
     "value": 5,
-    "description": "Ein wohlriechender Duft.",
+    "description": "Ein wohlriechender Duft, der bei sozialen Interaktionen helfen kann.",
     "icon": "perfume.webp"
   },
   {
@@ -239,7 +290,7 @@
     "type": "gear",
     "weight": 0.1,
     "value": 0.05,
-    "description": "Ein Metallhaken mit Öse zum Klettern.",
+    "description": "Ein Metallhaken mit Öse, der beim Klettern in Felsspalten geschlagen wird.",
     "icon": "piton.webp"
   },
   {
@@ -248,7 +299,7 @@
     "type": "consumable",
     "weight": 0.9,
     "value": 0.5,
-    "description": "Trockennahrung für einen Tag.",
+    "description": "Trockennahrung (Dörrfleisch, Zwieback, Nüsse) für einen Tag.",
     "icon": "ration.webp"
   },
   {
@@ -257,7 +308,7 @@
     "type": "gear",
     "weight": 1.8,
     "value": 1,
-    "description": "Ein einfaches Gewand, oft von Klerikern oder Magiern getragen.",
+    "description": "Ein einfaches Gewand, oft von Klerikern, Magiern oder Mönchen getragen.",
     "icon": "robe.webp"
   },
   {
@@ -266,7 +317,7 @@
     "type": "gear",
     "weight": 4.5,
     "value": 1,
-    "description": "Robustes Hanfseil.",
+    "description": "Ein robustes Hanfseil. Hat 2 Trefferpunkte und kann mit SG 17 Stärke zerrissen werden.",
     "icon": "rope.webp"
   },
   {
@@ -275,7 +326,7 @@
     "type": "consumable",
     "weight": 0.05,
     "value": 0.5,
-    "description": "Zum Versiegeln von Briefen und Schriftrollen.",
+    "description": "Wird über einer Kerze geschmolzen, um Briefe und Schriftrollen manipulationssicher zu versiegeln.",
     "icon": "sealing_wax.webp"
   },
   {
@@ -284,7 +335,7 @@
     "type": "consumable",
     "weight": 0.1,
     "value": 0.02,
-    "description": "Ein Stück Seife.",
+    "description": "Ein Stück Seife zum Reinigen von Körper und Kleidung.",
     "icon": "soap.webp"
   },
   {
@@ -293,7 +344,7 @@
     "type": "gear",
     "weight": 0.01,
     "value": 0.01,
-    "description": "Dünne Schnur.",
+    "description": "Dünne Schnur für Fallen, Alarmsysteme oder zum Zusammenbinden kleiner Dinge.",
     "icon": "string.webp"
   },
   {
@@ -302,7 +353,7 @@
     "type": "gear",
     "weight": 0.5,
     "value": 0.5,
-    "description": "Zum Entzünden von Feuern.",
+    "description": "Enthält Feuerstein, Stahl und Zunder. Zum Entzünden von Feuern (benötigt 1 Aktion).",
     "icon": "tinderbox.webp"
   },
   {
@@ -311,7 +362,7 @@
     "type": "gear",
     "weight": 0.5,
     "value": 0.01,
-    "description": "Brenndauer 1 Stunde.",
+    "description": "Brenndauer 1 Stunde. Radius 6m helles Licht, 6m dämmriges Licht. Als Waffe: 1 Feuerschaden.",
     "icon": "torch.webp"
   },
   {
@@ -320,7 +371,124 @@
     "type": "gear",
     "weight": 2.3,
     "value": 0.2,
-    "description": "Fasst ca. 2 Liter Wasser.",
+    "description": "Ein Beutel aus Leder oder Blase, der ca. 2 Liter Wasser fasst (genug für einen halben Tag).",
     "icon": "waterskin.webp"
+  },
+  {
+    "id": "book_prayer",
+    "name": "Gebetbuch",
+    "type": "gear",
+    "weight": 2.5,
+    "value": 25,
+    "description": "Ein Buch mit heiligen Texten, Gebeten und religiösen Riten.",
+    "icon": "book.webp"
+  },
+  {
+    "id": "book_history",
+    "name": "Geschichtsbuch",
+    "type": "gear",
+    "weight": 2.5,
+    "value": 25,
+    "description": "Ein dickes Buch über vergangene Zeitalter, Schlachten und Königreiche.",
+    "icon": "book.webp"
+  },
+  {
+    "id": "book_philosophy",
+    "name": "Philosophiebuch",
+    "type": "gear",
+    "weight": 2.5,
+    "value": 25,
+    "description": "Ein komplexes Werk über die Natur des Seins, Ethik und Logik.",
+    "icon": "book.webp"
+  },
+  {
+    "id": "holy_symbol",
+    "name": "Heiliges Symbol",
+    "type": "focus",
+    "weight": 0.5,
+    "value": 5,
+    "description": "Ein Amulett oder Emblem, das eine Gottheit repräsentiert. Dient als Zauberfokus für Kleriker und Paladine.",
+    "icon": "holy_symbol.webp"
+  },
+  {
+    "id": "pouch",
+    "name": "Gürteltasche",
+    "type": "gear",
+    "weight": 0.5,
+    "value": 0.5,
+    "description": "Eine kleine Ledertasche für den Gürtel. Fasst ca. 0,5 kg oder 200 Münzen.",
+    "icon": "pouch.webp"
+  },
+  {
+    "id": "mirror",
+    "name": "Stahlspiegel",
+    "type": "gear",
+    "weight": 0.25,
+    "value": 5,
+    "description": "Alias für 'Stahlspiegel'. Ein poliertes Stück Metall.",
+    "icon": "mirror.webp"
+  },
+  {
+    "id": "healers_kit",
+    "name": "Heilerset",
+    "type": "gear",
+    "weight": 1.5,
+    "value": 5,
+    "description": "Ledertasche mit Verbänden, Salben und Schienen. Erlaubt das Stabilisieren von Sterbenden ohne Medizin-Wurf (10 Anwendungen).",
+    "icon": "healer_kit.webp"
+  },
+  {
+    "id": "iron_pot",
+    "name": "Eisentopf",
+    "type": "gear",
+    "weight": 5,
+    "value": 2,
+    "description": "Ein schwerer Topf zum Kochen über offenem Feuer. Fasst ca. 4 Liter.",
+    "icon": "pot.webp"
+  },
+  {
+    "id": "shovel",
+    "name": "Schaufel",
+    "type": "gear",
+    "weight": 2.5,
+    "value": 2,
+    "description": "Ein Werkzeug zum Graben von Löchern oder Freischaufeln von Hindernissen.",
+    "icon": "shovel.webp"
+  },
+  {
+    "id": "manacles",
+    "name": "Handschellen",
+    "type": "gear",
+    "weight": 3,
+    "value": 2,
+    "description": "Fesseln für eine kleine oder mittelgroße Kreatur. Entkommen: SG 20 (Geschicklichkeit). Zerbrechen: SG 20 (Stärke).",
+    "icon": "manacles.webp"
+  },
+  {
+    "id": "tent",
+    "name": "Zelt (2 Personen)",
+    "type": "gear",
+    "weight": 10,
+    "value": 2,
+    "description": "Ein einfaches Zelt aus Segeltuch, bietet Schutz für zwei Personen vor dem Wetter.",
+    "icon": "tent.webp"
+  },
+  {
+    "id": "oil",
+    "name": "Öl (Flasche)",
+    "type": "consumable",
+    "weight": 0.5,
+    "value": 0.1,
+    "description": "Alias für 'Öl (Fläschchen)'.",
+    "icon": "oil.webp"
+  },
+  {
+    "id": "rope_silk",
+    "name": "Seil, Seide (15m)",
+    "type": "gear",
+    "weight": 2.5,
+    "value": 10,
+    "description": "Ein leichtes, aber extrem starkes Seil aus Seide. Hat 2 Trefferpunkte und kann mit SG 17 Stärke zerrissen werden.",
+    "icon": "rope.webp"
   }
 ]

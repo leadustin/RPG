@@ -63,6 +63,15 @@
     "icon": "calligrapher.webp"
   },
   {
+    "id": "calligrapher",
+    "name": "Kalligraphen-Bedarf",
+    "type": "tool",
+    "weight": 2.3,
+    "value": 10,
+    "description": "Alias für Kalligraphen-Bedarf (Hintergrund).",
+    "icon": "calligrapher.webp"
+  },
+  {
     "id": "carpenters_tools",
     "name": "Zimmermannswerkzeug",
     "type": "tool",
@@ -72,12 +81,30 @@
     "icon": "tools.webp"
   },
   {
+    "id": "carpenter",
+    "name": "Zimmermannswerkzeug",
+    "type": "tool",
+    "weight": 2.7,
+    "value": 8,
+    "description": "Alias für Zimmermannswerkzeug (Hintergrund).",
+    "icon": "tools.webp"
+  },
+  {
     "id": "cartographers_tools",
     "name": "Kartographenwerkzeug",
     "type": "tool",
     "weight": 2.7,
     "value": 15,
     "description": "Ein Winkelmaß, Zirkel, Messschieber und ein Lineal.",
+    "icon": "tools.webp"
+  },
+  {
+    "id": "cartographer",
+    "name": "Kartographenwerkzeug",
+    "type": "tool",
+    "weight": 2.7,
+    "value": 15,
+    "description": "Alias für Kartographenwerkzeug (Hintergrund).",
     "icon": "tools.webp"
   },
   {
@@ -234,6 +261,15 @@
     "icon": "navigator.webp"
   },
   {
+    "id": "navigator",
+    "name": "Navigationswerkzeug",
+    "type": "tool",
+    "weight": 0.9,
+    "value": 25,
+    "description": "Alias für Navigationswerkzeug (Hintergrund).",
+    "icon": "navigator.webp"
+  },
+  {
     "id": "musical_instrument_lute",
     "name": "Laute",
     "type": "tool",
@@ -297,6 +333,15 @@
     "icon": "lute.webp"
   },
   {
+    "id": "musical_instrument_choice",
+    "name": "Musikinstrument (Wahl)",
+    "type": "tool",
+    "weight": 3,
+    "value": 30,
+    "description": "Platzhalter für Instrumentenwahl (Hintergrund).",
+    "icon": "lute.webp"
+  },
+  {
     "id": "artisan_tools",
     "name": "Handwerkerwerkzeug (Beliebig)",
     "type": "tool",
@@ -306,12 +351,30 @@
     "icon": "tools.webp"
   },
   {
+    "id": "artisan_tools_choice",
+    "name": "Handwerker-Werkzeug (Wahl)",
+    "type": "tool",
+    "weight": 2.5,
+    "value": 15,
+    "description": "Platzhalter für Werkzeugwahl (Hintergrund).",
+    "icon": "tools.webp"
+  },
+  {
     "id": "gaming_set",
     "name": "Spielset (Beliebig)",
     "type": "tool",
     "weight": 0.5,
     "value": 1,
     "description": "Ein Spiel deiner Wahl.",
+    "icon": "dice.webp"
+  },
+  {
+    "id": "gaming_set_choice",
+    "name": "Spielset (Wahl)",
+    "type": "tool",
+    "weight": 0.5,
+    "value": 1,
+    "description": "Platzhalter für Spielsetwahl (Hintergrund).",
     "icon": "dice.webp"
   }
 ]

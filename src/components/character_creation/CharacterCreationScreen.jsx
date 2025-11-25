@@ -10,6 +10,7 @@ import allRaceData from "../../data/races.json";
 import allClassData from "../../data/classes.json";
 import allBackgroundData from "../../data/backgrounds.json";
 
+// WICHTIG: Import der Engine-Funktion
 import { initializeInventory } from '../../engine/inventoryEngine';
 
 const STEPS = ['Class', 'Background', 'Race', 'Abilities', 'Identity', 'Equipment', 'Zusammenfassung'];
@@ -31,7 +32,7 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
   const [maxStepIndex, setMaxStepIndex] = useState(0); 
   const [errorMsg, setErrorMsg] = useState(""); 
 
-  // State für die gewählte Ausrüstung
+  // State für die gewählte Klassen-Ausrüstung (Option A/B)
   const [startingEquipment, setStartingEquipment] = useState(null);
 
   const defaultRace = allRaceData.find((r) => r.key === "human");
@@ -106,10 +107,11 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
     // --- FINALISIERUNG ---
     if (currentStep === 'Zusammenfassung') {
       
-      // Inventar & Gold berechnen
+      // FIX: Hier nutzen wir jetzt initializeInventory, um ALLES zusammenzuführen
+      // (Klasse + Hintergrund + Gold)
       const { inventory, gold } = initializeInventory(character, startingEquipment);
 
-      // Daten konsolidieren
+      // Daten konsolidieren (Sprachen/Tools)
       const consolidatedLanguages = [
         ...(character.race?.languages || []),
         ...(character.background_choices?.languages || [])
@@ -122,11 +124,14 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
 
       const finalCharacter = {
         ...character,
+        // Wir speichern hier nur die Keys, um den State klein zu halten
+        // (Die Re-Hydrierung passiert in useGameState)
         class: character.class.key, 
         race: character.race.key,   
         subclass: character.subclass ? character.subclass.key : null,
         background: character.background.key, 
         
+        // Hier kommen die berechneten Werte rein
         gold: gold,
         inventory: inventory,
 
@@ -171,7 +176,7 @@ export const CharacterCreationScreen = ({ onCharacterFinalized }) => {
             </div>
           )}
           
-          {/* NEU: Bedingte Anzeige */}
+          {/* Bedingte Anzeige */}
           {currentStep === 'Equipment' ? (
             <StartingEquipmentSelection 
               classData={character.class}
