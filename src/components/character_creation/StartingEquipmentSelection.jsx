@@ -1,12 +1,11 @@
 // src/components/character_creation/StartingEquipmentSelection.jsx
 import React, { useState, useEffect } from 'react';
 import { getItem } from '../../utils/itemLoader';
-// Importiere das allgemeine Panel-Design für den Hintergrund (WICHTIG!)
 import './PanelDetails.css'; 
 import './StartingEquipmentSelection.css';
 
 const StartingEquipmentSelection = ({ classData, onSelect }) => {
-  const [choiceType, setChoiceType] = useState('equipment'); // 'equipment' oder 'gold'
+  const [choiceType, setChoiceType] = useState('equipment'); 
   const [selectedPackage, setSelectedPackage] = useState(0);
 
   useEffect(() => {
@@ -47,18 +46,23 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
   };
 
   if (!equipmentData) {
-    return <div className="selection-panel class-summary-box">Keine Startausrüstung definiert.</div>;
+    // Auch hier ui-panel nutzen für Konsistenz
+    return <div className="selection-panel ui-panel">Keine Startausrüstung definiert.</div>;
   }
 
   return (
-    // HIER: class-summary-box hinzugefügt für den Hintergrund-Look
-    <div className="selection-panel class-summary-box starting-equipment-panel">
-      <h2 className="panel-title">Startausrüstung wählen</h2>
-      <div className="details-divider"></div>
+    // HIER KORRIGIERT: 'ui-panel' statt 'class-summary-box'
+    // 'ui-panel' bringt den braunen Hintergrund und den Rahmen mit.
+    <div className="selection-panel ui-panel starting-equipment-panel">
       
-      <p className="description-text">
-        Wie möchtest du dein Abenteuer beginnen? Mit der bewährten Ausrüstung deiner Klasse oder mit einem Sack voll Gold, um dich selbst auszurüsten?
-      </p>
+      {/* Header Bereich */}
+      <div className="equipment-header">
+        <h2 className="panel-title">Startausrüstung wählen</h2>
+        <div className="details-divider"></div>
+        <p className="description-text">
+          Wie möchtest du dein Abenteuer beginnen? Mit der bewährten Ausrüstung deiner Klasse oder mit Gold?
+        </p>
+      </div>
 
       <div className="options-container">
         
@@ -101,6 +105,7 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
                   value={selectedPackage} 
                   onChange={(e) => setSelectedPackage(Number(e.target.value))}
                   onClick={(e) => e.stopPropagation()}
+                  className="panel-select" // Nutzt jetzt den Style aus PanelDetails.css
                 >
                   {equipmentData.choices.map((choice, index) => (
                     <option key={index} value={index}>{choice.label}</option>

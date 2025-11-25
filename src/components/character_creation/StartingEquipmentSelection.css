@@ -1,69 +1,83 @@
 /* src/components/character_creation/StartingEquipmentSelection.css */
 
-/* Das Panel selbst füllt den Raum */
+/* Das Panel selbst - nutzt jetzt den Hintergrund von .ui-panel */
 .starting-equipment-panel {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1.5rem; /* Inneres Padding wie bei anderen Panels */
+  padding: 20px;
   box-sizing: border-box;
-  overflow-y: auto; /* Scrollbar falls nötig */
+  overflow-y: auto;
+  /* WICHTIG: justify-content NICHT auf center setzen, damit es oben bleibt */
+  justify-content: flex-start; 
+}
+
+.equipment-header {
+  margin-bottom: 1.5rem;
+  flex-shrink: 0; /* Header nicht schrumpfen lassen */
 }
 
 .panel-title {
   margin-top: 0;
-  color: #e0e0e0;
-  font-family: 'Cinzel', serif; /* Falls im Projekt vorhanden */
+  color: var(--theme-text-highlight-color, #e0e0e0);
+  font-family: var(--theme-font-header, serif);
+  margin-bottom: 0.5rem;
 }
 
 .description-text {
-  color: #ccc;
-  margin-bottom: 2rem;
-  line-height: 1.6;
+  color: var(--theme-text-color, #ccc);
+  line-height: 1.5;
+  margin-top: 10px;
 }
 
 .options-container {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
-  justify-content: center; /* Zentriert die Karten */
-  margin-bottom: 2rem;
+  /* Startet links/oben statt zentriert, falls Platz eng wird */
+  justify-content: center; 
+  align-items: stretch; /* Karten gleich hoch */
+  padding-bottom: 20px;
 }
 
 /* --- KARTEN DESIGN --- */
 .option-card {
-  background: rgba(0, 0, 0, 0.3); /* Dunklerer Hintergrund für Kontrast im Panel */
-  border: 1px solid #555;
-  border-radius: 4px;
-  width: 45%; /* Karten nehmen fast die halbe Breite ein */
+  /* Wir machen den Hintergrund dunkler aber leicht transparent, 
+     damit der ui-panel Hintergrund durchscheint */
+  background: rgba(20, 20, 25, 0.6); 
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  width: 45%;
   min-width: 300px;
-  padding: 0; /* Padding im Content */
+  padding: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 .option-card:hover {
-  border-color: #aaa;
-  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--theme-gold-color, #d4af37);
+  background: rgba(30, 30, 35, 0.7);
   transform: translateY(-2px);
 }
 
 .option-card.selected {
-  border-color: #d4af37;
-  background: rgba(212, 175, 55, 0.1); /* Leichter Gold-Hintergrund */
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  border: 2px solid var(--theme-gold-color, #d4af37);
+  /* Ein subtiler goldener Schein im Hintergrund */
+  background: linear-gradient(to bottom, rgba(212, 175, 55, 0.1), rgba(20, 20, 25, 0.8));
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
 }
 
 /* --- HEADER --- */
 .option-card h3 {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   margin: 0;
   padding: 1rem;
   text-align: center;
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -71,8 +85,8 @@
 }
 
 .option-card.selected h3 {
-  color: #d4af37;
-  border-bottom-color: #d4af37;
+  color: var(--theme-gold-color, #d4af37);
+  border-bottom-color: var(--theme-gold-color, #d4af37);
 }
 
 /* --- CONTENT --- */
@@ -86,7 +100,7 @@
 .centered-content {
   align-items: center;
   text-align: center;
-  justify-content: center;
+  justify-content: center; /* Vertikal zentrieren innerhalb der Karte */
 }
 
 /* --- GOLD ANZEIGEN --- */
@@ -98,19 +112,22 @@
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(255, 215, 0, 0.3);
   width: 100%;
+  text-align: center;
 }
 
 .gold-display {
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: bold;
   color: #ffd700;
   text-shadow: 0 2px 4px rgba(0,0,0,0.8);
   margin: 0.5rem 0;
+  font-family: serif;
 }
 
 .big-gold-icon {
   font-size: 4rem;
-  margin-bottom: -10px;
+  margin-bottom: -15px;
+  opacity: 0.8;
 }
 
 /* --- LISTEN --- */
@@ -122,10 +139,11 @@
 }
 
 .item-list li {
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
+  font-size: 0.95rem;
 }
 
 .item-list li:last-child {
@@ -137,10 +155,13 @@
   margin-right: 8px;
   font-family: monospace;
   font-size: 1.1em;
+  background: rgba(0,0,0,0.3);
+  padding: 1px 4px;
+  border-radius: 3px;
 }
 
 .item-list .item-name {
-  color: #e0e0e0;
+  color: #eee;
 }
 
 /* --- SUB SELECTION --- */
@@ -149,7 +170,7 @@
   background: rgba(0, 0, 0, 0.2);
   padding: 1rem;
   border-radius: 4px;
-  border: 1px solid #444;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .sub-selection label {
@@ -160,49 +181,47 @@
   text-transform: uppercase;
 }
 
+/* Wir nutzen jetzt .panel-select aus PanelDetails.css, 
+   aber falls wir hier spezifische Anpassungen brauchen: */
 .sub-selection select {
   width: 100%;
-  padding: 8px;
-  background: #1a1a1a;
-  color: #fff;
-  border: 1px solid #555;
-  border-radius: 3px;
   margin-bottom: 1rem;
 }
 
 .sub-list li {
   font-size: 0.9rem;
+  padding: 4px 0;
 }
 
 /* --- HINT TEXT --- */
 .divider-small {
-  width: 50px;
+  width: 60px;
   height: 2px;
-  background: #555;
-  margin: 1rem 0;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  margin: 1.5rem 0;
 }
 
 .hint-text {
-  font-size: 0.9rem;
-  color: #aaa;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  color: #bbb;
+  line-height: 1.6;
 }
 
 /* --- CHECK BADGE --- */
 .check-badge {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: -10px;
+  right: -10px;
   background: #d4af37;
-  color: #000;
-  width: 28px;
-  height: 28px;
+  color: #1a1a1a;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
+  font-weight: 900;
+  font-size: 18px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.5);
   z-index: 10;
   border: 2px solid #fff;
