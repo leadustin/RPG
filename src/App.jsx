@@ -8,10 +8,8 @@ import { CharacterCreationScreen } from "./components/character_creation/Charact
 import GameView from "./components/game_view/GameView";
 import { LevelUpScreen } from "./components/level_up/LevelUpScreen";
 import CharacterSheet from "./components/character_sheet/CharacterSheet";
-// TileMap Import hier nicht mehr nötig, da GameView das macht, aber schadet nicht
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
 import { loadAutoSave, getSaveSlots } from "./utils/persistence";
-// locationsData Import hier nicht mehr nötig für die Logik
 import { EventLog } from "./components/event_log/EventLog";
 import "./App.css";
 
@@ -38,7 +36,8 @@ function App() {
     handleLongRest,
     handleShopTransaction,
     handleUpdateCharacter,
-    handleCastSpell
+    handleCastSpell,
+    handleUnpackItem 
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -52,15 +51,9 @@ function App() {
   const manualSaveExists = getSaveSlots().some((slot) => slot !== null);
   const saveFileExists = autoSaveExists || manualSaveExists;
 
-    // +++ NEU: Erstelle die Party für die Props +++
-    // Falls du in Zukunft echte Party-Mitglieder in gameState.party hast, nutze das.
-    // Aktuell wrappen wir nur den einzelnen Charakter in ein Array.
   const party = gameState.character ? [gameState.character] : [];
 
   const renderScreen = () => {
-    // +++ KORREKTUR: Der Block, der TileMap direkt gerendert hat, ist weg! +++
-    // Wir verlassen uns jetzt voll auf GameView -> LocationView -> TileMap
-
     switch (gameState.screen) {
       case "start":
         return (
@@ -131,6 +124,8 @@ function App() {
               handleToggleTwoHanded={handleToggleTwoHanded}
               handleFillQuiver={handleFillQuiver}
               handleUnloadQuiver={handleUnloadQuiver}
+              // HIER WURDE DIE ZEILE HINZUGEFÜGT:
+              handleUnpackItem={handleUnpackItem} 
             />
           )}
 

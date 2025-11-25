@@ -426,6 +426,79 @@ export const useGameState = () => {
     });
   }, []);
 
+  // +++ NEU: Funktion zum Auspacken von Paketen +++
+  const handleUnpackItem = useCallback((packItem) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      let inventory = [...character.inventory];
+      let logEntries = [...prevState.logEntries];
+
+      // 1. Definition des Pakets finden (um den Inhalt zu kennen)
+      // Da packItem aus dem Inventar kommt, hat es vielleicht nicht alle Infos.
+      // Wir suchen das Original-Item in allItems
+      const packDef = allItems.find(i => i.id === packItem.itemId);
+
+      if (!packDef || packDef.type !== 'pack' || !packDef.contents) {
+         logEntries.push(createLogEntry("Dieser Gegenstand kann nicht ausgepackt werden.", "error"));
+         return { ...prevState, logEntries };
+      }
+
+      // 2. Paket aus Inventar entfernen
+      const packIndex = inventory.findIndex(i => i.instanceId === packItem.instanceId);
+      if (packIndex === -1) return prevState; // Sollte nicht passieren
+
+      const currentPackStack = inventory[packIndex];
+      
+      if (currentPackStack.quantity > 1) {
+          // Wenn Stapel: Eins abziehen
+          inventory[packIndex] = { 
+              ...currentPackStack, 
+              quantity: currentPackStack.quantity - 1 
+          };
+      } else {
+          // Wenn einzeln: Entfernen
+          inventory.splice(packIndex, 1);
+      }
+
+      // 3. Inhalte hinzufügen
+      packDef.contents.forEach(contentItem => {
+          // Item Definition laden (z.B. "torch")
+          const itemDef = allItems.find(i => i.id === contentItem.id);
+          if (!itemDef) return;
+
+          // Prüfen ob wir stapeln können
+          const existingItemIndex = inventory.findIndex(i => i.itemId === contentItem.id);
+          
+          // Stapelbare Typen (Logik aus shopEngine/inventoryEngine adaptiert)
+          const isStackable = ['ammo', 'potion', 'scroll', 'loot', 'food', 'resource', 'gear', 'consumable'].includes(itemDef.type);
+
+          if (isStackable && existingItemIndex > -1) {
+              inventory[existingItemIndex] = {
+                  ...inventory[existingItemIndex],
+                  quantity: inventory[existingItemIndex].quantity + contentItem.quantity
+              };
+          } else {
+              inventory.push({
+                  ...itemDef,
+                  itemId: itemDef.id,
+                  instanceId: crypto.randomUUID(),
+                  quantity: contentItem.quantity,
+                  equipped: false
+              });
+          }
+      });
+
+      logEntries.push(createLogEntry(`${packDef.name} ausgepackt.`, "item"));
+
+      return {
+        ...prevState,
+        character: { ...character, inventory },
+        logEntries
+      };
+    });
+  }, []);
+
   const handleFillQuiver = useCallback((ammoItem) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -713,7 +786,8 @@ export const useGameState = () => {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
-    handleFillQuiver, 
+    handleFillQuiver,
+    handleUnpackItem,
     handleUnloadQuiver, 
     handleEnterLocation,
     handleLeaveLocation,

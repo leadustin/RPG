@@ -16,13 +16,13 @@ import {
   SKILL_DESCRIPTIONS_DE,
 } from "../../engine/characterEngine";
 import { LEVEL_XP_TABLE } from "../../utils/helpers";
-import InventoryItem from "./InventoryItem";
+// InventoryItem und InventoryFilter hier entfernt, da sie jetzt im InventoryPanel sind
 import EquipmentSlot from "./EquipmentSlot";
 import SpellbookTab from './SpellbookTab';
 import { ItemTypes } from "../../dnd/itemTypes"; 
-import InventoryFilter from "./InventoryFilter";
 import allClassData from "../../data/classes.json";
-import AbilitiesTab from './AbilitiesTab'; // Import sicherstellen
+import AbilitiesTab from './AbilitiesTab'; 
+import InventoryPanel from "./InventoryPanel"; // <--- NEU: Import
 
 const classIconModules = import.meta.glob(
   '../../assets/images/classes/*.(png|webp|jpg|svg)', 
@@ -47,20 +47,19 @@ const CharacterSheet = ({
   character: initialCharacter, 
   party = [], 
   onClose,
-  onUpdateCharacter, // <--- WICHTIG: Hier empfangen wir die Funktion aus App.jsx
+  onUpdateCharacter, 
   handleEquipItem,
   handleUnequipItem,
   handleToggleTwoHanded,
   handleFillQuiver,
-  handleUnloadQuiver
+  handleUnloadQuiver,
+  handleUnpackItem // <--- NEU: Prop für Auspack-Funktion
 }) => {
   const { t } = useTranslation(); 
   
   const [displayCharacter, setDisplayCharacter] = useState(initialCharacter || party[0]);
   const [activeTab, setActiveTab] = useState("Inventory");
   const [activeStatTab, setActiveStatTab] = useState("Stats");
-  const [collapsedInventories, setCollapsedInventories] = useState({});
-  const [activeFilter, setActiveFilter] = useState("all");
 
   useEffect(() => {
     if (initialCharacter) {
@@ -117,8 +116,10 @@ const CharacterSheet = ({
       }
   }, [displayCharacter, hasSpellcasting, activeTab]);
 
-
   // --- useMemo Hooks ---
+  // Gewichtsberechnung könnte man auch ins InventoryPanel auslagern oder als Prop übergeben, 
+  // falls du die Anzeige dort wieder haben möchtest. Aktuell habe ich es hier belassen, 
+  // falls du es für andere Logik brauchst, aber es wird im UI nicht mehr angezeigt.
   const currentWeight = useMemo(() => {
     if (!displayCharacter) return 0;
     let totalWeight = 0;
@@ -139,23 +140,6 @@ const CharacterSheet = ({
     }
     return totalWeight;
   }, [displayCharacter]);
-
-  const filteredInventory = useMemo(() => {
-    if (!displayCharacter || !displayCharacter.inventory) {
-      return [];
-    }
-    if (activeFilter === "all") {
-      return displayCharacter.inventory;
-    }
-    if (activeFilter === "armor") {
-        return displayCharacter.inventory.filter(item => 
-            ["armor", "shield", "head", "hands", "boots", "cloth", "belt", "cloak"].includes(item.type)
-        );
-    }
-    return displayCharacter.inventory.filter(
-      (item) => item && item.type === activeFilter
-    );
-  }, [displayCharacter, activeFilter]);
   
   const finalModifiers = useMemo(() => {
     if (!displayCharacter) return {};
@@ -216,16 +200,6 @@ const CharacterSheet = ({
   };
 
   if (!displayCharacter) return null;
-
-  const finalStrForWeight = displayCharacter.abilities.str + getRacialAbilityBonus(displayCharacter, 'str');
-  const maxWeight = finalStrForWeight * 15;
-  
-  const toggleInventory = (characterName) => {
-    setCollapsedInventories((prevState) => ({
-      ...prevState,
-      [characterName]: !prevState[characterName],
-    }));
-  };
 
   const maxHp = displayCharacter.stats.maxHp;
   const currentHp = displayCharacter.stats.hp !== undefined ? displayCharacter.stats.hp : maxHp;
@@ -298,29 +272,16 @@ const CharacterSheet = ({
           })}
         </aside>
 
-        {/* --- INVENTORY TAB --- */}
+        {/* --- INVENTORY TAB (NEU MIT INVENTORY PANEL) --- */}
         {activeTab === "Inventory" && (
           <section ref={drop} className="inventory-section">
-            <div className="inventory-header">
-              <h2>Inventory</h2>
-            </div>
-            <InventoryFilter activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-            <div className={`character-inventory ${collapsedInventories[displayCharacter.name] ? "collapsed" : ""}`}>
-              <div className="inventory-owner toggle-inventory" onClick={() => toggleInventory(displayCharacter.name)}>
-                <h3>{displayCharacter.name}</h3>
-                <div className="inventory-details">
-                  <div className={`weight-display ${currentWeight > maxWeight ? "encumbered" : ""}`}>
-                    Gewicht: {currentWeight.toFixed(1)} / {maxWeight} kg
-                  </div>
-                  <span className="toggle-icon">{collapsedInventories[displayCharacter.name] ? "+" : "-"}</span>
-                </div>
-              </div>
-              <div className="inventory-grid">
-                {filteredInventory.map((item, index) => (
-                  <InventoryItem key={`${item.id}-${index}`} item={item} />
-                ))}
-              </div>
-            </div>
+            <InventoryPanel 
+              inventory={displayCharacter.inventory}
+              currency={displayCharacter.wallet}
+              onEquip={enhancedHandleEquipItem}
+              onUnequip={handleUnequipItem}
+              handleUnpackItem={handleUnpackItem} // WICHTIG: Weitergeben
+            />
           </section>
         )}
         
@@ -328,7 +289,7 @@ const CharacterSheet = ({
         {activeTab === "Spells" && hasSpellcasting && (
           <SpellbookTab 
              character={displayCharacter} 
-             onUpdateCharacter={onUpdateCharacter} // <--- WICHTIG: Weiterleitung an SpellbookTab!
+             onUpdateCharacter={onUpdateCharacter} 
           />
         )}
 
