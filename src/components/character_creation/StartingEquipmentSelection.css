@@ -1,13 +1,5 @@
 /* Container für das gesamte Panel */
-.starting-equipment-panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 15px 20px; /* Weniger Padding oben/unten */
-  color: #e0e0e0;
-  overflow-y: auto;
-  justify-content: flex-start; /* Wichtig: Inhalt oben halten */
-}
+
 
 /* --- HEADER BEREICH KOMPAKT --- */
 .equipment-header {
@@ -25,12 +17,6 @@
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-/* Überschreibt den globalen Divider-Abstand NUR in diesem Panel */
-.equipment-header .details-divider {
-  margin: 8px 0; /* Viel kleiner als der Standard (oft 20px) */
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #555, transparent);
-}
 
 .description-text {
   color: #aaa;
