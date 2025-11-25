@@ -1,7 +1,6 @@
+// src/components/character_sheet/InventoryPanel.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import './InventoryPanel.css';
-// Stelle sicher, dass du diese Komponenten hast oder entferne die Imports, falls du sie inline baust
-// Ich gehe davon aus, dass du InventoryFilter und InventoryItem hast, wie vorher besprochen.
 import InventoryFilter from './InventoryFilter';
 import InventoryItem from './InventoryItem';
 import { useTranslation } from 'react-i18next';
@@ -10,29 +9,55 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
   const { t } = useTranslation();
   const [filter, setFilter] = useState('all');
   
-  // State für das Kontextmenü
-  const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, item: null });
+  // State für Einklappen
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // State für das Kontextmenü (inkl. Ziel-Koordinaten relativ zum Item)
+  const [contextMenu, setContextMenu] = useState({ 
+      visible: false, 
+      x: 0, 
+      y: 0, 
+      item: null,
+      itemId: null // ID speichern, um Tooltip beim Item zu deaktivieren
+  });
+  
   const menuRef = useRef(null);
 
   // Schließt Menü bei Klick woanders hin
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setContextMenu({ ...contextMenu, visible: false });
+        closeContextMenu();
       }
     };
     document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, [contextMenu]);
+    // Auch bei Scrollen schließen, damit Menü nicht "schwebt"
+    document.addEventListener("scroll", closeContextMenu, true); 
+    return () => {
+        document.removeEventListener("click", handleClickOutside);
+        document.removeEventListener("scroll", closeContextMenu, true);
+    };
+  }, []);
+
+  const closeContextMenu = () => {
+      setContextMenu({ visible: false, x: 0, y: 0, item: null, itemId: null });
+  };
 
   // Handler für Rechtsklick auf Item
   const handleContextMenu = (e, item) => {
     e.preventDefault(); // Browser-Menü unterdrücken
+    
+    // Position berechnen: Rechts neben dem Mauszeiger oder dem Item
+    // Wir nehmen hier Mauszeiger + kleiner Offset, damit es sich wie ein "Smart Tooltip" anfühlt
+    const xPos = e.clientX + 10; 
+    const yPos = e.clientY + 5;
+
     setContextMenu({
       visible: true,
-      x: e.pageX,
-      y: e.pageY,
-      item: item
+      x: xPos,
+      y: yPos,
+      item: item,
+      itemId: item.instanceId || item.id // Eindeutige ID für Tooltip-Deaktivierung
     });
   };
 
@@ -42,24 +67,19 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
 
     switch(action) {
         case 'equip':
-            // Einfache Logik für Equip via Kontextmenü
             if (onEquip) onEquip(contextMenu.item, contextMenu.item.slot || 'main-hand'); 
             break;
         case 'unpack':
             if (handleUnpackItem) {
                 handleUnpackItem(contextMenu.item);
-            } else {
-                console.warn("handleUnpackItem wurde nicht übergeben!");
             }
             break;
         default:
             break;
     }
-    setContextMenu({ ...contextMenu, visible: false });
+    closeContextMenu();
   };
 
-  // Filter-Logik
-  // Wir prüfen, ob inventory existiert, um Fehler zu vermeiden
   const safeInventory = inventory || [];
   
   const filteredInventory = safeInventory.filter(item => {
@@ -68,59 +88,87 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
     return item.type === filter;
   });
 
+  // Berechnung des Gesamtgewichts für die Anzeige im Header
+  const currentWeight = safeInventory.reduce((acc, i) => acc + (i.weight || 0) * (i.quantity || 1), 0);
+
   return (
-    <div className="inventory-panel">
-      <div className="inventory-header">
-        <h3>{t('inventory.title', 'Inventar')}</h3>
+    <div className={`inventory-panel ${isCollapsed ? 'collapsed' : ''}`}>
+      
+      {/* --- HEADER (Collapsible) --- */}
+      <div className="inventory-header" onClick={() => setIsCollapsed(!isCollapsed)}>
+        <div className="header-title-row">
+            <h3>{t('inventory.title', 'Inventar')}</h3>
+            <div className="header-stats">
+                <span className="weight-info">{currentWeight.toFixed(1)} kg</span>
+                <span className="toggle-icon">{isCollapsed ? '+' : '−'}</span>
+            </div>
+        </div>
+        
+        {/* Währung zeigen wir immer an, auch wenn eingeklappt (oder man schiebt es in den Body) */}
         <div className="currency-display">
-           <span title="Gold" className="coin gold">{currency?.gold || 0} GM</span>
-           <span title="Silber" className="coin silver">{currency?.silver || 0} SM</span>
-           <span title="Kupfer" className="coin copper">{currency?.copper || 0} KM</span>
+           <span title="Gold" className="coin gold">{currency?.gold || 0}</span>
+           <span title="Silber" className="coin silver">{currency?.silver || 0}</span>
+           <span title="Kupfer" className="coin copper">{currency?.copper || 0}</span>
         </div>
       </div>
 
-      {/* Filter Komponente */}
-      <InventoryFilter currentFilter={filter} onFilterChange={setFilter} />
+      {/* --- BODY (Wird ausgeblendet) --- */}
+      {!isCollapsed && (
+        <>
+          <InventoryFilter currentFilter={filter} onFilterChange={setFilter} />
 
-      <div className="inventory-list">
-        {filteredInventory.length === 0 ? (
-          <div className="empty-inventory">{t('inventory.empty', 'Leer')}</div>
-        ) : (
-          filteredInventory.map((item, index) => (
-            <div 
-                key={item.instanceId || item.id || index} 
-                onContextMenu={(e) => handleContextMenu(e, item)} // Rechtsklick Event
-            >
-                <InventoryItem 
-                  item={item} 
-                  // onEquip wird hier für Linksklick/Drag genutzt, falls InventoryItem das unterstützt
-                  onEquip={onEquip} 
-                />
-            </div>
-          ))
-        )}
-      </div>
+          <div className="inventory-list">
+            {filteredInventory.length === 0 ? (
+              <div className="empty-inventory">{t('inventory.empty', 'Leer')}</div>
+            ) : (
+              filteredInventory.map((item, index) => {
+                // Prüfen ob dies das Item ist, dessen Kontextmenü offen ist
+                const isCtxOpen = contextMenu.visible && contextMenu.itemId === (item.instanceId || item.id);
+                
+                return (
+                    <div 
+                        key={item.instanceId || item.id || index} 
+                        className={`inventory-slot-wrapper ${isCtxOpen ? 'active-context' : ''}`}
+                        onContextMenu={(e) => handleContextMenu(e, item)}
+                    >
+                        <InventoryItem 
+                          item={item} 
+                          onEquip={onEquip} 
+                          isContextMenuOpen={isCtxOpen} // Prop weitergeben!
+                        />
+                    </div>
+                );
+              })
+            )}
+          </div>
+        </>
+      )}
 
-      {/* --- KONTEXT MENÜ --- */}
+      {/* --- KONTEXT MENÜ (PORTAL-ARTIG) --- */}
       {contextMenu.visible && (
         <div 
             ref={menuRef}
             className="inventory-context-menu"
-            style={{ top: contextMenu.y, left: contextMenu.x }}
+            style={{ 
+                top: contextMenu.y, 
+                left: contextMenu.x,
+            }}
         >
             <div className="menu-header">{contextMenu.item.name}</div>
             
-            {/* Ausrüsten Button (nur wenn ausrüstbar und nicht ausgerüstet) */}
-            {!contextMenu.item.equipped && (contextMenu.item.slot || contextMenu.item.type === 'weapon' || contextMenu.item.type === 'armor') && (
-                <button onClick={() => executeAction('equip')}>Ausrüsten</button>
-            )}
+            {/* Dynamische Aktionen */}
+            <div className="menu-actions">
+                {!contextMenu.item.equipped && (contextMenu.item.slot || ['weapon','armor','shield'].includes(contextMenu.item.type)) && (
+                    <button onClick={() => executeAction('equip')}>⚔️ Ausrüsten</button>
+                )}
 
-            {/* Auspacken Button (nur für Packs) */}
-            {contextMenu.item.type === 'pack' && (
-                <button onClick={() => executeAction('unpack')}>Auspacken</button>
-            )}
-
-            <button className="cancel" onClick={() => setContextMenu({...contextMenu, visible: false})}>Abbrechen</button>
+                {contextMenu.item.type === 'pack' && (
+                    <button onClick={() => executeAction('unpack')}>🎒 Auspacken</button>
+                )}
+                
+                {/* Platzhalter für später: Wegwerfen, Ansehen, etc. */}
+                <button className="info-only">Gewicht: {contextMenu.item.weight} kg</button>
+            </div>
         </div>
       )}
     </div>
