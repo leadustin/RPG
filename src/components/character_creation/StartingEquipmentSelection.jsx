@@ -1,7 +1,8 @@
 // src/components/character_creation/StartingEquipmentSelection.jsx
 import React, { useState, useEffect } from 'react';
 import { getItem } from '../../utils/itemLoader';
-// WICHTIG: CSS Importieren
+// Importiere das allgemeine Panel-Design für den Hintergrund (WICHTIG!)
+import './PanelDetails.css'; 
 import './StartingEquipmentSelection.css';
 
 const StartingEquipmentSelection = ({ classData, onSelect }) => {
@@ -28,12 +29,10 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
       // Option A: Items + Standard Gold
       let finalItems = [];
 
-      // 1. Feste Items
       if (equipmentData.items) {
         finalItems = [...equipmentData.items];
       }
 
-      // 2. Paket-Auswahl (Choices)
       if (equipmentData.choices && equipmentData.choices.length > 0) {
         const packItems = equipmentData.choices[selectedPackage].items;
         finalItems = [...finalItems, ...packItems];
@@ -48,14 +47,17 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
   };
 
   if (!equipmentData) {
-    return <div className="selection-panel">Keine Startausrüstung für diese Klasse definiert.</div>;
+    return <div className="selection-panel class-summary-box">Keine Startausrüstung definiert.</div>;
   }
 
   return (
-    <div className="selection-panel">
-      <h2>Startausrüstung wählen</h2>
+    // HIER: class-summary-box hinzugefügt für den Hintergrund-Look
+    <div className="selection-panel class-summary-box starting-equipment-panel">
+      <h2 className="panel-title">Startausrüstung wählen</h2>
+      <div className="details-divider"></div>
+      
       <p className="description-text">
-        Wie möchtest du dein Abenteuer beginnen? Mit der bewährten Ausrüstung deiner Klasse oder mit einem Sack voll Gold?
+        Wie möchtest du dein Abenteuer beginnen? Mit der bewährten Ausrüstung deiner Klasse oder mit einem Sack voll Gold, um dich selbst auszurüsten?
       </p>
 
       <div className="options-container">
@@ -69,50 +71,49 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
           <h3>Option A: Ausrüstung</h3>
           
           <div className="option-content">
-            {/* Anzeige für zusätzliches Gold bei Option A */}
+            {/* Gold-Bonus */}
             {equipmentData.default_gold > 0 && (
-               <div style={{marginBottom: '10px', color: '#ffd700', fontWeight: 'bold'}}>
-                 + {equipmentData.default_gold} Goldmünzen
+               <div className="gold-bonus">
+                 <span className="icon">💰</span> {equipmentData.default_gold} GM Startgold
                </div>
             )}
 
             {/* Feste Items */}
             {equipmentData.items && equipmentData.items.length > 0 && (
-              <ul>
+              <ul className="item-list">
                 {equipmentData.items.map((itemRef, idx) => {
                   const item = getItem(itemRef.id);
                   return (
                     <li key={idx}>
-                      {itemRef.quantity > 1 ? `${itemRef.quantity}x ` : ''}
-                      {item ? item.name : itemRef.id}
+                      {itemRef.quantity > 1 ? <span className="qty">{itemRef.quantity}x</span> : ''}
+                      <span className="item-name">{item ? item.name : itemRef.id}</span>
                     </li>
                   );
                 })}
               </ul>
             )}
 
-            {/* Auswahl für Pakete (z.B. Kämpfer) */}
+            {/* Paket-Auswahl */}
             {equipmentData.choices && equipmentData.choices.length > 0 && (
               <div className="sub-selection">
                 <label>Wähle dein Paket:</label>
                 <select 
                   value={selectedPackage} 
                   onChange={(e) => setSelectedPackage(Number(e.target.value))}
-                  onClick={(e) => e.stopPropagation()} // Verhindert, dass Klick auf Select die Card toggelt
+                  onClick={(e) => e.stopPropagation()}
                 >
                   {equipmentData.choices.map((choice, index) => (
                     <option key={index} value={index}>{choice.label}</option>
                   ))}
                 </select>
                 
-                {/* Inhalt des gewählten Pakets anzeigen */}
-                <ul style={{marginTop: '10px'}}>
+                <ul className="item-list sub-list">
                   {equipmentData.choices[selectedPackage].items.map((itemRef, idx) => {
                     const item = getItem(itemRef.id);
                     return (
                       <li key={`pack-${idx}`}>
-                        {itemRef.quantity > 1 ? `${itemRef.quantity}x ` : ''}
-                        {item ? item.name : itemRef.id}
+                        {itemRef.quantity > 1 ? <span className="qty">{itemRef.quantity}x</span> : ''}
+                        <span className="item-name">{item ? item.name : itemRef.id}</span>
                       </li>
                     );
                   })}
@@ -130,11 +131,13 @@ const StartingEquipmentSelection = ({ classData, onSelect }) => {
           {choiceType === 'gold' && <div className="check-badge">✓</div>}
           <h3>Option B: Reichtum</h3>
           
-          <div className="option-content" style={{justifyContent: 'center'}}>
+          <div className="option-content centered-content">
+            <div className="big-gold-icon">💰</div>
             <span className="gold-display">{equipmentData.gold_alternative} GM</span>
+            <div className="divider-small"></div>
             <p className="hint-text">
-              Du startest ohne Ausrüstung. <br/>
-              Nutze das Gold, um vor dem Abenteuer im Laden einzukaufen.
+              Du startest <strong>ohne Ausrüstung</strong>. <br/>
+              Nutze das Gold, um vor dem Abenteuer im Laden genau das zu kaufen, was du brauchst.
             </p>
           </div>
         </div>
