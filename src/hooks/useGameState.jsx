@@ -17,10 +17,13 @@ import {
 } from "../engine/characterEngine";
 import spellsData from "../data/spells.json";
 import allRaceData from "../data/races.json";
+// NEU: Importe für Klassen und Hintergründe, um Objekte wiederherzustellen
+import allClassData from "../data/classes.json";
+import allBackgroundData from "../data/backgrounds.json";
+
 import locationsData from "../data/locations.json";
 import { rollDiceFormula } from "../utils/helpers";
 
-// FIX: Importiere allItems aus dem ItemLoader statt einzelner JSONs
 import allItems from "../utils/itemLoader";
 
 const createLogEntry = (message, type = "general") => ({
@@ -53,6 +56,9 @@ export const useGameState = () => {
         ...entry,
         timestamp: new Date(entry.timestamp),
       }));
+      
+      // OPTIONAL: Hier könnte man auch eine Hydrierung einbauen, falls alte Saves kaputt sind.
+      // Fürs erste verlassen wir uns darauf, dass neue Spiele korrekt erstellt werden.
       setGameState(loadedState);
     } else {
       console.warn("Konnte Autosave nicht laden.");
@@ -103,34 +109,62 @@ export const useGameState = () => {
     [setGameState]
   );
 
+  // +++ WICHTIGSTER FIX: Charakter-Objekte wiederherstellen (Hydrierung) +++
   const handleCharacterCreation = (finalizedCharacter) => {
-    const tempChar = JSON.parse(JSON.stringify(finalizedCharacter));
+    // Wir erstellen eine Kopie, die wir "hydrieren" (mit Daten füllen)
+    let hydratedChar = JSON.parse(JSON.stringify(finalizedCharacter));
 
-    if (tempChar.ability_bonus_assignments) {
+    // 1. Rasse wiederherstellen (falls nur ID gespeichert)
+    if (typeof hydratedChar.race === 'string') {
+        const raceObj = allRaceData.find(r => r.key === hydratedChar.race);
+        if (raceObj) hydratedChar.race = raceObj;
+    }
+
+    // 2. Klasse wiederherstellen (falls nur ID gespeichert)
+    if (typeof hydratedChar.class === 'string') {
+        const classObj = allClassData.find(c => c.key === hydratedChar.class);
+        if (classObj) hydratedChar.class = classObj;
+    }
+
+    // 3. Hintergrund wiederherstellen (falls nur ID gespeichert)
+    if (typeof hydratedChar.background === 'string') {
+        const bgObj = allBackgroundData.find(b => b.key === hydratedChar.background);
+        if (bgObj) hydratedChar.background = bgObj;
+    }
+
+    // 4. Subklasse wiederherstellen (falls vorhanden und nur ID)
+    if (hydratedChar.subclass && typeof hydratedChar.subclass === 'string') {
+        // Dazu brauchen wir die Klasse (die jetzt hoffentlich ein Objekt ist)
+        if (hydratedChar.class && hydratedChar.class.subclasses) {
+            const subObj = hydratedChar.class.subclasses.find(s => s.key === hydratedChar.subclass);
+            if (subObj) hydratedChar.subclass = subObj;
+        }
+    }
+
+    // --- Ab hier ist 'hydratedChar' wieder ein vollwertiges Objekt mit .name, .icon etc. ---
+
+    if (hydratedChar.ability_bonus_assignments) {
       for (const [ability, bonus] of Object.entries(
-        tempChar.ability_bonus_assignments
+        hydratedChar.ability_bonus_assignments
       )) {
-        tempChar.abilities[ability] += bonus;
+        hydratedChar.abilities[ability] += bonus;
       }
     }
 
-    const raceData = allRaceData.find((r) => r.key === tempChar.race.key);
-    const hp = calculateInitialHP(tempChar);
+    // HP Berechnung benötigt das Rassen-Objekt (deshalb Hydrierung vorher!)
+    const hp = calculateInitialHP(hydratedChar);
 
     const initialStats = {
       hp: hp,
       maxHp: hp,
-      armor_class: calculateAC(tempChar),
-      speed: raceData?.speed || 30,
-      abilities: tempChar.abilities,
+      armor_class: calculateAC(hydratedChar),
+      speed: hydratedChar.race?.speed || 30,
+      abilities: hydratedChar.abilities,
     };
 
-    // HINWEIS: Die alte Logik für "equipmentList" aus starting_equipment
-    // wurde hier entfernt/ignoriert, da das Inventar jetzt bereits
-    // vollständig in finalizedCharacter.inventory enthalten ist.
     const initialEquipment = {};
 
-    const rawInventory = finalizedCharacter.inventory || [];
+    const rawInventory = hydratedChar.inventory || [];
     const characterInventory = rawInventory.map(rawItem => {
         const itemDef = allItems.find(i => i.id === rawItem.itemId);
         if (!itemDef) {
@@ -145,11 +179,11 @@ export const useGameState = () => {
     }).filter(Boolean);
 
     const characterWithStats = {
-      ...finalizedCharacter,
+      ...hydratedChar,
       stats: initialStats,
       inventory: characterInventory,
       equipment: initialEquipment,
-      wallet: finalizedCharacter.wallet || { gold: finalizedCharacter.gold || 0, silver: 0, copper: 0 },
+      wallet: hydratedChar.wallet || { gold: hydratedChar.gold || 0, silver: 0, copper: 0 },
       position: { x: 2048, y: 1536 },
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
@@ -163,14 +197,10 @@ export const useGameState = () => {
       Rasse: characterWithStats.race?.name,
       Klasse: characterWithStats.class?.name,
       Hintergrund: characterWithStats.background?.name,
-      Hintergrund_Sprachen: characterWithStats.background_choices?.languages || [],
-      Hintergrund_Werkzeuge: characterWithStats.background_choices?.tools || [],
       Basis_Attribute: characterWithStats.abilities,
-      Kampfstil: characterWithStats.fighting_style || "Kein",
-      Start_Inventar_IDs: characterWithStats.inventory?.map((item) => item.itemId || item.id) || [],
     };
 
-    console.log("--- CHARAKTER ERSTELLT ---", characterCreationSummary);
+    console.log("--- CHARAKTER ERSTELLT (Hydriert) ---", characterCreationSummary);
 
     setGameState({
       screen: "game",
@@ -626,8 +656,7 @@ export const useGameState = () => {
       } 
       // 2. LEVEL SPELL - Kostet Slot
       else {
-          // Initialisiere Slots falls nicht vorhanden (volle Slots)
-          const maxSlots = calculateMaxSpellSlots(char);
+          const maxSlots = calculateMaxSpellSlots(char); // Dies ist ein Platzhalter, falls calculateMaxSpellSlots hier nicht importiert ist
           const currentSlots = char.currentSpellSlots ? { ...char.currentSpellSlots } : { ...maxSlots };
           
           if (!currentSlots[castLevel] || currentSlots[castLevel] <= 0) {
@@ -637,11 +666,9 @@ export const useGameState = () => {
               };
           }
 
-          // Slot abziehen
           currentSlots[castLevel] -= 1;
           char.currentSpellSlots = currentSlots;
 
-          // Info für Log
           const isUpcast = castLevel > spell.level;
           logMsg = `${char.name} wirkt ${spell.name} auf Grad ${castLevel}. ${isUpcast ? '(Verstärkt!)' : ''}`;
       }
