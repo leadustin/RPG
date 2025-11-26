@@ -7,6 +7,10 @@ import spellsEngine from '../../engine/spellsEngine';
 // NEU: Import für Warlock Logik
 import { WarlockLogic } from '../../engine/logic/classes/WarlockLogic';
 
+// +++ NEU: Daten für Feature-Lookup importieren +++
+import allClassData from '../../data/classes.json';
+import featuresData from '../../data/features.json';
+
 // --- ICONS LADEN ---
 const iconModules = import.meta.glob('../../assets/images/icons/*.(png|webp|jpg|svg)', { eager: true });
 const classIconModules = import.meta.glob('../../assets/images/classes/*.png', { eager: true });
@@ -89,19 +93,48 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
             standard.push({ ...base, uiType: 'Aktion', iconSrc: icon });
         });
 
+        // +++ NEU: Helper Funktion zum Auflösen von Features +++
+        const resolveFeature = (featIdentifier) => {
+            // Falls es schon ein Objekt ist (Legacy Support), direkt zurückgeben
+            if (typeof featIdentifier === 'object' && featIdentifier !== null) return featIdentifier;
+
+            const charClass = allClassData.find(c => c.key === character?.class?.key);
+            
+            // 1. Suche in Klassen-Features
+            let found = charClass?.features?.find(f => (f.key === featIdentifier || f.name === featIdentifier));
+            
+            // 2. Suche in Subklassen-Features
+            if (!found && character?.subclassKey && charClass?.subclasses) {
+                const subclass = charClass.subclasses.find(sc => sc.key === character.subclassKey);
+                found = subclass?.features?.find(f => (f.key === featIdentifier || f.name === featIdentifier));
+            }
+
+            // 3. Suche in globalen Features
+            if (!found) {
+                found = featuresData.find(f => (f.key === featIdentifier || f.name === featIdentifier));
+            }
+            return found;
+        };
+
         if (character?.features) {
-            character.features.forEach(feat => {
-                let featIcon = getIconSrc(feat.icon) || PLACEHOLDER_ICON;
+            character.features.forEach(featIdentifier => {
+                // Feature auflösen
+                const featData = resolveFeature(featIdentifier);
+                
+                // Falls nichts gefunden wurde, überspringen (oder Dummy anzeigen)
+                if (!featData) return;
+
+                let featIcon = getIconSrc(featData.icon) || PLACEHOLDER_ICON;
                 if (featIcon === PLACEHOLDER_ICON && character.class?.icon) {
                         const cIcon = getIconSrc(character.class.icon, 'class');
                         if (cIcon) featIcon = cIcon;
                 }
 
-                if (isActiveFeature(feat)) {
-                    let typeLabel = feat.action_type === 'bonus_action' ? "Bonusaktion" : (feat.action_type === 'reaction' ? "Reaktion" : "Merkmal");
-                    standard.push({ name: feat.name, description: feat.description, uiType: typeLabel, iconSrc: featIcon });
+                if (isActiveFeature(featData)) {
+                    let typeLabel = featData.action_type === 'bonus_action' ? "Bonusaktion" : (featData.action_type === 'reaction' ? "Reaktion" : "Merkmal");
+                    standard.push({ name: featData.name, description: featData.description, uiType: typeLabel, iconSrc: featIcon });
                 } else {
-                    passive.push({ name: feat.name, description: feat.description, uiType: 'Passiv', iconSrc: featIcon });
+                    passive.push({ name: featData.name, description: featData.description, uiType: 'Passiv', iconSrc: featIcon });
                 }
             });
         }
@@ -126,7 +159,6 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
         });
 
         // 2. Normale Zauber (Prepared oder Known)
-        // Wir nutzen Spread [...], um das Array zu kopieren, damit wir es modifizieren können
         let prepared = (character?.spells_prepared && character.spells_prepared.some(k => k !== null)) 
             ? character.spells_prepared.filter(k => k !== null) 
             : [...(character?.spells_known || [])];
@@ -137,7 +169,6 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
                 const warlockLogic = new WarlockLogic(character);
                 const patronSpells = warlockLogic.getAlwaysPreparedPatronSpells();
                 patronSpells.forEach(key => {
-                    // Nur hinzufügen, wenn noch nicht vorhanden (vermeidet Duplikate)
                     if (!prepared.includes(key)) {
                         prepared.push(key);
                     }
