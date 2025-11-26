@@ -11,7 +11,6 @@ import CharacterSheet from "./components/character_sheet/CharacterSheet";
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
 import { loadAutoSave, getSaveSlots } from "./utils/persistence";
 import { EventLog } from "./components/event_log/EventLog";
-import Test from "./components/test/Test";
 import "./App.css";
 
 function App() {
@@ -44,7 +43,6 @@ function App() {
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
   const [saveManagerMode, setSaveManagerMode] = useState(null);
-  const [showTestPage, setShowTestPage] = useState(false);
 
   const toggleCharacterSheet = () => {
     setShowCharacterSheet((prevState) => !prevState);
@@ -82,7 +80,6 @@ function App() {
           <GameView
             character={gameState.character}
             onToggleCharacterSheet={toggleCharacterSheet}
-            onToggleCss={() => setShowTestPage(true)}
             onEnterLocation={handleEnterLocation}
             onSaveGame={() => setSaveManagerMode("save")}
             onLoadGame={() => setSaveManagerMode("load")}
@@ -116,7 +113,6 @@ function App() {
         <div className="game-container">
           {renderScreen()}
           
-          {/* Das alte CharacterSheet (können wir später entfernen, wenn Test fertig ist) */}
           {showCharacterSheet && (
             <CharacterSheet
               character={gameState.character}
@@ -131,24 +127,6 @@ function App() {
               handleUnloadQuiver={handleUnloadQuiver}
               handleUnpackItem={handleUnpackItem}
               handleDestroyItem={handleDestroyItem}
-            />
-          )}
-
-          {/* +++ TEST VIEW mit allen Handlern +++ */}
-          {showTestPage && gameState.character && (
-            <Test 
-                onClose={() => setShowTestPage(false)} 
-                character={gameState.character}
-                party={party}
-                // Handler weitergeben
-                onUpdateCharacter={handleUpdateCharacter}
-                handleEquipItem={handleEquipItem}
-                handleUnequipItem={handleUnequipItem}
-                handleToggleTwoHanded={handleToggleTwoHanded}
-                handleFillQuiver={handleFillQuiver}
-                handleUnloadQuiver={handleUnloadQuiver}
-                handleUnpackItem={handleUnpackItem}
-                handleDestroyItem={handleDestroyItem}
             />
           )}
 
