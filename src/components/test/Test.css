@@ -1,5 +1,14 @@
 /* src/components/test/Test.css */
 
+/* Globale Variablen-Simulation für dieses Modul (angelehnt an ClassSelection) */
+.character-view-overlay {
+    --cv-border-color: #5c4e34;       /* Rahmenfarbe (Bronze/Braun) */
+    --cv-highlight-color: #ffd700;    /* Highlight (Gold) */
+    --cv-bg-color: rgba(0, 0, 0, 0.2); /* Leichter Hintergrund */
+    --cv-text-color: #d0c0b0;         /* Standard Text */
+    --cv-bg-hover: rgba(255, 255, 255, 0.05);
+}
+
 .character-view-overlay {
     position: absolute;
     top: 0;
@@ -13,11 +22,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--cv-text-color);
+    font-family: 'Merriweather', serif;
 }
 
 .character-view-container {
     display: grid;
-    grid-template-columns: 200px 1fr; 
+    grid-template-columns: 200px 1fr; /* Linke Spalte fest auf 200px */
     grid-template-rows: 100%; 
     width: 100%;
     height: 100%;
@@ -25,37 +36,155 @@
     pointer-events: none; 
 }
 
-/* Angepasst an den Stil von .options-menu aus OptionsMenu.css */
+/* Basis-Box im Stil der CharacterCreation */
 .character-view-box {
     pointer-events: auto;
+    box-sizing: border-box;
     
-    /* --- Übernommene Stile aus .options-menu --- */
-    /* 1. Hintergrund (Füllung) */
-    background-image: linear-gradient(rgba(20, 20, 20, 0.95), rgba(20, 20, 20, 0.95)),
-                      /* 2. Hintergrund (Rand) */
-                      linear-gradient(to bottom, #8c7853, #5c4e34);
+    background: var(--cv-bg-color);
+    border: 1px solid var(--cv-border-color);
+    border-radius: 8px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
     
-    background-origin: padding-box, border-box;
-    background-clip: padding-box, border-box;
-    border: 2px solid transparent;
-    border-radius: 12px; 
-    box-shadow: 
-        inset 0 0 8px rgba(0, 0, 0, 0.7),
-        0 0 20px rgba(0, 0, 0, 0.6);
-    
-    font-family: 'Cinzel', serif;
-    text-shadow: 1px 1px 2px #000;
-    color: #d0c0b0;
-    /* ----------------------------------------- */
-
     padding: 15px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.left-box {
-    /* Layout wird über Grid gesteuert */
+/* --- LINKE SPALTE (Portrait & Stats) --- */
+
+.cv-portrait-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--cv-border-color);
+    margin-bottom: 5px;
 }
 
-.right-box {
-    min-width: 0;
+.cv-portrait-frame {
+    width: 100%; /* Füllt die 200px Spalte */
+    aspect-ratio: 1; /* Quadratisch */
+    border: 1px solid var(--cv-border-color);
+    border-radius: 4px;
+    padding: 3px;
+    background: rgba(0,0,0,0.3);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+}
+
+.cv-portrait-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2px;
+    filter: sepia(0.1) contrast(1.1);
+}
+
+.cv-character-name {
+    color: var(--cv-highlight-color);
+    font-family: 'Cinzel', serif;
+    font-size: 1.2em;
+    text-align: center;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    margin-bottom: 4px;
+}
+
+.cv-character-details {
+    color: #aaa;
+    font-size: 0.8em;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Vitals (HP & AC) */
+.cv-vitals-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+    border-bottom: 1px solid var(--cv-border-color);
+    padding-bottom: 15px;
+    margin-bottom: 5px;
+}
+
+.cv-vital-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    padding: 6px 2px;
+    border: 1px solid #444;
+    border-radius: 4px;
+}
+
+.cv-vital-value {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #fff;
+    font-family: 'Cinzel', serif;
+}
+
+.cv-vital-label {
+    font-size: 0.6em;
+    text-transform: uppercase;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Attribute Grid */
+.cv-stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cv-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    font-size: 0.9em;
+}
+
+.cv-stat-row:hover {
+    background: var(--cv-bg-hover);
+}
+
+.cv-stat-label {
+    font-family: 'Cinzel', serif;
+    color: #bbb;
+}
+
+.cv-stat-value-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cv-stat-score {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.cv-stat-modifier {
+    font-weight: bold;
+    color: var(--cv-highlight-color);
+    min-width: 24px;
+    text-align: right;
+}
+
+/* Platzhalter rechts */
+.cv-right-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #555;
+    font-style: italic;
+    height: 100%;
 }
