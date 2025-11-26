@@ -116,6 +116,7 @@ function App() {
         <div className="game-container">
           {renderScreen()}
           
+          {/* Das alte CharacterSheet (können wir später entfernen, wenn Test fertig ist) */}
           {showCharacterSheet && (
             <CharacterSheet
               character={gameState.character}
@@ -133,12 +134,21 @@ function App() {
             />
           )}
 
-          {/* +++ UPDATED: Echte Daten an Test.jsx übergeben +++ */}
+          {/* +++ TEST VIEW mit allen Handlern +++ */}
           {showTestPage && gameState.character && (
             <Test 
                 onClose={() => setShowTestPage(false)} 
                 character={gameState.character}
-                party={party} 
+                party={party}
+                // Handler weitergeben
+                onUpdateCharacter={handleUpdateCharacter}
+                handleEquipItem={handleEquipItem}
+                handleUnequipItem={handleUnequipItem}
+                handleToggleTwoHanded={handleToggleTwoHanded}
+                handleFillQuiver={handleFillQuiver}
+                handleUnloadQuiver={handleUnloadQuiver}
+                handleUnpackItem={handleUnpackItem}
+                handleDestroyItem={handleDestroyItem}
             />
           )}
 
