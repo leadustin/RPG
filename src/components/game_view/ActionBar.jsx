@@ -29,7 +29,6 @@ const getIconSrc = (iconName, type = 'generic') => {
 
 const PLACEHOLDER_ICON = getIconSrc('skill_placeholder.png');
 
-// --- STANDARD AKTIONEN ---
 const BASE_ACTIONS = [
     { name: 'Angriff', description: 'Führe einen Nah- oder Fernkampfangriff aus.', icon: 'sword_icon.png' },
     { name: 'Spurt', description: 'Verdopple deine Bewegungsrate für diesen Zug.', icon: 'boot_icon.png' },
@@ -40,7 +39,6 @@ const BASE_ACTIONS = [
     { name: 'Springen', description: 'Springe weit oder hoch.', icon: 'jump_icon.png' },
 ];
 
-// --- FILTER LOGIK ---
 const isActiveFeature = (feat) => {
     if (!feat) return false;
     if (feat.action_type) return true;
@@ -59,7 +57,8 @@ const isConsumable = (item) => {
     return ['potion', 'scroll', 'food', 'consumable', 'drink'].some(t => type.includes(t)) || item.consumable === true;
 };
 
-function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, onRestClick }) {
+// +++ WICHTIG: Hier wurde 'onToggleCss' in den Props ergänzt +++
+function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, onToggleCss, character, onRestClick }) {
     const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
     
     // Tabs & View State
@@ -93,23 +92,18 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
             standard.push({ ...base, uiType: 'Aktion', iconSrc: icon });
         });
 
-        // +++ NEU: Helper Funktion zum Auflösen von Features +++
         const resolveFeature = (featIdentifier) => {
-            // Falls es schon ein Objekt ist (Legacy Support), direkt zurückgeben
             if (typeof featIdentifier === 'object' && featIdentifier !== null) return featIdentifier;
 
             const charClass = allClassData.find(c => c.key === character?.class?.key);
             
-            // 1. Suche in Klassen-Features
             let found = charClass?.features?.find(f => (f.key === featIdentifier || f.name === featIdentifier));
             
-            // 2. Suche in Subklassen-Features
             if (!found && character?.subclassKey && charClass?.subclasses) {
                 const subclass = charClass.subclasses.find(sc => sc.key === character.subclassKey);
                 found = subclass?.features?.find(f => (f.key === featIdentifier || f.name === featIdentifier));
             }
 
-            // 3. Suche in globalen Features
             if (!found) {
                 found = featuresData.find(f => (f.key === featIdentifier || f.name === featIdentifier));
             }
@@ -118,10 +112,7 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
 
         if (character?.features) {
             character.features.forEach(featIdentifier => {
-                // Feature auflösen
                 const featData = resolveFeature(featIdentifier);
-                
-                // Falls nichts gefunden wurde, überspringen (oder Dummy anzeigen)
                 if (!featData) return;
 
                 let featIcon = getIconSrc(featData.icon) || PLACEHOLDER_ICON;
@@ -152,18 +143,15 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
 
         const spells = [];
         
-        // 1. Zaubertricks
         (character?.cantrips_known || []).forEach(key => {
             const spell = spellsEngine.getSpell(key);
             if (spell) spells.push({ ...spell, uiType: 'Zaubertrick', iconSrc: getIconSrc(spell.icon) || PLACEHOLDER_ICON });
         });
 
-        // 2. Normale Zauber (Prepared oder Known)
         let prepared = (character?.spells_prepared && character.spells_prepared.some(k => k !== null)) 
             ? character.spells_prepared.filter(k => k !== null) 
             : [...(character?.spells_known || [])];
 
-        // 3. NEU: Warlock Patron Zauber (PHB 2024) hinzufügen
         if (character?.class?.key === 'warlock') {
             try {
                 const warlockLogic = new WarlockLogic(character);
@@ -178,7 +166,6 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
             }
         }
 
-        // 4. Alle Zauber in UI-Objekte umwandeln
         prepared.forEach(key => {
             const spell = spellsEngine.getSpell(key);
             if (spell) spells.push({ ...spell, uiType: `Zauber (${spell.level})`, iconSrc: getIconSrc(spell.icon) || PLACEHOLDER_ICON });
@@ -194,7 +181,6 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
         return { standard, spells, items, passive };
     }, [character]);
 
-    // --- HANDLER ---
     const handleTabClick = (tabName) => {
         if (activeTab === tabName && viewMode !== 'multi') {
             setActiveTab(null); 
@@ -248,7 +234,6 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
         document.removeEventListener('mouseup', handleMouseUp);
     };
 
-    // --- RENDERER ---
     const getTabClassName = (n) => `hotbar-tab ${activeTab === n ? 'active' : ''}`;
     const EmptySlot = () => <div className="hotbar-slot"></div>;
     
@@ -273,7 +258,6 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
         return <Tooltip item={item}><div className="hotbar-slot equipped"><img src={iconSrc} alt={item.name} /></div></Tooltip>;
     };
 
-    // Render Logic für 'multi' (Spaltenbegrenzt)
     const renderSectionMulti = (actions, colCount) => {
         if (colCount <= 0) return null;
         const slots = [];
@@ -287,10 +271,8 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
         return slots;
     };
 
-    // Render Logic für 'single' (Scrollbar + Volles Grid)
     const renderSectionSingle = (actions) => {
         const slots = [];
-        // Mindestens 16 Spalten (volle Bildschirmbreite), oder mehr wenn viele Items
         const minCols = 16;
         const neededCols = Math.ceil(actions.length / visibleRows);
         const colCount = Math.max(minCols, neededCols);
@@ -299,7 +281,6 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
             for (let r = 0; r < visibleRows; r++) {
                 const idx = (c * visibleRows) + r;
                 const action = actions[idx];
-                // Rendert FilledSlot ODER EmptySlot, damit das Grid immer sichtbar ist
                 slots.push(
                     <div key={`${c}-${r}`} className="grid-cell">
                         {action ? <FilledSlot action={action} /> : <EmptySlot />}
