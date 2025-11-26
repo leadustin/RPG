@@ -11,6 +11,8 @@ import "./GameView.css";
 function GameView({
   character,
   onToggleCharacterSheet,
+  // +++ NEU: Prop empfangen +++
+  onToggleCss,
   onEnterLocation,
   onSaveGame,
   onLoadGame,
@@ -19,7 +21,6 @@ function GameView({
   saveFileExists,
   onShortRest,
   onLongRest,
-  // +++ NEU: Prop empfangen +++
   onShopTransaction
 }) {
 
@@ -53,7 +54,6 @@ function GameView({
                   locationId={character.currentLocation}
                   character={character}
                   onLeaveLocation={() => onEnterLocation("worldmap", character.worldMapPosition)}
-                  // +++ NEU: Weitergabe an LocationView +++
                   onShopTransaction={onShopTransaction}
               />
            ) : (
@@ -72,6 +72,8 @@ function GameView({
           <ActionBar
             character={activeCharacter}
             onToggleCharacterSheet={onToggleCharacterSheet}
+            // +++ NEU: Prop weitergeben +++
+            onToggleCss={onToggleCss}
             onSaveGame={onSaveGame}
             onLoadGame={onLoadGame}
             saveFileExists={saveFileExists}

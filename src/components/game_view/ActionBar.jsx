@@ -373,6 +373,9 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
                         <div className="hotbar-footer">
                             <div className="hotbar-tab-container">
                                 <div className={getTabClassName('Inventar')} onClick={handleInventoryClick}>Inventar</div>
+                                {/* +++ NEU: Button für CSS / Test Page +++ */}
+                                <div className={getTabClassName('CSS')} onClick={onToggleCss}>CSS</div>
+                                
                                 <div className={getTabClassName('Allgem.')} onClick={() => handleTabClick('Allgem.')}>Allgem.</div>
                                 <div className={getTabClassName(classTabName)} onClick={() => handleTabClick(classTabName)}>{classTabName}</div>
                                 <div className={getTabClassName('Gegenst.')} onClick={() => handleTabClick('Gegenst.')}>Gegenst.</div>

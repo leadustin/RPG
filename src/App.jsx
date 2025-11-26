@@ -11,6 +11,8 @@ import CharacterSheet from "./components/character_sheet/CharacterSheet";
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
 import { loadAutoSave, getSaveSlots } from "./utils/persistence";
 import { EventLog } from "./components/event_log/EventLog";
+// +++ NEU: Import der Test Komponente +++
+import Test from "./components/test/Test";
 import "./App.css";
 
 function App() {
@@ -43,6 +45,8 @@ function App() {
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
   const [saveManagerMode, setSaveManagerMode] = useState(null);
+  // +++ NEU: State für Test/CSS Viewer +++
+  const [showTestPage, setShowTestPage] = useState(false);
 
   const toggleCharacterSheet = () => {
     setShowCharacterSheet((prevState) => !prevState);
@@ -80,6 +84,8 @@ function App() {
           <GameView
             character={gameState.character}
             onToggleCharacterSheet={toggleCharacterSheet}
+            // +++ NEU: Prop übergeben +++
+            onToggleCss={() => setShowTestPage(true)}
             onEnterLocation={handleEnterLocation}
             onSaveGame={() => setSaveManagerMode("save")}
             onLoadGame={() => setSaveManagerMode("load")}
@@ -128,6 +134,11 @@ function App() {
               handleUnpackItem={handleUnpackItem}
               handleDestroyItem={handleDestroyItem}
             />
+          )}
+
+          {/* +++ NEU: Test/CSS Viewer Overlay +++ */}
+          {showTestPage && (
+            <Test onClose={() => setShowTestPage(false)} />
           )}
 
           {gameState.character && gameState.character.pendingLevelUp && (
