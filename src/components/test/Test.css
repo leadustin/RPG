@@ -6,7 +6,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(10, 10, 10, 0.95); /* Dunkler Hintergrund */
+    background-color: rgba(10, 10, 10, 0.95);
     z-index: 2000;
     padding: 40px;
     box-sizing: border-box;
@@ -16,32 +16,46 @@
 }
 
 .character-view-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 350px 1fr; 
+    grid-template-rows: 100%; 
     width: 100%;
     height: 100%;
     gap: 20px;
-    pointer-events: none; /* Klicks gehen durch den Container durch (falls nötig) */
+    pointer-events: none; 
 }
 
-/* Basis-Stil für die Boxen (Kopie von .class-summary-box) */
+/* Angepasst an den Stil von .options-menu aus OptionsMenu.css */
 .character-view-box {
-    pointer-events: auto; /* Klicks in den Boxen wieder aktivieren */
-    background: rgba(0, 0, 0, 0.2); 
-    border: 1px solid var(--color-border-light, #5c4e34);
-    border-radius: 8px;
+    pointer-events: auto;
+    
+    /* --- Übernommene Stile aus .options-menu --- */
+    /* 1. Hintergrund (Füllung) */
+    background-image: linear-gradient(rgba(20, 20, 20, 0.95), rgba(20, 20, 20, 0.95)),
+                      /* 2. Hintergrund (Rand) */
+                      linear-gradient(to bottom, #8c7853, #5c4e34);
+    
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
+    border: 2px solid transparent;
+    border-radius: 12px; 
+    box-shadow: 
+        inset 0 0 8px rgba(0, 0, 0, 0.7),
+        0 0 20px rgba(0, 0, 0, 0.6);
+    
+    font-family: 'Cinzel', serif;
+    text-shadow: 1px 1px 2px #000;
+    color: #d0c0b0;
+    /* ----------------------------------------- */
+
     padding: 15px;
     overflow-y: auto;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.2); /* Leichter Schatten nach innen wie im Original */
 }
 
-/* Linke Spalte */
 .left-box {
-    width: 350px; /* Feste Breite analog zur Klassenauswahl */
-    flex-shrink: 0;
+    /* Layout wird über Grid gesteuert */
 }
 
-/* Rechte Spalte */
 .right-box {
-    flex: 1; /* Nimmt den restlichen Platz ein */
     min-width: 0;
 }
