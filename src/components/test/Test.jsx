@@ -4,17 +4,14 @@ import './Test.css';
 
 const Test = ({ onClose, character, party = [] }) => {
     
-    // State für den aktuell ausgewählten Charakter
     const [displayCharacter, setDisplayCharacter] = useState(character);
 
-    // Wenn Props sich ändern (z.B. Initial), State updaten
     useEffect(() => {
         if (character) {
             setDisplayCharacter(character);
         }
     }, [character]);
 
-    // Ermittle die anzuzeigende Gruppe (Fallback auf einzelnen Char)
     const currentParty = party.length > 0 ? party : (character ? [character] : []);
 
     if (!displayCharacter) return null;
@@ -23,10 +20,9 @@ const Test = ({ onClose, character, party = [] }) => {
         <div className="character-view-overlay" onClick={onClose}>
             <div className="character-view-container" onClick={(e) => e.stopPropagation()}>
                 
-                {/* --- LINKE SPALTE: Nur Portraits (Navigation) --- */}
+                {/* --- LINKE SPALTE: Portraits --- */}
                 <div className="character-view-box cv-sidebar">
                     {currentParty.map((member) => {
-                        // Prüfen, ob dieser Char aktiv ist
                         const isActive = member.id === displayCharacter.id || (member.name === displayCharacter.name);
                         
                         return (
@@ -46,14 +42,12 @@ const Test = ({ onClose, character, party = [] }) => {
                                         <div className="cv-portrait-placeholder">?</div>
                                     )}
                                 </div>
-                                {/* Optional: Name beim Hovern anzeigen */}
-                                <div className="cv-tooltip-name">{member.name}</div>
                             </div>
                         );
                     })}
                 </div>
 
-                {/* --- RECHTE SPALTE: Details des ausgewählten Charakters --- */}
+                {/* --- RECHTE SPALTE: Details --- */}
                 <div className="character-view-box">
                     <div className="cv-right-placeholder">
                         <h2>{displayCharacter.name}</h2>
