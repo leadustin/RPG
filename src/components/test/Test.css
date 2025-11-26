@@ -6,7 +6,7 @@
     --cv-highlight-color: #ffd700;    
     --cv-bg-color: rgba(0, 0, 0, 0.2); 
     --cv-text-color: #d0c0b0;         
-    --cv-bg-active: rgba(92, 78, 52, 0.4); /* Hintergrund für aktives Portrait */
+    --cv-bg-active: rgba(92, 78, 52, 0.4);
 }
 
 .character-view-overlay {
@@ -28,7 +28,8 @@
 
 .character-view-container {
     display: grid;
-    grid-template-columns: 120px 1fr; /* Linke Spalte schmaler für nur Portraits */
+    /* Linke Spalte breiter (180px), damit 120px Bilder + Padding passen */
+    grid-template-columns: 180px 1fr; 
     grid-template-rows: 100%; 
     width: 100%;
     height: 100%;
@@ -57,17 +58,17 @@
     padding-top: 20px;
 }
 
-/* Container für ein einzelnes Portrait (Button-Verhalten) */
+/* Container für ein einzelnes Portrait */
 .cv-portrait-wrapper {
-    width: 80px;
-    height: 80px;
+    width: 120px;  /* Angepasst auf 120px */
+    height: 120px; /* Angepasst auf 120px */
     cursor: pointer;
     position: relative;
     transition: transform 0.2s;
 }
 
 .cv-portrait-wrapper:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 /* Der eigentliche Bildrahmen */
@@ -75,14 +76,20 @@
     width: 100%;
     height: 100%;
     border: 2px solid var(--cv-border-color);
-    border-radius: 50%; /* Rund oder eckig, je nach Geschmack. Hier rund für Avatar-Look */
+    
+    /* Nicht mehr rund (50%), sondern leicht abgerundet */
+    border-radius: 6px; 
+    
     overflow: hidden;
     background: #000;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    
+    /* Kein Glühen, nur ein dezenter Schatten für Tiefe */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s;
 }
 
 .cv-portrait-image {
@@ -93,14 +100,14 @@
 
 .cv-portrait-placeholder {
     font-family: 'Cinzel', serif;
-    font-size: 1.5em;
+    font-size: 2em;
     color: #555;
 }
 
-/* AKTIVER ZUSTAND (Ausgewählter Charakter) */
+/* AKTIVER ZUSTAND */
 .cv-portrait-wrapper.active .cv-portrait-frame {
+    /* Nur Rahmenfarbe ändert sich, kein Glühen/Glow */
     border-color: var(--cv-highlight-color);
-    box-shadow: 0 0 15px var(--cv-highlight-color);
 }
 
 /* Optional: Kleiner Indikator oder Name beim Hovern */
@@ -109,18 +116,19 @@
     left: 100%;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0,0,0,0.8);
-    padding: 4px 8px;
+    background: rgba(0,0,0,0.9);
+    padding: 6px 10px;
     border-radius: 4px;
-    margin-left: 10px;
+    margin-left: 12px;
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s;
-    font-size: 0.8em;
+    font-size: 0.9em;
     color: #fff;
     z-index: 10;
     border: 1px solid var(--cv-border-color);
+    font-family: 'Cinzel', serif;
 }
 
 .cv-portrait-wrapper:hover .cv-tooltip-name {
