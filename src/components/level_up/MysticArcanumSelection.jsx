@@ -57,7 +57,6 @@ export const MysticArcanumSelection = ({ character, arcanumLevel, selectedKey, o
                                             onClick={() => onSelect(spell.key)}
                                         >
                                             <img src={iconSrc} alt={spell.name} />
-                                            <span className="name">{spell.name}</span>
                                             {isSelected && <div className="check-marker" style={{color: '#d4af37', borderColor: '#d4af37'}}>★</div>}
                                         </div>
                                     </Tooltip>

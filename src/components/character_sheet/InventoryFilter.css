@@ -1,28 +1,68 @@
 /* src/components/character_sheet/InventoryFilter.css */
+
 .inventory-filter-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    padding: 0 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #444;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.inventory-filter-container .filter-btn {
-    background-color: #333;
-    color: #ccc;
-    border: 1px solid #555;
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s, color 0.2s;
+.filter-label {
+  color: #888;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5px;
 }
 
-.inventory-filter-container .filter-btn:hover {
-    background-color: #444;
+.select-wrapper {
+  flex-grow: 1;
+  position: relative;
 }
 
-.inventory-filter-container .filter-btn.active {
-    background-color: #a88b4a; /* Gold-Ton für den aktiven Filter */
-    color: #fff;
-    border-color: #d4b574;
+/* --- DAS STYLED DROPDOWN --- */
+.inventory-filter-select {
+  width: 100%;
+  background-color: #1f1f23;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 8px 12px;
+  padding-right: 35px; /* Platz für den Pfeil */
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  /* Standard-Pfeil entfernen */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Eigener Gold-Pfeil */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23d4af37%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20128c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4l128-128c3.6-3.6%205.4-7.8%205.4-12.8%200-5-1.8-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px;
+}
+
+.inventory-filter-select:hover {
+  background-color: #2a2a2e;
+  border-color: #888;
+}
+
+.inventory-filter-select:focus {
+  outline: none;
+  border-color: #d4af37; /* Goldener Rahmen bei Fokus */
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+/* Dropdown-Liste (Browser-abhängig, aber meist dunkel) */
+.inventory-filter-select option {
+  background-color: #1f1f23;
+  color: #fff;
+  padding: 10px;
 }

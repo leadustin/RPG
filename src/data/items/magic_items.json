@@ -1,0 +1,134 @@
+[
+  {
+    "id": "potion_healing_greater",
+    "name": "Heiltrank (Groß)",
+    "type": "potion",
+    "rarity": "uncommon",
+    "weight": 0.5,
+    "value": 100,
+    "description": "Eine schimmernde rote Flüssigkeit.",
+    "effect": "Heilt 4W4 + 4 Trefferpunkte.",
+    "icon": "potion_red.webp"
+  },
+  {
+    "id": "potion_healing_superior",
+    "name": "Heiltrank (Überlegen)",
+    "type": "potion",
+    "rarity": "rare",
+    "weight": 0.5,
+    "value": 500,
+    "description": "Eine kräftige rote Flüssigkeit.",
+    "effect": "Heilt 8W4 + 8 Trefferpunkte.",
+    "icon": "potion_red.webp"
+  },
+  {
+    "id": "potion_healing_supreme",
+    "name": "Heiltrank (Höchster)",
+    "type": "potion",
+    "rarity": "very_rare",
+    "weight": 0.5,
+    "value": 1350,
+    "description": "Pulsierendes rotes Licht geht von diesem Trank aus.",
+    "effect": "Heilt 10W4 + 20 Trefferpunkte.",
+    "icon": "potion_red.webp"
+  },
+  {
+    "id": "potion_invisibility",
+    "name": "Trank der Unsichtbarkeit",
+    "type": "potion",
+    "rarity": "very_rare",
+    "weight": 0.25,
+    "value": 5000,
+    "description": "Macht den Trinkenden unsichtbar.",
+    "effect": "Gewährt Unsichtbarkeit für 1 Stunde.",
+    "icon": "potion_blue.webp"
+  },
+  {
+    "id": "potion_speed",
+    "name": "Trank der Geschwindigkeit",
+    "type": "potion",
+    "rarity": "very_rare",
+    "weight": 0.25,
+    "value": 400,
+    "description": "Beschleunigt Bewegungen und Reflexe.",
+    "effect": "Gewährt den Effekt des Zaubers 'Hast' für 1 Minute.",
+    "icon": "potion_yellow.webp"
+  },
+  {
+    "id": "potion_giant_strength_hill",
+    "name": "Trank der Hügelriesenstärke",
+    "type": "potion",
+    "rarity": "uncommon",
+    "weight": 0.25,
+    "value": 200,
+    "description": "Enthält einen Splitter eines Riesen.",
+    "effect": "Setzt Stärke auf 21 für 1 Stunde.",
+    "icon": "potion_brown.webp"
+  },
+  {
+    "id": "potion_flying",
+    "name": "Trank des Fliegens",
+    "type": "potion",
+    "rarity": "very_rare",
+    "weight": 0.25,
+    "value": 5000,
+    "description": "Vogelfedern schwimmen in dieser klaren Flüssigkeit.",
+    "effect": "Gewährt Flugbewegungsrate (gleich Gehrate) für 1 Stunde.",
+    "icon": "potion_blue.webp"
+  },
+  {
+    "id": "potion_resistance_fire",
+    "name": "Trank der Feuerresistenz",
+    "type": "potion",
+    "rarity": "uncommon",
+    "weight": 0.25,
+    "value": 300,
+    "description": "Schützt vor Hitze.",
+    "effect": "Gewährt Resistenz gegen Feuerschaden für 1 Stunde.",
+    "icon": "potion_red.webp"
+  },
+  {
+    "id": "elixir_colossus",
+    "name": "Elixier des Kolosses",
+    "type": "potion",
+    "rarity": "rare",
+    "weight": 0.5,
+    "value": 200,
+    "description": "Lässt den Trinkenden wachsen.",
+    "effect": "Erhöht die Größe und den Waffenschaden.",
+    "icon": "potion_purple.webp"
+  },
+  {
+    "id": "elixir_bloodlust",
+    "name": "Elixier der Blutlust",
+    "type": "potion",
+    "rarity": "uncommon",
+    "weight": 0.5,
+    "value": 250,
+    "description": "Treibt zu rasender Wut an.",
+    "effect": "5 temporäre TP und eine zusätzliche Aktion nach einem Kill.",
+    "icon": "potion_red.webp"
+  },
+  {
+    "id": "scroll_revivify",
+    "name": "Schriftrolle der Wiederbelebung",
+    "type": "scroll",
+    "rarity": "uncommon",
+    "weight": 0.0,
+    "value": 600,
+    "description": "Eine magische Schriftrolle mit dem Zauber 'Wiederbeleben'.",
+    "effect": "Wirkt Wiederbeleben (Kleriker/Paladin).",
+    "icon": "scroll.webp"
+  },
+  {
+    "id": "dust_of_disappearance",
+    "name": "Staub des Verschwindens",
+    "type": "wondrous",
+    "rarity": "uncommon",
+    "weight": 0.0,
+    "value": 300,
+    "description": "Ein kleiner Beutel mit feinem Pulver.",
+    "effect": "Macht dich und Kreaturen in 3m Radius unsichtbar (2W4 Minuten).",
+    "icon": "pouch.webp"
+  }
+]

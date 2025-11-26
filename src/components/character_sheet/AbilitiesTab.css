@@ -4,130 +4,163 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: #1a1a1a;
     color: #e0e0e0;
-    overflow: hidden;
+    overflow: hidden; /* Verhindert, dass der ganze Tab scrollt, wir wollen Spalten scrollen */
 }
 
-/* --- HEADER / RESOURCES --- */
-.abilities-controls {
-    padding: 15px;
-    background: #252525;
-    border-bottom: 1px solid #444;
+/* --- HEADER --- */
+.abilities-header {
     display: flex;
-    gap: 20px;
-    align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0; /* Header bleibt fix */
+}
+
+.abilities-resources {
+    display: flex;
+    gap: 1rem;
 }
 
 .resource-bar {
     display: flex;
     align-items: center;
-    background: #333;
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid #555;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
 .resource-label {
-    margin-right: 10px;
-    font-weight: bold;
-    color: #ccc;
-    font-size: 0.9rem;
-}
-
-.resource-value {
-    color: #d4af37;
+    color: #ffd700;
     font-weight: bold;
 }
 
 .resource-pills {
     display: flex;
-    gap: 4px;
+    gap: 2px;
 }
 
 .pill {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    border: 1px solid #555;
+    border: 1px solid #666;
+    background-color: #222;
 }
 
 .pill.filled {
-    background-color: #d32f2f; /* Rot für Wut/Kampf */
-    box-shadow: 0 0 5px rgba(211, 47, 47, 0.6);
+    background-color: #cf3333; /* Barbarian Rage Red */
+    border-color: #ff6666;
+    box-shadow: 0 0 4px #cf3333;
 }
 
-.pill.empty {
-    background-color: #111;
-}
-
-/* --- GRID CONTAINER --- */
-.ability-grid-container {
+/* --- MAIN LAYOUT (2 SPALTEN GRID) --- */
+.abilities-content-wrapper {
+    display: grid;
+    /* Linke Spalte nimmt den meisten Platz (z.B. 2fr), Rechte Spalte den Rest (1fr) */
+    /* Du kannst das Verhältnis anpassen, z.B. 3fr 1fr */
+    grid-template-columns: 2.5fr 1fr; 
+    gap: 1rem;
     flex: 1;
+    overflow: hidden; /* Wichtig für Scrollbars in den Spalten */
+    padding: 1rem;
+}
+
+/* Linke Spalte (Scrollbar) */
+.abilities-main-column {
     overflow-y: auto;
-    padding: 20px;
+    padding-right: 0.5rem; /* Platz für Scrollbar */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.ability-section {
-    margin-bottom: 30px;
+/* Rechte Spalte (Scrollbar bei Bedarf) */
+.abilities-side-column {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
-.section-header {
+/* Platzhalter rechts */
+.side-panel-placeholder {
+    flex: 1;
     display: flex;
     align-items: center;
+    justify-content: center;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #888;
+}
+
+/* --- SECTIONS & CARDS --- */
+.section-header {
     font-size: 1.1rem;
-    color: #d4af37;
-    border-bottom: 1px solid #444;
-    padding-bottom: 8px;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: #ffd700;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .count-badge {
-    margin-left: 10px;
-    font-size: 0.8rem;
-    background: #333;
-    color: #888;
-    padding: 2px 6px;
+    background: rgba(255, 215, 0, 0.1);
+    color: #ffd700;
+    font-size: 0.75rem;
+    padding: 1px 6px;
     border-radius: 10px;
 }
 
+/* DAS GRID FÜR DIE KARTEN */
 .ability-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 15px;
+    /* Auto-Fill: Füllt so viele Spalten wie möglich. Min 200px pro Karte */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
 }
 
-/* --- ABILITY CARD --- */
 .ability-icon-card {
+    background-color: rgba(30, 30, 30, 0.8);
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 0.5rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    cursor: help; /* Cursor zeigt an, dass es Infos gibt */
-    transition: transform 0.1s;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
     position: relative;
+    overflow: hidden;
 }
 
 .ability-icon-card:hover {
-    transform: translateY(-2px);
+    background-color: rgba(50, 50, 50, 0.9);
+    border-color: #777;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 .ability-icon-frame {
-    width: 64px;
-    height: 64px;
-    border-radius: 8px;
-    border: 2px solid #444;
-    overflow: hidden;
-    position: relative;
-    background: #000;
-    transition: border-color 0.2s ease;
-}
-
-.ability-icon-card:hover .ability-icon-frame {
-    border-color: #aaa;
+    width: 40px;
+    height: 40px;
+    background: #111;
+    border: 1px solid #555;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .ability-icon-frame img {
@@ -137,52 +170,44 @@
 }
 
 .ability-card-name {
-    margin-top: 6px;
-    font-size: 0.75rem;
-    text-align: center;
-    color: #ccc;
-    line-height: 1.2;
-    max-width: 100%;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #eee;
+    /* Text abschneiden wenn zu lang */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* --- TOOLTIP STYLES --- */
+/* --- TOOLTIP STYLES (Innerhalb des Tooltips) --- */
 .ability-tooltip-content {
-    max-width: 250px;
-    font-size: 0.9rem;
-    text-align: left;
+    max-width: 280px;
 }
-
 .ability-tooltip-header {
-    border-bottom: 1px solid #555;
-    padding-bottom: 5px;
-    margin-bottom: 5px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 4px;
+    margin-bottom: 4px;
 }
-
 .ability-tooltip-name {
     font-weight: bold;
-    color: #d4af37;
+    color: #ffd700;
     font-size: 1rem;
 }
-
 .ability-tooltip-type {
     font-size: 0.75rem;
-    color: #888;
+    color: #aaa;
     font-style: italic;
 }
-
 .ability-tooltip-meta {
     font-size: 0.8rem;
-    color: #aaa;
-    margin-bottom: 8px;
+    color: #88aaff; /* Bläulich für Source/Level */
+    margin-bottom: 6px;
 }
-
 .ability-tooltip-description {
+    font-size: 0.85rem;
     line-height: 1.4;
     color: #ddd;
 }

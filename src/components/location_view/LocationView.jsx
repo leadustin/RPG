@@ -7,14 +7,9 @@ import shopsData from '../../data/shops.json';
 import ShopScreen from '../shop/ShopScreen';
 import { TileMap } from '../maps/TileMap';
 
-// Importiere alle Items zum "Hydrieren" des Shop-Inventars
-// (Damit der Shop weiß, wie das Item heißt, welches Icon es hat, etc.)
-import armor from '../../data/items/armor.json';
-import weapons from '../../data/items/weapons.json';
-import items from '../../data/items/items.json';
-import clothes from '../../data/items/clothes.json';
-
-const allGameItems = [...armor, ...weapons, ...items, ...clothes];
+// FIX: Statt einzelne JSON-Dateien zu importieren (die teils gelöscht wurden),
+// nutzen wir jetzt den zentralen itemLoader. Dieser enthält ALLE Items.
+import allGameItems from '../../utils/itemLoader';
 
 const LocationView = ({ 
     locationId, 
@@ -41,8 +36,13 @@ const LocationView = ({
     const handleOpenShop = (shop) => {
         // Inventar des Shops mit echten Item-Daten anreichern
         const hydratedInventory = shop.inventory.map(entry => {
+            // FIX: Suche im allGameItems Array (aus itemLoader)
             const itemDef = allGameItems.find(i => i.id === entry.itemId);
-            if (!itemDef) return null;
+            
+            if (!itemDef) {
+                console.warn(`Shop Item nicht gefunden: ${entry.itemId}`);
+                return null;
+            }
             return { ...itemDef, quantity: entry.quantity };
         }).filter(Boolean);
 

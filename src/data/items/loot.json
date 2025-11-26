@@ -1,0 +1,56 @@
+[
+  {
+    "id": "gold_coin",
+    "name": "Goldmünze (GM)",
+    "type": "currency",
+    "weight": 0.01,
+    "value": 1,
+    "description": "Standardwährung in den Reichen.",
+    "icon": "gold_coin.webp"
+  },
+  {
+    "id": "silver_coin",
+    "name": "Silbermünze (SM)",
+    "type": "currency",
+    "weight": 0.01,
+    "value": 0.1,
+    "description": "10 Silber entsprechen 1 Gold.",
+    "icon": "silver_coin.webp"
+  },
+  {
+    "id": "copper_coin",
+    "name": "Kupfermünze (KM)",
+    "type": "currency",
+    "weight": 0.01,
+    "value": 0.01,
+    "description": "10 Kupfer entsprechen 1 Silber.",
+    "icon": "copper_coin.webp"
+  },
+  {
+    "id": "gem_ruby",
+    "name": "Rubin",
+    "type": "gem",
+    "weight": 0.05,
+    "value": 50,
+    "description": "Ein kleiner, aber makelloser roter Edelstein.",
+    "icon": "gem_ruby.webp"
+  },
+  {
+    "id": "gem_sapphire",
+    "name": "Saphir",
+    "type": "gem",
+    "weight": 0.05,
+    "value": 50,
+    "description": "Ein tiefblauer Edelstein.",
+    "icon": "gem_sapphire.webp"
+  },
+  {
+    "id": "gem_diamond_dust",
+    "name": "Diamantstaub (Wert 300 GM)",
+    "type": "component",
+    "weight": 0.1,
+    "value": 300,
+    "description": "Benötigt für Zauber wie 'Wiederbeleben'.",
+    "icon": "dust.webp"
+  }
+]

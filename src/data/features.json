@@ -100,7 +100,7 @@
     "key": "pact_of_the_chain",
     "name": "Pakt der Kette",
     "description": "Du lernst den Zauber 'Vertrauten finden' (zählt nicht gegen bekannte Zauber). Du kannst zusätzlich eine 'verbesserte' Form wählen (Imp, Quasit, Sprite oder Pseudodrache).",
-    "feature_type": "pact_boon",
+    "feature_type": "invocation",
     "mechanics": {
       "type": "learn_spell_with_variant_forms",
       "spell_key": "find_familiar",
@@ -111,7 +111,7 @@
     "key": "pact_of_the_blade",
     "name": "Pakt der Klinge",
     "description": "Du kannst (als Aktion) eine Paktwaffe in deiner Hand erschaffen (beliebige Nahkampfwaffe). Du bist geübt mit ihr. Sie gilt als magisch. Du kannst auch eine magische Waffe (durch 1 Std. Ritual) zu deiner Paktwaffe machen.",
-    "feature_type": "pact_boon",
+    "feature_type": "invocation",
     "mechanics": {
       "type": "summon_pact_weapon",
       "action_type": "action",
@@ -123,7 +123,7 @@
     "key": "pact_of_the_tome",
     "name": "Pakt des Wälzers",
     "description": "Du erhältst ein 'Buch der Schatten'. Wähle 3 Zaubertricks (Cantrips) von einer beliebigen Klasse. Sie zählen als Hexenmeister-Zauber für dich, aber nicht gegen deine bekannten Zaubertricks.",
-    "feature_type": "pact_boon",
+    "feature_type": "invocation",
     "mechanics": {
       "type": "learn_cantrips_from_any_class",
       "count": 3

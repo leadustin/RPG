@@ -17,31 +17,13 @@ import {
 } from "../engine/characterEngine";
 import spellsData from "../data/spells.json";
 import allRaceData from "../data/races.json";
+import allClassData from "../data/classes.json";
+import allBackgroundData from "../data/backgrounds.json";
+
 import locationsData from "../data/locations.json";
 import { rollDiceFormula } from "../utils/helpers";
 
-// Item-Daten importieren
-import armorData from "../data/items/armor.json";
-import weaponsData from "../data/items/weapons.json";
-import clothesData from "../data/items/clothes.json";
-import itemsData from "../data/items/items.json";
-import accessoriesData from "../data/items/accessories.json";
-import beltsData from "../data/items/belts.json";
-import bootsData from "../data/items/boots.json";
-import handsData from "../data/items/hands.json";
-import headsData from "../data/items/heads.json";
-
-const allItems = [
-  ...armorData,
-  ...weaponsData,
-  ...clothesData,
-  ...itemsData,
-  ...accessoriesData,
-  ...beltsData,
-  ...bootsData,
-  ...handsData,
-  ...headsData,
-];
+import allItems from "../utils/itemLoader";
 
 const createLogEntry = (message, type = "general") => ({
   id: Date.now() + Math.random(),
@@ -73,6 +55,9 @@ export const useGameState = () => {
         ...entry,
         timestamp: new Date(entry.timestamp),
       }));
+      
+      // OPTIONAL: Hier könnte man auch eine Hydrierung einbauen, falls alte Saves kaputt sind.
+      // Fürs erste verlassen wir uns darauf, dass neue Spiele korrekt erstellt werden.
       setGameState(loadedState);
     } else {
       console.warn("Konnte Autosave nicht laden.");
@@ -123,41 +108,62 @@ export const useGameState = () => {
     [setGameState]
   );
 
+  // +++ WICHTIGSTER FIX: Charakter-Objekte wiederherstellen (Hydrierung) +++
   const handleCharacterCreation = (finalizedCharacter) => {
-    const tempChar = JSON.parse(JSON.stringify(finalizedCharacter));
+    // Wir erstellen eine Kopie, die wir "hydrieren" (mit Daten füllen)
+    let hydratedChar = JSON.parse(JSON.stringify(finalizedCharacter));
 
-    if (tempChar.ability_bonus_assignments) {
+    // 1. Rasse wiederherstellen (falls nur ID gespeichert)
+    if (typeof hydratedChar.race === 'string') {
+        const raceObj = allRaceData.find(r => r.key === hydratedChar.race);
+        if (raceObj) hydratedChar.race = raceObj;
+    }
+
+    // 2. Klasse wiederherstellen (falls nur ID gespeichert)
+    if (typeof hydratedChar.class === 'string') {
+        const classObj = allClassData.find(c => c.key === hydratedChar.class);
+        if (classObj) hydratedChar.class = classObj;
+    }
+
+    // 3. Hintergrund wiederherstellen (falls nur ID gespeichert)
+    if (typeof hydratedChar.background === 'string') {
+        const bgObj = allBackgroundData.find(b => b.key === hydratedChar.background);
+        if (bgObj) hydratedChar.background = bgObj;
+    }
+
+    // 4. Subklasse wiederherstellen (falls vorhanden und nur ID)
+    if (hydratedChar.subclass && typeof hydratedChar.subclass === 'string') {
+        // Dazu brauchen wir die Klasse (die jetzt hoffentlich ein Objekt ist)
+        if (hydratedChar.class && hydratedChar.class.subclasses) {
+            const subObj = hydratedChar.class.subclasses.find(s => s.key === hydratedChar.subclass);
+            if (subObj) hydratedChar.subclass = subObj;
+        }
+    }
+
+    // --- Ab hier ist 'hydratedChar' wieder ein vollwertiges Objekt mit .name, .icon etc. ---
+
+    if (hydratedChar.ability_bonus_assignments) {
       for (const [ability, bonus] of Object.entries(
-        tempChar.ability_bonus_assignments
+        hydratedChar.ability_bonus_assignments
       )) {
-        tempChar.abilities[ability] += bonus;
+        hydratedChar.abilities[ability] += bonus;
       }
     }
 
-    const raceData = allRaceData.find((r) => r.key === tempChar.race.key);
-    const hp = calculateInitialHP(tempChar);
+    // HP Berechnung benötigt das Rassen-Objekt (deshalb Hydrierung vorher!)
+    const hp = calculateInitialHP(hydratedChar);
 
     const initialStats = {
       hp: hp,
       maxHp: hp,
-      armor_class: calculateAC(tempChar),
-      speed: raceData?.speed || 30,
-      abilities: tempChar.abilities,
+      armor_class: calculateAC(hydratedChar),
+      speed: hydratedChar.race?.speed || 30,
+      abilities: hydratedChar.abilities,
     };
 
-    const equipmentList = finalizedCharacter.class.starting_equipment || [];
     const initialEquipment = {};
-    equipmentList.forEach((item) => {
-      const itemDetails = allItems.find((i) => i.name === item.item);
-      if (itemDetails && itemDetails.slot) {
-        initialEquipment[itemDetails.slot] = {
-          ...itemDetails,
-          id: `${itemDetails.name}-${Date.now()}`,
-        };
-      }
-    });
 
-    const rawInventory = finalizedCharacter.inventory || [];
+    const rawInventory = hydratedChar.inventory || [];
     const characterInventory = rawInventory.map(rawItem => {
         const itemDef = allItems.find(i => i.id === rawItem.itemId);
         if (!itemDef) {
@@ -172,11 +178,11 @@ export const useGameState = () => {
     }).filter(Boolean);
 
     const characterWithStats = {
-      ...finalizedCharacter,
+      ...hydratedChar,
       stats: initialStats,
       inventory: characterInventory,
       equipment: initialEquipment,
-      wallet: finalizedCharacter.wallet || { gold: 0, silver: 0, copper: 0 },
+      wallet: hydratedChar.wallet || { gold: hydratedChar.gold || 0, silver: 0, copper: 0 },
       position: { x: 2048, y: 1536 },
       currentLocation: "worldmap",
       worldMapPosition: { x: 2048, y: 1536 },
@@ -190,14 +196,10 @@ export const useGameState = () => {
       Rasse: characterWithStats.race?.name,
       Klasse: characterWithStats.class?.name,
       Hintergrund: characterWithStats.background?.name,
-      Hintergrund_Sprachen: characterWithStats.background_choices?.languages || [],
-      Hintergrund_Werkzeuge: characterWithStats.background_choices?.tools || [],
       Basis_Attribute: characterWithStats.abilities,
-      Kampfstil: characterWithStats.fighting_style || "Kein",
-      Start_Inventar_IDs: characterWithStats.inventory?.map((item) => item.itemId || item.id) || [],
     };
 
-    console.log("--- CHARAKTER ERSTELLT ---", characterCreationSummary);
+    console.log("--- CHARAKTER ERSTELLT (Hydriert) ---", characterCreationSummary);
 
     setGameState({
       screen: "game",
@@ -277,7 +279,37 @@ export const useGameState = () => {
     });
   }, []);
 
-  // --- HIER WURDE GEÄNDERT ---
+  const handleDestroyItem = useCallback((itemToDestroy) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      const inventory = [...character.inventory];
+
+      // Wir suchen das Item anhand der eindeutigen instanceId (oder id als Fallback)
+      const index = inventory.findIndex(i => 
+          (i.instanceId && i.instanceId === itemToDestroy.instanceId) || 
+          i.id === itemToDestroy.id
+      );
+
+      if (index > -1) {
+          // Item aus dem Array entfernen
+          inventory.splice(index, 1);
+          
+          const newLogEntries = [
+              ...prevState.logEntries, 
+              createLogEntry(`${itemToDestroy.name} wurde zerstört.`, "item")
+          ];
+
+          return {
+              ...prevState,
+              character: { ...character, inventory },
+              logEntries: newLogEntries
+          };
+      }
+      return prevState;
+    });
+  }, []);
+
   const handleEnterLocation = useCallback((locationId, currentPosition) => {
     setGameState((prevState) => {
       if (!prevState.character) return prevState;
@@ -324,7 +356,6 @@ export const useGameState = () => {
       };
     });
   }, []);
-  // ---------------------------
 
   const handleLeaveLocation = useCallback(() => {
     setGameState((prevState) => {
@@ -421,6 +452,79 @@ export const useGameState = () => {
         ...prevState,
         character: { ...character, inventory, equipment },
         logEntries: [...prevState.logEntries, newLogEntry],
+      };
+    });
+  }, []);
+
+  // +++ NEU: Funktion zum Auspacken von Paketen +++
+  const handleUnpackItem = useCallback((packItem) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      const character = { ...prevState.character };
+      let inventory = [...character.inventory];
+      let logEntries = [...prevState.logEntries];
+
+      // 1. Definition des Pakets finden (um den Inhalt zu kennen)
+      // Da packItem aus dem Inventar kommt, hat es vielleicht nicht alle Infos.
+      // Wir suchen das Original-Item in allItems
+      const packDef = allItems.find(i => i.id === packItem.itemId);
+
+      if (!packDef || packDef.type !== 'pack' || !packDef.contents) {
+         logEntries.push(createLogEntry("Dieser Gegenstand kann nicht ausgepackt werden.", "error"));
+         return { ...prevState, logEntries };
+      }
+
+      // 2. Paket aus Inventar entfernen
+      const packIndex = inventory.findIndex(i => i.instanceId === packItem.instanceId);
+      if (packIndex === -1) return prevState; // Sollte nicht passieren
+
+      const currentPackStack = inventory[packIndex];
+      
+      if (currentPackStack.quantity > 1) {
+          // Wenn Stapel: Eins abziehen
+          inventory[packIndex] = { 
+              ...currentPackStack, 
+              quantity: currentPackStack.quantity - 1 
+          };
+      } else {
+          // Wenn einzeln: Entfernen
+          inventory.splice(packIndex, 1);
+      }
+
+      // 3. Inhalte hinzufügen
+      packDef.contents.forEach(contentItem => {
+          // Item Definition laden (z.B. "torch")
+          const itemDef = allItems.find(i => i.id === contentItem.id);
+          if (!itemDef) return;
+
+          // Prüfen ob wir stapeln können
+          const existingItemIndex = inventory.findIndex(i => i.itemId === contentItem.id);
+          
+          // Stapelbare Typen (Logik aus shopEngine/inventoryEngine adaptiert)
+          const isStackable = ['ammo', 'potion', 'scroll', 'loot', 'food', 'resource', 'gear', 'consumable'].includes(itemDef.type);
+
+          if (isStackable && existingItemIndex > -1) {
+              inventory[existingItemIndex] = {
+                  ...inventory[existingItemIndex],
+                  quantity: inventory[existingItemIndex].quantity + contentItem.quantity
+              };
+          } else {
+              inventory.push({
+                  ...itemDef,
+                  itemId: itemDef.id,
+                  instanceId: crypto.randomUUID(),
+                  quantity: contentItem.quantity,
+                  equipped: false
+              });
+          }
+      });
+
+      logEntries.push(createLogEntry(`${packDef.name} ausgepackt.`, "item"));
+
+      return {
+        ...prevState,
+        character: { ...character, inventory },
+        logEntries
       };
     });
   }, []);
@@ -655,33 +759,23 @@ export const useGameState = () => {
       } 
       // 2. LEVEL SPELL - Kostet Slot
       else {
-          // Initialisiere Slots falls nicht vorhanden (volle Slots)
-          const maxSlots = calculateMaxSpellSlots(char);
+          const maxSlots = calculateMaxSpellSlots(char); // Dies ist ein Platzhalter, falls calculateMaxSpellSlots hier nicht importiert ist
           const currentSlots = char.currentSpellSlots ? { ...char.currentSpellSlots } : { ...maxSlots };
           
-          // Warlock Sonderfall (Pact Magic): Slots haben immer denselben (höchsten) Level
-          // Vereinfachung: Wir schauen auf den angeforderten Slot.
-          
           if (!currentSlots[castLevel] || currentSlots[castLevel] <= 0) {
-              // Darf eigentlich nicht passieren, wenn UI Buttons deaktiviert
               return {
                   ...prevState,
                   logEntries: [...prevState.logEntries, createLogEntry(`Fehler: Kein Zauberplatz von Grad ${castLevel} verfügbar!`, "error")]
               };
           }
 
-          // Slot abziehen
           currentSlots[castLevel] -= 1;
           char.currentSpellSlots = currentSlots;
 
-          // Info für Log
           const isUpcast = castLevel > spell.level;
           logMsg = `${char.name} wirkt ${spell.name} auf Grad ${castLevel}. ${isUpcast ? '(Verstärkt!)' : ''}`;
       }
       
-      // Hier könnte man spellsEngine.executeSpell() aufrufen, wenn man ein Zielsystem hätte.
-      // Vorerst loggen wir nur den Verbrauch.
-
       return {
           ...prevState,
           character: char,
@@ -690,7 +784,6 @@ export const useGameState = () => {
     });
   }, []);
 
-  // +++ NEU: Shop Handler +++
   const handleShopTransaction = useCallback((newCharacter, logMessage) => {
     setGameState((prevState) => {
       const newLogEntry = createLogEntry(logMessage, "item");
@@ -702,11 +795,8 @@ export const useGameState = () => {
     });
   }, []);
 
-  // +++ NEU: Generisches Update für den Charakter (z.B. für Zauberbuch) +++
   const handleUpdateCharacter = useCallback((updatedCharacter) => {
     setGameState((prevState) => {
-      // Sicherheitshalber prüfen, ob IDs übereinstimmen, falls wir in einer Party sind
-      // (Aktuell ist character eh der Main Char, aber für die Zukunft)
       return {
         ...prevState,
         character: updatedCharacter
@@ -726,7 +816,9 @@ export const useGameState = () => {
     handleEquipItem,
     handleUnequipItem,
     handleToggleTwoHanded,
-    handleFillQuiver, 
+    handleFillQuiver,
+    handleUnpackItem,
+    handleDestroyItem,
     handleUnloadQuiver, 
     handleEnterLocation,
     handleLeaveLocation,

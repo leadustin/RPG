@@ -17,8 +17,8 @@ import './LevelUpScreen.css';
 import { WeaponMasterySelection } from '../character_creation/WeaponMasterySelection';
 import { FeatSelection } from '../character_creation/FeatSelection'; 
 import { InvocationSelection } from './InvocationSelection';
-import { LevelUpSpells } from './LevelUpSpells'; // NEU
-import { MysticArcanumSelection } from './MysticArcanumSelection'; // NEU
+import { LevelUpSpells } from './LevelUpSpells'; 
+import { MysticArcanumSelection } from './MysticArcanumSelection'; 
 import '../character_creation/SkillSelection.css'; 
 import '../character_creation/PanelDetails.css'; 
 
@@ -219,7 +219,7 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
 
   const navigateToNextStep = (currentStep) => {
     if (currentStep < 1 && isAbilityIncrease) setStep(1);
-    else if (currentStep < 2 && isSubclassChoice) setStep(2);
+    else if (currentStep < 2 && (isSubclassChoice || (isWarlock && newLevel === 3))) setStep(2);
     else if (currentStep < 2.5 && hasInvocationChoice) setStep(2.5);
     else if (currentStep < 3 && hasSpellChoice) setStep(3);
     else if (currentStep < 4 && isMasteryIncrease) setStep(4);
@@ -345,9 +345,73 @@ export const LevelUpScreen = ({ character, onConfirm }) => {
       <div className="levelup-sidebar">
         <h2>Stufenaufstieg!</h2>
         <p className="levelup-subtitle">{character.name} &rarr; Stufe {newLevel}</p>
-        <div className="levelup-summary-preview">
-            <p>TP: {character.stats.hp} {rollResult && ` + ${(rollResult.total || 0) + racialHpBonus + getAbilityModifier(character.abilities.con + getRacialAbilityBonus(character, 'con'))}`}</p>
+        
+        {/* --- UPDATE: Schönere Attributs-Übersicht --- */}
+        <div className="levelup-summary-preview" style={{textAlign: 'left', marginBottom: '20px', backgroundColor: 'rgba(0, 0, 0, 0.2)', padding: '15px', borderRadius: '8px'}}>
+            
+            {/* HP Anzeige */}
+            <div style={{marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '15px'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '1.2em', alignItems: 'center'}}>
+                    <strong style={{color: '#ff6b6b'}}>TP (Max)</strong>
+                    <span style={{fontWeight: 'bold'}}>
+                        {character.stats.maxHp} 
+                        {rollResult && (
+                            <span style={{color: '#4caf50', marginLeft: '8px'}}>
+                                {' + '}{(rollResult.total || 0) + racialHpBonus + getAbilityModifier(finalAbilities.con + (levelUpMode === 'asi' ? (asiChoices.con || 0) : 0))}
+                            </span>
+                        )}
+                    </span>
+                </div>
+            </div>
+
+            {/* Attribute Liste - Neues Layout */}
+            <div>
+                <h4 style={{margin: '0 0 15px 0', color: '#ddd', fontSize: '1em', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '5px'}}>Attribute</h4>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+                {['str', 'dex', 'con', 'int', 'wis', 'cha'].map(stat => {
+                    const base = finalAbilities[stat];
+                    const bonus = (levelUpMode === 'asi' ? asiChoices[stat] : 0) || 0;
+                    const val = base + bonus;
+                    const mod = getAbilityModifier(val);
+                    
+                    return (
+                        <div key={stat} style={{
+                            display:'flex', 
+                            justifyContent:'space-between', 
+                            alignItems: 'center',
+                            padding: '6px 8px',
+                            backgroundColor: bonus > 0 ? 'rgba(76, 175, 80, 0.1)' : 'transparent',
+                            borderRadius: '4px',
+                            border: bonus > 0 ? '1px solid rgba(76, 175, 80, 0.3)' : 'none'
+                        }}>
+                           <span style={{color: '#aaa', fontWeight: '600', width: '40px'}}>{stat.toUpperCase()}</span>
+                           
+                           <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                             <strong style={{color: bonus > 0 ? '#4caf50' : '#fff', fontSize: '1.1em'}}>{val}</strong> 
+                             
+                             <span style={{
+                                 fontSize: '0.85em', 
+                                 color: '#ccc', 
+                                 backgroundColor: 'rgba(255,255,255,0.1)', 
+                                 padding: '2px 6px', 
+                                 borderRadius: '4px',
+                                 minWidth: '35px',
+                                 textAlign: 'center'
+                             }}>
+                                {mod >= 0 ? '+' : ''}{mod}
+                             </span>
+
+                             {/* Grüner Pfeil bei Änderung (optional, aber schick) */}
+                             {bonus > 0 && <span style={{color:'#4caf50', fontSize: '0.8em'}}>▲</span>}
+                           </div>
+                        </div>
+                    );
+                })}
+                </div>
+            </div>
         </div>
+        {/* --- ENDE UPDATE --- */}
+
         <div className="levelup-steps">
           <div className={`step-item ${step === 0 ? 'active' : step > 0 ? 'complete' : ''}`}>Trefferpunkte</div>
           {isAbilityIncrease && <div className={`step-item ${step === 1 ? 'active' : step > 1 ? 'complete' : ''}`}>Attribute / Talent</div>}

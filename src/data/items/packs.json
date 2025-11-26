@@ -1,0 +1,148 @@
+[
+  {
+    "id": "burglars_pack",
+    "name": "Einbrecherausrüstung",
+    "type": "pack",
+    "value": 16,
+    "weight": 21.5,
+    "description": "Enthält alles, was man für den heimlichen Einstieg benötigt.",
+    "contents": [
+      { "id": "backpack", "quantity": 1 },
+      { "id": "ball_bearings", "quantity": 1 },
+      { "id": "string", "quantity": 1 },
+      { "id": "bell", "quantity": 1 },
+      { "id": "candle", "quantity": 5 },
+      { "id": "crowbar", "quantity": 1 },
+      { "id": "hammer", "quantity": 1 },
+      { "id": "piton", "quantity": 10 },
+      { "id": "lantern_hooded", "quantity": 1 },
+      { "id": "flask_oil", "quantity": 2 },
+      { "id": "ration", "quantity": 5 },
+      { "id": "tinderbox", "quantity": 1 },
+      { "id": "waterskin", "quantity": 1 },
+      { "id": "rope_hempen", "quantity": 1 }
+    ],
+    "icon": "burglars_pack.webp"
+  },
+  {
+    "id": "diplomats_pack",
+    "name": "Diplomatenausrüstung",
+    "type": "pack",
+    "value": 39,
+    "weight": 17.7,
+    "description": "Essenzielle Ausrüstung für Gesandte, Botschafter und Reisende von Rang.",
+    "contents": [
+      { "id": "chest", "quantity": 1 },
+      { "id": "clothes_fine", "quantity": 1 },
+      { "id": "ink_bottle", "quantity": 1 },
+      { "id": "ink_pen", "quantity": 5 },
+      { "id": "lamp", "quantity": 1 },
+      { "id": "map_case", "quantity": 2 },
+      { "id": "flask_oil", "quantity": 4 },
+      { "id": "paper", "quantity": 5 },
+      { "id": "parchment", "quantity": 5 },
+      { "id": "perfume", "quantity": 1 },
+      { "id": "tinderbox", "quantity": 1 },
+      { "id": "sealing_wax", "quantity": 1 },
+      { "id": "soap", "quantity": 1 }
+    ],
+    "icon": "diplomats_pack.webp"
+  },
+  {
+    "id": "dungeoneers_pack",
+    "name": "Gewölbeforscherausrüstung",
+    "type": "pack",
+    "value": 12,
+    "weight": 25.0,
+    "description": "Spezialausrüstung für das Erkunden von tiefen Höhlen und Ruinen.",
+    "contents": [
+      { "id": "backpack", "quantity": 1 },
+      { "id": "caltrops", "quantity": 1 },
+      { "id": "crowbar", "quantity": 1 },
+      { "id": "flask_oil", "quantity": 2 },
+      { "id": "ration", "quantity": 10 },
+      { "id": "rope_hempen", "quantity": 1 },
+      { "id": "tinderbox", "quantity": 1 },
+      { "id": "torch", "quantity": 10 },
+      { "id": "waterskin", "quantity": 1 }
+    ],
+    "icon": "dungeoneers_pack.webp"
+  },
+  {
+    "id": "entertainers_pack",
+    "name": "Künstlerausrüstung",
+    "type": "pack",
+    "value": 40,
+    "weight": 26.5,
+    "description": "Alles, was ein reisender Künstler für Auftritt und Überleben braucht.",
+    "contents": [
+      { "id": "backpack", "quantity": 1 },
+      { "id": "bedroll", "quantity": 1 },
+      { "id": "bell", "quantity": 1 },
+      { "id": "lantern_bullseye", "quantity": 1 },
+      { "id": "costume", "quantity": 3 },
+      { "id": "mirror_steel", "quantity": 1 },
+      { "id": "flask_oil", "quantity": 8 },
+      { "id": "ration", "quantity": 9 },
+      { "id": "tinderbox", "quantity": 1 },
+      { "id": "waterskin", "quantity": 1 }
+    ],
+    "icon": "entertainers_pack.webp"
+  },
+  {
+    "id": "explorers_pack",
+    "name": "Entdeckerausrüstung",
+    "type": "pack",
+    "value": 10,
+    "weight": 25.0,
+    "description": "Standardausrüstung für lange Reisen in die Wildnis.",
+    "contents": [
+      { "id": "backpack", "quantity": 1 },
+      { "id": "bedroll", "quantity": 1 },
+      { "id": "flask_oil", "quantity": 2 },
+      { "id": "ration", "quantity": 10 },
+      { "id": "rope_hempen", "quantity": 1 },
+      { "id": "tinderbox", "quantity": 1 },
+      { "id": "torch", "quantity": 10 },
+      { "id": "waterskin", "quantity": 1 }
+    ],
+    "icon": "explorers_pack.webp"
+  },
+  {
+    "id": "priests_pack",
+    "name": "Priesterausrüstung",
+    "type": "pack",
+    "value": 33,
+    "weight": 13.0,
+    "description": "Ausrüstung für Akolythen und Diener der Götter.",
+    "contents": [
+      { "id": "backpack", "quantity": 1 },
+      { "id": "blanket", "quantity": 1 },
+      { "id": "holy_water", "quantity": 1 },
+      { "id": "lamp", "quantity": 1 },
+      { "id": "ration", "quantity": 7 },
+      { "id": "robe", "quantity": 1 },
+      { "id": "tinderbox", "quantity": 1 }
+    ],
+    "icon": "priests_pack.webp"
+  },
+  {
+    "id": "scholars_pack",
+    "name": "Gelehrtenausrüstung",
+    "type": "pack",
+    "value": 40,
+    "weight": 10.0,
+    "description": "Werkzeuge zum Aufzeichnen von Wissen und Karten.",
+    "contents": [
+      { "id": "backpack", "quantity": 1 },
+      { "id": "book", "quantity": 1 },
+      { "id": "ink_bottle", "quantity": 1 },
+      { "id": "ink_pen", "quantity": 1 },
+      { "id": "lamp", "quantity": 1 },
+      { "id": "flask_oil", "quantity": 10 },
+      { "id": "parchment", "quantity": 10 },
+      { "id": "tinderbox", "quantity": 1 }
+    ],
+    "icon": "scholars_pack.webp"
+  }
+]

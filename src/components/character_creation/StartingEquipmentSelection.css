@@ -1,0 +1,200 @@
+/* src/components/character_creation/StartingEquipmentSelection.css */
+
+/* --- HAUPT-LAYOUT --- */
+.ses-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px 15px !important; 
+  box-sizing: border-box;
+  overflow: hidden; 
+  color: #e0e0e0;
+}
+
+/* --- HEADER --- */
+.ses-header {
+  flex-shrink: 0; 
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 5px;
+}
+
+.ses-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-family: serif;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.ses-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #aaa;
+  font-style: italic;
+}
+
+/* --- GRID FÜR DIE KARTEN --- */
+.ses-options-grid {
+  display: flex;
+  gap: 15px;
+  flex-grow: 1; 
+  align-items: flex-start; 
+  overflow-y: auto; 
+  padding-bottom: 10px;
+}
+
+/* --- KARTE (BASE) --- */
+.ses-card {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  
+  background-color: rgba(30, 30, 35, 0.8);
+  border: 1px solid #555;
+  border-radius: 6px;
+  
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  position: relative;
+  
+  max-height: 100%; 
+}
+
+.ses-card:hover {
+  background-color: rgba(40, 40, 45, 0.9);
+  border-color: #aaa;
+  /* transform: translateY(-2px);  <-- ENTFERNT */
+}
+
+/* --- KARTE (SELECTED) --- */
+.ses-card.ses-selected {
+  border: 2px solid #d4af37; /* RPG Gold */
+  background-color: rgba(45, 45, 50, 0.95);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* Header innerhalb der Karte */
+.ses-card-header {
+  background: rgba(0,0,0,0.4);
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.ses-card-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #eee;
+  text-transform: uppercase;
+}
+
+.ses-selected .ses-card-header h3 {
+  color: #d4af37;
+}
+
+/* Inhalt der Karte */
+.ses-card-body {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto; 
+}
+
+/* --- ITEM LISTEN STYLING --- */
+.ses-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ses-list li {
+  display: flex;
+  align-items: flex-start; 
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.ses-qty {
+  font-family: monospace;
+  color: #888;
+  margin-right: 8px;
+  min-width: 20px; 
+}
+
+.ses-name {
+  color: #e0e0e0;
+}
+
+/* --- GOLD ANZEIGE (Option A) --- */
+.ses-gold-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffd700;
+  font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* --- DROPDOWN BEREICH --- */
+.ses-choice-block {
+  background: rgba(0,0,0,0.2);
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #444;
+}
+
+.ses-choice-block label {
+  font-size: 0.8rem;
+  color: #aaa;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.ses-select {
+  width: 100%;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 6px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+
+.ses-sublist li {
+  font-size: 0.85rem;
+  padding: 2px 0;
+}
+
+/* --- OPTION B (Zentriert) --- */
+.ses-center {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%; 
+  min-height: 200px;
+}
+
+.ses-big-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.ses-gold-value {
+  font-size: 2.5rem;
+  color: #ffd700;
+  font-weight: bold;
+  font-family: serif;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.ses-hint {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #999;
+  line-height: 1.4;
+}

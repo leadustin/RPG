@@ -1,14 +1,11 @@
 // src/engine/shopEngine.js
 import { calculateItemPriceForCharacter } from './characterEngine';
-import allItems from '../data/items/items.json'; // Und andere Item-Dateien, besser wäre eine zentrale 'itemLoader' utility
-import weapons from '../data/items/weapons.json';
-import armor from '../data/items/armor.json';
-import clothes from '../data/items/clothes.json';
 
-// Helper: Alle Items in einer Map oder Liste für schnellen Zugriff
-const globalItemDatabase = [...allItems, ...weapons, ...armor, ...clothes];
+// FIX: Statt viele einzelne JSON-Dateien zu laden (die teils gelöscht wurden),
+// nutzen wir den zentralen itemLoader.
+import allGameItems from '../utils/itemLoader';
 
-const getItemDef = (itemId) => globalItemDatabase.find(i => i.id === itemId);
+const getItemDef = (itemId) => allGameItems.find(i => i.id === itemId);
 
 /**
  * Berechnet den Verkaufspreis (Spieler an Händler).
@@ -45,8 +42,10 @@ export const buyItem = (character, itemDef, quantity = 1) => {
 
     // Item zum Inventar hinzufügen
     const inventory = [...character.inventory];
-    // Prüfen auf Stacking (nur bei Munition, Potions, Loot)
-    const stackableTypes = ['ammo', 'potion', 'scroll', 'loot', 'food', 'resource'];
+    
+    // Definition von stapelbaren Typen (kann bei Bedarf erweitert werden)
+    const stackableTypes = ['ammo', 'potion', 'scroll', 'loot', 'food', 'resource', 'currency', 'gem'];
+    
     const existingItemIndex = inventory.findIndex(i => i.itemId === itemDef.id && stackableTypes.includes(itemDef.type));
 
     if (existingItemIndex >= 0) {
@@ -57,8 +56,9 @@ export const buyItem = (character, itemDef, quantity = 1) => {
         inventory.push({
             ...itemDef,
             itemId: itemDef.id,
-            instanceId: Date.now() + Math.random(), // Unique ID
-            quantity: quantity
+            instanceId: crypto.randomUUID(), // Moderne UUID statt Date.now()
+            quantity: quantity,
+            equipped: false
         });
     }
 

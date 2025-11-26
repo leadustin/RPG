@@ -1,31 +1,40 @@
 // src/components/character_sheet/InventoryFilter.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './InventoryFilter.css';
 
-const InventoryFilter = ({ activeFilter, onFilterChange }) => {
+const InventoryFilter = ({ currentFilter, onFilterChange }) => {
+  const { t } = useTranslation();
+
   const filters = [
-    { key: 'all', label: 'Alle' },
+    { key: 'all', label: 'Alle Items' },
     { key: 'weapon', label: 'Waffen' },
-    { key: 'armor', label: 'Rüstung' }, // Zeigt Rüstung, Schilde, Helme, Handschuhe, Stiefel, Kleidung
+    { key: 'armor', label: 'Rüstung & Schilde' },
     { key: 'potion', label: 'Tränke' },
-    { key: 'scroll', label: 'Rollen' },
-    { key: 'tool', label: 'Werkzeug' },
-    { key: 'ammo', label: 'Munition' },
-    { key: 'resource', label: 'Material' },
-    { key: 'loot', label: 'Plunder' },
+    { key: 'scroll', label: 'Schriftrollen' },
+    { key: 'loot', label: 'Schätze & Wertsachen' },
+    { key: 'tool', label: 'Werkzeuge' },
+    { key: 'resource', label: 'Materialien' },
+    { key: 'ammo', label: 'Munition' }, // Hab ich ergänzt, da wichtig
   ];
 
   return (
-    <div className="inventory-filter">
-      {filters.map(filter => (
-        <button
-          key={filter.key}
-          className={`filter-btn ${activeFilter === filter.key ? 'active' : ''}`}
-          onClick={() => onFilterChange(filter.key)}
+    <div className="inventory-filter-container">
+      <label htmlFor="inv-filter" className="filter-label">Kategorie:</label>
+      <div className="select-wrapper">
+        <select
+          id="inv-filter"
+          className="inventory-filter-select"
+          value={currentFilter}
+          onChange={(e) => onFilterChange(e.target.value)}
         >
-          {filter.label}
-        </button>
-      ))}
+          {filters.map((filter) => (
+            <option key={filter.key} value={filter.key}>
+              {t(`filter.${filter.key}`, filter.label)}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };
