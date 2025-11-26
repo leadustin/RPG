@@ -1,12 +1,12 @@
 /* src/components/test/Test.css */
 
-/* Globale Variablen-Simulation für dieses Modul (angelehnt an ClassSelection) */
+/* Globale Variablen-Simulation (Design: Character Creation) */
 .character-view-overlay {
-    --cv-border-color: #5c4e34;       /* Rahmenfarbe (Bronze/Braun) */
-    --cv-highlight-color: #ffd700;    /* Highlight (Gold) */
-    --cv-bg-color: rgba(0, 0, 0, 0.2); /* Leichter Hintergrund */
-    --cv-text-color: #d0c0b0;         /* Standard Text */
-    --cv-bg-hover: rgba(255, 255, 255, 0.05);
+    --cv-border-color: #5c4e34;       
+    --cv-highlight-color: #ffd700;    
+    --cv-bg-color: rgba(0, 0, 0, 0.2); 
+    --cv-text-color: #d0c0b0;         
+    --cv-bg-active: rgba(92, 78, 52, 0.4); /* Hintergrund für aktives Portrait */
 }
 
 .character-view-overlay {
@@ -28,7 +28,7 @@
 
 .character-view-container {
     display: grid;
-    grid-template-columns: 200px 1fr; /* Linke Spalte fest auf 200px */
+    grid-template-columns: 120px 1fr; /* Linke Spalte schmaler für nur Portraits */
     grid-template-rows: 100%; 
     width: 100%;
     height: 100%;
@@ -36,155 +36,110 @@
     pointer-events: none; 
 }
 
-/* Basis-Box im Stil der CharacterCreation */
+/* Basis-Box Stil */
 .character-view-box {
     pointer-events: auto;
     box-sizing: border-box;
-    
     background: var(--cv-bg-color);
     border: 1px solid var(--cv-border-color);
     border-radius: 8px;
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
-    
     padding: 15px;
     overflow-y: auto;
+}
+
+/* --- LINKE SPALTE: Sidebar / Portrait-Liste --- */
+.cv-sidebar {
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-/* --- LINKE SPALTE (Portrait & Stats) --- */
-
-.cv-portrait-section {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--cv-border-color);
-    margin-bottom: 5px;
+    padding-top: 20px;
 }
 
+/* Container für ein einzelnes Portrait (Button-Verhalten) */
+.cv-portrait-wrapper {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.cv-portrait-wrapper:hover {
+    transform: scale(1.05);
+}
+
+/* Der eigentliche Bildrahmen */
 .cv-portrait-frame {
-    width: 100%; /* Füllt die 200px Spalte */
-    aspect-ratio: 1; /* Quadratisch */
-    border: 1px solid var(--cv-border-color);
-    border-radius: 4px;
-    padding: 3px;
-    background: rgba(0,0,0,0.3);
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--cv-border-color);
+    border-radius: 50%; /* Rund oder eckig, je nach Geschmack. Hier rund für Avatar-Look */
+    overflow: hidden;
+    background: #000;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .cv-portrait-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 2px;
-    filter: sepia(0.1) contrast(1.1);
 }
 
-.cv-character-name {
-    color: var(--cv-highlight-color);
+.cv-portrait-placeholder {
     font-family: 'Cinzel', serif;
-    font-size: 1.2em;
-    text-align: center;
-    line-height: 1.2;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    margin-bottom: 4px;
+    font-size: 1.5em;
+    color: #555;
 }
 
-.cv-character-details {
-    color: #aaa;
-    font-size: 0.8em;
-    font-style: italic;
-    text-align: center;
+/* AKTIVER ZUSTAND (Ausgewählter Charakter) */
+.cv-portrait-wrapper.active .cv-portrait-frame {
+    border-color: var(--cv-highlight-color);
+    box-shadow: 0 0 15px var(--cv-highlight-color);
 }
 
-/* Vitals (HP & AC) */
-.cv-vitals-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 5px;
-    border-bottom: 1px solid var(--cv-border-color);
-    padding-bottom: 15px;
-    margin-bottom: 5px;
-}
-
-.cv-vital-box {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(0,0,0,0.3);
-    padding: 6px 2px;
-    border: 1px solid #444;
-    border-radius: 4px;
-}
-
-.cv-vital-value {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #fff;
-    font-family: 'Cinzel', serif;
-}
-
-.cv-vital-label {
-    font-size: 0.6em;
-    text-transform: uppercase;
-    color: #888;
-    margin-top: 2px;
-}
-
-/* Attribute Grid */
-.cv-stats-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.cv-stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Optional: Kleiner Indikator oder Name beim Hovern */
+.cv-portrait-wrapper .cv-tooltip-name {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.8);
     padding: 4px 8px;
     border-radius: 4px;
-    transition: background 0.2s;
-    font-size: 0.9em;
+    margin-left: 10px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.8em;
+    color: #fff;
+    z-index: 10;
+    border: 1px solid var(--cv-border-color);
 }
 
-.cv-stat-row:hover {
-    background: var(--cv-bg-hover);
+.cv-portrait-wrapper:hover .cv-tooltip-name {
+    opacity: 1;
 }
 
-.cv-stat-label {
-    font-family: 'Cinzel', serif;
-    color: #bbb;
-}
-
-.cv-stat-value-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.cv-stat-score {
-    color: #888;
-    font-size: 0.9em;
-}
-
-.cv-stat-modifier {
-    font-weight: bold;
-    color: var(--cv-highlight-color);
-    min-width: 24px;
-    text-align: right;
-}
-
-/* Platzhalter rechts */
+/* --- RECHTE SPALTE: Platzhalter --- */
 .cv-right-placeholder {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #555;
-    font-style: italic;
     height: 100%;
+    color: #777;
+    font-style: italic;
+}
+
+.cv-right-placeholder h2 {
+    color: var(--cv-highlight-color);
+    font-family: 'Cinzel', serif;
+    margin-bottom: 10px;
 }
