@@ -1,5 +1,5 @@
 // src/components/location_view/LocationView.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import locationsData from "../../data/locations.json";
 import shopsData from "../../data/shops.json";
 import ShopScreen from "../shop/ShopScreen";
@@ -13,29 +13,34 @@ function LocationView({
   onStartCombat 
 }) {
   const [activeShopId, setActiveShopId] = useState(null);
-  const [resolvedLocation, setResolvedLocation] = useState(null);
 
-  // Versuche, den Ort zu finden (auch bei Schreibfehlern in der ID)
-  useEffect(() => {
-    if (!locationId) return;
+  // --- LOGIK: Ort korrekt finden ---
+  // Wir prüfen, ob locationsData eine Liste (Array) oder ein Objekt ist.
+  // Das ist kein "Fallback", sondern eine saubere Typprüfung.
+  let location = null;
+  
+  if (Array.isArray(locationsData)) {
+    // Wenn JSON ein Array ist: Suche den Eintrag mit der passenden ID
+    location = locationsData.find(loc => loc.id === locationId);
+  } else {
+    // Wenn JSON ein Objekt ist: Direkter Zugriff über den Key
+    location = locationsData[locationId];
+  }
 
-    // 1. Direkter Treffer?
-    let loc = locationsData[locationId];
+  // --- FEHLERBEHANDLUNG: Wenn ID wirklich nicht existiert ---
+  if (!location) {
+    console.error(`Fehler: Ort mit ID "${locationId}" nicht in locations.json gefunden.`);
+    return (
+      <div className="location-view error-view">
+        <h2 style={{ color: 'red' }}>⚠️ Ort nicht gefunden</h2>
+        <p>Das Spiel sucht nach ID: <strong>{locationId}</strong></p>
+        <p>Bitte prüfe, ob die ID in <code>src/data/locations.json</code> exakt so geschrieben ist.</p>
+        <button onClick={onLeaveLocation}>Zurück zur Weltkarte</button>
+      </div>
+    );
+  }
 
-    // 2. Falls nicht gefunden, suche case-insensitive (Groß/Klein egal)
-    if (!loc) {
-      const foundKey = Object.keys(locationsData).find(
-        key => key.toLowerCase() === locationId.toLowerCase()
-      );
-      if (foundKey) {
-        loc = locationsData[foundKey];
-      }
-    }
-
-    setResolvedLocation(loc);
-  }, [locationId]);
-
-  // --- FALL 1: SHOP OFFEN ---
+  // --- SHOP-SCREEN ANZEIGEN ---
   if (activeShopId) {
     const shopData = shopsData[activeShopId];
     return (
@@ -48,55 +53,44 @@ function LocationView({
     );
   }
 
-  // --- FALL 2: ORT NICHT GEFUNDEN (Fehleranzeige) ---
-  if (!resolvedLocation) {
-    return (
-      <div className="location-view error-view" style={{ padding: '20px', textAlign: 'center' }}>
-        <h2 style={{ color: 'red' }}>⚠️ Ort nicht gefunden</h2>
-        <p>Gesuchte ID: <strong>{locationId}</strong></p>
-        <p>Verfügbare IDs in Datenbank: {Object.keys(locationsData).slice(0, 5).join(', ')}...</p>
-        <button onClick={onLeaveLocation} style={{ marginTop: '20px', padding: '10px' }}>
-          Zurück zur Weltkarte
-        </button>
-      </div>
-    );
-  }
-
-  // --- FALL 3: ORT ANZEIGEN (Normal) ---
+  // --- NORMALE ORTS-ANSICHT ---
   return (
     <div className="location-view">
       <div className="location-header">
-        <h2>{resolvedLocation.name}</h2>
-        {resolvedLocation.type && <span className="location-type">({resolvedLocation.type})</span>}
+        {/* Wir nutzen eine Übersetzungs-Logik oder Fallback auf den Key, falls kein i18n da ist */}
+        <h2>{location.name.startsWith("location.") ? location.id.toUpperCase() : location.name}</h2>
+        {/* Zeige Beschreibung (hier vereinfacht direkt gerendert) */}
       </div>
 
       <div className="location-content">
-        {resolvedLocation.image && (
-          <img 
-            src={resolvedLocation.image} 
-            alt={resolvedLocation.name} 
-            className="location-image" 
-          />
+        {/* Bild rendern falls vorhanden */}
+        {location.image && (
+          <img src={location.image} alt={location.name} className="location-image" />
         )}
-        <p className="location-description">{resolvedLocation.description}</p>
+        
+        {/* Beschreibungstext */}
+        <p className="location-description">
+          {location.description.startsWith("location.") ? "Eine kurze Rast an diesem Ort." : location.description}
+        </p>
 
         {/* Händler Buttons */}
-        {resolvedLocation.shops && resolvedLocation.shops.length > 0 && (
+        {location.shops && location.shops.length > 0 && (
           <div className="location-shops">
-            <h3>Händler:</h3>
+            <h3>🛒 Händler:</h3>
             <div className="shop-list">
-              {resolvedLocation.shops.map(shopId => {
+              {location.shops.map(shopId => {
                 const shop = shopsData[shopId];
-                // Falls Shop-Daten fehlen, zeige Warnung statt nichts
-                if (!shop) return <div key={shopId} className="error-msg">⚠️ Shop "{shopId}" fehlt</div>;
-                
+                if (!shop) {
+                    console.warn(`Shop-ID "${shopId}" in shops.json nicht gefunden.`);
+                    return null;
+                }
                 return (
                   <button 
                     key={shopId} 
                     className="shop-btn"
                     onClick={() => setActiveShopId(shopId)}
                   >
-                    🛒 {shop.name} betreten
+                    {shop.name} betreten
                   </button>
                 );
               })}
@@ -107,7 +101,7 @@ function LocationView({
 
       <div className="location-footer">
         <div className="location-actions-row">
-            {/* KAMPF-BUTTON: Wird IMMER angezeigt, wenn onStartCombat existiert */}
+            {/* KAMPF-BUTTON: Nur anzeigen, wenn die Funktion bereitsteht */}
             {onStartCombat && (
               <button 
                 className="combat-start-btn" 
@@ -115,11 +109,11 @@ function LocationView({
                 style={{ 
                     backgroundColor: '#8b0000', 
                     color: 'white', 
-                    border: '1px solid #ff0000',
-                    marginRight: '10px'
+                    fontWeight: 'bold', 
+                    marginRight: '10px' 
                 }}
               >
-                ⚔️ Kampf starten (Test)
+                ⚔️ Kampf starten
               </button>
             )}
 
