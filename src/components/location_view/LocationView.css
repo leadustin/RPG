@@ -144,3 +144,17 @@
     color: #ff6b6b;
     font-size: 1.5em;
 }
+
+/* In src/components/location_view/LocationView.css */
+.combat-start-btn {
+  background-color: #8b0000; /* Dunkelrot */
+  color: #fff;
+  border: 1px solid #ff4444;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.combat-start-btn:hover {
+  background-color: #a30000;
+  box-shadow: 0 0 8px #ff0000;
+}

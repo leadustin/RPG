@@ -1,116 +1,118 @@
 // src/components/location_view/LocationView.jsx
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import './LocationView.css';
-import locationsData from '../../data/locations.json';
-import shopsData from '../../data/shops.json';
-import ShopScreen from '../shop/ShopScreen';
-import { TileMap } from '../maps/TileMap';
+import React, { useState } from "react";
+import locationsData from "../../data/locations.json";
+import shopsData from "../../data/shops.json";
+import ShopScreen from "../shop/ShopScreen";
+import "./LocationView.css";
 
-// FIX: Statt einzelne JSON-Dateien zu importieren (die teils gelöscht wurden),
-// nutzen wir jetzt den zentralen itemLoader. Dieser enthält ALLE Items.
-import allGameItems from '../../utils/itemLoader';
+function LocationView({ 
+  locationId, 
+  character, 
+  onLeaveLocation, 
+  onShopTransaction,
+  onStartCombat // +++ NEU: Prop für Kampfstart empfangen +++
+}) {
+  const [activeShopId, setActiveShopId] = useState(null);
 
-const LocationView = ({ 
-    locationId, 
-    character,
-    onLeaveLocation, 
-    onShopTransaction 
-}) => {
-    const { t } = useTranslation();
-    const [activeShop, setActiveShop] = useState(null);
+  const location = locationsData[locationId];
 
-    const location = locationsData.find(loc => loc.id === locationId);
-
-    if (!location) {
-        return <div className="location-view-error">Ort nicht gefunden: {locationId}</div>;
-    }
-
-    const viewType = location.type === 'city' ? 'Stadt' : 'Dungeon';
-
-    // Shops auflösen: Wir suchen in shops.json nach den IDs, die in locations.json stehen
-    const availableShops = location.shops 
-        ? location.shops.map(shopId => shopsData.find(s => s.id === shopId)).filter(Boolean)
-        : [];
-
-    const handleOpenShop = (shop) => {
-        // Inventar des Shops mit echten Item-Daten anreichern
-        const hydratedInventory = shop.inventory.map(entry => {
-            // FIX: Suche im allGameItems Array (aus itemLoader)
-            const itemDef = allGameItems.find(i => i.id === entry.itemId);
-            
-            if (!itemDef) {
-                console.warn(`Shop Item nicht gefunden: ${entry.itemId}`);
-                return null;
-            }
-            return { ...itemDef, quantity: entry.quantity };
-        }).filter(Boolean);
-
-        setActiveShop({ ...shop, inventory: hydratedInventory });
-    };
-
-    // Handler für Klicks auf die Karte (wenn Events in der Map definiert sind)
-    const handleMapInteraction = (eventData) => {
-        if (eventData.type === 'shop') {
-            const shop = availableShops.find(s => s.id === eventData.shopId);
-            if (shop) {
-                handleOpenShop(shop);
-            }
-        }
-    };
-
+  // Fallback, falls ID nicht gefunden
+  if (!location) {
     return (
-        <div className={`location-view ${location.type}`}>
-            
-            {/* Header */}
-            <div className="location-header">
-                <h1>{t(location.name, location.name)}</h1>
-                <p className="location-type">({viewType})</p>
-                <p className="location-desc">{t(location.description, location.description)}</p>
-            </div>
-
-            {/* Karte */}
-            <div className="location-map-container">
-                {location.mapFile && (
-                    <TileMap 
-                        mapFile={location.mapFile}
-                        character={character}
-                        onLeaveLocation={onLeaveLocation}
-                        onInteract={handleMapInteraction}
-                    />
-                )}
-            </div>
-            
-            {/* Shop Buttons (Overlay) */}
-            {availableShops.length > 0 && (
-                <div className="location-actions">
-                    <h3>Orte</h3>
-                    <div className="shop-buttons">
-                        {availableShops.map(shop => (
-                            <button key={shop.id} onClick={() => handleOpenShop(shop)}>
-                                <span className="icon">🛒</span> {shop.name}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Footer */}
-            <div className="location-footer">
-                 <button className="leave-btn" onClick={onLeaveLocation}>Ort verlassen</button>
-            </div>
-
-            {/* Shop Fenster (Modal) */}
-            {activeShop && (
-                <ShopScreen 
-                    shop={activeShop}
-                    character={character}
-                    onTransaction={onShopTransaction}
-                    onClose={() => setActiveShop(null)}
-                />
-            )}
-        </div>
+      <div className="location-view">
+        <h2>Unbekannter Ort: {locationId}</h2>
+        <button onClick={onLeaveLocation}>Zurück zur Karte</button>
+      </div>
     );
-};
+  }
+
+  // Shop öffnen
+  const handleOpenShop = (shopId) => {
+    setActiveShopId(shopId);
+  };
+
+  // Shop schließen
+  const handleCloseShop = () => {
+    setActiveShopId(null);
+  };
+
+  // Wenn ein Shop offen ist, zeigen wir diesen an
+  if (activeShopId) {
+    const shopData = shopsData[activeShopId];
+    return (
+      <ShopScreen
+        shop={shopData}
+        character={character}
+        onClose={handleCloseShop}
+        onTransaction={onShopTransaction}
+      />
+    );
+  }
+
+  return (
+    <div className="location-view">
+      <div className="location-header">
+        <h2>{location.name}</h2>
+        {location.type && <span className="location-type">({location.type})</span>}
+      </div>
+
+      <div className="location-content">
+        {location.image && (
+          <img 
+            src={location.image} 
+            alt={location.name} 
+            className="location-image" 
+          />
+        )}
+        <p className="location-description">{location.description}</p>
+
+        {/* Interaktions-Bereich */}
+        <div className="location-interactions">
+          
+          {/* Shops auflisten */}
+          {location.shops && location.shops.length > 0 && (
+            <div className="location-shops">
+              <h3>Händler:</h3>
+              <div className="shop-list">
+                {location.shops.map(shopId => {
+                  const shop = shopsData[shopId];
+                  if (!shop) return null;
+                  return (
+                    <button 
+                      key={shopId} 
+                      className="shop-btn"
+                      onClick={() => handleOpenShop(shopId)}
+                    >
+                      🛒 {shop.name} betreten
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* NPCs / Quests könnten hier folgen */}
+        </div>
+      </div>
+
+      <div className="location-footer">
+        <div className="location-actions-row">
+            {/* +++ NEU: KAMPF-BUTTON (Nur zum Testen oder für gefährliche Orte) +++ */}
+            <button 
+              className="combat-start-btn" 
+              onClick={onStartCombat}
+              title="Startet einen Testkampf mit Goblins"
+            >
+              ⚔️ Kampf starten (Test)
+            </button>
+
+            <button className="leave-btn" onClick={onLeaveLocation}>
+              🏃 Ort verlassen
+            </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default LocationView;
