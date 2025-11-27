@@ -212,7 +212,7 @@ const AbilitiesTab = ({ character }) => {
             <div className="abilities-main-column">
                 
                 {masteries.length > 0 && (
-                    <div className="ability-section">
+                    <div className="ability-section summary-box">
                         <h3 className="section-header">Waffenmeisterschaften <span className="count-badge">{masteries.length}</span></h3>
                         <div className="ability-grid">
                             {masteries.map((m, i) => renderAbilityCard(m, i))}
@@ -221,7 +221,7 @@ const AbilitiesTab = ({ character }) => {
                 )}
 
                 {skills.length > 0 && (
-                    <div className="ability-section">
+                    <div className="ability-section summary-box">
                         <h3 className="section-header">Fertigkeiten <span className="count-badge">{skills.length}</span></h3>
                         <div className="ability-grid">
                             {skills.map((s, i) => renderAbilityCard(s, i))}
@@ -230,7 +230,7 @@ const AbilitiesTab = ({ character }) => {
                 )}
 
                 {feats.length > 0 && (
-                    <div className="ability-section">
+                    <div className="ability-section summary-box">
                         <h3 className="section-header">Talente <span className="count-badge">{feats.length}</span></h3>
                         <div className="ability-grid">
                             {feats.map((f, i) => renderAbilityCard(f, i))}
@@ -239,7 +239,7 @@ const AbilitiesTab = ({ character }) => {
                 )}
 
                 {classFeatures.length > 0 && (
-                    <div className="ability-section">
+                    <div className="ability-section summary-box">
                         <h3 className="section-header">Klassenmerkmale <span className="count-badge">{classFeatures.length}</span></h3>
                         <div className="ability-grid">
                             {classFeatures.map((f, i) => renderAbilityCard(f, i))}
@@ -249,7 +249,7 @@ const AbilitiesTab = ({ character }) => {
             </div>
 
             {/* RECHTE SPALTE: Platzhalter für zukünftige Inhalte */}
-            <div className="abilities-side-column">
+            <div className="abilities-side-column summary-box">
                 <div className="side-panel-placeholder">
                     <span style={{opacity: 0.5}}>Details / Info</span>
                 </div>

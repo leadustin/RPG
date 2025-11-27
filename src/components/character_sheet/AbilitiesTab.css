@@ -77,18 +77,16 @@
     padding-right: 0.5rem; 
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem; /* Abstand zwischen den Summary-Boxen */
 }
 
 /* Rechte Spalte (Scrollbar bei Bedarf) */
+/* Styling wie background/border entfernt, da nun summary-box genutzt wird */
 .abilities-side-column {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 1rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 /* Platzhalter-Design in der rechten Spalte */
@@ -103,6 +101,10 @@
 }
 
 /* --- SECTIONS & CARDS --- */
+.ability-section {
+    padding: 1rem; /* Padding für den Inhalt innerhalb der summary-box */
+}
+
 .section-header {
     font-size: 1.1rem;
     color: #ffd700;
