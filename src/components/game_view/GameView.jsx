@@ -5,9 +5,9 @@ import ActionBar from "./ActionBar";
 import { WorldMap } from "../worldmap/WorldMap";
 import RestMenu from "./RestMenu";
 import LocationView from "../location_view/LocationView";
-// import locationsData from "../../data/locations.json"; // Wird aktuell nicht direkt genutzt, kann drin bleiben
 import { CombatGrid } from "../combat/CombatGrid";
-import { CombatActions } from "../combat/CombatActions"; // +++ NEU +++
+import { CombatActions } from "../combat/CombatActions";
+import { CombatResultScreen } from "../combat/CombatResultScreen"; 
 import { useCombat } from "../../hooks/useCombat";
 import enemiesData from "../../data/enemies.json";
 import "./GameView.css";
@@ -30,8 +30,15 @@ function GameView({
   const [showRestMenu, setShowRestMenu] = useState(false);
 
   // +++ KAMPF-SYSTEM STATE & HOOK +++
-  // Wir holen uns jetzt auch 'dash' aus dem Hook
-  const { combatState, startCombat, moveCombatant, attack, dash, nextTurn } = useCombat(character);
+  const { 
+    combatState, 
+    startCombat, 
+    moveCombatant, 
+    attack, 
+    dash, 
+    nextTurn, 
+    endCombatSession 
+  } = useCombat(character);
   
   // State für die Interaktion im Kampf (z.B. "Ich will angreifen, auf wen?")
   const [selectedAction, setSelectedAction] = useState(null); // 'attack' | null
@@ -53,11 +60,11 @@ function GameView({
   // Hilfsfunktion: Waffen aus dem Inventar des Charakters holen
   const getEquippedWeapons = () => {
     const weapons = [];
-    // Prüfen, ob Equipment-Daten vorhanden sind (Struktur hängt von deinem Save-File ab)
+    // Prüfen, ob Equipment-Daten vorhanden sind
     if (character.equipment?.mainHand) weapons.push(character.equipment.mainHand);
     if (character.equipment?.offHand) weapons.push(character.equipment.offHand);
     
-    // Fallback Mockdaten für den Test, falls Inventar leer ist:
+    // Fallback Mockdaten, falls Inventar leer ist:
     if (weapons.length === 0) {
         weapons.push({ name: "Kurzschwert", damage: "1d6", attackBonus: 4, type: "piercing" });
         weapons.push({ name: "Langbogen", damage: "1d8", attackBonus: 4, type: "piercing", range: "150/600" });
@@ -69,16 +76,18 @@ function GameView({
   const handlePrepareAttack = (weapon) => {
     setSelectedAction('attack');
     setSelectedWeapon(weapon);
-    // Hier könnte man noch visuelles Feedback geben (z.B. Cursor ändern)
   };
 
   // Grid-Handler: Spieler klickt auf ein Feld (Bewegung)
   const handleTileClick = (pos) => {
+    // Wenn Ergebnis-Screen da ist, keine Interaktion
+    if (combatState.result) return;
+
     const activeC = combatState.combatants[combatState.turnIndex];
     
     // Nur reagieren, wenn der Spieler am Zug ist
     if (activeC && activeC.type === 'player') {
-      // Wenn wir im Attack-Modus sind, bricht ein Klick auf den leeren Boden den Angriff ab?
+      // Wenn wir im Attack-Modus sind, bricht ein Klick auf den leeren Boden den Angriff ab
       if (selectedAction === 'attack') {
           setSelectedAction(null);
           setSelectedWeapon(null);
@@ -91,6 +100,9 @@ function GameView({
 
   // Grid-Handler: Spieler klickt auf eine Figur (Angriff)
   const handleCombatantClick = (target) => {
+    // Wenn Ergebnis-Screen da ist, keine Interaktion
+    if (combatState.result) return;
+
     const activeC = combatState.combatants[combatState.turnIndex];
     
     // Sicherheitscheck: Ist Spieler dran? Ist Ziel ein Gegner?
@@ -100,13 +112,23 @@ function GameView({
             attack(activeC.id, target.id, selectedWeapon);
             
             // Nach dem Angriff den Modus zurücksetzen
-            // (In D&D 5e könnte man "Extra Attack" haben, aber für jetzt Reset)
             setSelectedAction(null);
             setSelectedWeapon(null);
         } else {
             console.log("Bitte wähle zuerst eine Aktion (Waffe) unten aus!");
         }
     }
+  };
+
+  // Handler für das Bestätigen des Kampfendes (Sieg/Niederlage Screen)
+  const handleCombatEnd = () => {
+    if (combatState.result?.type === 'victory') {
+        console.log(`Kampf gewonnen! Füge ${combatState.result.xp} XP und Items hinzu.`);
+        // TODO: Hier müsste onShopTransaction oder eine neue onUpdateCharacter Prop genutzt werden,
+        // um XP und Loot tatsächlich in den Charakter-State zu speichern.
+    }
+    // Kampfmodus beenden
+    endCombatSession();
   };
 
   const isAtLocation = character?.currentLocation && character.currentLocation !== "worldmap";
@@ -129,6 +151,14 @@ function GameView({
            {combatState.isActive ? (
              <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                
+               {/* Ergebnis Overlay (Sieg/Niederlage) */}
+               {combatState.result && (
+                 <CombatResultScreen 
+                    result={combatState.result}
+                    onConfirm={handleCombatEnd}
+                 />
+               )}
+
                {/* Grid Bereich */}
                <div style={{ 
                    flex: 1, 
@@ -147,33 +177,38 @@ function GameView({
                  />
                </div>
                
-               {/* Kleines Log Overlay oben rechts (optional) */}
-               <div className="combat-log-overlay" style={{ 
-                   position: 'absolute', 
-                   top: 10, 
-                   right: 10, 
-                   width: '250px', 
-                   background: 'rgba(0,0,0,0.6)', 
-                   color: '#eee', 
-                   padding: '10px', 
-                   fontSize: '0.85rem', 
-                   pointerEvents: 'none',
-                   borderRadius: '4px'
-               }}>
-                  {combatState.log.slice(-4).map((l, i) => <div key={i} style={{marginBottom:'4px'}}>{l}</div>)}
-               </div>
+               {/* UI nur anzeigen, wenn Kampf noch läuft (kein Ergebnis) */}
+               {!combatState.result && (
+                 <>
+                   {/* Kleines Log Overlay oben rechts */}
+                   <div className="combat-log-overlay" style={{ 
+                       position: 'absolute', 
+                       top: 10, 
+                       right: 10, 
+                       width: '250px', 
+                       background: 'rgba(0,0,0,0.6)', 
+                       color: '#eee', 
+                       padding: '10px', 
+                       fontSize: '0.85rem', 
+                       pointerEvents: 'none',
+                       borderRadius: '4px'
+                   }}>
+                      {combatState.log.slice(-4).map((l, i) => <div key={i} style={{marginBottom:'4px'}}>{l}</div>)}
+                   </div>
 
-               {/* Neue Kampf-UI Leiste unten */}
-               <CombatActions 
-                  combatState={combatState}
-                  onAttack={handlePrepareAttack}
-                  onDash={dash}
-                  onEndTurn={() => {
-                      setSelectedAction(null); // Modus Reset bei Zugende
-                      nextTurn();
-                  }}
-                  playerWeapons={getEquippedWeapons()}
-               />
+                   {/* Kampf-Aktionsleiste */}
+                   <CombatActions 
+                      combatState={combatState}
+                      onAttack={handlePrepareAttack}
+                      onDash={dash}
+                      onEndTurn={() => {
+                          setSelectedAction(null); // Modus Reset bei Zugende
+                          nextTurn();
+                      }}
+                      playerWeapons={getEquippedWeapons()}
+                   />
+                 </>
+               )}
 
              </div>
            ) : isAtLocation ? (
@@ -200,8 +235,7 @@ function GameView({
 
       <div className="bottom-section">
         <div className="action-bar-area">
-          {/* Die normale ActionBar wird im Kampf deaktiviert oder ausgeblendet, 
-              da wir CombatActions nutzen */}
+          {/* Die normale ActionBar wird im Kampf deaktiviert */}
           <ActionBar
             character={activeCharacter}
             onToggleCharacterSheet={onToggleCharacterSheet}
@@ -209,7 +243,7 @@ function GameView({
             onLoadGame={onLoadGame}
             saveFileExists={saveFileExists}
             onRestClick={() => setShowRestMenu(true)} 
-            disabled={combatState.isActive} // Deaktivieren während Kampf
+            disabled={combatState.isActive} 
           />
         </div>
       </div>
