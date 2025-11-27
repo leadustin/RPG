@@ -184,6 +184,29 @@ const AbilitiesTab = ({ character }) => {
         );
     }
 
+    // --- WARLOCK ---
+    if (classKey === 'warlock') {
+        const warlockData = allClassData.find(c => c.key === 'warlock');
+        let maxSlots = 1;
+        let slotLevel = 1;
+        if (warlockData?.pact_magic_progression) {
+            const prog = warlockData.pact_magic_progression.find(p => p.level === character.level);
+            if (prog) {
+                maxSlots = prog.slots;
+                slotLevel = prog.slot_level;
+            }
+        }
+        // Annahme: character.resources.pactSlots speichert die aktuellen Slots, sonst max
+        const currentSlots = character.resources?.pactSlots !== undefined ? character.resources.pactSlots : maxSlots;
+
+        return (
+            <div className="resource-display">
+                <span className="resource-label">Paktmagie (Grad {slotLevel})</span>
+                <span className="resource-value">{currentSlots} / {maxSlots}</span>
+            </div>
+        );
+    }
+
     // --- MONK ---
     if (classKey === 'monk') {
       return (
@@ -216,7 +239,7 @@ const AbilitiesTab = ({ character }) => {
             {/* LINKE SPALTE: Icons & Ressourcen */}
             <div className="abilities-main-column">
                 
-                {/* RESSOURCEN BLOCK (Jetzt oben in der Main Column) */}
+                {/* RESSOURCEN BLOCK */}
                 {resourcesContent && (
                     <div className="ability-section summary-box resource-header-box">
                         {resourcesContent}
