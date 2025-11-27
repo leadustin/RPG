@@ -102,6 +102,7 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
   const currentWeight = safeInventory.reduce((acc, i) => acc + (i.weight || 0) * (i.quantity || 1), 0);
 
   return (
+    <div className="summary-box">
     <div className={`inventory-panel ${isCollapsed ? 'collapsed' : ''}`}>
       
       <div className="inventory-header" onClick={() => setIsCollapsed(!isCollapsed)}>
@@ -195,7 +196,7 @@ const InventoryPanel = ({ inventory, onEquip, onUnequip, currency, handleUnpackI
         </div>
       )}
 
-    </div>
+    </div></div>
   );
 };
 

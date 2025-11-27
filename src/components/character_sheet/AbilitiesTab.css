@@ -4,8 +4,9 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
     color: #e0e0e0;
-    overflow: hidden; /* Verhindert, dass der ganze Tab scrollt, wir wollen Spalten scrollen */
+    overflow: hidden; 
 }
 
 /* --- HEADER --- */
@@ -16,7 +17,7 @@
     padding: 0.5rem 1rem;
     background-color: rgba(0, 0, 0, 0.3);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    flex-shrink: 0; /* Header bleibt fix */
+    flex-shrink: 0; 
 }
 
 .abilities-resources {
@@ -54,27 +55,26 @@
 }
 
 .pill.filled {
-    background-color: #cf3333; /* Barbarian Rage Red */
+    background-color: #cf3333; 
     border-color: #ff6666;
     box-shadow: 0 0 4px #cf3333;
 }
 
-/* --- MAIN LAYOUT (2 SPALTEN GRID) --- */
+/* --- MAIN LAYOUT (2 SPALTEN GRID WIEDERHERGESTELLT) --- */
 .abilities-content-wrapper {
     display: grid;
-    /* Linke Spalte nimmt den meisten Platz (z.B. 2fr), Rechte Spalte den Rest (1fr) */
-    /* Du kannst das Verhältnis anpassen, z.B. 3fr 1fr */
-    grid-template-columns: 2.5fr 1fr; 
+    /* Aufteilung: Links Icons (etwas breiter), Rechts Info-Platzhalter */
+    grid-template-columns: 800px 1fr; 
     gap: 1rem;
     flex: 1;
-    overflow: hidden; /* Wichtig für Scrollbars in den Spalten */
+    overflow: hidden; 
     padding: 1rem;
 }
 
-/* Linke Spalte (Scrollbar) */
+/* Linke Spalte (Scrollbar für Icons) */
 .abilities-main-column {
     overflow-y: auto;
-    padding-right: 0.5rem; /* Platz für Scrollbar */
+    padding-right: 0.5rem; 
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -91,7 +91,7 @@
     flex-direction: column;
 }
 
-/* Platzhalter rechts */
+/* Platzhalter-Design in der rechten Spalte */
 .side-panel-placeholder {
     flex: 1;
     display: flex;
@@ -122,64 +122,52 @@
     border-radius: 10px;
 }
 
-/* DAS GRID FÜR DIE KARTEN */
+/* DAS GRID NUR FÜR ICONS (Linke Spalte) */
 .ability-grid {
     display: grid;
-    /* Auto-Fill: Füllt so viele Spalten wie möglich. Min 200px pro Karte */
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
+    /* Kleine Boxen für Icons, ca 50px breit */
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 8px;
 }
 
 .ability-icon-card {
     background-color: rgba(30, 30, 30, 0.8);
     border: 1px solid #444;
     border-radius: 6px;
-    padding: 0.5rem;
+    padding: 4px;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 0.75rem;
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+    aspect-ratio: 1 / 1; /* Quadratisch */
 }
 
 .ability-icon-card:hover {
     background-color: rgba(50, 50, 50, 0.9);
-    border-color: #777;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    border-color: #d4af37; /* Gold bei Hover */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
 
 .ability-icon-frame {
-    width: 40px;
-    height: 40px;
-    background: #111;
-    border: 1px solid #555;
+    width: 100%;
+    height: 100%;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
 }
 
 .ability-icon-frame img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; 
 }
 
-.ability-card-name {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: #eee;
-    /* Text abschneiden wenn zu lang */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* --- TOOLTIP STYLES (Innerhalb des Tooltips) --- */
+/* --- TOOLTIP STYLES --- */
 .ability-tooltip-content {
     max-width: 280px;
 }
@@ -203,7 +191,7 @@
 }
 .ability-tooltip-meta {
     font-size: 0.8rem;
-    color: #88aaff; /* Bläulich für Source/Level */
+    color: #88aaff; 
     margin-bottom: 6px;
 }
 .ability-tooltip-description {

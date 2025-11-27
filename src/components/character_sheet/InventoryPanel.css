@@ -109,7 +109,7 @@
   position: fixed; /* Fixed damit es nicht durch overflow:hidden abgeschnitten wird */
   z-index: 9999;
   background-color: #1a1a1d;
-  border: 1px solid #d4af37;
+  border: 1px solid var(--theme-panel-border-color);
   border-radius: 4px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.8);
   min-width: 160px;

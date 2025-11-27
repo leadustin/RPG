@@ -23,14 +23,22 @@ body {
 
 .game-ui {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 10px;    /* 10px Abstand von oben */
+  left: 10px;   /* 10px Abstand von links */
+  right: 10px;  /* 10px Abstand von rechts */
+  bottom: 10px; /* 10px Abstand von unten */
+  width: auto;  /* Automatische Breite basierend auf den Abständen */
+  height: auto; /* Automatische Höhe basierend auf den Abständen */
   z-index: 100; 
-  background-color: #1a1a1a; 
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8); /* (Optional) Fügt etwas Tiefe hinzu */
+  background-image: var(--theme-panel-bg), var(--theme-panel-border);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  box-shadow: var(--theme-panel-shadow-inset), var(--theme-panel-shadow-outset);
 }
 
 header {
@@ -128,7 +136,7 @@ header {
 }
 
 .character-portrait.active {
-    border-color: #d4af37;
+    border-color: var(--color-selection);
 }
 
 .character-portrait img {
@@ -163,9 +171,10 @@ header {
 /* Mittlere Spalte: Inventar */
 .inventory-section {
     flex: 0 0 40%;
-    padding: 20px;
+    padding-top: 20px;
+    padding-bottom : 20px;
+    padding-left: 0px;
     overflow-y: auto;
-    border-right: 1px solid var(--border-color);
 }
 
 .inventory-header {
@@ -297,7 +306,6 @@ header {
 .right-panel-character-sheet {
     flex-grow: 1;
     display: flex;
-    background-color: var(--container-bg);
     padding: 20px;
     gap: 20px;
 }
@@ -394,10 +402,9 @@ header {
 }
 
 .stats-column-right {
-    flex: 0 0 280px;
+    flex: 0 0 440px;
     display: flex;
     flex-direction: column;
-    gap: 25px;
 }
 
 /* --- NEUE STILE FÜR DIE STAT-TABS --- */
@@ -409,26 +416,35 @@ header {
 }
 
 .stat-tab-btn {
-  flex: 1; /* Tabs füllen den Platz gleichmäßig aus */
-  background: none;
-  border: none;
-  color: var(--secondary-text-color);
-  padding: 8px 5px; /* Etwas Paddinb */
+  flex: 1;
+  padding: 5px;
+  margin: 5px;
+  font-size: 1.1em;
+  background-color: var(--theme-button-bg);
+  color: var(--theme-text-color);
+  border: 1px solid var(--theme-panel-border-color);
+  border-radius: 5px;
+  font-family: var(--theme-font);
   cursor: pointer;
-  font-size: 13px; /* Kleinere Schrift für die Tabs */
-  font-weight: bold;
-  border-bottom: 2px solid transparent; /* Platzhalter für den aktiven Strich */
-  transition: all 0.2s ease;
-  white-space: nowrap; /* Verhindert Zeilenumbruch */
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .stat-tab-btn:hover {
-  color: var(--primary-text-color);
+  background-color: var(--theme-button-bg-hover);
+  box-shadow: var(--theme-button-glow-hover);
+  border-color: var(--theme-button-glow-hover);
 }
 
 .stat-tab-btn.active {
-  color: #d4af37; /* Gold-Akzent, passend zu den anderen aktiven Elementen */
-  border-bottom-color: #d4af37;
+  background-color: var(--theme-button-bg-active);
+  border-color: var(--theme-button-border-active);
+  box-shadow: var(--theme-button-glow-active);
+  font-weight: bold;
+  color: var(--theme-text-color);
 }
 
 .stat-tab-content {
@@ -508,7 +524,6 @@ header {
     gap: 20px;
     padding-top: 0px;
     padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
 }
 
 .stat-block {
@@ -570,10 +585,6 @@ header {
 
 .spells-header h2 {
   margin: 0;
-}
-
-.spells-content {
-  /* Hier kannst du das Layout für deine Zauber definieren, z.B. ein Grid */
 }
 
 /* Schild-Spezifische Styles */
@@ -691,7 +702,7 @@ header {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 275px;
+  width: 100%;
 }
 
 .skill-group {
@@ -717,10 +728,10 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #2a2a2e;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-border-light);
   padding: 6px 12px;
   border-radius: 4px;
-  border: 1px solid #444;
   cursor: default;
   transition: background-color 0.2s;
 }

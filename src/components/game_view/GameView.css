@@ -1,46 +1,41 @@
-/* Hauptcontainer, der die Ansicht in zwei Zeilen teilt */
 .game-view-container {
     display: flex;
-    flex-direction: column; /* Reihen untereinander */
+    flex-direction: column;
     height: 100%;
     width: 100%;
     padding: 15px;
     box-sizing: border-box;
-    background-color: #1a1a1a;
-    gap: 15px; /* Abstand zwischen oberer und unterer Sektion */
+    background-color: #111;
+    gap: 15px; 
 }
 
-/* Obere Sektion: Nimmt den verfügbaren Platz ein */
 .top-section {
-    flex-grow: 1; /* Wächst, um den Raum zu füllen */
+    flex-grow: 1; 
     display: grid;
-    grid-template-columns: 150px 1240px; /* Breite für Porträts und Rest für Karte */
+    grid-template-columns: 150px 1240px; 
     gap: 15px;
-    overflow: hidden; /* Wichtig, damit nichts überläuft */
+    overflow: hidden; 
 }
 
-/* Untere Sektion: Feste Höhe */
 .bottom-section {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-areas: "action";
   
   gap: 10px;
-  height: 235px; /* Höhe angepasst, z.B. 15% */
-  padding: 0 0px 0px 0px; /* Padding angepasst */
+  height: 235px; 
+  padding: 0 0px 0px 0px; 
   box-sizing: border-box;
 }
 
 
-/* Zuweisung der Komponenten zu den Bereichen */
 .party-portraits-area {
-    /* Nimmt automatisch die 1. Spalte in .top-section ein */
 }
 
 .world-map-area {
     display: flex;
-    width: 1240px; /* Feste Breite für die Karte */
-    height: 640px; /* Feste Höhe für die Karte */
+    width: 1240px; 
+    height: 640px; 
     justify-content: center;
     align-items: center;
     background-color: #000;
@@ -50,7 +45,6 @@
 }
 
 .action-bar-area {
-    /* Nimmt automatisch die 2. Spalte in .bottom-section ein */
     background-color: #2a2a2a;
     border-radius: 5px;
     display: flex;

@@ -64,7 +64,7 @@ const AbilitiesTab = ({ character }) => {
     }));
   }, [character]);
 
-  // 2. Klassen-Features (mit Lookup)
+  // 2. Klassen-Features
   const classFeatures = useMemo(() => {
     if (!character.features) return [];
     
@@ -158,7 +158,6 @@ const AbilitiesTab = ({ character }) => {
             <div className="ability-icon-frame">
                 <img src={item.icon || genericIcons['skill_placeholder.png']} alt={item.name} />
             </div>
-            <div className="ability-card-name">{item.name}</div>
         </div>
       </Tooltip>
     );
@@ -185,7 +184,6 @@ const AbilitiesTab = ({ character }) => {
             </div>
         );
     }
-    // Weitere Klassenlogik hier (Monk, Fighter etc.)
     if (classKey === 'monk') {
       return <div className="resource-bar"><span className="resource-label">Ki:</span><span className="resource-value">{character.level}/{character.level}</span></div>;
     }
@@ -197,7 +195,7 @@ const AbilitiesTab = ({ character }) => {
 
   return (
     <div className="abilities-tab">
-        {/* HEADER (Controls & Resources) - geht über die volle Breite */}
+        {/* HEADER (Controls & Resources) */}
         <div className="abilities-header">
              <div className="abilities-controls">
                 {/* Platzhalter für Filter/Suche */}
@@ -210,7 +208,7 @@ const AbilitiesTab = ({ character }) => {
         {/* HAUPT LAYOUT (2-Spalten Grid) */}
         <div className="abilities-content-wrapper">
             
-            {/* LINKE SPALTE: Inhalte */}
+            {/* LINKE SPALTE: Icons */}
             <div className="abilities-main-column">
                 
                 {masteries.length > 0 && (
@@ -250,7 +248,7 @@ const AbilitiesTab = ({ character }) => {
                 )}
             </div>
 
-            {/* RECHTE SPALTE: Sideboard / Platzhalter */}
+            {/* RECHTE SPALTE: Platzhalter für zukünftige Inhalte */}
             <div className="abilities-side-column">
                 <div className="side-panel-placeholder">
                     <span style={{opacity: 0.5}}>Details / Info</span>

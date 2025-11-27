@@ -261,8 +261,8 @@ const CharacterSheet = ({
              const memCurHp = member.stats.hp !== undefined ? member.stats.hp : memMaxHp;
 
              return (
+              <div className="summary-box" key={member.id || member.name}>
               <div
-                key={member.id || member.name}
                 className={`character-portrait ${isSelected ? "active" : ""}`}
                 onClick={() => setDisplayCharacter(member)} 
               >
@@ -275,6 +275,7 @@ const CharacterSheet = ({
                   <div className="hp-current" style={{ width: `${(memCurHp / memMaxHp) * 100}%` }}></div>
                   <span className="hp-text">{`${memCurHp} / ${memMaxHp}`}</span>
                 </div>
+              </div>
               </div>
              );
           })}
@@ -306,6 +307,7 @@ const CharacterSheet = ({
 
         {activeTab === "Inventory" && (
           <aside className="right-panel-character-sheet">
+            <div className="summary-box">
             <div className="equipment-column-left">
               <p className="slot-label">Ausrüstung</p>
               <div className="two-column-grid">
@@ -344,14 +346,10 @@ const CharacterSheet = ({
                 />
               </div>
             </div>
-
-            <div className="character-model-column">
-              <div className="character-viewer">
-                <img src={displayCharacter.model || "https://placeholder.pics/svg/160x300"} alt="Character Model" />
-              </div>
             </div>
 
             <div className="stats-column-right">
+              <div className="summary-box">
               <div className="stat-tab-nav">
                 <button className={`stat-tab-btn ${activeStatTab === "Stats" ? "active" : ""}`} onClick={() => setActiveStatTab("Stats")}>Stats</button>
                 <button className={`stat-tab-btn ${activeStatTab === "Kampf" ? "active" : ""}`} onClick={() => setActiveStatTab("Kampf")}>Kampf</button>
@@ -446,6 +444,7 @@ const CharacterSheet = ({
                   })}
                 </div>
               )}
+              </div>
               </div>
             </div>
           </aside>

@@ -2,37 +2,31 @@
 
 .creation-screen-container {
   display: grid;
-  grid-template-columns: 250px 1fr; /* Linke Spalte fest, rechte flexibel */
+  grid-template-columns: 250px 1fr;
   height: 100%;
   width: 100%;
   gap: 10px;
   padding: 10px;
   box-sizing: border-box;
-  overflow: hidden; /* Verhindert, dass der ganze Screen scrollt (wir wollen nur Bereiche scrollen) */
+  overflow: hidden;
 }
 
-/* +++ NEU: Der Wrapper für die rechte Seite +++ */
 .panel-content-wrapper {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto; /* Hier aktivieren wir das Scrollen! */
+  overflow-y: auto;
   gap: 10px;
-  
-  /* Optional: Scrollbar styling für Webkit-Browser (Chrome/Edge) */
   scrollbar-width: thin;
   scrollbar-color: #444 #1a1a1a;
 }
 
-/* Falls du das SelectionPanel selbst auch anpassen musst, 
-   aber meist reicht der Wrapper */
 .selection-panel {
-  flex: 1; /* Nimmt den restlichen Platz ein */
+  flex: 1; 
 }
 
-/* Fehler-Banner Styling (falls noch nicht vorhanden) */
 .validation-error-banner {
-  background-color: rgba(220, 53, 69, 0.9); /* Rot transparent */
+  background-color: rgba(220, 53, 69, 0.9);
   color: white;
   padding: 10px;
   border-radius: 4px;
