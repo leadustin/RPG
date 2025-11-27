@@ -1,54 +1,83 @@
 // src/engine/rulesEngine.js
 import featuresData from '../data/features.json';
 
-// --- GRUNDREGELN (CORE RULES) ---
-// Diese Logik lag vorher in der characterEngine, gehört aber hierhin.
+// --- GRUNDREGELN ---
 
-/**
- * Berechnet den Modifikator für einen Attributswert.
- * Formel: (Wert - 10) / 2, abgerundet.
- */
 export const getAbilityModifier = (score) => {
   return Math.floor((score - 10) / 2);
 };
 
-/**
- * Gibt den Übungsbonus (Proficiency Bonus) für ein gegebenes Level zurück.
- */
 export const getProficiencyBonus = (level) => {
   if (!level) return 2;
   if (level < 5) return 2;
   if (level < 9) return 3;
   if (level < 13) return 4;
   if (level < 17) return 5;
-  return 6; // Stufe 17-20
+  return 6;
 };
 
 /**
- * Berechnet Angriffs- und Schadensmodifikatoren für eine Waffe basierend auf 5e Regeln.
- * Berücksichtigt: Finesse, Fernkampf, Übung (Proficiency).
+ * Sammelt alle Proficiencies (Waffen, Rüstungen, Werkzeuge) eines Charakters
+ * aus Klasse, Rasse und Hintergrund zusammen.
+ */
+export const getCharacterProficiencies = (character) => {
+  if (!character) return [];
+  
+  let profs = [];
+
+  // 1. Aus dem Charakter-Objekt direkt (falls vorhanden)
+  if (character.proficiencies && Array.isArray(character.proficiencies)) {
+    profs = [...character.proficiencies];
+  }
+
+  // 2. Aus der Klasse
+  if (character.class && character.class.proficiencies) {
+    // Klassen-Daten haben oft Strukturen wie { armor: [], weapons: [] }
+    // Wir sammeln hier vereinfacht alles ein, was Arrays sind
+    Object.values(character.class.proficiencies).forEach(val => {
+        if (Array.isArray(val)) profs.push(...val);
+    });
+  }
+
+  // 3. Aus der Rasse
+  if (character.race && character.race.proficiencies) {
+     Object.values(character.race.proficiencies).forEach(val => {
+        if (Array.isArray(val)) profs.push(...val);
+    });
+  }
+
+  // 4. Aus dem Hintergrund
+  // (Hintergründe geben meist Skills/Tools, seltener Waffen, aber sicher ist sicher)
+  
+  return profs;
+};
+
+/**
+ * Berechnet Angriffs- und Schadensmodifikatoren.
+ * FIX: Prüft Proficiencies dynamisch und handhabt W/d Notation nicht hier, 
+ * aber stellt sicher, dass Daten sauber zurückkommen.
  */
 export const calculateWeaponStats = (character, weapon) => {
   if (!character || !weapon) return { toHit: 0, damageMod: 0, ability: 'str', isProficient: false };
 
-  const stats = character.stats || { str: 10, dex: 10 };
-  const strMod = getAbilityModifier(stats.str);
-  const dexMod = getAbilityModifier(stats.dex);
+  const stats = character.stats.abilities || character.stats || { str: 10, dex: 10 };
+  const strMod = getAbilityModifier(stats.str || 10);
+  const dexMod = getAbilityModifier(stats.dex || 10);
   const profBonus = getProficiencyBonus(character.level || 1);
 
-  // 1. Attribut bestimmen (STR oder DEX)
+  // 1. Attribut bestimmen
   let abilityMod = strMod;
   let usedAbility = 'str';
 
-  const isRanged = weapon.range_type === 'ranged';
-  const isFinesse = weapon.properties && weapon.properties.includes('Finesse');
+  const isRanged = weapon.range_type === 'ranged'; // check json key naming carefully
+  // Manche Items haben properties als String Array
+  const props = weapon.properties || [];
+  const isFinesse = props.includes('Finesse');
 
   if (isRanged) {
-    // Fernkampf nutzt DEX (außer Wurfwaffen, aber das vereinfachen wir hier erstmal auf DEX/STR Wahl)
     abilityMod = dexMod;
     usedAbility = 'dex';
   } else if (isFinesse) {
-    // Finesse nutzt das höhere von beiden
     if (dexMod > strMod) {
       abilityMod = dexMod;
       usedAbility = 'dex';
@@ -56,22 +85,34 @@ export const calculateWeaponStats = (character, weapon) => {
   }
 
   // 2. Übung prüfen (Proficiency)
-  // Wir prüfen, ob der Charakter Übung mit der Kategorie (simple/martial) oder der Waffe selbst hat
+  // Wir holen die gesammelte Liste
+  const allProfs = getCharacterProficiencies(character);
+  
   let isProficient = false;
   
-  // Array der Proficiencies aus dem Charakter laden (Fallback auf leeres Array)
-  const charProfs = character.proficiencies || []; 
+  // Check Kategorie (z.B. "simple", "martial", "einfache waffen", etc.)
+  // Wir müssen hier etwas flexibel sein wegen Groß/Kleinschreibung und Deutsch/Englisch
+  const category = weapon.category ? weapon.category.toLowerCase() : "";
   
-  // Check Kategorie (z.B. "simple", "martial")
-  if (weapon.category && charProfs.includes(weapon.category)) {
-    isProficient = true;
-  }
-  // Check spezifische Waffe (z.B. "longsword")
-  if (weapon.id && charProfs.includes(weapon.id)) {
-    isProficient = true;
-  }
+  // Mapping für deutsche Begriffe aus deiner weapons.json ("simple" -> "Einfache Waffen"?)
+  // Da weapons.json "category": "simple" sagt, prüfen wir das.
+  
+  if (allProfs.includes(weapon.category)) isProficient = true;
+  if (allProfs.includes(weapon.id)) isProficient = true;
+  
+  // Fallback Check für D&D Standard
+  // Krieger (Fighter) haben meist "martial" und "simple"
+  // Das muss in deinen classes.json Daten stimmen. 
+  // Wenn dort "Martial Weapons" steht und hier "martial", matcht es nicht.
+  // Einfacher Fix für den Moment: Wenn Class Fighter/Paladin/Ranger/Barbarian -> immer Proficient mit Martial
+  const className = character.class?.key || "";
+  const martialClasses = ["fighter", "paladin", "ranger", "barbarian"];
+  if (weapon.category === "martial" && martialClasses.includes(className)) isProficient = true;
+  
+  // Alle Klassen können Simple Weapons (außer Wizard/Sorcerer manchmal eingeschränkt, aber meistens ja)
+  if (weapon.category === "simple") isProficient = true; // Vereinfachung für den Prototyp!
 
-  // 3. Werte zusammenrechnen
+  // 3. Werte
   let toHit = abilityMod + (isProficient ? profBonus : 0);
   let damageMod = abilityMod; 
 

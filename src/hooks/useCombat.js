@@ -196,7 +196,9 @@ export const useCombat = (playerCharacter) => {
       const isCrit = d20Roll === 20;
 
       if (isCrit || totalAttack >= target.ac) {
-        let dmgResult = rollDiceString(damageDice);
+        // Ersetze deutsches 'W' durch englisches 'd' und Leerzeichen entfernen
+          const cleanDice = damageDice.toUpperCase().replace('W', 'd').replace(/\s/g, ''); 
+          let dmgResult = rollDiceString(cleanDice);
         
         // Monster Logik Check: Wenn der String sowas wie "1W6 + 2" war, ist der Modifikator schon in "total" drin.
         // Bei Spielern (z.B. "1d8") müssen wir damageMod addieren.

@@ -5,11 +5,13 @@ import ActionBar from "./ActionBar";
 import { WorldMap } from "../worldmap/WorldMap";
 import RestMenu from "./RestMenu";
 import LocationView from "../location_view/LocationView";
+// Daten & Kampf-Komponenten importieren
+import locationsData from "../../data/locations.json";
+import enemiesData from "../../data/enemies.json";
 import { CombatGrid } from "../combat/CombatGrid";
 import { CombatActions } from "../combat/CombatActions";
-import { CombatResultScreen } from "../combat/CombatResultScreen"; 
+import { CombatResultScreen } from "../combat/CombatResultScreen";
 import { useCombat } from "../../hooks/useCombat";
-import enemiesData from "../../data/enemies.json";
 import "./GameView.css";
 
 function GameView({
@@ -23,13 +25,16 @@ function GameView({
   saveFileExists,
   onShortRest,
   onLongRest,
-  onShopTransaction
+  onShopTransaction,
+  // Neue Props für Kampf-Belohnungen
+  onCombatVictory, 
+  onCombatDefeat
 }) {
 
   const [activeCharacterId, setActiveCharacterId] = useState(character?.id || 'player');
   const [showRestMenu, setShowRestMenu] = useState(false);
 
-  // +++ KAMPF-SYSTEM STATE & HOOK +++
+  // +++ KAMPF-SYSTEM HOOK +++
   const { 
     combatState, 
     startCombat, 
@@ -40,7 +45,7 @@ function GameView({
     endCombatSession 
   } = useCombat(character);
   
-  // State für die Interaktion im Kampf (z.B. "Ich will angreifen, auf wen?")
+  // Lokaler State für Interaktionen im Kampf
   const [selectedAction, setSelectedAction] = useState(null); // 'attack' | null
   const [selectedWeapon, setSelectedWeapon] = useState(null);
 
@@ -49,87 +54,80 @@ function GameView({
     setActiveCharacterId(mainCharacterId);
   }, [character?.id]);
 
-  // --- KAMPF-HELPER ---
+  // --- KAMPF-LOGIK ---
 
-  // Funktion zum Starten eines Testkampfes (wird an LocationView übergeben)
+  // Startet einen Testkampf (wird an LocationView gegeben)
   const handleStartTestCombat = () => {
-    // Beispiel: Ein Goblin und ein Ork
+    // Beispiel: Ein Goblin und ein Ork aus enemies.json
     startCombat([enemiesData.goblin, enemiesData.orc]);
   };
 
-  // Hilfsfunktion: Waffen aus dem Inventar des Charakters holen
+  // Hilfsfunktion: Waffen aus dem Inventar holen
   const getEquippedWeapons = () => {
     const weapons = [];
-    // Prüfen, ob Equipment-Daten vorhanden sind
     if (character.equipment?.mainHand) weapons.push(character.equipment.mainHand);
     if (character.equipment?.offHand) weapons.push(character.equipment.offHand);
     
-    // Fallback Mockdaten, falls Inventar leer ist:
+    // Fallback falls leer (zum Testen)
     if (weapons.length === 0) {
-        weapons.push({ name: "Kurzschwert", damage: "1d6", attackBonus: 4, type: "piercing" });
-        weapons.push({ name: "Langbogen", damage: "1d8", attackBonus: 4, type: "piercing", range: "150/600" });
+        weapons.push({ name: "Waffenloser Schlag", damage: "1", type: "bludgeoning" });
     }
     return weapons;
   };
 
-  // UI-Handler: Spieler klickt auf eine Waffe in der CombatActions-Leiste
   const handlePrepareAttack = (weapon) => {
     setSelectedAction('attack');
     setSelectedWeapon(weapon);
   };
 
-  // Grid-Handler: Spieler klickt auf ein Feld (Bewegung)
   const handleTileClick = (pos) => {
-    // Wenn Ergebnis-Screen da ist, keine Interaktion
-    if (combatState.result) return;
+    if (combatState.result) return; // Blockiert wenn Ergebnis da ist
 
     const activeC = combatState.combatants[combatState.turnIndex];
-    
-    // Nur reagieren, wenn der Spieler am Zug ist
     if (activeC && activeC.type === 'player') {
-      // Wenn wir im Attack-Modus sind, bricht ein Klick auf den leeren Boden den Angriff ab
       if (selectedAction === 'attack') {
+          // Abbruch bei Klick auf leeres Feld im Angriffsmodus
           setSelectedAction(null);
           setSelectedWeapon(null);
           return;
       }
-      // Ansonsten: Bewegung versuchen
       moveCombatant(activeC.id, pos);
     }
   };
 
-  // Grid-Handler: Spieler klickt auf eine Figur (Angriff)
   const handleCombatantClick = (target) => {
-    // Wenn Ergebnis-Screen da ist, keine Interaktion
     if (combatState.result) return;
 
     const activeC = combatState.combatants[combatState.turnIndex];
-    
-    // Sicherheitscheck: Ist Spieler dran? Ist Ziel ein Gegner?
     if (activeC && activeC.type === 'player' && target.type === 'enemy') {
         if (selectedAction === 'attack') {
-            // Angriff ausführen!
             attack(activeC.id, target.id, selectedWeapon);
-            
-            // Nach dem Angriff den Modus zurücksetzen
+            // Reset nach Angriff
             setSelectedAction(null);
             setSelectedWeapon(null);
         } else {
-            console.log("Bitte wähle zuerst eine Aktion (Waffe) unten aus!");
+            console.log("Bitte wähle zuerst eine Waffe aus.");
         }
     }
   };
 
-  // Handler für das Bestätigen des Kampfendes (Sieg/Niederlage Screen)
-  const handleCombatEnd = () => {
-    if (combatState.result?.type === 'victory') {
-        console.log(`Kampf gewonnen! Füge ${combatState.result.xp} XP und Items hinzu.`);
-        // TODO: Hier müsste onShopTransaction oder eine neue onUpdateCharacter Prop genutzt werden,
-        // um XP und Loot tatsächlich in den Charakter-State zu speichern.
+  // Kampfende bestätigen (Button im Result Screen)
+  const handleConfirmCombatEnd = () => {
+    const result = combatState.result;
+    
+    if (result?.type === 'victory') {
+        if (onCombatVictory) {
+            onCombatVictory(result.xp, result.loot);
+        }
+    } else if (result?.type === 'defeat') {
+        if (onCombatDefeat) {
+            onCombatDefeat();
+        }
     }
-    // Kampfmodus beenden
     endCombatSession();
   };
+
+  // --- RENDER LOGIK ---
 
   const isAtLocation = character?.currentLocation && character.currentLocation !== "worldmap";
   const party = character ? [character] : [];
@@ -147,23 +145,22 @@ function GameView({
         </div>
         
         <div className="world-map-area">
-           {/* +++ KAMPF ANSICHT +++ */}
+           {/* +++ KAMPF-MODUS +++ */}
            {combatState.isActive ? (
              <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                
-               {/* Ergebnis Overlay (Sieg/Niederlage) */}
+               {/* Ergebnis Screen (Sieg/Niederlage) */}
                {combatState.result && (
                  <CombatResultScreen 
                     result={combatState.result}
-                    onConfirm={handleCombatEnd}
+                    onConfirm={handleConfirmCombatEnd}
                  />
                )}
 
-               {/* Grid Bereich */}
+               {/* Das Grid */}
                <div style={{ 
                    flex: 1, 
                    position: 'relative', 
-                   // Mauszeiger ändern, wenn Angriff bereit ist
                    cursor: selectedAction === 'attack' ? 'crosshair' : 'default' 
                }}>
                  <CombatGrid 
@@ -177,52 +174,40 @@ function GameView({
                  />
                </div>
                
-               {/* UI nur anzeigen, wenn Kampf noch läuft (kein Ergebnis) */}
+               {/* UI (nur wenn kein Ergebnis angezeigt wird) */}
                {!combatState.result && (
                  <>
-                   {/* Kleines Log Overlay oben rechts */}
+                   {/* Mini-Log */}
                    <div className="combat-log-overlay" style={{ 
-                       position: 'absolute', 
-                       top: 10, 
-                       right: 10, 
-                       width: '250px', 
-                       background: 'rgba(0,0,0,0.6)', 
-                       color: '#eee', 
-                       padding: '10px', 
-                       fontSize: '0.85rem', 
-                       pointerEvents: 'none',
-                       borderRadius: '4px'
+                       position: 'absolute', top: 10, right: 10, width: '250px', 
+                       background: 'rgba(0,0,0,0.6)', color: '#eee', 
+                       padding: '10px', fontSize: '0.85rem', pointerEvents: 'none', borderRadius: '4px'
                    }}>
                       {combatState.log.slice(-4).map((l, i) => <div key={i} style={{marginBottom:'4px'}}>{l}</div>)}
                    </div>
 
-                   {/* Kampf-Aktionsleiste */}
+                   {/* Aktionsleiste */}
                    <CombatActions 
                       combatState={combatState}
                       onAttack={handlePrepareAttack}
                       onDash={dash}
-                      onEndTurn={() => {
-                          setSelectedAction(null); // Modus Reset bei Zugende
-                          nextTurn();
-                      }}
+                      onEndTurn={() => { setSelectedAction(null); nextTurn(); }}
                       playerWeapons={getEquippedWeapons()}
                    />
                  </>
                )}
-
              </div>
            ) : isAtLocation ? (
-              /* LOCATION ANSICHT */
+              /* +++ ORTS-ANSICHT +++ */
               <LocationView 
                   locationId={character.currentLocation}
                   character={character}
                   onLeaveLocation={() => onEnterLocation("worldmap", character.worldMapPosition)}
                   onShopTransaction={onShopTransaction}
-                  // Übergabe der Kampf-Start Funktion
-                  onStartCombat={handleStartTestCombat} 
+                  onStartCombat={handleStartTestCombat} // Hier wird die Funktion übergeben
               />
            ) : (
-              /* WELTKARTE ANSICHT */
+              /* +++ WELTKARTE +++ */
               <WorldMap
                 character={character}
                 onEnterLocation={onEnterLocation}
@@ -235,7 +220,7 @@ function GameView({
 
       <div className="bottom-section">
         <div className="action-bar-area">
-          {/* Die normale ActionBar wird im Kampf deaktiviert */}
+          {/* ActionBar im Kampf deaktivieren */}
           <ActionBar
             character={activeCharacter}
             onToggleCharacterSheet={onToggleCharacterSheet}
@@ -243,7 +228,7 @@ function GameView({
             onLoadGame={onLoadGame}
             saveFileExists={saveFileExists}
             onRestClick={() => setShowRestMenu(true)} 
-            disabled={combatState.isActive} 
+            disabled={combatState.isActive}
           />
         </div>
       </div>
@@ -251,13 +236,8 @@ function GameView({
       {showRestMenu && (
         <RestMenu
           character={activeCharacter}
-          onShortRest={(dice) => {
-            onShortRest(dice);
-          }}
-          onLongRest={() => {
-            onLongRest();
-            setShowRestMenu(false);
-          }}
+          onShortRest={onShortRest}
+          onLongRest={() => { onLongRest(); setShowRestMenu(false); }}
           onClose={() => setShowRestMenu(false)}
         />
       )}
