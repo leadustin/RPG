@@ -17,8 +17,14 @@ export const useCombat = (playerCharacter) => {
   // NEU: Speichert die aktuell in der Actionbar ausgewählte Aktion/Waffe
   const [selectedAction, setSelectedAction] = useState(null);
 
-  // --- INITIIERUNG (Code gekürzt, da unverändert) ---
+  // --- INITIIERUNG ---
   const startCombat = useCallback((enemies) => {
+    // Safety check
+    if (!playerCharacter) {
+      console.error("Kein Spieler-Charakter vorhanden!");
+      return;
+    }
+
     const stats = playerCharacter.stats || {};
     const currentHp = typeof stats.hp === 'number' ? stats.hp : (playerCharacter.hp || 10);
     const maxHp = stats.maxHp || playerCharacter.maxHp || 20;
@@ -35,8 +41,8 @@ export const useCombat = (playerCharacter) => {
       maxHp: maxHp,
       ac: armorClass,
       initiative: d(20) + initBonus,
-      x: playerCharacter.worldMapPosition?.x || 5, // Fallback
-      y: playerCharacter.worldMapPosition?.y || 5, // Fallback
+      x: playerCharacter.worldMapPosition?.x || 5,
+      y: playerCharacter.worldMapPosition?.y || 5,
       speed: speed,
       color: 'blue'
     };
@@ -78,20 +84,45 @@ export const useCombat = (playerCharacter) => {
       let logEntry = '';
       let damage = 0;
 
-      // Einfacher Angriff (Erweitern nach RulesEngine)
-      if (action.type === 'weapon' || action.type === 'attack') {
+      // WAFFEN-ANGRIFF
+      if (action.type === 'weapon' && action.item) {
+          const weapon = action.item;
           const roll = d(20);
-          // Hier müsste der Angriffsbonus rein (z.B. +5)
-          const hit = roll >= target.ac; 
+          
+          // Hier würde calculateWeaponStats aus rulesEngine genutzt
+          // Vereinfacht: +5 Angriffsbonus annehmen
+          const attackBonus = 5; // TODO: Aus Charakter berechnen
+          const totalRoll = roll + attackBonus;
+          const hit = totalRoll >= target.ac;
           
           if (hit) {
-              // Schadenswurf (Dummy Logic - hier Dice String parsen)
-              damage = d(6); // Beispiel
-              logEntry = `${attacker.name} greift ${target.name} an: TREFFER (${roll}) für ${damage} Schaden!`;
+              // Schadenswurf (z.B. "1d8")
+              const damageDice = weapon.damage || "1d6";
+              damage = rollDiceString(damageDice);
+              logEntry = `${attacker.name} greift ${target.name} mit ${weapon.name} an: TREFFER (${roll}+${attackBonus}=${totalRoll}) für ${damage} Schaden!`;
           } else {
-              logEntry = `${attacker.name} greift ${target.name} an: VERFEHLT (${roll}).`;
+              logEntry = `${attacker.name} greift ${target.name} mit ${weapon.name} an: VERFEHLT (${roll}+${attackBonus}=${totalRoll} vs AC ${target.ac}).`;
           }
-      } else {
+      } 
+      // ZAUBER
+      else if (action.type === 'spell' || action.uiType?.includes('Zauber')) {
+          // Zauber-Logik (vereinfacht)
+          logEntry = `${attacker.name} wirkt ${action.name} auf ${target.name}!`;
+          // TODO: Schadenswurf basierend auf Zauber
+          damage = d(8); // Beispiel
+      }
+      // GEGENSTAND (z.B. Trank)
+      else if (action.type === 'item' || action.uiType === 'Gegenstand') {
+          logEntry = `${attacker.name} benutzt ${action.name}.`;
+          // TODO: Item-Effekte
+      }
+      // STANDARD-AKTION (z.B. Spurt, Helfen)
+      else if (action.uiType === 'Aktion') {
+          logEntry = `${attacker.name} führt ${action.name} aus.`;
+          // TODO: Aktion-Effekte
+      }
+      // FALLBACK
+      else {
           logEntry = `${attacker.name} führt ${action.name} aus.`;
       }
 
@@ -102,17 +133,15 @@ export const useCombat = (playerCharacter) => {
           return c;
       });
 
-      // Tod prüfen
-      const deadEnemies = newCombatants.filter(c => c.type === 'enemy' && c.hp <= 0).length;
-      const totalEnemies = newCombatants.filter(c => c.type === 'enemy').length; // Vorsicht: hier zählen wir alle, auch tote, wenn sie nicht entfernt werden.
-      // Besser: Check if all enemies are dead
+      // Sieg/Niederlage prüfen
       const livingEnemies = newCombatants.filter(c => c.type === 'enemy' && c.hp > 0).length;
+      const playerAlive = newCombatants.find(c => c.type === 'player').hp > 0;
       
       let result = null;
       if (livingEnemies === 0) result = 'victory';
-      if (newCombatants.find(c => c.type === 'player').hp <= 0) result = 'defeat';
+      if (!playerAlive) result = 'defeat';
 
-      // Ressourcen verbrauchen (Action)
+      // Ressourcen verbrauchen
       const newResources = { ...prev.turnResources, hasAction: false };
 
       return {
@@ -149,12 +178,38 @@ export const useCombat = (playerCharacter) => {
           return;
       }
 
-      // 2. BEWEGEN: Wenn kein Gegner da ist (und evtl. keine Aktion ausgewählt, oder wir ignorieren die Waffe beim Laufen)
-      if (!target) {
-          // Implementierung Bewegung (verkürzt)
-          // moveCharacter(x, y);
-          // Hier müsste deine Bewegungslogik hin (Pfadfindung, Reichweite prüfen)
-          console.log(`Bewege zu ${x}, ${y}`);
+      // 2. BEWEGEN: Wenn kein Gegner da ist
+      if (!target && !selectedAction) {
+          // Bewegungslogik hier einfügen
+          const distance = Math.abs(currentCombatant.x - x) + Math.abs(currentCombatant.y - y);
+          const movementCost = distance * 5; // 5ft pro Feld
+          
+          if (movementCost <= combatState.turnResources.movementLeft) {
+              setCombatState(prev => ({
+                  ...prev,
+                  combatants: prev.combatants.map(c => 
+                      c.id === currentCombatant.id ? { ...c, x, y } : c
+                  ),
+                  turnResources: {
+                      ...prev.turnResources,
+                      movementLeft: prev.turnResources.movementLeft - movementCost
+                  },
+                  log: [...prev.log, `${currentCombatant.name} bewegt sich zu (${x}, ${y}).`]
+              }));
+          } else {
+              setCombatState(prev => ({
+                  ...prev,
+                  log: [...prev.log, "Nicht genug Bewegung übrig!"]
+              }));
+          }
+      }
+
+      // 3. HINWEIS: Wenn Aktion ausgewählt, aber kein gültiges Ziel
+      if (selectedAction && !target) {
+          setCombatState(prev => ({
+              ...prev,
+              log: [...prev.log, `Wähle ein gültiges Ziel für ${selectedAction.name}.`]
+          }));
       }
 
   }, [combatState, selectedAction, performAction]);
@@ -186,7 +241,9 @@ export const useCombat = (playerCharacter) => {
 
   // --- KI LOGIK (Platzhalter, minimal angepasst) ---
   useEffect(() => {
-    if (!combatState.isActive || combatState.result) return;
+    // Safety check
+    if (!combatState.isActive || combatState.result || !combatState.combatants.length) return;
+    
     const currentC = combatState.combatants[combatState.turnIndex];
     
     if (currentC && currentC.type === 'enemy' && currentC.hp > 0) {
@@ -196,16 +253,16 @@ export const useCombat = (playerCharacter) => {
                 performAction(currentC.id, player.id, { 
                     type: 'attack', 
                     name: 'Biss', // Beispiel
-                    item: { name: 'Biss' } 
+                    item: { name: 'Biss', damage: '1d6' } 
                 });
-                nextTurn();
+                setTimeout(() => nextTurn(), 500); // Kleiner Delay für bessere UX
             } else {
                 nextTurn();
             }
         }, 1000);
         return () => clearTimeout(timer);
     }
-  }, [combatState.turnIndex, combatState.isActive, combatState.result, performAction, nextTurn]);
+  }, [combatState.turnIndex, combatState.isActive, combatState.result, combatState.combatants, performAction, nextTurn]);
 
   return {
     combatState,

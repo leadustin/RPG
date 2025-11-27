@@ -59,7 +59,7 @@ const isConsumable = (item) => {
     return ['potion', 'scroll', 'food', 'consumable', 'drink'].some(t => type.includes(t)) || item.consumable === true;
 };
 
-function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, onRestClick }) {
+function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, onRestClick, onSlotClick, selectedAction, disabled = false }) {
     const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
     
     // Tabs & View State
@@ -195,6 +195,16 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
     }, [character]);
 
     // --- HANDLER ---
+    const handleSlotClick = (action) => {
+        // Wenn disabled (z.B. nicht im Kampf), normal Inventar öffnen
+        if (disabled || !onSlotClick) {
+            console.log("Slot geklickt:", action);
+            return;
+        }
+        // Im Kampf: Aktion an GameView weitergeben
+        onSlotClick(action);
+    };
+
     const handleTabClick = (tabName) => {
         if (activeTab === tabName && viewMode !== 'multi') {
             setActiveTab(null); 
@@ -252,6 +262,12 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
     const getTabClassName = (n) => `hotbar-tab ${activeTab === n ? 'active' : ''}`;
     const EmptySlot = () => <div className="hotbar-slot"></div>;
     
+    const isSlotSelected = (action) => {
+        if (!selectedAction) return false;
+        // Vergleich nach Name (da Aktionen verschiedene Quellen haben können)
+        return selectedAction.name === action.name;
+    };
+
     const FilledSlot = ({ action }) => (
         <Tooltip content={
             <div className="action-tooltip">
@@ -260,7 +276,11 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
                 <p>{action.description || "Keine Beschreibung."}</p>
             </div>
         }>
-            <div className="hotbar-slot action-filled">
+            <div 
+                className={`hotbar-slot action-filled ${isSlotSelected(action) ? 'selected' : ''}`}
+                onClick={() => handleSlotClick(action)}
+                style={{ cursor: disabled ? 'default' : 'pointer' }}
+            >
                 <img src={action.iconSrc} alt={action.name} />
                 {action.count > 1 && <span className="slot-count">{action.count}</span>}
             </div>
@@ -270,7 +290,28 @@ function ActionBar({ onSaveGame, onLoadGame, onToggleCharacterSheet, character, 
     const EquippedItemSlot = ({ item }) => {
         if (!item) return <EmptySlot />;
         const iconSrc = getIconSrc(item.icon) || PLACEHOLDER_ICON;
-        return <Tooltip item={item}><div className="hotbar-slot equipped"><img src={iconSrc} alt={item.name} /></div></Tooltip>;
+        
+        // Equipment als Aktion verpacken
+        const weaponAction = {
+            name: item.name,
+            description: item.description,
+            type: 'weapon',
+            item: item,
+            uiType: 'Waffe',
+            iconSrc: iconSrc
+        };
+        
+        return (
+            <Tooltip item={item}>
+                <div 
+                    className={`hotbar-slot equipped ${isSlotSelected(weaponAction) ? 'selected' : ''}`}
+                    onClick={() => handleSlotClick(weaponAction)}
+                    style={{ cursor: disabled ? 'default' : 'pointer' }}
+                >
+                    <img src={iconSrc} alt={item.name} />
+                </div>
+            </Tooltip>
+        );
     };
 
     // Render Logic für 'multi' (Spaltenbegrenzt)

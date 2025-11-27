@@ -12,8 +12,6 @@ import { CombatResultScreen } from "../combat/CombatResultScreen";
 import { useCombat } from "../../hooks/useCombat";
 import "./GameView.css";
 
-// HINWEIS: CombatActions import entfernt, da nicht mehr benötigt
-
 function GameView({
   character,
   onToggleCharacterSheet,
@@ -34,6 +32,7 @@ function GameView({
   const [showRestMenu, setShowRestMenu] = useState(false);
 
   // +++ KAMPF-SYSTEM HOOK +++
+  // WICHTIG: Hook IMMER aufrufen, auch wenn character null ist
   const { 
     combatState, 
     startCombat, 
@@ -45,7 +44,12 @@ function GameView({
     handleCombatTileClick
   } = useCombat(character);
 
-  const activeCharacter = character; 
+  const activeCharacter = character;
+
+  // Early return NACH den Hooks, falls kein Charakter
+  if (!character) {
+    return <div className="game-view-container">Lädt Charakter...</div>;
+  } 
 
   const handleStartTestCombat = () => {
       const goblins = [enemiesData.enemies[0]]; 
@@ -59,19 +63,18 @@ function GameView({
   };
 
   // Handler, wenn ein Slot in der ActionBar geklickt wird
-  const handleActionSlotClick = (item) => {
+  const handleActionSlotClick = (action) => {
       if (combatState.isActive) {
-          // Prüfen, ob bereits ausgewählt (zum Abwählen)
-          if (selectedAction && selectedAction.item === item) {
-              setSelectedAction(null);
+          // Im Kampf: Aktion auswählen/abwählen
+          if (selectedAction && selectedAction.name === action.name) {
+              setSelectedAction(null); // Abwählen
           } else {
-              // Setze Typ basierend auf Item (vereinfacht)
-              // Du kannst hier noch genauer zwischen Zaubern und Waffen unterscheiden
-              const type = item.type === 'spell' ? 'spell' : 'weapon';
-              setSelectedAction({ type, item, name: item.name });
+              setSelectedAction(action); // Auswählen
           }
       } else {
-          console.log("Inventar öffnen oder Details anzeigen für:", item);
+          // Außerhalb des Kampfes: Inventar oder Details anzeigen
+          console.log("Außerhalb des Kampfes geklickt:", action);
+          // Optional: Hier könntest du Tooltips öffnen, Inventar anzeigen, etc.
       }
   };
 
@@ -125,7 +128,6 @@ function GameView({
 
       <div className="bottom-section">
         <div className="action-bar-area">
-          {/* ActionBar ist jetzt IMMER aktiv, aber wir übergeben selectedAction für das Styling */}
           <ActionBar
             character={activeCharacter}
             onToggleCharacterSheet={onToggleCharacterSheet}
@@ -133,9 +135,7 @@ function GameView({
             onLoadGame={onLoadGame}
             saveFileExists={saveFileExists}
             onRestClick={() => setShowRestMenu(true)} 
-            // Die ActionBar nicht mehr deaktivieren!
-            disabled={false} 
-            // Neue Props
+            disabled={!combatState.isActive} // Nur im Kampf voll funktional
             onSlotClick={handleActionSlotClick}
             selectedAction={selectedAction}
           />
