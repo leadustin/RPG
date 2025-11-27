@@ -165,6 +165,8 @@ const AbilitiesTab = ({ character }) => {
 
   const renderResources = () => {
     const classKey = character.class?.key;
+    
+    // --- BARBARIAN ---
     if (classKey === 'barbarian') {
         const barbarianData = allClassData.find(c => c.key === 'barbarian');
         let maxRages = 2;
@@ -172,45 +174,55 @@ const AbilitiesTab = ({ character }) => {
             const prog = barbarianData.rage_progression.find(p => p.level === character.level);
             if (prog) maxRages = prog.uses === "∞" ? 99 : prog.uses;
         }
-        const currentRages = character.resources?.rage || maxRages; 
+        const currentRages = character.resources?.rage !== undefined ? character.resources.rage : maxRages; 
+        
         return (
-            <div className="resource-bar">
-                <span className="resource-label">Kampfrausch:</span>
-                <div className="resource-pills">
-                    {[...Array(maxRages)].map((_, i) => (
-                        <span key={i} className={`pill ${i < currentRages ? 'filled' : 'empty'}`} />
-                    ))}
-                </div>
+            <div className="resource-display">
+                <span className="resource-label">Kampfrausch</span>
+                <span className="resource-value">{currentRages} / {maxRages}</span>
             </div>
         );
     }
+
+    // --- MONK ---
     if (classKey === 'monk') {
-      return <div className="resource-bar"><span className="resource-label">Ki:</span><span className="resource-value">{character.level}/{character.level}</span></div>;
+      return (
+        <div className="resource-display">
+            <span className="resource-label">Ki-Punkte</span>
+            <span className="resource-value">{character.level} / {character.level}</span>
+        </div>
+      );
     }
+
+    // --- FIGHTER ---
     if (classKey === 'fighter') {
-      return <div className="resource-bar"><span className="resource-label">Tatendrang:</span><div className="resource-pills"><span className="pill filled" /></div></div>;
+      return (
+        <div className="resource-display">
+            <span className="resource-label">Tatendrang</span>
+            <span className="resource-value">1 / 1</span>
+        </div>
+      );
     }
     return null;
   };
 
+  const resourcesContent = renderResources();
+
   return (
     <div className="abilities-tab">
-        {/* HEADER (Controls & Resources) */}
-        <div className="abilities-header">
-             <div className="abilities-controls">
-                {/* Platzhalter für Filter/Suche */}
-             </div>
-             <div className="abilities-resources">
-                {renderResources()}
-             </div>
-        </div>
-
         {/* HAUPT LAYOUT (2-Spalten Grid) */}
         <div className="abilities-content-wrapper">
             
-            {/* LINKE SPALTE: Icons */}
+            {/* LINKE SPALTE: Icons & Ressourcen */}
             <div className="abilities-main-column">
                 
+                {/* RESSOURCEN BLOCK (Jetzt oben in der Main Column) */}
+                {resourcesContent && (
+                    <div className="ability-section summary-box resource-header-box">
+                        {resourcesContent}
+                    </div>
+                )}
+
                 {masteries.length > 0 && (
                     <div className="ability-section summary-box">
                         <h3 className="section-header">Waffenmeisterschaften <span className="count-badge">{masteries.length}</span></h3>
