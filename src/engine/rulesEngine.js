@@ -16,11 +16,71 @@ export const getAbilityModifier = (score) => {
  * Gibt den Übungsbonus (Proficiency Bonus) für ein gegebenes Level zurück.
  */
 export const getProficiencyBonus = (level) => {
+  if (!level) return 2;
   if (level < 5) return 2;
   if (level < 9) return 3;
   if (level < 13) return 4;
   if (level < 17) return 5;
   return 6; // Stufe 17-20
+};
+
+/**
+ * Berechnet Angriffs- und Schadensmodifikatoren für eine Waffe basierend auf 5e Regeln.
+ * Berücksichtigt: Finesse, Fernkampf, Übung (Proficiency).
+ */
+export const calculateWeaponStats = (character, weapon) => {
+  if (!character || !weapon) return { toHit: 0, damageMod: 0, ability: 'str', isProficient: false };
+
+  const stats = character.stats || { str: 10, dex: 10 };
+  const strMod = getAbilityModifier(stats.str);
+  const dexMod = getAbilityModifier(stats.dex);
+  const profBonus = getProficiencyBonus(character.level || 1);
+
+  // 1. Attribut bestimmen (STR oder DEX)
+  let abilityMod = strMod;
+  let usedAbility = 'str';
+
+  const isRanged = weapon.range_type === 'ranged';
+  const isFinesse = weapon.properties && weapon.properties.includes('Finesse');
+
+  if (isRanged) {
+    // Fernkampf nutzt DEX (außer Wurfwaffen, aber das vereinfachen wir hier erstmal auf DEX/STR Wahl)
+    abilityMod = dexMod;
+    usedAbility = 'dex';
+  } else if (isFinesse) {
+    // Finesse nutzt das höhere von beiden
+    if (dexMod > strMod) {
+      abilityMod = dexMod;
+      usedAbility = 'dex';
+    }
+  }
+
+  // 2. Übung prüfen (Proficiency)
+  // Wir prüfen, ob der Charakter Übung mit der Kategorie (simple/martial) oder der Waffe selbst hat
+  let isProficient = false;
+  
+  // Array der Proficiencies aus dem Charakter laden (Fallback auf leeres Array)
+  const charProfs = character.proficiencies || []; 
+  
+  // Check Kategorie (z.B. "simple", "martial")
+  if (weapon.category && charProfs.includes(weapon.category)) {
+    isProficient = true;
+  }
+  // Check spezifische Waffe (z.B. "longsword")
+  if (weapon.id && charProfs.includes(weapon.id)) {
+    isProficient = true;
+  }
+
+  // 3. Werte zusammenrechnen
+  let toHit = abilityMod + (isProficient ? profBonus : 0);
+  let damageMod = abilityMod; 
+
+  return {
+    toHit,
+    damageMod,
+    usedAbility,
+    isProficient
+  };
 };
 
 // --- HELPER FÜR FEATURES (Legacy / Übergang) ---

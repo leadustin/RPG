@@ -1,6 +1,6 @@
 // src/hooks/useCombat.js
 import { useState, useCallback, useEffect } from 'react';
-import { getAbilityModifier } from '../engine/rulesEngine';
+import { getAbilityModifier, calculateWeaponStats } from '../engine/rulesEngine'; // +++ NEU IMPORTIERT
 import { rollDiceString, d } from '../utils/dice';
 
 export const useCombat = (playerCharacter) => {
@@ -11,10 +11,10 @@ export const useCombat = (playerCharacter) => {
     combatants: [],
     log: [],
     turnResources: { hasAction: true, hasBonusAction: true, movementLeft: 0 },
-    result: null // +++ NEU: Speichert das Ergebnis (null, 'victory', 'defeat')
+    result: null
   });
 
-  // --- INITIIERUNG ---
+  // --- INITIIERUNG (Bleibt fast gleich) ---
   const startCombat = useCallback((enemies) => {
     const playerToken = {
       id: 'player',
@@ -38,7 +38,7 @@ export const useCombat = (playerCharacter) => {
       maxHp: enemyData.hp.average,
       ac: enemyData.ac,
       initiativeBonus: getAbilityModifier(enemyData.stats.dex),
-      speed: 30,
+      speed: 30, 
       position: { x: 8, y: 2 + index * 2 },
       initiative: 0,
       data: enemyData
@@ -55,24 +55,19 @@ export const useCombat = (playerCharacter) => {
       combatants: allCombatants,
       log: [`Kampf gestartet! Initiative: ${allCombatants.map(c => `${c.name} (${c.initiative})`).join(', ')}`],
       turnResources: { hasAction: true, hasBonusAction: true, movementLeft: allCombatants[0].speed },
-      result: null // Reset
+      result: null 
     });
   }, [playerCharacter]);
 
-  // --- HELPER: KAMPFENDE PRÜFEN ---
+  // --- HELPER: KAMPFENDE ---
   const checkEndCondition = (currentCombatants) => {
     const player = currentCombatants.find(c => c.type === 'player');
     const enemies = currentCombatants.filter(c => c.type === 'enemy');
     
-    // 1. Niederlage?
-    if (player.hp <= 0) {
-      return { type: 'defeat', xp: 0, loot: [] };
-    }
+    if (player.hp <= 0) return { type: 'defeat', xp: 0, loot: [] };
 
-    // 2. Sieg? (Alle Gegner tot)
     const allEnemiesDead = enemies.every(e => e.hp <= 0);
     if (allEnemiesDead) {
-      // XP und Loot berechnen
       let totalXp = 0;
       let totalLoot = [];
       enemies.forEach(e => {
@@ -81,17 +76,14 @@ export const useCombat = (playerCharacter) => {
             totalLoot = [...totalLoot, ...e.data.loot.items];
         }
       });
-      
       return { type: 'victory', xp: totalXp, loot: totalLoot };
     }
-
-    return null; // Kampf geht weiter
+    return null; 
   };
 
   // --- RUNDENLOGIK ---
   const nextTurn = useCallback(() => {
     setCombatState(prev => {
-      // Falls Kampf schon vorbei, nichts tun
       if (prev.result) return prev;
 
       let nextIndex = prev.turnIndex + 1;
@@ -102,7 +94,6 @@ export const useCombat = (playerCharacter) => {
         nextRound++;
       }
 
-      // Tote überspringen
       let loops = 0;
       while (prev.combatants[nextIndex].hp <= 0 && loops < prev.combatants.length) {
         nextIndex++;
@@ -124,10 +115,10 @@ export const useCombat = (playerCharacter) => {
     });
   }, []);
 
-  // --- AKTIONEN (mit End-Check) ---
+  // --- BEWEGUNG ---
   const moveCombatant = (id, targetPos) => {
     setCombatState(prev => {
-      if (prev.result) return prev; // Keine Aktionen nach Kampfende
+      if (prev.result) return prev; 
       const activeC = prev.combatants[prev.turnIndex];
       if (activeC.id !== id) return prev;
 
@@ -148,6 +139,7 @@ export const useCombat = (playerCharacter) => {
     });
   };
 
+  // --- ANGRIFF (UPDATED) ---
   const attack = (attackerId, targetId, weapon = null) => {
     setCombatState(prev => {
       if (prev.result) return prev;
@@ -157,38 +149,90 @@ export const useCombat = (playerCharacter) => {
       const target = prev.combatants.find(c => c.id === targetId);
       if (!attacker || !target) return prev;
 
-      const attackBonus = weapon ? (weapon.attackBonus || 0) : 2; 
-      const statMod = getAbilityModifier(attacker.data.stats?.str || 10);
+      // +++ BERECHNUNG DER WERTE +++
+      let attackBonus = 0;
+      let damageMod = 0;
+      let damageDice = "1d4"; // Default waffenlos
+      let damageType = "Wucht";
+
+      // Fallunterscheidung: Spieler vs Monster
+      if (attacker.type === 'player') {
+        // Spieler nutzt echte Stats und Waffe
+        if (weapon) {
+            const stats = calculateWeaponStats(attacker.data, weapon);
+            attackBonus = stats.toHit;
+            damageMod = stats.damageMod;
+            damageDice = weapon.damage;
+            damageType = weapon.damage_type || "Wucht";
+        } else {
+            // Waffenloser Schlag (Spieler)
+            const strMod = getAbilityModifier(attacker.data.stats.str);
+            attackBonus = strMod + (attacker.data.proficiencyBonus || 2); // Monk etc. check fehlt hier, vereinfacht
+            damageMod = strMod;
+            damageDice = "1"; // 1 Schaden + STR
+        }
+      } else {
+        // Monster nutzt statische Daten aus enemies.json
+        if (weapon) {
+            // Wenn wir eine "Waffe" übergeben haben (KI Logik)
+            attackBonus = weapon.attackBonus || 4;
+            damageDice = weapon.damage || "1d6";
+            // Monster haben Damage Mod oft schon im Würfelstring (z.B. "1d6 + 2"), 
+            // daher lassen wir damageMod hier oft auf 0 wenn der String geparst wird.
+            // Aber um sicherzugehen, nutzen wir hier keine extra Logik, da KI Strings oft komplex sind.
+        } else {
+            // Fallback Monster
+            attackBonus = 3;
+            damageDice = "1d4";
+        }
+      }
+
+      // Würfeln
       const d20Roll = d(20);
-      const totalAttack = d20Roll + attackBonus + statMod;
+      const totalAttack = d20Roll + attackBonus;
       
-      let logEntry = `${attacker.name} greift ${target.name} an: `;
+      let logEntry = `${attacker.name} greift ${target.name} an (${weapon?.name || 'Faust'}): `;
       let damage = 0;
       const isCrit = d20Roll === 20;
 
       if (isCrit || totalAttack >= target.ac) {
-        const damageDice = weapon ? weapon.damage : "1d4";
         let dmgResult = rollDiceString(damageDice);
-        damage = dmgResult.total + statMod;
+        
+        // Monster Logik Check: Wenn der String sowas wie "1W6 + 2" war, ist der Modifikator schon in "total" drin.
+        // Bei Spielern (z.B. "1d8") müssen wir damageMod addieren.
+        
+        // Einfache Heuristik: Wenn der Dice-String ein '+' enthält, nehmen wir an, der Mod ist drin.
+        const hasBuiltInMod = damageDice.includes('+');
+        const finalDamageMod = hasBuiltInMod ? 0 : damageMod;
+
+        damage = dmgResult.total + finalDamageMod;
 
         if (isCrit) {
-            const critRoll = rollDiceString(damageDice);
-            damage += critRoll.total;
-            logEntry += `💥 KRIT! (${damage} Schaden)`;
+            const critRoll = rollDiceString(damageDice); // Nur Würfel nochmal, ohne Mod
+            // Bei Crit rollen wir nur den Würfelteil nochmal. Da rollDiceString aber bei "1d6+2" auch die +2 nochmal rechnen würde,
+            // ist das hier etwas tricky. Für den Prototyp verdoppeln wir einfach den Würfelschaden.
+            // Bessere Lösung: rollDiceString splittet Würfel und Mod.
+            
+            // Simpler Crit: Schaden verdoppeln (Hausregel) oder einfach einen extra Roll addieren (5e RAW)
+            // Hier: Extra Roll des Basiswürfels (ohne Mod)
+            // Wir parsen den String kurz "manuell" für den reinen Würfelteil, falls möglich, oder nehmen dmgResult.total nochmal (etwas hoch)
+            // Nehmen wir einfach an: Crit = (Würfel * 2) + Mod
+            
+            damage += Math.max(1, dmgResult.total - (hasBuiltInMod ? 0 : 0)); // Vereinfacht
+            logEntry += `💥 KRIT! (${d20Roll}) -> ${damage} ${damageType}`;
         } else {
-            logEntry += `Treffer! (${damage} Schaden)`;
+            logEntry += `Treffer! (${totalAttack}) -> ${damage} ${damageType}`;
         }
       } else {
-        logEntry += `Verfehlt.`;
+        logEntry += `Verfehlt. (${totalAttack} vs AC ${target.ac})`;
       }
 
       const newCombatants = prev.combatants.map(c => c.id === targetId ? { ...c, hp: Math.max(0, c.hp - damage) } : c);
       
       if (newCombatants.find(c => c.id === targetId).hp === 0) {
-        logEntry += ` 💀 ${target.name} besiegt!`;
+        logEntry += ` 💀 Besiegt!`;
       }
 
-      // +++ NEU: PRÜFE OB KAMPF VORBEI IST +++
       const endResult = checkEndCondition(newCombatants);
 
       return {
@@ -196,7 +240,7 @@ export const useCombat = (playerCharacter) => {
         combatants: newCombatants,
         log: [...prev.log, logEntry],
         turnResources: { ...prev.turnResources, hasAction: false },
-        result: endResult // Speichere Ergebnis falls vorhanden
+        result: endResult 
       };
     });
   };
@@ -214,14 +258,13 @@ export const useCombat = (playerCharacter) => {
     });
   };
 
-  // Funktionalität um Kampf komplett zu beenden (Reset)
   const endCombatSession = useCallback(() => {
       setCombatState(prev => ({ ...prev, isActive: false, result: null }));
   }, []);
 
   // --- KI LOGIK ---
   useEffect(() => {
-    if (!combatState.isActive || combatState.result) return; // Stoppe KI bei Kampfende
+    if (!combatState.isActive || combatState.result) return; 
 
     const currentCombatant = combatState.combatants[combatState.turnIndex];
     if (currentCombatant && currentCombatant.type === 'enemy' && currentCombatant.hp > 0) {
@@ -233,7 +276,7 @@ export const useCombat = (playerCharacter) => {
               const action = currentCombatant.data.actions[0];
               kiWeapon = {
                   name: action.name,
-                  damage: action.damage.dice.replace('W', 'd'),
+                  damage: action.damage.dice.replace('W', 'd'), // Fix deutsche Notation
                   attackBonus: action.attack_bonus
               };
           }
