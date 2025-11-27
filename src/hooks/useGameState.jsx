@@ -804,6 +804,72 @@ export const useGameState = () => {
     });
   }, []);
 
+  // +++ NEU: KAMPF-SIEG VERARBEITEN +++
+  const handleCombatVictory = useCallback((xp, loot) => {
+    setGameState((prevState) => {
+      if (!prevState.character) return prevState;
+      
+      let character = { ...prevState.character };
+      let logEntries = [...prevState.logEntries];
+
+      // 1. XP VERGEBEN
+      if (xp > 0) {
+        character = grantXpToCharacter(character, xp);
+        logEntries.push(createLogEntry(`Kampf gewonnen! Du erhältst ${xp} EP.`, "xp"));
+        
+        if (character.pendingLevelUp && !prevState.character.pendingLevelUp) {
+          logEntries.push(createLogEntry(`${character.name} ist bereit für ein Level Up!`, "level"));
+        }
+      }
+
+      // 2. LOOT HINZUFÜGEN
+      if (loot && loot.length > 0) {
+        const inventory = [...character.inventory];
+        
+        loot.forEach(lootItemStr => {
+          let itemDef;
+          // Loot kann String-ID oder Objekt sein
+          if (typeof lootItemStr === 'string') {
+             itemDef = allItems.find(i => i.id === lootItemStr);
+          } else {
+             itemDef = lootItemStr; 
+          }
+
+          if (itemDef) {
+             const isStackable = ['ammo', 'potion', 'scroll', 'loot', 'food', 'resource', 'currency'].includes(itemDef.type);
+             const existingIndex = isStackable ? inventory.findIndex(i => i.itemId === itemDef.id) : -1;
+
+             if (existingIndex > -1) {
+                inventory[existingIndex] = {
+                    ...inventory[existingIndex],
+                    quantity: (inventory[existingIndex].quantity || 1) + 1
+                };
+             } else {
+                inventory.push({
+                    ...itemDef,
+                    itemId: itemDef.id,
+                    instanceId: crypto.randomUUID(),
+                    quantity: 1,
+                    equipped: false
+                });
+             }
+             logEntries.push(createLogEntry(`Beute erhalten: ${itemDef.name}`, "item"));
+          }
+        });
+        character.inventory = inventory;
+      }
+
+      return { ...prevState, character, logEntries };
+    });
+  }, []);
+
+  const handleCombatDefeat = useCallback(() => {
+      setGameState(prev => ({
+          ...prev,
+          logEntries: [...prev.logEntries, createLogEntry("Du wurdest besiegt...", "combat")]
+      }));
+  }, []);
+
   return {
     gameState,
     setGameState, 
@@ -831,5 +897,7 @@ export const useGameState = () => {
     handleUpdateCharacter,
     handleCastSpell,
     rollDiceFormula,
+    handleCombatVictory,
+    handleCombatDefeat,
   };
 };

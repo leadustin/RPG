@@ -1,19 +1,26 @@
 // src/engine/rulesEngine.js
 import featuresData from '../data/features.json';
 
-// --- GRUNDREGELN ---
+// --- GRUNDREGELN (CORE RULES) ---
+// Diese Logik lag vorher in der characterEngine, gehört aber hierhin.
 
+/**
+ * Berechnet den Modifikator für einen Attributswert.
+ * Formel: (Wert - 10) / 2, abgerundet.
+ */
 export const getAbilityModifier = (score) => {
   return Math.floor((score - 10) / 2);
 };
 
+/**
+ * Gibt den Übungsbonus (Proficiency Bonus) für ein gegebenes Level zurück.
+ */
 export const getProficiencyBonus = (level) => {
-  if (!level) return 2;
   if (level < 5) return 2;
   if (level < 9) return 3;
   if (level < 13) return 4;
   if (level < 17) return 5;
-  return 6;
+  return 6; // Stufe 17-20
 };
 
 /**
@@ -46,38 +53,40 @@ export const getCharacterProficiencies = (character) => {
     });
   }
 
-  // 4. Aus dem Hintergrund
-  // (Hintergründe geben meist Skills/Tools, seltener Waffen, aber sicher ist sicher)
+  // 4. Aus dem Hintergrund (falls vorhanden)
   
   return profs;
 };
 
 /**
- * Berechnet Angriffs- und Schadensmodifikatoren.
- * FIX: Prüft Proficiencies dynamisch und handhabt W/d Notation nicht hier, 
- * aber stellt sicher, dass Daten sauber zurückkommen.
+ * Berechnet Angriffs- und Schadensmodifikatoren für eine Waffe basierend auf 5e Regeln.
+ * Berücksichtigt: Finesse, Fernkampf, Übung (Proficiency).
  */
 export const calculateWeaponStats = (character, weapon) => {
+  // Sicherheitscheck: Ohne Charakter oder Waffe keine Berechnung
   if (!character || !weapon) return { toHit: 0, damageMod: 0, ability: 'str', isProficient: false };
 
-  const stats = character.stats.abilities || character.stats || { str: 10, dex: 10 };
+  // Attribute holen (Fallback auf 10, falls Struktur anders ist)
+  const stats = character.stats?.abilities || character.stats || { str: 10, dex: 10 };
   const strMod = getAbilityModifier(stats.str || 10);
   const dexMod = getAbilityModifier(stats.dex || 10);
   const profBonus = getProficiencyBonus(character.level || 1);
 
-  // 1. Attribut bestimmen
+  // 1. Attribut bestimmen (STR oder DEX)
   let abilityMod = strMod;
   let usedAbility = 'str';
 
-  const isRanged = weapon.range_type === 'ranged'; // check json key naming carefully
-  // Manche Items haben properties als String Array
+  const isRanged = weapon.range_type === 'ranged';
+  // Manche Items haben properties als Array, manche nicht -> Sicherstellen
   const props = weapon.properties || [];
   const isFinesse = props.includes('Finesse');
 
   if (isRanged) {
+    // Fernkampf nutzt DEX (Ausnahme Wurfwaffen, hier vereinfacht)
     abilityMod = dexMod;
     usedAbility = 'dex';
   } else if (isFinesse) {
+    // Finesse nutzt das höhere von beiden
     if (dexMod > strMod) {
       abilityMod = dexMod;
       usedAbility = 'dex';
@@ -85,35 +94,31 @@ export const calculateWeaponStats = (character, weapon) => {
   }
 
   // 2. Übung prüfen (Proficiency)
-  // Wir holen die gesammelte Liste
+  // Wir holen die gesammelte Liste aller Proficiencies des Charakters
   const allProfs = getCharacterProficiencies(character);
   
   let isProficient = false;
   
-  // Check Kategorie (z.B. "simple", "martial", "einfache waffen", etc.)
-  // Wir müssen hier etwas flexibel sein wegen Groß/Kleinschreibung und Deutsch/Englisch
-  const category = weapon.category ? weapon.category.toLowerCase() : "";
+  // Check auf Kategorie (z.B. "simple", "martial")
+  if (weapon.category && allProfs.includes(weapon.category)) isProficient = true;
+  // Check auf spezifische ID (z.B. "longsword")
+  if (weapon.id && allProfs.includes(weapon.id)) isProficient = true;
   
-  // Mapping für deutsche Begriffe aus deiner weapons.json ("simple" -> "Einfache Waffen"?)
-  // Da weapons.json "category": "simple" sagt, prüfen wir das.
-  
-  if (allProfs.includes(weapon.category)) isProficient = true;
-  if (allProfs.includes(weapon.id)) isProficient = true;
-  
-  // Fallback Check für D&D Standard
-  // Krieger (Fighter) haben meist "martial" und "simple"
-  // Das muss in deinen classes.json Daten stimmen. 
-  // Wenn dort "Martial Weapons" steht und hier "martial", matcht es nicht.
-  // Einfacher Fix für den Moment: Wenn Class Fighter/Paladin/Ranger/Barbarian -> immer Proficient mit Martial
+  // Fallback Check für Standard D&D Klassenlogik (vereinfacht für Prototyp)
   const className = character.class?.key || "";
   const martialClasses = ["fighter", "paladin", "ranger", "barbarian"];
+  
+  // Wenn Klasse Martial Weapons kann und Waffe Martial ist -> Proficient
   if (weapon.category === "martial" && martialClasses.includes(className)) isProficient = true;
   
-  // Alle Klassen können Simple Weapons (außer Wizard/Sorcerer manchmal eingeschränkt, aber meistens ja)
-  if (weapon.category === "simple") isProficient = true; // Vereinfachung für den Prototyp!
+  // Fast alle Klassen können Simple Weapons
+  if (weapon.category === "simple") isProficient = true;
 
-  // 3. Werte
+  // 3. Endwerte berechnen
+  // Angriffswurf: W20 + Attributsmod + (falls geübt) Proficiency Bonus
   let toHit = abilityMod + (isProficient ? profBonus : 0);
+  
+  // Schaden: Würfel + Attributsmod (bei Offhand ohne Stil 0, hier Standard)
   let damageMod = abilityMod; 
 
   return {
