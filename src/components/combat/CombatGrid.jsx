@@ -17,8 +17,36 @@ export const CombatGrid = ({
   const [hoveredTile, setHoveredTile] = useState(null);
   const activeCombatant = combatants.find(c => c.id === activeCombatantId);
 
-  // Distanz Helper
+  // Distanz Helper (Chebyshev für Grid-Bewegung)
   const getDist = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
+
+  // --- NEU: Reichweiten-Helper für Visualisierung ---
+  const calculateVisualRange = (action) => {
+      if (!action) return 1; // Fallback
+
+      // 1. Eigenschaft "Reichweite" (Reach)
+      if (action.properties && action.properties.includes("Reichweite")) {
+          return 2; // 3m = 2 Felder
+      }
+
+      // 2. Explizite Range (z.B. "24/96")
+      if (action.range) {
+          const rangeMeters = parseInt(action.range.split('/')[0]);
+          if (!isNaN(rangeMeters)) {
+              return Math.floor(rangeMeters / 1.5);
+          }
+      }
+
+      // 3. Enemy "reach" String (z.B. "1,5m")
+      if (action.reach) {
+          const reachVal = parseFloat(action.reach.replace(',', '.'));
+          if (!isNaN(reachVal)) {
+              return Math.max(1, Math.floor(reachVal / 1.5));
+          }
+      }
+
+      return 1; // Standard 1.5m
+  };
 
   // --- OVERLAY ZEICHNEN ---
   const renderOverlay = () => {
@@ -33,8 +61,14 @@ export const CombatGrid = ({
       const isMove = !selectedAction;
       
       let isValid = false;
-      if (isMove) isValid = dist <= movementLeft;
-      else isValid = dist <= 1.5; 
+      if (isMove) {
+          // Bewegungsmodus
+          isValid = dist <= movementLeft;
+      } else {
+          // Angriffsmodus: Nutze die berechnete Reichweite der Waffe!
+          const attackRange = calculateVisualRange(selectedAction);
+          isValid = dist <= attackRange;
+      }
 
       const color = isValid ? "rgba(0, 255, 0, 0.7)" : "rgba(255, 0, 0, 0.7)";
 
@@ -58,11 +92,18 @@ export const CombatGrid = ({
         const dist = activeCombatant ? getDist(activeCombatant, {x,y}) : 999;
         
         let highlight = '';
+        
+        // Bewegungs-Highlight
         if (activeCombatant?.type === 'player' && !selectedAction && !occupied && dist <= movementLeft && dist > 0) {
             highlight = 'tile-movable';
         }
+        
+        // Angriffs-Highlight (optional: zeige rote Kacheln nur bei Gegnern in Reichweite)
         if (activeCombatant?.type === 'player' && selectedAction && occupied?.type === 'enemy') {
-            highlight = 'tile-attackable';
+            const range = calculateVisualRange(selectedAction);
+            if (dist <= range) {
+                highlight = 'tile-attackable';
+            }
         }
 
         tiles.push(
@@ -94,12 +135,10 @@ export const CombatGrid = ({
             width: TILE_SIZE - 8, height: TILE_SIZE - 8,
             backgroundImage: `url(${c.icon || '/src/assets/react.svg'})`
           }}
-          // FIX: Click Event auf dem Token weiterleiten!
           onClick={(e) => {
-              e.stopPropagation(); // Verhindert Doppelklick auf Tile
+              e.stopPropagation(); 
               if(onTileClick) onTileClick(c.x, c.y);
           }}
-          // FIX: Hover auch auf dem Token aktivieren für Tooltip
           onMouseEnter={() => setHoveredTile({ x: c.x, y: c.y })}
           onMouseLeave={() => setHoveredTile(null)}
         >
