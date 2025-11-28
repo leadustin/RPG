@@ -44,6 +44,8 @@ export const useCombat = (playerCharacter) => {
   // --- START ---
   const startCombat = useCallback((enemies) => {
     if (!playerCharacter) return;
+    
+    console.log("⚔️ COMBAT STARTED vs", enemies.length, "enemies");
 
     const stats = playerCharacter.stats || {};
     const startHp = (typeof stats.hp === 'number') ? stats.hp : (playerCharacter.hp || 20);
@@ -81,6 +83,8 @@ export const useCombat = (playerCharacter) => {
     });
 
     const allCombatants = [playerCombatant, ...enemyCombatants].sort((a, b) => b.initiative - a.initiative);
+    
+    console.log("🎲 Initiative Order:", allCombatants.map(c => `${c.name} (${c.initiative})`).join(', '));
 
     setCombatState({
       isActive: true,
@@ -102,12 +106,18 @@ export const useCombat = (playerCharacter) => {
       const attacker = prev.combatants.find(c => c.id === attackerId);
       const target = prev.combatants.find(c => c.id === targetId);
       
-      if (!attacker || !target) return prev;
+      if (!attacker || !target) {
+          console.warn("⚠️ Action failed: Attacker or Target not found.");
+          return prev;
+      }
+
+      console.log(`⚡ ACTION: ${attacker.name} uses ${action.name} on ${target.name}`);
 
       const dist = getDistance(attacker, target);
       const range = action.range || 1.5;
 
       if (dist > range && action.type === 'weapon') {
+          console.log(`❌ Out of range: Dist ${dist} > Range ${range}`);
           return { ...prev, log: [...prev.log, `❌ ${attacker.name} ist zu weit weg!`] };
       }
 
@@ -118,6 +128,8 @@ export const useCombat = (playerCharacter) => {
       const attackBonus = action.attackBonus || 5; 
       const totalRoll = roll + attackBonus;
       
+      console.log(`🎲 Attack Roll: D20(${roll}) + ${attackBonus} = ${totalRoll} vs AC ${target.ac}`);
+
       if (totalRoll >= target.ac) {
           // Schaden berechnen
           let diceString = "1d4";
@@ -133,21 +145,28 @@ export const useCombat = (playerCharacter) => {
 
               if (action.damage && action.damage.bonus) damage += Number(action.damage.bonus);
               
+              console.log(`💥 HIT! Damage Roll (${cleanDice}): ${damage}`);
               logEntry = `⚔️ ${attacker.name} trifft ${target.name} (${damage} Schaden)`;
           } catch (err) {
-              console.error("Würfelfehler:", err);
+              console.error("❌ Dice Error:", err);
               damage = 1; 
               logEntry = `Fehler beim Schaden, minimaler Treffer (1)`;
           }
       } else {
+          console.log("💨 MISS!");
           logEntry = `💨 ${attacker.name} verfehlt (${totalRoll})`;
       }
 
+      // HP abziehen
       const newCombatants = prev.combatants.map(c => {
           if (c.id === targetId) {
               const safeDamage = isNaN(damage) ? 0 : damage;
               const newHp = Math.max(0, c.hp - safeDamage);
-              if (newHp === 0) logEntry += ` 💀 ${c.name} besiegt!`;
+              console.log(`🩸 ${c.name} HP: ${c.hp} -> ${newHp}`);
+              if (newHp === 0) {
+                  logEntry += ` 💀 ${c.name} besiegt!`;
+                  console.log(`💀 ${c.name} DIED`);
+              }
               return { ...c, hp: newHp };
           }
           return c;
@@ -157,8 +176,14 @@ export const useCombat = (playerCharacter) => {
       const playerAlive = newCombatants.some(c => c.type === 'player' && c.hp > 0);
       
       let result = null;
-      if (!enemiesAlive) result = 'victory';
-      if (!playerAlive) result = 'defeat';
+      if (!enemiesAlive) {
+          result = 'victory';
+          console.log("🏆 VICTORY!");
+      }
+      if (!playerAlive) {
+          result = 'defeat';
+          console.log("💀 DEFEAT!");
+      }
 
       return {
           ...prev,
@@ -172,7 +197,7 @@ export const useCombat = (playerCharacter) => {
     setSelectedAction(null);
   }, []);
 
-  // --- CLICK HANDLER ---
+  // --- CLICK HANDLER (Player Movement/Attack) ---
   const handleCombatTileClick = useCallback((x, y) => {
       const state = stateRef.current;
       if (!state.isActive || state.result) return;
@@ -185,19 +210,26 @@ export const useCombat = (playerCharacter) => {
       if (target && target.type === 'enemy') {
           if (selectedAction && state.turnResources.hasAction) {
               performAction(current.id, target.id, selectedAction);
+          } else {
+              console.log("⚠️ Cannot attack: No action selected or no action resource left.");
           }
       } else if (!target && !selectedAction) {
+          // Movement
           const dist = getDistance(current, {x, y});
           if (dist <= state.turnResources.movementLeft) {
+              console.log(`🏃 Player Move: (${current.x},${current.y}) -> (${x},${y}) | Cost: ${dist}`);
               setCombatState(prev => ({
                   ...prev,
                   combatants: prev.combatants.map(c => c.id === current.id ? { ...c, x, y } : c),
                   turnResources: { ...prev.turnResources, movementLeft: prev.turnResources.movementLeft - dist }
               }));
+          } else {
+              console.log(`❌ Move failed: Distance ${dist} > Moves Left ${state.turnResources.movementLeft}`);
           }
       }
   }, [selectedAction, performAction]);
 
+  // --- NEXT TURN ---
   const nextTurn = useCallback(() => {
       processingTurn.current = false; 
       setCombatState(prev => {
@@ -207,6 +239,8 @@ export const useCombat = (playerCharacter) => {
           const nextRound = nextIndex === 0 ? prev.round + 1 : prev.round;
           const nextCombatant = prev.combatants[nextIndex];
           
+          console.log(`🔄 ROUND ${nextRound} | Turn: ${nextCombatant.name} (${nextCombatant.type})`);
+
           return {
               ...prev,
               turnIndex: nextIndex,
@@ -219,15 +253,16 @@ export const useCombat = (playerCharacter) => {
 
   // --- KI LOGIK ---
   useEffect(() => {
-    // FIX: combatState.isActive zur Dependency hinzufügen!
+    // FIX: Dependency Array korrigiert (isActive hinzugefügt)
     const state = combatState;
     if (!state.isActive || state.result) return;
 
     const currentC = state.combatants[state.turnIndex];
 
-    // Sicherstellen, dass wir nicht in einer Schleife hängen, wenn jemand tot ist
+    // Überspringen wenn tot
     if (currentC && currentC.hp <= 0) {
         if (!processingTurn.current) {
+             console.log(`☠️ Skipping dead turn: ${currentC.name}`);
              processingTurn.current = true;
              setTimeout(() => nextTurn(), 500);
         }
@@ -237,10 +272,11 @@ export const useCombat = (playerCharacter) => {
     if (currentC && currentC.type === 'enemy' && currentC.hp > 0 && !processingTurn.current) {
         
         processingTurn.current = true;
+        console.log(`🤖 AI THINKING: ${currentC.name}...`);
         
         const aiTurn = async () => {
             try {
-                // 1. Bewegen (Verzögerung für Realismus)
+                // 1. Bewegen
                 await new Promise(r => setTimeout(r, 600));
                 
                 let freshState = stateRef.current;
@@ -251,52 +287,47 @@ export const useCombat = (playerCharacter) => {
                 if (player && player.hp > 0) {
                     const dist = getDistance(currentC, player);
                     
-                    // Bewegung berechnen
                     if (dist > 1.5) {
                         let newX = currentC.x;
                         let newY = currentC.y;
                         const dx = player.x - currentC.x;
                         const dy = player.y - currentC.y;
                         
-                        // Einfache Annäherung
+                        // Simple pathfinding towards player
                         if (Math.abs(dx) >= Math.abs(dy)) newX += Math.sign(dx);
                         else newY += Math.sign(dy);
 
                         const occupied = freshState.combatants.some(c => c.x === newX && c.y === newY && c.hp > 0);
                         
                         if (!occupied) {
+                            console.log(`🤖 AI MOVES: ${currentC.name} to (${newX}, ${newY})`);
                             setCombatState(prev => ({
                                 ...prev,
                                 combatants: prev.combatants.map(c => c.id === currentC.id ? { ...c, x: newX, y: newY } : c),
                                 log: [...prev.log, `${currentC.name} nähert sich.`]
                             }));
-                            // Kurz warten, damit das Grid rendert und "performAction" die neuen Koordinaten hat
                             await new Promise(r => setTimeout(r, 500)); 
+                        } else {
+                            console.log(`🤖 AI BLOCKED: Cannot move to (${newX}, ${newY})`);
                         }
                     }
                     
-                    // 2. Angreifen (nach Bewegung)
-                    // State neu holen, da sich Position geändert haben könnte
+                    // 2. Angreifen
                     freshState = stateRef.current; 
-                    
-                    // Prüfen ob jetzt in Reichweite (oder ob es Fernkampf ist)
-                    // Hier vereinfacht: Gegner hat immer Nahkampf mit 1.5 Reichweite
-                    // Wenn wir in performAction sind, wird dort nochmal Range geprüft.
-                    
                     const actionTemplate = (currentC.actions && currentC.actions[0]) || { name: 'Angriff', damage: '1d4' };
                     
+                    // Wir führen die Action aus, performAction loggt den Rest
                     performAction(currentC.id, player.id, {
                         type: 'weapon',
                         name: actionTemplate.name,
                         damage: actionTemplate.damage, 
                         attackBonus: actionTemplate.attack_bonus || 4,
-                        range: 1.5 // Nahkampf
+                        range: 1.5 
                     });
                 }
             } catch (error) {
-                console.error("KI Fehler:", error);
+                console.error("❌ AI ERROR:", error);
             } finally {
-                // Zug beenden
                 if (!stateRef.current.result) {
                     setTimeout(() => nextTurn(), 800);
                 }
@@ -305,7 +336,7 @@ export const useCombat = (playerCharacter) => {
 
         aiTurn();
     }
-  }, [combatState.turnIndex, combatState.isActive, nextTurn, performAction]); // FIX: isActive hinzugefügt
+  }, [combatState.turnIndex, combatState.isActive, nextTurn, performAction]); 
 
   return {
     combatState, startCombat, nextTurn, endCombatSession: () => {},
