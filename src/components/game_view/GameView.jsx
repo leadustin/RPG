@@ -1,5 +1,5 @@
 // src/components/game_view/GameView.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // useEffect hinzugefügt
 import { PartyPortraits } from "./PartyPortraits";
 import ActionBar from "./ActionBar";
 import { WorldMap } from "../worldmap/WorldMap";
@@ -41,6 +41,18 @@ function GameView({
     handleCombatTileClick
   } = useCombat(character);
 
+  // +++ AUTOMATISCHER SIEG +++
+  // Wenn Sieg erkannt wird: Kurz warten, dann beenden ohne Screen
+  useEffect(() => {
+      if (combatState.result === 'victory') {
+          console.log("GameView: Automatischer Sieg - Kampf wird beendet.");
+          const timer = setTimeout(() => {
+              handleEndCombat();
+          }, 1500); // 1.5 Sekunden Verzögerung zum Realisieren des letzten Schlags
+          return () => clearTimeout(timer);
+      }
+  }, [combatState.result]);
+
   if (!character) {
     return <div className="game-view-container">Lädt Charakter...</div>;
   }
@@ -51,10 +63,7 @@ function GameView({
       const currentLocationId = character.currentLocation;
       const locationData = locationsData.find(loc => loc.id === currentLocationId);
 
-      if (!locationData || !locationData.enemies || locationData.enemies.length === 0) {
-          console.log("Keine Gegner an diesem Ort definiert.");
-          return;
-      }
+      if (!locationData || !locationData.enemies || locationData.enemies.length === 0) return;
 
       const combatEnemies = [];
       locationData.enemies.forEach((enemyConfig) => {
@@ -69,9 +78,7 @@ function GameView({
           }
       });
 
-      if (combatEnemies.length > 0) {
-          startCombat(combatEnemies);
-      }
+      if (combatEnemies.length > 0) startCombat(combatEnemies);
   };
 
   const handleEndCombat = () => {
@@ -82,7 +89,6 @@ function GameView({
 
   const handleActionSlotClick = (action) => {
       if (combatState.isActive) {
-          // Toggle Logik für Waffenwahl
           if (selectedAction && selectedAction.name === action.name) {
               setSelectedAction(null); 
           } else {
@@ -109,10 +115,13 @@ function GameView({
            {combatState.isActive ? (
              <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                
-               {combatState.result && (
+               {/* FIX: Screen nur bei NIEDERLAGE anzeigen, Sieg wird auto-behandelt */}
+               {combatState.result === 'defeat' && (
                  <CombatResultScreen 
                     result={combatState.result}
                     onClose={handleEndCombat}
+                    onLoadGame={onLoadGame} // Neu übergeben
+                    onMainMenu={() => window.location.reload()} // Einfacher Reload für Hauptmenü
                  />
                )}
 
@@ -126,18 +135,17 @@ function GameView({
                    overflow: 'auto',
                    background: '#222'
                }}>
-                 {/* KORREKTUR: Props für das Grid erweitert */}
                  <CombatGrid 
-                   width={12}
-                   height={8}
+                   width={12} height={8}
                    combatants={combatState.combatants}
                    activeCombatantId={combatState.combatants[combatState.turnIndex]?.id}
-                   selectedAction={selectedAction} // Damit das Grid weiß, ob wir zielen
-                   movementLeft={combatState.turnResources.movementLeft} // Für die Reichweiten-Anzeige
+                   selectedAction={selectedAction} 
+                   movementLeft={combatState.turnResources.movementLeft} 
                    onTileClick={(x, y) => handleCombatTileClick(x, y)}
                  />
                </div>
                
+               {/* Overlay nur ausblenden, wenn das Ergebnis feststeht */}
                {!combatState.result && (
                  <>
                    <div className="combat-log-overlay" style={{ 

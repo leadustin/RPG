@@ -2,47 +2,40 @@
 import React from 'react';
 import './CombatResultScreen.css';
 
-export const CombatResultScreen = ({ result, onConfirm }) => {
-  const { type, xp, loot } = result;
-  const isVictory = type === 'victory';
+export const CombatResultScreen = ({ result, onClose, onLoadGame, onMainMenu }) => {
+    const isVictory = result === 'victory';
 
-  return (
-    <div className={`combat-result-overlay ${isVictory ? 'victory' : 'defeat'}`}>
-      <div className="result-card">
-        <h2>{isVictory ? '⚔️ SIEG! ⚔️' : '💀 NIEDERLAGE 💀'}</h2>
-        
-        <div className="result-content">
-          {isVictory ? (
-            <>
-              <p>Du hast alle Feinde besiegt!</p>
-              
-              <div className="rewards-section">
-                <h3>Belohnungen:</h3>
-                <div className="xp-reward">✨ {xp} Erfahrungspunkte</div>
+    return (
+        <div className="combat-result-overlay">
+            <div className={`combat-result-box ${isVictory ? 'victory' : 'defeat'}`}>
+                <h2>{isVictory ? "Sieg!" : "Niederlage"}</h2>
+                <p>
+                    {isVictory 
+                        ? "Alle Gegner wurden besiegt." 
+                        : "Deine Reise endet hier..."}
+                </p>
                 
-                {loot && loot.length > 0 && (
-                  <div className="loot-reward">
-                    <h4>Beute:</h4>
-                    <ul>
-                      {loot.map((item, idx) => (
-                        <li key={idx}>
-                          <span className="loot-icon">📦</span> {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <p>Du wurdest im Kampf besiegt... (Game Over Logik hier)</p>
-          )}
-        </div>
+                <div className="result-buttons" style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
+                    {/* Bei Sieg (falls angezeigt) einfach weiter */}
+                    {isVictory && (
+                        <button onClick={onClose} className="btn-result">Weiter</button>
+                    )}
 
-        <button className="confirm-btn" onClick={onConfirm}>
-          {isVictory ? 'Alles einsammeln & weiter' : 'Zum Hauptmenü'}
-        </button>
-      </div>
-    </div>
-  );
+                    {/* Bei Niederlage: Optionen */}
+                    {!isVictory && (
+                        <>
+                            {onLoadGame && (
+                                <button onClick={onLoadGame} className="btn-result">
+                                    Spielstand laden
+                                </button>
+                            )}
+                            <button onClick={onMainMenu} className="btn-result danger">
+                                Hauptmenü
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 };

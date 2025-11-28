@@ -3,16 +3,13 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { getAbilityModifier } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';
 
-// Distanzberechnung (Chebyshev: Diagonale zählen als 1 Feld, wie oft in VTTs/D&D 4e/5e optional)
 const getDistance = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 
-// Helper: Würfel-String bereinigen
 const normalizeDice = (diceString) => {
     if (!diceString) return "1d4";
     return diceString.replace(/W/gi, 'd').replace(/\s/g, ''); 
 };
 
-// Helper: Zahl aus Würfel-Objekt ziehen
 const extractDamageValue = (rollResult) => {
     if (typeof rollResult === 'number') return rollResult;
     if (rollResult && typeof rollResult === 'object') {
@@ -26,7 +23,8 @@ const extractDamageValue = (rollResult) => {
 };
 
 export const useCombat = (playerCharacter) => {
-  const [combatState, setCombatState] = useState({
+  // Initialer State
+  const initialState = {
     isActive: false,
     round: 0,
     turnIndex: 0,
@@ -34,8 +32,9 @@ export const useCombat = (playerCharacter) => {
     log: [],
     turnResources: { hasAction: true, hasBonusAction: true, movementLeft: 6 },
     result: null
-  });
+  };
 
+  const [combatState, setCombatState] = useState(initialState);
   const [selectedAction, setSelectedAction] = useState(null);
   const stateRef = useRef(combatState);
   const processingTurn = useRef(false); 
@@ -52,9 +51,6 @@ export const useCombat = (playerCharacter) => {
     const startHp = (typeof stats.hp === 'number') ? stats.hp : (playerCharacter.hp || 20);
     const maxHp = stats.maxHp || playerCharacter.maxHp || 20;
     
-    // Spieler Initiative
-    const playerInit = d(20) + getAbilityModifier(stats.abilities?.dex || 10);
-
     const playerCombatant = {
       id: playerCharacter.id || 'player',
       type: 'player',
@@ -62,7 +58,7 @@ export const useCombat = (playerCharacter) => {
       hp: startHp,
       maxHp: maxHp,
       ac: stats.armor_class || 12,
-      initiative: playerInit,
+      initiative: d(20) + getAbilityModifier(stats.abilities?.dex || 10),
       x: 2, y: 4, speed: 6, color: 'blue',
       icon: playerCharacter.icon
     };
@@ -104,6 +100,14 @@ export const useCombat = (playerCharacter) => {
     processingTurn.current = false;
   }, [playerCharacter]);
 
+  // --- END SESSION ---
+  const endCombatSession = useCallback(() => {
+      console.log("🏳️ Combat Session Ended");
+      setCombatState(initialState);
+      setSelectedAction(null);
+      processingTurn.current = false;
+  }, []);
+
   // --- PERFORM ACTION ---
   const performAction = useCallback((attackerId, targetId, action) => {
     setCombatState(prev => {
@@ -118,7 +122,6 @@ export const useCombat = (playerCharacter) => {
       const dist = getDistance(attacker, target);
       const range = action.range || 1.5;
 
-      // Harte Regel: Wenn Reichweite überschritten, Aktion abbrechen (Loggen)
       if (dist > range && action.type === 'weapon') {
           console.log(`❌ Out of range: Dist ${dist} > Range ${range}`);
           return { ...prev, log: [...prev.log, `❌ ${attacker.name}: Ziel zu weit entfernt!`] };
@@ -136,7 +139,6 @@ export const useCombat = (playerCharacter) => {
       console.log(`🎲 Attack Roll: D20(${roll}) + ${attackBonus} = ${totalRoll} vs AC ${target.ac}`);
 
       if (totalRoll >= target.ac) {
-          // Schaden berechnen
           let diceString = "1d4";
           if (action.item && action.item.damage) diceString = action.item.damage; 
           else if (action.damage && action.damage.dice) diceString = action.damage.dice; 
@@ -162,7 +164,6 @@ export const useCombat = (playerCharacter) => {
           logEntry = `💨 ${attacker.name} verfehlt (${totalRoll})`;
       }
 
-      // HP abziehen
       const newCombatants = prev.combatants.map(c => {
           if (c.id === targetId) {
               const safeDamage = isNaN(damage) ? 0 : damage;
@@ -202,7 +203,7 @@ export const useCombat = (playerCharacter) => {
     setSelectedAction(null);
   }, []);
 
-  // --- CLICK HANDLER (Player Movement/Attack) ---
+  // --- CLICK HANDLER ---
   const handleCombatTileClick = useCallback((x, y) => {
       const state = stateRef.current;
       if (!state.isActive || state.result) return;
@@ -212,38 +213,33 @@ export const useCombat = (playerCharacter) => {
 
       const target = state.combatants.find(c => c.x === x && c.y === y && c.hp > 0);
 
-      // --- Spieler Angriff ---
+      // Angriff
       if (target && target.type === 'enemy') {
           if (selectedAction && state.turnResources.hasAction) {
               const dist = getDistance(current, target);
               const range = selectedAction.range || 1.5;
               
-              // FIX: Client-seitige Prüfung VOR performAction Aufruf
               if (dist <= range) {
                   performAction(current.id, target.id, selectedAction);
               } else {
-                  console.log(`⚠️ Ziel zu weit weg. Distanz: ${dist}, Reichweite: ${range}`);
+                  console.log(`⚠️ Ziel zu weit weg.`);
                   setCombatState(prev => ({
                       ...prev,
                       log: [...prev.log, `⚠️ Zu weit weg! (${dist} Felder)`]
                   }));
               }
-          } else {
-              console.log("⚠️ Kein Angriff möglich: Keine Aktion gewählt oder verbraucht.");
           }
       } 
-      // --- Spieler Bewegung ---
+      // Bewegung
       else if (!target && !selectedAction) {
           const dist = getDistance(current, {x, y});
           if (dist <= state.turnResources.movementLeft) {
-              console.log(`🏃 Player Move: (${current.x},${current.y}) -> (${x},${y}) | Cost: ${dist}`);
+              console.log(`🏃 Player Move: (${current.x},${current.y}) -> (${x},${y})`);
               setCombatState(prev => ({
                   ...prev,
                   combatants: prev.combatants.map(c => c.id === current.id ? { ...c, x, y } : c),
                   turnResources: { ...prev.turnResources, movementLeft: prev.turnResources.movementLeft - dist }
               }));
-          } else {
-              console.log(`❌ Move failed: Distance ${dist} > Moves Left ${state.turnResources.movementLeft}`);
           }
       }
   }, [selectedAction, performAction]);
@@ -258,7 +254,7 @@ export const useCombat = (playerCharacter) => {
           const nextRound = nextIndex === 0 ? prev.round + 1 : prev.round;
           const nextCombatant = prev.combatants[nextIndex];
           
-          console.log(`🔄 ROUND ${nextRound} | Turn: ${nextCombatant.name} (${nextCombatant.type})`);
+          console.log(`🔄 ROUND ${nextRound} | Turn: ${nextCombatant.name}`);
 
           return {
               ...prev,
@@ -277,25 +273,20 @@ export const useCombat = (playerCharacter) => {
 
     const currentC = state.combatants[state.turnIndex];
 
-    // Überspringen wenn tot
     if (currentC && currentC.hp <= 0) {
         if (!processingTurn.current) {
-             console.log(`☠️ Skipping dead turn: ${currentC.name}`);
              processingTurn.current = true;
              setTimeout(() => nextTurn(), 500);
         }
         return;
     }
 
-    // Wenn Gegner an der Reihe ist
     if (currentC && currentC.type === 'enemy' && currentC.hp > 0 && !processingTurn.current) {
         
         processingTurn.current = true;
-        console.log(`🤖 AI THINKING: ${currentC.name}...`);
         
         const aiTurn = async () => {
             try {
-                // Kurze "Denkpause"
                 await new Promise(r => setTimeout(r, 600));
                 
                 let freshState = stateRef.current;
@@ -307,21 +298,16 @@ export const useCombat = (playerCharacter) => {
                     let currentX = currentC.x;
                     let currentY = currentC.y;
                     const actionTemplate = (currentC.actions && currentC.actions[0]) || { name: 'Angriff', damage: '1d4' };
-                    const attackRange = 1.5; // Standard Nahkampf
+                    const attackRange = 1.5;
 
                     const distToPlayer = getDistance(currentC, player);
                     
-                    // 1. BEWEGUNG (wenn nicht in Reichweite)
+                    // 1. BEWEGUNG
                     if (distToPlayer > attackRange) {
-                        const movesAvailable = 1; // Vereinfacht: Gegner bewegt sich 1 Feld pro Tick Richtung Spieler (verbesserbar)
-                        
                         let newX = currentX;
                         let newY = currentY;
-                        
                         const dx = player.x - currentX;
                         const dy = player.y - currentY;
-                        
-                        // Einfachste Annäherung (1 Feld)
                         if (Math.abs(dx) >= Math.abs(dy)) newX += Math.sign(dx);
                         else newY += Math.sign(dy);
 
@@ -329,27 +315,18 @@ export const useCombat = (playerCharacter) => {
                         
                         if (!occupied) {
                             console.log(`🤖 AI MOVES: ${currentC.name} to (${newX}, ${newY})`);
-                            
-                            // State update für Bewegung
                             setCombatState(prev => ({
                                 ...prev,
                                 combatants: prev.combatants.map(c => c.id === currentC.id ? { ...c, x: newX, y: newY } : c),
                                 log: [...prev.log, `${currentC.name} nähert sich.`]
                             }));
-                            
-                            // WICHTIG: Koordinaten lokal aktualisieren für die folgende Angriffslogik
                             currentX = newX;
                             currentY = newY;
-
-                            // Warten bis UI aktualisiert (Kosmetik)
                             await new Promise(r => setTimeout(r, 500)); 
-                        } else {
-                            console.log(`🤖 AI BLOCKED: Cannot move to (${newX}, ${newY})`);
                         }
                     }
                     
-                    // 2. ANGRIFF (Nur wenn JETZT in Reichweite)
-                    // Wir berechnen die Distanz mit den möglicherweise neuen Koordinaten (currentX/Y)
+                    // 2. ANGRIFF
                     const newDistToPlayer = getDistance({x: currentX, y: currentY}, player);
                     
                     if (newDistToPlayer <= attackRange) {
@@ -361,14 +338,12 @@ export const useCombat = (playerCharacter) => {
                             range: attackRange
                         });
                     } else {
-                        console.log(`🤖 AI WAIT: Player too far (${newDistToPlayer} > ${attackRange}). Ending turn.`);
-                        // Optional: Logge "Gegner starrt dich böse an"
+                        console.log(`🤖 AI WAIT: Player too far.`);
                     }
                 }
             } catch (error) {
                 console.error("❌ AI ERROR:", error);
             } finally {
-                // Prüfen ob Spiel noch läuft, bevor wir Turn beenden
                 if (!stateRef.current.result) {
                     setTimeout(() => nextTurn(), 800);
                 }
@@ -380,7 +355,7 @@ export const useCombat = (playerCharacter) => {
   }, [combatState.turnIndex, combatState.isActive, nextTurn, performAction]); 
 
   return {
-    combatState, startCombat, nextTurn, endCombatSession: () => {},
+    combatState, startCombat, nextTurn, endCombatSession,
     selectedAction, setSelectedAction, handleCombatTileClick
   };
 };
