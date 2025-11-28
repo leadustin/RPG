@@ -7,15 +7,11 @@
     "icon": "skill_placeholder.png",
     "components": ["V", "S"],
     "classes": ["sorcerer", "wizard"],
-
-    "//": "--- UI-Felder (Für Tooltips) ---",
     "ui_casting_time": "1 Aktion",
     "ui_range": "18 Meter",
     "ui_duration": "Sofort",
     "ui_description": "Du schleuderst eine Säureblase. Wähle 1 oder 2 Kreaturen in Reichweite (max 1,5m voneinander entfernt). Ziel muss GE-Rettungswurf bestehen oder 1W6 Säureschaden erleiden.",
     "ui_scaling": "Der Schaden erhöht sich um 1W6 auf Stufe 5 (2W6), 11 (3W6) und 17 (4W6).",
-
-    "//": "--- Logik-Felder (Für Engine) ---",
     "casting_time": "ACTION",
     "range_m": 18,
     "duration": "INSTANTANEOUS",

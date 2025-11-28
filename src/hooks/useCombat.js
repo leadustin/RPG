@@ -1,18 +1,17 @@
 // src/hooks/useCombat.js
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { getAbilityModifier, calculateSpellAttackBonus, calculateSpellSaveDC } from '../engine/rulesEngine';
+import { getAbilityModifier, calculateSpellAttackBonus, calculateSpellSaveDC, getProficiencyBonus } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';
 
-// Distanzberechnung
+// --- HELPER FUNCTIONS ---
+
 const getDistance = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 
-// Helper: Würfel-String bereinigen
 const normalizeDice = (diceString) => {
     if (!diceString) return "1d4";
     return diceString.replace(/W/gi, 'd').replace(/\s/g, ''); 
 };
 
-// Helper: Zahl aus Würfel-Objekt ziehen
 const extractDamageValue = (rollResult) => {
     if (typeof rollResult === 'number') return rollResult;
     if (rollResult && typeof rollResult === 'object') {
@@ -25,7 +24,6 @@ const extractDamageValue = (rollResult) => {
     return 1; 
 };
 
-// Helper: Wandelt "9m" in Anzahl Felder um (1 Feld = 1.5m)
 const calculateMoveTiles = (speedString) => {
     if (!speedString) return 6; 
     const meters = parseInt(speedString);
@@ -33,56 +31,44 @@ const calculateMoveTiles = (speedString) => {
     return Math.floor(meters / 1.5);
 };
 
-// +++ NEU: Helper für Zauberschaden-Skalierung (Cantrips) +++
-const getScaledCantripDamage = (characterLevel, scalingData) => {
-    if (!scalingData || scalingData.type !== 'CANTRIP') return null;
-    
-    // Sortiere Level absteigend (17, 11, 5, 1)
-    const levels = Object.keys(scalingData.dice_at_levels)
-        .map(Number)
-        .sort((a, b) => b - a);
-        
-    for (const level of levels) {
-        if (characterLevel >= level) {
-            return scalingData.dice_at_levels[level];
-        }
+// Helper: Berechnet Cantrip-Würfel basierend auf sauberer Scaling-Tabelle
+const getCantripDice = (level, scaling) => {
+    if (!scaling || !scaling.dice_at_levels) return null;
+    const levels = Object.keys(scaling.dice_at_levels).map(Number).sort((a, b) => b - a);
+    for (const l of levels) {
+        if (level >= l) return scaling.dice_at_levels[l];
     }
-    return "1d4"; // Fallback
+    return scaling.dice_at_levels["1"]; // Fallback auf Level 1
 };
 
-// +++Robustere Reichweiten-Berechnung +++
 const calculateWeaponRange = (action) => {
     if (!action) return 1; 
+    
+    // Prüfe sauberes Feld range_m (aus spells.json)
+    if (action.range_m) {
+        return Math.floor(action.range_m / 1.5);
+    }
 
-    // Wir schauen entweder direkt in die Action oder in das eingebettete Item (Spieler-Waffen)
     const source = action.item || action;
-
-    // 1. Prüfe auf "Reichweite" (Reach) Eigenschaft
     const props = source.properties || [];
-    if (props.includes("Reichweite")) {
-        return 2; // 3m = 2 Felder
-    }
+    if (props.includes("Reichweite")) return 2; 
 
-    // 2. Explizite Range (z.B. "24/96" für Bogen)
     if (source.range) {
-        // Nimm die erste Zahl vor dem Schrägstrich
+        if (typeof source.range === 'string' && source.range.toLowerCase().includes('berührung')) return 1;
+        
         const rangeMeters = parseInt(source.range.split('/')[0]);
-        if (!isNaN(rangeMeters)) {
-            return Math.floor(rangeMeters / 1.5);
-        }
+        if (!isNaN(rangeMeters)) return Math.floor(rangeMeters / 1.5);
     }
-
-    // 3. Enemy "reach" String (z.B. "1,5m" - meist direkt an der Action definiert)
+    
     if (action.reach) {
         const reachVal = parseFloat(action.reach.replace(',', '.'));
-        if (!isNaN(reachVal)) {
-            return Math.max(1, Math.floor(reachVal / 1.5));
-        }
+        if (!isNaN(reachVal)) return Math.max(1, Math.floor(reachVal / 1.5));
     }
 
-    // 4. Fallback
     return 1; 
 };
+
+// --- HOOK ---
 
 export const useCombat = (playerCharacter) => {
   const initialState = {
@@ -102,7 +88,7 @@ export const useCombat = (playerCharacter) => {
 
   useEffect(() => { stateRef.current = combatState; }, [combatState]);
 
-  // --- START ---
+  // --- START COMBAT ---
   const startCombat = useCallback((enemies) => {
     if (!playerCharacter) return;
     
@@ -112,6 +98,7 @@ export const useCombat = (playerCharacter) => {
     const startHp = (typeof stats.hp === 'number') ? stats.hp : (playerCharacter.hp || 20);
     const maxHp = stats.maxHp || playerCharacter.maxHp || 20;
     
+    // Spieler Init
     const playerInit = d(20) + getAbilityModifier(stats.abilities?.dex || 10);
 
     const playerCombatant = {
@@ -166,7 +153,7 @@ export const useCombat = (playerCharacter) => {
     processingTurn.current = false;
   }, [playerCharacter]);
 
-  // --- END SESSION ---
+  // --- END COMBAT ---
   const endCombatSession = useCallback(() => {
       console.log("🏳️ Combat Session Ended");
       setCombatState(initialState);
@@ -180,102 +167,131 @@ export const useCombat = (playerCharacter) => {
       const attacker = prev.combatants.find(c => c.id === attackerId);
       const target = prev.combatants.find(c => c.id === targetId);
       
-      if (!attacker || !target) return prev; // Fehler: Teilnehmer nicht gefunden
+      if (!attacker || !target) {
+          console.warn("⚠️ Action failed: Attacker or Target not found.");
+          return prev;
+      }
 
       // 1. REICHWEITE PRÜFEN
       const dist = getDistance(attacker, target);
-      const allowedRange = calculateWeaponRange(action); 
+      const allowedRange = calculateWeaponRange(action);
 
-      // Wir erlauben eine kleine Toleranz für Zauber-Reichweiten, da die oft sehr groß sind
       if (dist > allowedRange) {
-          return { ...prev, log: [...prev.log, `❌ ${attacker.name}: Ziel zu weit entfernt! (${dist}/${allowedRange})`] };
+          console.log(`❌ Out of range: Dist ${dist} > Range ${allowedRange}`);
+          return { ...prev, log: [...prev.log, `❌ ${attacker.name}: Ziel zu weit entfernt!`] };
       }
 
       console.log(`⚡ ACTION: ${attacker.name} uses ${action.name} on ${target.name}`);
 
       let logEntry = '';
       let damage = 0;
+      let heal = 0;
       let hitSuccess = false;
       let isCritical = false;
+      let halfDamage = false; // Für Saves
 
       // ---------------------------------------------------------
-      // FALL A: ZAUBER (Magie)
+      // FALL A: ZAUBER (Basierend auf sauberen 'effects')
       // ---------------------------------------------------------
-      if (action.uiType && (action.uiType.includes("Zauber") || action.uiType === "Zaubertrick")) {
+      if (action.effects && action.effects.length > 0) {
+          // Wir nehmen den ersten relevanten Effekt (Damage oder Healing)
+          // Komplexere Zauber könnten mehrere Effekte haben, hier vereinfacht.
+          const effect = action.effects.find(e => e.type === "DAMAGE" || e.type === "HEALING");
           
-          // Daten aus action.effects holen (Struktur aus spells.json)
-          const effect = action.effects ? action.effects.find(e => e.type === "DAMAGE") : null;
-          
-          // Fall 1: Angriffswurf (z.B. Feuerpfeil)
-          if (effect && effect.attack_roll) {
-              const spellAttackBonus = (attacker.type === 'player') 
-                  ? calculateSpellAttackBonus(playerCharacter) 
-                  : (attacker.attack_bonus || 4); // Einfacher Bonus für Monster
+          if (effect) {
+              // 1. ANGRIFFSWURF (Attack Roll)
+              if (effect.attack_roll && effect.attack_roll !== 'auto') {
+                  const spellAttackBonus = (attacker.type === 'player') 
+                      ? calculateSpellAttackBonus(playerCharacter) 
+                      : (attacker.attack_bonus || 4);
 
-              const d20 = d(20);
-              const totalRoll = d20 + spellAttackBonus;
-              isCritical = d20 === 20;
+                  const d20 = d(20);
+                  const totalRoll = d20 + spellAttackBonus;
+                  isCritical = d20 === 20;
 
-              console.log(`🪄 Spell Attack: D20(${d20}) + ${spellAttackBonus} = ${totalRoll} vs AC ${target.ac}`);
+                  console.log(`🪄 Spell Attack: D20(${d20}) + ${spellAttackBonus} = ${totalRoll} vs AC ${target.ac}`);
 
-              if (totalRoll >= target.ac || isCritical) {
-                  hitSuccess = true;
-                  logEntry = `🪄 ${attacker.name} trifft mit ${action.name}!`;
-              } else {
-                  logEntry = `💨 ${attacker.name} verfehlt mit ${action.name}.`;
+                  if (totalRoll >= target.ac || isCritical) {
+                      hitSuccess = true;
+                      logEntry = `🪄 ${attacker.name} trifft mit ${action.name}!`;
+                  } else {
+                      logEntry = `💨 ${attacker.name} verfehlt mit ${action.name}.`;
+                  }
               }
-          } 
-          
-          // Fall 2: Rettungswurf (z.B. Heilige Flamme)
-          else if (effect && effect.saving_throw) {
-              const saveDC = (attacker.type === 'player') 
-                  ? calculateSpellSaveDC(playerCharacter)
-                  : (attacker.save_dc || 12); // Fallback für Monster
+              // 2. RETTUNGSWURF (Saving Throw)
+              else if (effect.saving_throw) {
+                  const saveDC = (attacker.type === 'player') 
+                      ? calculateSpellSaveDC(playerCharacter)
+                      : (attacker.save_dc || 12);
 
-              // Gegner würfelt Save
-              const abilityKey = effect.saving_throw.ability?.toLowerCase().substring(0, 3); // "dexterity" -> "dex"
-              const saveMod = getAbilityModifier(target.stats?.[abilityKey] || 10);
-              const saveRoll = d(20) + saveMod;
+                  // Attribut Key extrahieren (z.B. "dexterity" -> "dex")
+                  const abilityKey = effect.saving_throw.ability?.toLowerCase().substring(0, 3); 
+                  const saveMod = getAbilityModifier(target.stats?.[abilityKey] || 10);
+                  const saveRoll = d(20) + saveMod;
 
-              console.log(`🛡️ Saving Throw (${abilityKey}): Rolled ${saveRoll} vs DC ${saveDC}`);
+                  console.log(`🛡️ Saving Throw (${abilityKey}): Rolled ${saveRoll} vs DC ${saveDC}`);
 
-              if (saveRoll < saveDC) {
+                  if (saveRoll < saveDC) {
+                      hitSuccess = true;
+                      logEntry = `🔥 ${target.name} scheitert am Rettungswurf!`;
+                  } else {
+                      // Prüfen ob halber Schaden bei Erfolg
+                      if (effect.saving_throw.effect_on_success === 'half') {
+                          hitSuccess = true;
+                          halfDamage = true;
+                          logEntry = `🛡️ ${target.name} schafft den RW (halber Schaden).`;
+                      } else {
+                          logEntry = `🛡️ ${target.name} weicht dem Zauber aus.`;
+                      }
+                  }
+              }
+              // 3. AUTO HIT (z.B. Magic Missile)
+              else if (effect.attack_roll === 'auto') {
                   hitSuccess = true;
-                  logEntry = `🔥 ${target.name} scheitert beim Rettungswurf!`;
-              } else {
-                  logEntry = `🛡️ ${target.name} weicht dem Zauber aus.`;
-                  // Manche Zauber machen halben Schaden bei Erfolg, hier vereinfacht: kein Schaden
+                  logEntry = `✨ ${action.name} trifft automatisch.`;
+              }
+
+              // SCHADEN / HEILUNG BERECHNEN
+              if (hitSuccess && effect.damage) {
+                  let diceString = effect.damage.dice;
+
+                  // Skalierung anwenden (Cantrip)
+                  if (effect.scaling && effect.scaling.type === "CANTRIP" && attacker.type === 'player') {
+                      const scaled = getCantripDice(playerCharacter.level, effect.scaling);
+                      if (scaled) diceString = scaled;
+                  }
+
+                  let rollVal = extractDamageValue(rollDiceString(normalizeDice(diceString)));
+                  
+                  // Modifikator addieren? (z.B. bei Heilung oft Stat-Mod)
+                  if (effect.add_modifier && attacker.type === 'player') {
+                      // Vereinfacht: Wir nehmen Spell-Attack-Bonus minus PB als Stat-Mod
+                      // Sauberer wäre: getAbilityModifier(stats[castingStat])
+                      rollVal += calculateSpellAttackBonus(playerCharacter) - getProficiencyBonus(playerCharacter.level); 
+                  }
+
+                  if (isCritical && effect.attack_roll) {
+                      rollVal += extractDamageValue(rollDiceString(normalizeDice(diceString)));
+                      logEntry += " (KRITISCH!)";
+                  }
+
+                  if (halfDamage) {
+                      rollVal = Math.floor(rollVal / 2);
+                  }
+
+                  if (effect.type === 'HEALING') {
+                      heal = rollVal;
+                  } else {
+                      damage = rollVal;
+                  }
               }
           }
-
-          // SCHADEN BERECHNEN (Wenn getroffen)
-          if (hitSuccess && effect) {
-              let diceString = effect.damage.dice;
-
-              // Skalierung für Cantrips prüfen
-              if (effect.scaling && effect.scaling.type === "CANTRIP" && attacker.type === 'player') {
-                  const scaledDice = getScaledCantripDamage(playerCharacter.level, effect.scaling);
-                  if (scaledDice) diceString = scaledDice;
-              }
-
-              // Kritischer Treffer verdoppelt Würfel (nur bei Angriffswürfen!)
-              if (isCritical && effect.attack_roll) {
-                  // Sehr vereinfacht: Wir verdoppeln einfach das Ergebnis oder die Würfelanzahl
-                  // Hier: String parsen wäre sauberer, aber für jetzt rollen wir 2x
-                  const dmg1 = extractDamageValue(rollDiceString(normalizeDice(diceString)));
-                  const dmg2 = extractDamageValue(rollDiceString(normalizeDice(diceString)));
-                  damage = dmg1 + dmg2;
-                  logEntry += " (KRITISCH!)";
-              } else {
-                  damage = extractDamageValue(rollDiceString(normalizeDice(diceString)));
-              }
-          }
-
-      } 
+      }
+      
       // ---------------------------------------------------------
-      // FALL B: WAFFE (Physisch)
+      // FALL B: WAFFE (Physisch - Fallback für reine Waffenaktionen)
       // ---------------------------------------------------------
-      else {
+      else if (!action.effects && action.type !== 'spell') {
           const d20 = d(20);
           const attackBonus = action.attackBonus || 5; 
           const totalRoll = d20 + attackBonus;
@@ -295,13 +311,12 @@ export const useCombat = (playerCharacter) => {
               damage = extractDamageValue(rollDiceString(cleanDice));
 
               if (isCritical) {
-                  damage += extractDamageValue(rollDiceString(cleanDice)); // Krit: Würfel nochmal
+                  damage += extractDamageValue(rollDiceString(cleanDice));
                   logEntry = `⚔️ KRITISCHER TREFFER! ${attacker.name} trifft ${target.name}`;
               } else {
                   logEntry = `⚔️ ${attacker.name} trifft ${target.name}`;
               }
 
-              // Stat-Bonus auf Schaden (nur bei Waffen üblich)
               if (action.damage && action.damage.bonus) damage += Number(action.damage.bonus);
           } else {
               logEntry = `💨 ${attacker.name} verfehlt mit der Waffe.`;
@@ -309,18 +324,20 @@ export const useCombat = (playerCharacter) => {
       }
 
       // ---------------------------------------------------------
-      // SCHADENSVERARBEITUNG & STATUS
+      // VERARBEITUNG
       // ---------------------------------------------------------
       
-      if (hitSuccess && damage > 0) {
-          logEntry += ` für ${damage} Schaden.`;
-      }
+      if (damage > 0) logEntry += ` (${damage} Schaden)`;
+      if (heal > 0) logEntry += ` (${heal} Heilung)`;
 
       const newCombatants = prev.combatants.map(c => {
           if (c.id === targetId) {
-              const safeDamage = isNaN(damage) ? 0 : damage;
-              const newHp = Math.max(0, c.hp - safeDamage);
-              console.log(`🩸 ${c.name} HP: ${c.hp} -> ${newHp}`);
+              // HP Limitierung (0 bis MaxHP)
+              const newHp = Math.max(0, Math.min(c.maxHp, c.hp - damage + heal));
+              
+              if (damage > 0) console.log(`🩸 ${c.name} HP: ${c.hp} -> ${newHp}`);
+              if (heal > 0) console.log(`💚 ${c.name} HP: ${c.hp} -> ${newHp}`);
+              
               if (newHp === 0) {
                   logEntry += ` 💀 ${c.name} besiegt!`;
               }
@@ -358,7 +375,7 @@ export const useCombat = (playerCharacter) => {
 
       const target = state.combatants.find(c => c.x === x && c.y === y && c.hp > 0);
 
-      // Angriff
+      // 1. Angriff auf Gegner
       if (target && target.type === 'enemy') {
           if (selectedAction && state.turnResources.hasAction) {
               const dist = getDistance(current, target);
@@ -373,9 +390,11 @@ export const useCombat = (playerCharacter) => {
                       log: [...prev.log, `⚠️ Zu weit weg! (${dist} Felder)`]
                   }));
               }
+          } else {
+              console.log("⚠️ Kein Angriff möglich: Keine Aktion gewählt oder verbraucht.");
           }
       } 
-      // Bewegung
+      // 2. Bewegung auf leeres Feld
       else if (!target && !selectedAction) {
           const dist = getDistance(current, {x, y});
           if (dist <= state.turnResources.movementLeft) {
@@ -385,6 +404,8 @@ export const useCombat = (playerCharacter) => {
                   combatants: prev.combatants.map(c => c.id === current.id ? { ...c, x, y } : c),
                   turnResources: { ...prev.turnResources, movementLeft: prev.turnResources.movementLeft - dist }
               }));
+          } else {
+              console.log(`❌ Move failed: Distance ${dist} > Moves Left ${state.turnResources.movementLeft}`);
           }
       }
   }, [selectedAction, performAction]);
@@ -399,12 +420,13 @@ export const useCombat = (playerCharacter) => {
           const nextRound = nextIndex === 0 ? prev.round + 1 : prev.round;
           const nextCombatant = prev.combatants[nextIndex];
           
-          console.log(`🔄 ROUND ${nextRound} | Turn: ${nextCombatant.name}`);
+          console.log(`🔄 ROUND ${nextRound} | Turn: ${nextCombatant.name} (${nextCombatant.type})`);
 
           return {
               ...prev,
               turnIndex: nextIndex,
               round: nextRound,
+              // Ressourcen zurücksetzen
               turnResources: { 
                   hasAction: true, 
                   hasBonusAction: true, 
@@ -422,8 +444,10 @@ export const useCombat = (playerCharacter) => {
 
     const currentC = state.combatants[state.turnIndex];
 
+    // Überspringen wenn tot
     if (currentC && currentC.hp <= 0) {
         if (!processingTurn.current) {
+             console.log(`☠️ Skipping dead turn: ${currentC.name}`);
              processingTurn.current = true;
              setTimeout(() => nextTurn(), 500);
         }
@@ -436,7 +460,7 @@ export const useCombat = (playerCharacter) => {
         
         const aiTurn = async () => {
             try {
-                // Denkpause vor Zugbeginn
+                // Denkpause
                 await new Promise(r => setTimeout(r, 800));
                 
                 let freshState = stateRef.current;
@@ -500,17 +524,18 @@ export const useCombat = (playerCharacter) => {
                             combatants: prev.combatants.map(c => c.id === currentC.id ? { ...c, x: currentX, y: currentY } : c),
                             log: [...prev.log, `${currentC.name} bewegt sich.`]
                         }));
-                        // WARTEN: Hier auf 600ms erhöht, damit die CSS Transition (400ms) fertig ist
                         await new Promise(r => setTimeout(r, 600)); 
                     }
                     
                     // --- 2. ANGRIFF ---
+                    // State nochmal holen für Sicherheit
+                    freshState = stateRef.current; 
                     const finalDistToPlayer = getDistance({x: currentX, y: currentY}, player);
                     
                     if (finalDistToPlayer <= attackRange) {
                         performAction(currentC.id, player.id, {
                             ...actionTemplate,
-                            type: 'weapon',
+                            type: 'weapon', // KI nutzt einfache Waffenlogik (Fallback) oder man gibt ihr effects in der JSON
                             range: actionTemplate.range, 
                             reach: actionTemplate.reach
                         });
