@@ -3,8 +3,14 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { getAbilityModifier } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';
 
-// Hilfsfunktion: Distanz berechnen (Schachbrett-Metrik: Diagonal = 1 Schritt)
+// Hilfsfunktion: Distanz berechnen
 const getDistance = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
+
+// Hilfsfunktion: '1W6 + 2' zu '1d6 + 2' umwandeln für den Parser
+const normalizeDice = (diceString) => {
+    if (!diceString) return "1d4";
+    return diceString.replace(/W/gi, 'd'); // Ersetzt W oder w mit d
+};
 
 export const useCombat = (playerCharacter) => {
   const [combatState, setCombatState] = useState({
@@ -13,62 +19,61 @@ export const useCombat = (playerCharacter) => {
     turnIndex: 0,
     combatants: [],
     log: [],
-    turnResources: { hasAction: true, hasBonusAction: true, movementLeft: 6 }, // 6 Felder = 9m
+    turnResources: { hasAction: true, hasBonusAction: true, movementLeft: 6 },
     result: null
   });
 
   const [selectedAction, setSelectedAction] = useState(null);
   
-  // Refs für stabilen Zugriff innerhalb von Timeouts
   const stateRef = useRef(combatState);
   const processingTurn = useRef(false); 
 
-  // Ref immer aktuell halten
   useEffect(() => { stateRef.current = combatState; }, [combatState]);
 
   // --- KAMPF STARTEN ---
   const startCombat = useCallback((enemies) => {
     if (!playerCharacter) return;
-    console.log("[Combat] Start mit:", enemies);
 
+    // 1. SPIELER DATEN SICHER LADEN
     const stats = playerCharacter.stats || {};
+    // Priorität: stats.hp -> playerCharacter.hp -> Fallback 20
+    const startHp = (typeof stats.hp === 'number') ? stats.hp : (playerCharacter.hp || 20);
+    const maxHp = stats.maxHp || playerCharacter.maxHp || 20;
+    
+    console.log(`[Combat] Spieler startet mit ${startHp} / ${maxHp} HP`); // <--- HIER PRÜFEN
+
     const initBonus = getAbilityModifier(stats.abilities?.dex || 10);
 
-    // Spieler Setup
     const playerCombatant = {
       id: playerCharacter.id || 'player',
       type: 'player',
       name: playerCharacter.name || 'Held',
-      hp: typeof stats.hp === 'number' ? stats.hp : 20,
-      maxHp: stats.maxHp || 20,
+      hp: startHp,
+      maxHp: maxHp,
       ac: stats.armor_class || 12,
       initiative: d(20) + initBonus,
       x: 2, y: 4, speed: 6, color: 'blue',
       icon: playerCharacter.icon
     };
 
-    // Gegner Setup (MIT HP FIX)
+    // 2. GEGNER DATEN LADEN (Inklusive Actions)
     const enemyCombatants = enemies.map((e, i) => {
-        // +++ HP FIX: Objekt vs Zahl prüfen +++
-        let hpValue = 10; // Fallback
-        if (typeof e.hp === 'number') {
-            hpValue = e.hp;
-        } else if (e.hp && (e.hp.average || e.hp.max)) {
-            // Nimm average oder max, was da ist
-            hpValue = e.hp.average || e.hp.max || 10;
-        }
+        // HP Fix (Objekt vs Zahl)
+        let hpValue = 10; 
+        if (typeof e.hp === 'number') hpValue = e.hp;
+        else if (e.hp && (e.hp.average || e.hp.max)) hpValue = e.hp.average || e.hp.max;
 
         return {
-            ...e,
+            ...e, // Übernimmt alle Daten aus JSON (auch 'actions'!)
             id: e.instanceId || `enemy_${i}_${Date.now()}`,
             type: 'enemy',
             name: e.name || `Gegner ${i+1}`,
             initiative: d(20) + (e.initBonus || 0),
-            hp: hpValue,        // Jetzt garantiert eine Zahl!
-            maxHp: hpValue,     // Jetzt garantiert eine Zahl!
+            hp: hpValue,
+            maxHp: hpValue,
             speed: 5, 
             color: 'red',
-            x: 9, y: 3 + i      // Startposition rechts
+            x: 9, y: 3 + i
         };
     });
 
@@ -96,29 +101,40 @@ export const useCombat = (playerCharacter) => {
       
       if (!attacker || !target) return prev;
 
-      // Distanz Check
       const dist = getDistance(attacker, target);
       const range = action.range || 1.5;
 
       if (dist > range && action.type === 'weapon') {
-          return { ...prev, log: [...prev.log, `❌ ${attacker.name} ist zu weit weg (${dist} Felder)!`] };
+          return { ...prev, log: [...prev.log, `❌ ${attacker.name} ist zu weit weg!`] };
       }
 
       let logEntry = '';
       let damage = 0;
+      
+      // Angriffswurf
       const roll = d(20);
-      const attackBonus = 5; 
+      const attackBonus = action.attackBonus || 5; 
       const totalRoll = roll + attackBonus;
       
+      console.log(`[Combat] ${attacker.name} würfelt ${roll} + ${attackBonus} = ${totalRoll} gegen AC ${target.ac}`);
+
       if (totalRoll >= target.ac) {
-          const damageDice = action.item?.damage || "1d6";
-          damage = rollDiceString(damageDice);
-          logEntry = `⚔️ ${attacker.name} trifft ${target.name} (${totalRoll}) für ${damage} Schaden!`;
+          // Schaden berechnen
+          let diceString = "1d4";
+          // Versuche Schaden aus Item oder Action zu lesen
+          if (action.item && action.item.damage) diceString = action.item.damage; // Spieler Waffe
+          else if (action.damage && action.damage.dice) diceString = action.damage.dice; // Gegner JSON
+
+          // W in d umwandeln
+          diceString = normalizeDice(diceString);
+
+          damage = rollDiceString(diceString);
+          logEntry = `⚔️ ${attacker.name} trifft ${target.name} mit ${action.name} (${totalRoll}) für ${damage} Schaden!`;
       } else {
           logEntry = `💨 ${attacker.name} verfehlt ${target.name} (${totalRoll}).`;
       }
 
-      // HP Update
+      // HP abziehen
       const newCombatants = prev.combatants.map(c => {
           if (c.id === targetId) {
               const newHp = Math.max(0, c.hp - damage);
@@ -128,7 +144,7 @@ export const useCombat = (playerCharacter) => {
           return c;
       });
 
-      // Status Check
+      // Status
       const enemiesAlive = newCombatants.some(c => c.type === 'enemy' && c.hp > 0);
       const playerAlive = newCombatants.some(c => c.type === 'player' && c.hp > 0);
       
@@ -147,33 +163,22 @@ export const useCombat = (playerCharacter) => {
     setSelectedAction(null);
   }, []);
 
-  // --- KLICK HANDLER ---
+  // --- SPIELER KLICK ---
   const handleCombatTileClick = useCallback((x, y) => {
       const state = stateRef.current;
       if (!state.isActive || state.result) return;
 
       const current = state.combatants[state.turnIndex];
-      // Nur Spieler darf klicken
       if (current.type !== 'player') return;
 
       const target = state.combatants.find(c => c.x === x && c.y === y && c.hp > 0);
 
-      // A) Angriff
       if (target && target.type === 'enemy') {
-          if (selectedAction) {
-              if (state.turnResources.hasAction) {
-                  performAction(current.id, target.id, selectedAction);
-              } else {
-                  setCombatState(p => ({...p, log: [...p.log, "Keine Aktion mehr!"]}));
-              }
-          } else {
-              setCombatState(p => ({...p, log: [...p.log, "Wähle zuerst eine Waffe!"]}));
+          if (selectedAction && state.turnResources.hasAction) {
+              performAction(current.id, target.id, selectedAction);
           }
-          return;
-      }
-
-      // B) Bewegung
-      if (!target && !selectedAction) {
+      } else if (!target && !selectedAction) {
+          // Bewegung
           const dist = getDistance(current, {x, y});
           if (dist <= state.turnResources.movementLeft) {
               setCombatState(prev => ({
@@ -181,20 +186,16 @@ export const useCombat = (playerCharacter) => {
                   combatants: prev.combatants.map(c => c.id === current.id ? { ...c, x, y } : c),
                   turnResources: { ...prev.turnResources, movementLeft: prev.turnResources.movementLeft - dist }
               }));
-          } else {
-              setCombatState(p => ({...p, log: [...p.log, "Zu weit!"]}));
           }
       }
   }, [selectedAction, performAction]);
 
-  // --- RUNDE BEENDEN ---
   const nextTurn = useCallback(() => {
-      processingTurn.current = false; // Reset Lock
+      processingTurn.current = false; 
       setCombatState(prev => {
           const nextIndex = (prev.turnIndex + 1) % prev.combatants.length;
           const nextRound = nextIndex === 0 ? prev.round + 1 : prev.round;
           const nextCombatant = prev.combatants[nextIndex];
-          
           return {
               ...prev,
               turnIndex: nextIndex,
@@ -205,36 +206,31 @@ export const useCombat = (playerCharacter) => {
       });
   }, []);
 
-  // --- KI LOGIK ---
+  // --- INTELLIGENTE KI ---
   useEffect(() => {
     const state = combatState;
     if (!state.isActive || state.result) return;
 
     const currentC = state.combatants[state.turnIndex];
 
-    // KI-Zug starten
     if (currentC && currentC.type === 'enemy' && currentC.hp > 0 && !processingTurn.current) {
-        
-        processingTurn.current = true; // Lock setzen
-        console.log(`[KI] ${currentC.name} (HP: ${currentC.hp}) ist am Zug...`);
+        processingTurn.current = true;
+        console.log(`[KI] ${currentC.name} am Zug. Actions:`, currentC.actions);
 
         const timer = setTimeout(() => {
             const freshState = stateRef.current;
             if (!freshState.isActive) return;
 
             const player = freshState.combatants.find(c => c.type === 'player');
-            
             if (player && player.hp > 0) {
                 const dist = getDistance(currentC, player);
                 
-                // 1. Bewegen
+                // 1. Bewegen wenn nötig
                 if (dist > 1.5) {
                     let newX = currentC.x;
                     let newY = currentC.y;
                     const dx = player.x - currentC.x;
                     const dy = player.y - currentC.y;
-                    
-                    // Simple Wegfindung
                     if (Math.abs(dx) >= Math.abs(dy)) newX += Math.sign(dx);
                     else newY += Math.sign(dy);
 
@@ -243,30 +239,37 @@ export const useCombat = (playerCharacter) => {
                         setCombatState(prev => ({
                             ...prev,
                             combatants: prev.combatants.map(c => c.id === currentC.id ? { ...c, x: newX, y: newY } : c),
-                            log: [...prev.log, `${currentC.name} kommt näher.`]
+                            log: [...prev.log, `${currentC.name} bewegt sich.`]
                         }));
                     }
                 }
                 
-                // 2. Angreifen (Falls nah genug)
-                // Wir prüfen hier "frisch" die Distanz nach potenzieller Bewegung theoretisch, 
-                // aber der Einfachheit halber greift die KI im nächsten 'Tick' oder Zug an.
-                // Hier erlauben wir einen direkten Angriff wenn NAH
+                // 2. Echten Angriff aus JSON wählen
                 const newDist = getDistance(freshState.combatants.find(c => c.id === currentC.id) || currentC, player);
                 
                 if (newDist <= 1.5) {
-                     performAction(currentC.id, player.id, { type: 'weapon', item: { damage: '1d6' } });
+                     // Wähle erste Aktion aus JSON oder Fallback
+                     let enemyAction = { type: 'weapon', name: 'Angriff', damage: { dice: '1d4' } };
+                     
+                     if (currentC.actions && currentC.actions.length > 0) {
+                         // Nimm die erste verfügbare Aktion (meist Nahkampf)
+                         const actionTemplate = currentC.actions[0];
+                         enemyAction = {
+                             type: 'weapon',
+                             name: actionTemplate.name,
+                             damage: actionTemplate.damage, // Das Objekt { average: 5, dice: "1W6+2"}
+                             attackBonus: actionTemplate.attack_bonus
+                         };
+                     }
+
+                     performAction(currentC.id, player.id, enemyAction);
                 }
             }
-            
-            // Runde beenden
             setTimeout(() => nextTurn(), 800);
-
         }, 1000);
-
         return () => clearTimeout(timer);
     }
-  }, [combatState.turnIndex, nextTurn, performAction]); // Nur Triggern bei Zugwechsel
+  }, [combatState.turnIndex, nextTurn, performAction]); 
 
   return {
     combatState, startCombat, nextTurn, endCombatSession: () => {},
