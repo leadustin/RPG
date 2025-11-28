@@ -9,8 +9,9 @@ import locationsData from "../../data/locations.json";
 import enemiesData from "../../data/enemies.json";
 import { CombatGrid } from "../combat/CombatGrid";
 import { CombatResultScreen } from "../combat/CombatResultScreen";
+// +++ NEU: Import wiederhergestellt +++
+import { TurnOrderBar } from "../combat/TurnOrderBar"; 
 import { useCombat } from "../../hooks/useCombat";
-// +++ FIX: Fehlender Import hinzugefügt +++
 import { rollDiceString } from "../../utils/dice"; 
 import "./GameView.css";
 
@@ -43,7 +44,7 @@ function GameView({
     handleCombatTileClick
   } = useCombat(character);
 
-  // +++ FIX: Loot-Logik integriert (verursachte vorher den Fehler ohne Import) +++
+  // Logik für XP, HP und Loot bei Sieg
   useEffect(() => {
       if (combatState.result === 'victory') {
           console.log("GameView: Sieg - Berechne XP und Loot...");
@@ -52,7 +53,7 @@ function GameView({
           const enemies = combatState.combatants.filter(c => c.type === 'enemy');
           const totalXp = enemies.reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
 
-          // 2. LOOT BERECHNEN
+          // 2. Loot berechnen
           let totalGold = 0;
           let droppedItems = [];
 
@@ -61,7 +62,6 @@ function GameView({
               if (enemy.loot && enemy.loot.gold_dice) {
                   const diceStr = enemy.loot.gold_dice.replace(/W/gi, 'd');
                   try {
-                      // Hier trat der Fehler auf: rollDiceString war nicht definiert
                       const roll = rollDiceString(diceStr);
                       const goldAmount = (typeof roll === 'object') ? roll.total : roll;
                       totalGold += goldAmount;
@@ -86,7 +86,6 @@ function GameView({
 
           const timer = setTimeout(() => {
               if (onCombatVictory) {
-                  // Übergabe: XP, HP, Loot-Objekt
                   onCombatVictory(totalXp, remainingHp, { gold: totalGold, items: droppedItems });
               }
               endCombatSession();
@@ -163,6 +162,12 @@ function GameView({
            {combatState.isActive ? (
              <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                
+               {/* +++ WIEDER EINGEFÜGT: Initiative Leiste +++ */}
+               <TurnOrderBar 
+                   combatants={combatState.combatants} 
+                   activeIndex={combatState.turnIndex} 
+               />
+
                {combatState.result && (
                  <CombatResultScreen 
                     result={combatState.result}
@@ -193,8 +198,9 @@ function GameView({
                
                {!combatState.result && (
                  <>
+                   {/* UPDATE: Top Position angepasst (100px), damit die Leiste Platz hat */}
                    <div className="combat-log-overlay" style={{ 
-                       position: 'absolute', top: 10, right: 10, width: '300px', 
+                       position: 'absolute', top: 100, right: 10, width: '300px', 
                        background: 'rgba(0,0,0,0.8)', color: '#eee', 
                        padding: '10px', fontSize: '0.85rem', pointerEvents: 'none', borderRadius: '4px',
                        maxHeight: '200px', overflowY: 'auto'
