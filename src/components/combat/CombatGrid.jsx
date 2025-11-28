@@ -1,16 +1,15 @@
-
 // src/components/combat/CombatGrid.jsx
 import React from 'react';
-import './CombatGrid.css'; // Wir brauchen auch ein CSS dazu
+import './CombatGrid.css';
 
-// Standardgröße eines Feldes in Pixeln (für Berechnung)
+// Standardgröße eines Feldes in Pixeln
 const TILE_SIZE = 64; 
 
 export const CombatGrid = ({ 
   width = 10, 
   height = 10, 
   backgroundImg, 
-  combatants, 
+  combatants = [], // Default leeres Array um Absturz zu verhindern
   activeCombatantId,
   onTileClick,
   onCombatantClick 
@@ -21,8 +20,8 @@ export const CombatGrid = ({
     const tiles = [];
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
-        // Prüfen, ob eine Figur hier steht (für Blockaden-Visualisierung etc.)
-        const occupied = combatants.find(c => c.position.x === x && c.position.y === y);
+        // KORREKTUR: Zugriff direkt auf c.x und c.y (statt c.position.x)
+        const occupied = combatants.find(c => c.x === x && c.y === y);
         
         tiles.push(
           <div 
@@ -32,12 +31,12 @@ export const CombatGrid = ({
               width: TILE_SIZE, 
               height: TILE_SIZE,
               left: x * TILE_SIZE,
-              top: y * TILE_SIZE
+              top: y * TILE_SIZE,
+              // Optional: Roter Rand wenn besetzt (zum Debuggen)
+              // border: occupied ? '1px solid red' : '1px solid #ccc'
             }}
-            onClick={() => onTileClick && onTileClick({ x, y })}
+            onClick={() => onTileClick && onTileClick(x, y)} // KORREKTUR: x, y direkt übergeben
           >
-            {/* Optional: Koordinaten anzeigen zum Debuggen */}
-            {/* <span className="debug-coord">{x},{y}</span> */}
           </div>
         );
       }
@@ -51,7 +50,6 @@ export const CombatGrid = ({
       const isActive = combatant.id === activeCombatantId;
       const isDead = combatant.hp <= 0;
 
-      // Wenn tot, vielleicht nicht rendern oder als Leiche
       if (isDead) return null; 
 
       return (
@@ -59,11 +57,12 @@ export const CombatGrid = ({
           key={combatant.id}
           className={`combat-token ${combatant.type} ${isActive ? 'active' : ''}`}
           style={{
-            width: TILE_SIZE - 8, // Etwas kleiner als das Feld
+            width: TILE_SIZE - 8,
             height: TILE_SIZE - 8,
-            left: combatant.position.x * TILE_SIZE + 4,
-            top: combatant.position.y * TILE_SIZE + 4,
-            backgroundImage: `url(${combatant.icon || '/assets/placeholder_token.png'})` // Pfad anpassen
+            // KORREKTUR: Zugriff direkt auf x/y
+            left: (combatant.x || 0) * TILE_SIZE + 4,
+            top: (combatant.y || 0) * TILE_SIZE + 4,
+            backgroundImage: `url(${combatant.icon || '/assets/placeholder_token.png'})`
           }}
           onClick={(e) => {
             e.stopPropagation();
@@ -71,10 +70,17 @@ export const CombatGrid = ({
           }}
           title={`${combatant.name} (${combatant.hp} HP)`}
         >
-          <div className="hp-bar-mini">
+          {/* Kleiner HP Balken */}
+          <div className="hp-bar-mini" style={{
+              position: 'absolute', bottom: -5, left: 0, width: '100%', height: '4px', background: '#333'
+          }}>
             <div 
               className="hp-fill" 
-              style={{ width: `${(combatant.hp / combatant.maxHp) * 100}%` }}
+              style={{ 
+                  width: `${(combatant.hp / combatant.maxHp) * 100}%`,
+                  height: '100%',
+                  backgroundColor: combatant.type === 'enemy' ? 'red' : 'green'
+              }}
             />
           </div>
         </div>
@@ -88,8 +94,11 @@ export const CombatGrid = ({
       style={{ 
         width: width * TILE_SIZE, 
         height: height * TILE_SIZE,
+        position: 'relative', // Wichtig für absolute Positionierung der Kinder
+        margin: '0 auto',
         backgroundImage: backgroundImg ? `url(${backgroundImg})` : 'none',
-        backgroundSize: 'cover'
+        backgroundSize: 'cover',
+        backgroundColor: '#3a3a3a' // Fallback Farbe
       }}
     >
       <div className="grid-overlay">

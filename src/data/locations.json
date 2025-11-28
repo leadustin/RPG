@@ -8,7 +8,10 @@
     "description": "location.elfenwacht.description",
     "mapFile": "elfenwacht.json",
     "shops": ["general_store_elfenwacht", "blacksmith_elfenwacht"],
-    "xp": 300
+    "xp": 300,
+    "enemies": [
+      { "id": "goblin", "count": 1 }
+    ]
   },
   {
     "id": "goblinhoehle",

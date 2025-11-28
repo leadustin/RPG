@@ -35,17 +35,23 @@ export const TileMap = ({ mapFile, character, onLeaveLocation, onInteract }) => 
         }
     }, [mapFile]);
 
-    // 2. ZEICHNEN (Bleibt gleich, nur der Vollständigkeit halber hier)
+    // 2. ZEICHNEN
     useEffect(() => {
         if (!mapData || !canvasRef.current) return;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         
+        // Safety check falls tilesets array leer ist oder image undefined
+        if (!mapData.tilesets || mapData.tilesets.length === 0 || !mapData.tilesets[0].image) return;
+
         const rawImageName = mapData.tilesets[0].image; 
         const tilesetImageName = rawImageName.split('/').pop();
         const tilesetSrc = availableTilesets[tilesetImageName];
 
-        if (!tilesetSrc) return;
+        if (!tilesetSrc) {
+            console.warn(`Tileset-Bild "${tilesetImageName}" nicht gefunden.`);
+            return;
+        }
 
         const tileset = new Image();
         tileset.src = tilesetSrc;
@@ -76,27 +82,24 @@ export const TileMap = ({ mapFile, character, onLeaveLocation, onInteract }) => 
         };
     }, [mapData]);
 
-    // +++ NEU: Klick-Handler +++
+    // Klick-Handler
     const handleCanvasClick = (e) => {
         if (!mapData || !onInteract) return;
 
         const canvas = canvasRef.current;
         const rect = canvas.getBoundingClientRect();
         
-        // Mausposition relativ zum Canvas berechnen
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
         
         const x = (e.clientX - rect.left) * scaleX;
         const y = (e.clientY - rect.top) * scaleY;
 
-        // In Tile-Koordinaten umrechnen
         const tileX = Math.floor(x / mapData.tilewidth);
         const tileY = Math.floor(y / mapData.tileheight);
 
         console.log(`Klick auf Tile: ${tileX}, ${tileY}`);
 
-        // Prüfen ob ein Event an dieser Stelle liegt
         if (mapData.events) {
             const event = mapData.events.find(ev => ev.x === tileX && ev.y === tileY);
             if (event) {
@@ -105,7 +108,6 @@ export const TileMap = ({ mapFile, character, onLeaveLocation, onInteract }) => 
             }
         }
     };
-    // +++ ENDE NEU +++
 
     if (!mapData) return <div className="tilemap-loading">Lade Karte...</div>;
 
@@ -113,18 +115,17 @@ export const TileMap = ({ mapFile, character, onLeaveLocation, onInteract }) => 
         <div className="tilemap-container">
             <canvas 
                 ref={canvasRef} 
-                style={{ maxWidth: '100%', maxHeight: '100%', cursor: 'pointer' }} // Cursor zeigt Klickbarkeit
+                style={{ maxWidth: '100%', maxHeight: '100%', cursor: onInteract ? 'pointer' : 'default' }}
                 onContextMenu={(e) => e.preventDefault()}
-                onClick={handleCanvasClick} // <--- Handler hinzufügen
+                onClick={handleCanvasClick}
             />
             
-            {isLoaded && (
+            {/* KORREKTUR: Prüfung ob character existiert, bevor auf position zugegriffen wird */}
+            {isLoaded && character && character.position && (
                 <PlayerCharacter position={character.position} />
             )}
             
-            <div className="map-ui-overlay">
-                {/* Overlay UI wenn nötig */}
-            </div>
+            <div className="map-ui-overlay"></div>
         </div>
     );
 };

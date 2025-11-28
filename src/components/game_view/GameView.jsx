@@ -32,28 +32,60 @@ function GameView({
   const [showRestMenu, setShowRestMenu] = useState(false);
 
   // +++ KAMPF-SYSTEM HOOK +++
-  // WICHTIG: Hook IMMER aufrufen, auch wenn character null ist
   const { 
     combatState, 
     startCombat, 
     nextTurn, 
     endCombatSession,
-    // Neue Variablen aus useCombat
     selectedAction,
     setSelectedAction,
     handleCombatTileClick
   } = useCombat(character);
 
-  const activeCharacter = character;
-
   // Early return NACH den Hooks, falls kein Charakter
   if (!character) {
     return <div className="game-view-container">Lädt Charakter...</div>;
-  } 
+  }
 
-  const handleStartTestCombat = () => {
-      const goblins = [enemiesData.enemies[0]]; 
-      startCombat(goblins);
+  const activeCharacter = character;
+
+  // --- NEU: Dynamischer Kampfstart basierend auf Location-Daten ---
+  const handleStartLocationCombat = () => {
+      const currentLocationId = character.currentLocation;
+      const locationData = locationsData.find(loc => loc.id === currentLocationId);
+
+      // Prüfen, ob der Ort existiert und Gegner hat
+      if (!locationData || !locationData.enemies || locationData.enemies.length === 0) {
+          console.log("Keine Gegner an diesem Ort definiert.");
+          return;
+      }
+
+      const combatEnemies = [];
+
+      // Über die Gegner-Konfiguration des Ortes iterieren
+      locationData.enemies.forEach((enemyConfig) => {
+          // Daten aus enemies.json holen (z.B. enemiesData["goblin"])
+          const enemyTemplate = enemiesData[enemyConfig.id];
+
+          if (enemyTemplate) {
+              // So viele Gegner erstellen, wie 'count' angibt
+              for (let i = 0; i < enemyConfig.count; i++) {
+                  // WICHTIG: Kopie erstellen, damit jeder Gegner eigene HP hat
+                  combatEnemies.push({
+                      ...enemyTemplate,
+                      instanceId: `${enemyConfig.id}_${i}_${Date.now()}` // Einzigartige ID für interne Logik
+                  });
+              }
+          } else {
+              console.warn(`Gegner-ID "${enemyConfig.id}" nicht in enemies.json gefunden!`);
+          }
+      });
+
+      if (combatEnemies.length > 0) {
+          startCombat(combatEnemies);
+      } else {
+          console.log("Keine gültigen Gegnerdaten gefunden.");
+      }
   };
 
   const handleEndCombat = () => {
@@ -74,48 +106,80 @@ function GameView({
       } else {
           // Außerhalb des Kampfes: Inventar oder Details anzeigen
           console.log("Außerhalb des Kampfes geklickt:", action);
-          // Optional: Hier könntest du Tooltips öffnen, Inventar anzeigen, etc.
       }
   };
 
   return (
     <div className="game-view-container">
       <div className="top-section">
-        <PartyPortraits 
-            party={[activeCharacter]} 
+        <div className="party-portraits-area">
+          <PartyPortraits
+            party={[activeCharacter]}
             activeCharacterId={activeCharacterId}
             onSelectCharacter={setActiveCharacterId}
-        />
-        <div className="system-menu-buttons">
-           {/* ... Buttons ... */}
+          />
         </div>
-      </div>
-
-      <div className="middle-section">
-        <div className="main-window">
+        
+        <div className="world-map-area">
+           {/* +++ KAMPF-MODUS +++ */}
            {combatState.isActive ? (
-               <>
-                 <CombatGrid 
-                    combatState={combatState} 
-                    // Hier übergeben wir den neuen Klick-Handler
-                    onTileClick={handleCombatTileClick}
+             <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+               
+               {/* Ergebnis Screen (Sieg/Niederlage) */}
+               {combatState.result && (
+                 <CombatResultScreen 
+                    result={combatState.result}
+                    onClose={handleEndCombat}
                  />
-                 {combatState.result && (
-                     <CombatResultScreen 
-                        result={combatState.result} 
-                        onClose={handleEndCombat} 
-                     />
-                 )}
-               </>
-           ) : character.location && character.location !== "worldmap" ? (
+               )}
+
+               {/* Das Grid */}
+               <div style={{ 
+                   flex: 1, 
+                   position: 'relative', 
+                   cursor: selectedAction ? 'crosshair' : 'default',
+                   display: 'flex',            // Zentrierung
+                   justifyContent: 'center',   // Zentrierung
+                   alignItems: 'center',       // Zentrierung
+                   overflow: 'auto'
+               }}>
+                 <CombatGrid 
+                   width={12}  // Optional: Breite anpassen
+                   height={8}  // Optional: Höhe anpassen
+                   
+                   // KORREKTUR: Daten explizit aus combatState holen
+                   combatants={combatState.combatants}
+                   activeCombatantId={combatState.combatants[combatState.turnIndex]?.id}
+                   
+                   onTileClick={(x, y) => handleCombatTileClick(x, y)}
+                 />
+               </div>
+               
+               {/* UI (nur wenn kein Ergebnis angezeigt wird) */}
+               {!combatState.result && (
+                 <>
+                   {/* Mini-Log */}
+                   <div className="combat-log-overlay" style={{ 
+                       position: 'absolute', top: 10, right: 10, width: '250px', 
+                       background: 'rgba(0,0,0,0.6)', color: '#eee', 
+                       padding: '10px', fontSize: '0.85rem', pointerEvents: 'none', borderRadius: '4px'
+                   }}>
+                      {combatState.log.slice(-4).map((l, i) => <div key={i} style={{marginBottom:'4px'}}>{l}</div>)}
+                   </div>
+                 </>
+               )}
+             </div>
+           ) : character.currentLocation && character.currentLocation !== "worldmap" ? (
+              /* +++ ORTS-ANSICHT +++ */
               <LocationView 
-                  locationId={character.location}
+                  locationId={character.currentLocation}
                   character={character}
                   onLeaveLocation={() => onEnterLocation("worldmap", character.worldMapPosition)}
                   onShopTransaction={onShopTransaction}
-                  onStartCombat={handleStartTestCombat}
+                  onStartCombat={handleStartLocationCombat} // Hier die neue Funktion nutzen
               />
            ) : (
+              /* +++ WELTKARTE +++ */
               <WorldMap
                 character={character}
                 onEnterLocation={onEnterLocation}
@@ -135,7 +199,7 @@ function GameView({
             onLoadGame={onLoadGame}
             saveFileExists={saveFileExists}
             onRestClick={() => setShowRestMenu(true)} 
-            disabled={!combatState.isActive} // Nur im Kampf voll funktional
+            disabled={!combatState.isActive}
             onSlotClick={handleActionSlotClick}
             selectedAction={selectedAction}
           />

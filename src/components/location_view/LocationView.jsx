@@ -5,7 +5,7 @@ import './LocationView.css';
 import locationsData from '../../data/locations.json';
 import shopsData from '../../data/shops.json';
 import ShopScreen from '../shop/ShopScreen';
-import { TileMap } from '../maps/TileMap';
+import { TileMap } from '../maps/TileMap'; // Sicherstellen, dass der Import stimmt (benannter Import { TileMap } vs default)
 import allGameItems from '../../utils/itemLoader';
 
 const LocationView = ({ 
@@ -13,12 +13,12 @@ const LocationView = ({
     character,
     onLeaveLocation, 
     onShopTransaction,
-    onStartCombat // +++ NEU: Prop für Kampfstart +++
+    onStartCombat 
 }) => {
     const { t } = useTranslation();
     const [activeShop, setActiveShop] = useState(null);
 
-    // Finde den Ort (unterstützt Array-Struktur deiner JSON)
+    // Finde den Ort
     const location = locationsData.find(loc => loc.id === locationId);
 
     if (!location) {
@@ -38,50 +38,40 @@ const LocationView = ({
         : [];
 
     const handleOpenShop = (shop) => {
-        const hydratedInventory = shop.inventory.map(entry => {
-            const itemDef = allGameItems.find(i => i.id === entry.itemId);
-            if (!itemDef) {
-                console.warn(`Shop Item nicht gefunden: ${entry.itemId}`);
-                return null;
-            }
-            return { ...itemDef, quantity: entry.quantity };
-        }).filter(Boolean);
-
-        setActiveShop({ ...shop, inventory: hydratedInventory });
+        setActiveShop(shop);
     };
 
-    const handleMapInteraction = (eventData) => {
-        if (eventData.type === 'shop') {
-            const shop = availableShops.find(s => s.id === eventData.shopId);
-            if (shop) handleOpenShop(shop);
-        }
-    };
+    // Prüfung, ob Gegner vorhanden sind
+    const hasEnemies = location.enemies && location.enemies.length > 0;
 
     return (
-        <div className={`location-view ${location.type || 'default'}`}>
-            
+        <div className="location-view-container">
             <div className="location-header">
-                <h1>{t(location.name, location.name)}</h1>
-                <p className="location-type">({viewType})</p>
-                <p className="location-desc">{t(location.description, location.description)}</p>
+                <h2>{t(location.name)}</h2>
+                <span className="location-type">({viewType})</span>
             </div>
 
-            <div className="location-map-container">
-                {location.mapFile && (
-                    <TileMap 
-                        mapFile={location.mapFile}
-                        character={character}
-                        onLeaveLocation={onLeaveLocation}
-                        onInteract={handleMapInteraction}
-                    />
-                )}
-            </div>
-            
-            {/* Aktionen-Leiste (Shops & Kampf) */}
-            <div className="location-actions">
+            <div className="location-content">
+                <div className="location-image-placeholder">
+                    {/* TileMap Rendering */}
+                    {location.mapFile ? (
+                       <div className="mini-map-preview">
+                           <TileMap 
+                             mapFile={location.mapFile} 
+                             character={character} // <--- KORREKTUR: Charakter übergeben
+                             scale={0.5} 
+                           />
+                       </div>
+                    ) : (
+                        <div className="placeholder-text">Bild / Karte von {t(location.name)}</div>
+                    )}
+                </div>
+
+                <p className="location-description">{t(location.description)}</p>
+
                 {availableShops.length > 0 && (
-                    <div className="shop-buttons">
-                        <h3>Orte:</h3>
+                    <div className="location-shops">
+                        <h3>Händler:</h3>
                         {availableShops.map(shop => (
                             <button key={shop.id} onClick={() => handleOpenShop(shop)}>
                                 <span className="icon">🛒</span> {shop.name}
@@ -90,15 +80,14 @@ const LocationView = ({
                     </div>
                 )}
 
-                {/* +++ KAMPF-BUTTON (Nur anzeigen wenn Funktion übergeben wurde) +++ */}
-                {onStartCombat && (
+                {onStartCombat && hasEnemies && (
                     <div className="combat-section" style={{ marginTop: '10px' }}>
                         <button 
                             className="combat-start-btn" 
                             onClick={onStartCombat}
                             style={{ backgroundColor: '#8b0000', color: 'white', fontWeight: 'bold' }}
                         >
-                            ⚔️ Kampf testen
+                            ⚔️ Kampf beginnen
                         </button>
                     </div>
                 )}
