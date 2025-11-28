@@ -9,9 +9,9 @@ import locationsData from "../../data/locations.json";
 import enemiesData from "../../data/enemies.json";
 import { CombatGrid } from "../combat/CombatGrid";
 import { CombatResultScreen } from "../combat/CombatResultScreen";
-// +++ NEU: Import TurnOrderBar +++
-import { TurnOrderBar } from "../combat/TurnOrderBar"; 
 import { useCombat } from "../../hooks/useCombat";
+// +++ FIX: Fehlender Import hinzugefügt +++
+import { rollDiceString } from "../../utils/dice"; 
 import "./GameView.css";
 
 function GameView({
@@ -30,7 +30,6 @@ function GameView({
   onCombatDefeat
 }) {
 
-  // ... (State und Hooks bleiben unverändert) ...
   const [activeCharacterId, setActiveCharacterId] = useState(character?.id || 'player');
   const [showRestMenu, setShowRestMenu] = useState(false);
 
@@ -44,8 +43,7 @@ function GameView({
     handleCombatTileClick
   } = useCombat(character);
 
-  // ... (useEffect für Sieg und Hilfsfunktionen bleiben gleich) ...
-  
+  // +++ FIX: Loot-Logik integriert (verursachte vorher den Fehler ohne Import) +++
   useEffect(() => {
       if (combatState.result === 'victory') {
           console.log("GameView: Sieg - Berechne XP und Loot...");
@@ -59,13 +57,11 @@ function GameView({
           let droppedItems = [];
 
           enemies.forEach(enemy => {
-              // A) Gold würfeln (wenn vorhanden)
+              // A) Gold würfeln
               if (enemy.loot && enemy.loot.gold_dice) {
-                  // z.B. "2W6"
-                  // Wir müssen "W" durch "d" ersetzen für die dice-utility, falls nötig
                   const diceStr = enemy.loot.gold_dice.replace(/W/gi, 'd');
                   try {
-                      // rollDiceString gibt ein Objekt zurück { total: 7, ... } oder eine Zahl
+                      // Hier trat der Fehler auf: rollDiceString war nicht definiert
                       const roll = rollDiceString(diceStr);
                       const goldAmount = (typeof roll === 'object') ? roll.total : roll;
                       totalGold += goldAmount;
@@ -74,10 +70,9 @@ function GameView({
                   }
               }
 
-              // B) Items würfeln (Chance)
+              // B) Items würfeln (40% Chance)
               if (enemy.loot && enemy.loot.items && Array.isArray(enemy.loot.items)) {
                   enemy.loot.items.forEach(itemId => {
-                      // 40% Chance (0.4) dass ein Item droppt
                       if (Math.random() <= 0.4) {
                           droppedItems.push(itemId);
                       }
@@ -91,7 +86,7 @@ function GameView({
 
           const timer = setTimeout(() => {
               if (onCombatVictory) {
-                  // Datenübergabe erweitert um Loot-Objekt
+                  // Übergabe: XP, HP, Loot-Objekt
                   onCombatVictory(totalXp, remainingHp, { gold: totalGold, items: droppedItems });
               }
               endCombatSession();
@@ -105,12 +100,16 @@ function GameView({
     return <div className="game-view-container">Lädt Charakter...</div>;
   }
 
-  // ... (handleStartLocationCombat usw. bleiben gleich) ...
+  const activeCharacter = character;
+
   const handleStartLocationCombat = () => {
       const currentLocationId = character.currentLocation;
       const locationData = locationsData.find(loc => loc.id === currentLocationId);
 
-      if (!locationData || !locationData.enemies || locationData.enemies.length === 0) return;
+      if (!locationData || !locationData.enemies || locationData.enemies.length === 0) {
+          console.log("Keine Gegner an diesem Ort definiert.");
+          return;
+      }
 
       const combatEnemies = [];
       locationData.enemies.forEach((enemyConfig) => {
@@ -125,7 +124,9 @@ function GameView({
           }
       });
 
-      if (combatEnemies.length > 0) startCombat(combatEnemies);
+      if (combatEnemies.length > 0) {
+          startCombat(combatEnemies);
+      }
   };
 
   const handleEndCombat = () => {
@@ -145,7 +146,6 @@ function GameView({
       }
   };
 
-  const activeCharacter = character;
   const isPlayerTurn = combatState.isActive && combatState.combatants[combatState.turnIndex]?.type === 'player';
 
   return (
@@ -163,18 +163,10 @@ function GameView({
            {combatState.isActive ? (
              <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                
-               {/* +++ NEU: TurnOrderBar ganz oben anzeigen +++ */}
-               <TurnOrderBar 
-                   combatants={combatState.combatants} 
-                   activeIndex={combatState.turnIndex} 
-               />
-
-               {combatState.result === 'defeat' && (
+               {combatState.result && (
                  <CombatResultScreen 
                     result={combatState.result}
                     onClose={handleEndCombat}
-                    onLoadGame={onLoadGame}
-                    onMainMenu={() => window.location.reload()} 
                  />
                )}
 
@@ -189,20 +181,20 @@ function GameView({
                    background: '#222'
                }}>
                  <CombatGrid 
-                   width={12} height={8}
+                   width={12}
+                   height={8}
                    combatants={combatState.combatants}
                    activeCombatantId={combatState.combatants[combatState.turnIndex]?.id}
-                   selectedAction={selectedAction} 
-                   movementLeft={combatState.turnResources.movementLeft} 
+                   selectedAction={selectedAction}
+                   movementLeft={combatState.turnResources.movementLeft}
                    onTileClick={(x, y) => handleCombatTileClick(x, y)}
                  />
                </div>
                
                {!combatState.result && (
                  <>
-                   {/* UPDATE: Log Overlay etwas nach unten geschoben (top: 100px), damit die Leiste Platz hat */}
                    <div className="combat-log-overlay" style={{ 
-                       position: 'absolute', top: 100, right: 10, width: '300px', 
+                       position: 'absolute', top: 10, right: 10, width: '300px', 
                        background: 'rgba(0,0,0,0.8)', color: '#eee', 
                        padding: '10px', fontSize: '0.85rem', pointerEvents: 'none', borderRadius: '4px',
                        maxHeight: '200px', overflowY: 'auto'

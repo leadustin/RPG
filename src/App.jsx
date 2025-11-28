@@ -11,6 +11,8 @@ import CharacterSheet from "./components/character_sheet/CharacterSheet";
 import { SaveSlotManager } from "./components/game_view/SaveSlotManager";
 import { loadAutoSave, getSaveSlots } from "./utils/persistence";
 import { EventLog } from "./components/event_log/EventLog";
+// +++ FIX: Fehlender Import für Item-Datenbank +++
+import allItems from "./utils/itemLoader"; 
 import "./App.css";
 
 function App() {
@@ -48,7 +50,7 @@ function App() {
     setShowCharacterSheet((prevState) => !prevState);
   };
 
-  // +++ NEU: Logik für Kampf-Sieg (EP & HP übernehmen) +++
+  // +++ FIX: Funktion aktualisiert, um Loot entgegenzunehmen +++
   const handleCombatVictory = (earnedXp, remainingHp, lootResult) => {
     console.log(`App: Sieg verarbeitet.`, { earnedXp, remainingHp, lootResult });
 
@@ -56,9 +58,9 @@ function App() {
       const currentStats = gameState.character.stats || {};
       const safeHp = (typeof remainingHp === 'number') ? remainingHp : currentStats.hp;
       
-      // Charakter kopieren
       let updatedCharacter = {
         ...gameState.character,
+        // Erfahrung aktualisieren (experience statt xp)
         experience: (gameState.character.experience || 0) + earnedXp,
         stats: {
           ...currentStats,
@@ -75,8 +77,6 @@ function App() {
                   ...updatedCharacter.wallet,
                   gold: currentGold + lootResult.gold
               };
-              // Optional: Log-Eintrag hinzufügen passiert hier nicht direkt, 
-              // aber man sieht das Gold im UI sofort steigen.
           }
 
           // 2. Items hinzufügen
@@ -84,14 +84,13 @@ function App() {
               const newInventory = [...(updatedCharacter.inventory || [])];
               
               lootResult.items.forEach(itemId => {
-                  // Prüfen, ob Item in Datenbank existiert
+                  // Hier trat der Fehler auf: allItems war nicht definiert
                   const itemDef = allItems.find(i => i.id === itemId);
                   
                   if (itemDef) {
-                      // Item hinzufügen (neue Instanz)
                       newInventory.push({
                           ...itemDef,
-                          instanceId: crypto.randomUUID(), // Einzigartige ID für dieses Item
+                          instanceId: crypto.randomUUID(), 
                           quantity: 1
                       });
                       console.log(`Loot erhalten: ${itemDef.name}`);
@@ -104,15 +103,12 @@ function App() {
           }
       }
 
-      // Charakter im State aktualisieren
       handleUpdateCharacter(updatedCharacter);
     }
   };
 
-  // +++ NEU: Logik für Niederlage (Optional, da UI das Meiste macht) +++
   const handleCombatDefeat = () => {
     console.log("App: Niederlage registriert.");
-    // Hier könnte man z.B. Autosaves löschen oder Statistiken tracken
   };
 
   const autoSaveExists = loadAutoSave() !== undefined;
@@ -156,7 +152,6 @@ function App() {
             onShortRest={handleShortRest}
             onLongRest={handleLongRest}
             onShopTransaction={handleShopTransaction}
-            // +++ NEU: Handler übergeben +++
             onCombatVictory={handleCombatVictory}
             onCombatDefeat={handleCombatDefeat}
           />
