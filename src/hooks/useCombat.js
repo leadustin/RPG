@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { getAbilityModifier } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';
 
-// Distanzberechnung (Chebyshev: Diagonale zählen als 1 Feld)
+// Distanzberechnung
 const getDistance = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 
 // Helper: Würfel-String bereinigen
@@ -27,39 +27,43 @@ const extractDamageValue = (rollResult) => {
 
 // Helper: Wandelt "9m" in Anzahl Felder um (1 Feld = 1.5m)
 const calculateMoveTiles = (speedString) => {
-    if (!speedString) return 6; // Fallback: 9m / 6 Felder
+    if (!speedString) return 6; 
     const meters = parseInt(speedString);
     if (isNaN(meters)) return 6;
     return Math.floor(meters / 1.5);
 };
 
-// Helper: Berechnet Reichweite in Feldern basierend auf Item/Action Daten
+// +++ FIX: Robustere Reichweiten-Berechnung +++
 const calculateWeaponRange = (action) => {
-    if (!action) return 1; // Standard Nahkampf
+    if (!action) return 1; 
 
-    // 1. Prüfe auf "Reichweite" (Reach) Eigenschaft (z.B. Hellebarde)
-    if (action.properties && action.properties.includes("Reichweite")) {
+    // Wir schauen entweder direkt in die Action oder in das eingebettete Item (Spieler-Waffen)
+    const source = action.item || action;
+
+    // 1. Prüfe auf "Reichweite" (Reach) Eigenschaft
+    const props = source.properties || [];
+    if (props.includes("Reichweite")) {
         return 2; // 3m = 2 Felder
     }
 
     // 2. Explizite Range (z.B. "24/96" für Bogen)
-    if (action.range) {
-        const rangeMeters = parseInt(action.range.split('/')[0]);
+    if (source.range) {
+        // Nimm die erste Zahl vor dem Schrägstrich
+        const rangeMeters = parseInt(source.range.split('/')[0]);
         if (!isNaN(rangeMeters)) {
             return Math.floor(rangeMeters / 1.5);
         }
     }
 
-    // 3. Enemy "reach" (z.B. "1,5m")
+    // 3. Enemy "reach" String (z.B. "1,5m" - meist direkt an der Action definiert)
     if (action.reach) {
-        // Ersetze Komma durch Punkt für parseFloat
         const reachVal = parseFloat(action.reach.replace(',', '.'));
         if (!isNaN(reachVal)) {
             return Math.max(1, Math.floor(reachVal / 1.5));
         }
     }
 
-    // 4. Fallback Standard
+    // 4. Fallback
     return 1; 
 };
 
@@ -91,7 +95,6 @@ export const useCombat = (playerCharacter) => {
     const startHp = (typeof stats.hp === 'number') ? stats.hp : (playerCharacter.hp || 20);
     const maxHp = stats.maxHp || playerCharacter.maxHp || 20;
     
-    // Spieler Init
     const playerInit = d(20) + getAbilityModifier(stats.abilities?.dex || 10);
 
     const playerCombatant = {
@@ -166,7 +169,6 @@ export const useCombat = (playerCharacter) => {
       }
 
       const dist = getDistance(attacker, target);
-      // Nutze die neue, korrekte Reichweitenberechnung
       const allowedRange = calculateWeaponRange(action);
 
       if (dist > allowedRange && action.type === 'weapon') {
@@ -174,7 +176,7 @@ export const useCombat = (playerCharacter) => {
           return { ...prev, log: [...prev.log, `❌ ${attacker.name}: Ziel zu weit entfernt!`] };
       }
 
-      console.log(`⚡ ACTION: ${attacker.name} uses ${action.name} on ${target.name}`);
+      console.log(`⚡ ACTION: ${attacker.name} uses ${action.name} on ${target.name} (Range: ${allowedRange})`);
 
       let logEntry = '';
       let damage = 0;
@@ -187,6 +189,7 @@ export const useCombat = (playerCharacter) => {
 
       if (totalRoll >= target.ac) {
           let diceString = "1d4";
+          // Schaden auslesen (beachte Verschachtelung)
           if (action.item && action.item.damage) diceString = action.item.damage; 
           else if (action.damage && action.damage.dice) diceString = action.damage.dice; 
           else if (typeof action.damage === 'string') diceString = action.damage;
@@ -229,14 +232,8 @@ export const useCombat = (playerCharacter) => {
       const playerAlive = newCombatants.some(c => c.type === 'player' && c.hp > 0);
       
       let result = null;
-      if (!enemiesAlive) {
-          result = 'victory';
-          console.log("🏆 VICTORY!");
-      }
-      if (!playerAlive) {
-          result = 'defeat';
-          console.log("💀 DEFEAT!");
-      }
+      if (!enemiesAlive) result = 'victory';
+      if (!playerAlive) result = 'defeat';
 
       return {
           ...prev,
@@ -264,7 +261,6 @@ export const useCombat = (playerCharacter) => {
       if (target && target.type === 'enemy') {
           if (selectedAction && state.turnResources.hasAction) {
               const dist = getDistance(current, target);
-              // Validierung vor Ausführung
               const allowedRange = calculateWeaponRange(selectedAction);
               
               if (dist <= allowedRange) {
@@ -308,7 +304,6 @@ export const useCombat = (playerCharacter) => {
               ...prev,
               turnIndex: nextIndex,
               round: nextRound,
-              // Ressourcen zurücksetzen (Bewegung aus Speed berechnen)
               turnResources: { 
                   hasAction: true, 
                   hasBonusAction: true, 
@@ -351,13 +346,11 @@ export const useCombat = (playerCharacter) => {
                     let currentX = currentC.x;
                     let currentY = currentC.y;
                     
-                    // Aktion und Reichweite bestimmen
                     const actionTemplate = (currentC.actions && currentC.actions[0]) || { name: 'Angriff', damage: '1d4' };
                     const attackRange = calculateWeaponRange(actionTemplate);
 
                     let distToPlayer = getDistance({x: currentX, y: currentY}, player);
                     
-                    // --- 1. BEWEGUNG (Mehrere Schritte) ---
                     const maxMoves = calculateMoveTiles(currentC.speed);
                     let movesLeft = maxMoves;
                     let hasMoved = false;
@@ -393,7 +386,7 @@ export const useCombat = (playerCharacter) => {
                             hasMoved = true;
                             distToPlayer = minNewDist; 
                         } else {
-                            break; // Blockiert oder am Ziel
+                            break;
                         }
                     }
 
@@ -407,18 +400,16 @@ export const useCombat = (playerCharacter) => {
                         await new Promise(r => setTimeout(r, 400)); 
                     }
                     
-                    // --- 2. ANGRIFF ---
                     const finalDistToPlayer = getDistance({x: currentX, y: currentY}, player);
                     
                     if (finalDistToPlayer <= attackRange) {
                         performAction(currentC.id, player.id, {
+                            ...actionTemplate,
                             type: 'weapon',
-                            name: actionTemplate.name,
-                            damage: actionTemplate.damage, 
-                            attackBonus: actionTemplate.attack_bonus || 4,
-                            range: actionTemplate.range, // Original String übergeben
-                            properties: actionTemplate.properties, // Properties für Reach
-                            reach: actionTemplate.reach // Reach Wert für Feinde
+                            // Wichtig: Wir müssen sicherstellen, dass performAction die Reichweite korrekt lesen kann
+                            // Entweder wir übergeben das item mit oder die Reichweite direkt
+                            range: actionTemplate.range, 
+                            reach: actionTemplate.reach
                         });
                     } else {
                         console.log(`🤖 AI WAIT: Player too far (${finalDistToPlayer} > ${attackRange}).`);
