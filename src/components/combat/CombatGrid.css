@@ -68,3 +68,52 @@
     overflow: hidden;
 }
 .hp-fill { height: 100%; transition: width 0.3s; }
+
+/* --- FLOATING TEXT --- */
+.floating-text-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Klicks gehen durch */
+    z-index: 20;
+    overflow: hidden;
+}
+
+.floating-text {
+    position: absolute;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    animation: floatUp 1.2s ease-out forwards;
+    white-space: nowrap;
+}
+
+.floating-text.damage {
+    color: #ff3333; /* Rot für Schaden */
+}
+
+.floating-text.heal {
+    color: #4caf50; /* Grün für Heilung */
+}
+
+.floating-text.miss {
+    color: #cccccc; /* Grau für Verfehlt (optional für später) */
+    font-size: 20px;
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(-10px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(1);
+    }
+}
