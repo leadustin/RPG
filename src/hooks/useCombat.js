@@ -11,18 +11,17 @@ const normalizeDice = (diceString) => {
     return diceString.replace(/W/gi, 'd').replace(/\s/g, ''); 
 };
 
-// +++ FIX: Zieht die Zahl aus dem Würfel-Objekt +++
+// Helper: Zahl aus Würfel-Objekt ziehen
 const extractDamageValue = (rollResult) => {
     if (typeof rollResult === 'number') return rollResult;
     if (rollResult && typeof rollResult === 'object') {
-        // Prüfe gängige Properties von Dice-Libraries
         if (rollResult.total !== undefined) return rollResult.total;
         if (rollResult.value !== undefined) return rollResult.value;
         if (rollResult.result !== undefined) return rollResult.result;
         if (rollResult.sum !== undefined) return rollResult.sum;
     }
     console.warn("Konnte keinen Zahlenwert aus Würfel-Objekt lesen:", rollResult);
-    return 1; // Fallback damit Spiel nicht abstürzt
+    return 1; 
 };
 
 export const useCombat = (playerCharacter) => {
@@ -130,23 +129,20 @@ export const useCombat = (playerCharacter) => {
           
           try {
               const rawResult = rollDiceString(cleanDice);
-              // +++ HIER IST DER FIX +++
               damage = extractDamageValue(rawResult);
 
-              // Bonus dazu (falls definiert)
               if (action.damage && action.damage.bonus) damage += Number(action.damage.bonus);
               
               logEntry = `⚔️ ${attacker.name} trifft ${target.name} (${damage} Schaden)`;
           } catch (err) {
               console.error("Würfelfehler:", err);
-              damage = 1; // Fallback
+              damage = 1; 
               logEntry = `Fehler beim Schaden, minimaler Treffer (1)`;
           }
       } else {
           logEntry = `💨 ${attacker.name} verfehlt (${totalRoll})`;
       }
 
-      // HP abziehen (Sicherstellen dass es eine Zahl bleibt)
       const newCombatants = prev.combatants.map(c => {
           if (c.id === targetId) {
               const safeDamage = isNaN(damage) ? 0 : damage;
@@ -157,7 +153,6 @@ export const useCombat = (playerCharacter) => {
           return c;
       });
 
-      // Status prüfen
       const enemiesAlive = newCombatants.some(c => c.type === 'enemy' && c.hp > 0);
       const playerAlive = newCombatants.some(c => c.type === 'player' && c.hp > 0);
       
@@ -206,7 +201,6 @@ export const useCombat = (playerCharacter) => {
   const nextTurn = useCallback(() => {
       processingTurn.current = false; 
       setCombatState(prev => {
-          // Wenn Spiel vorbei, nichts mehr tun
           if (prev.result) return prev;
 
           const nextIndex = (prev.turnIndex + 1) % prev.combatants.length;
@@ -225,68 +219,93 @@ export const useCombat = (playerCharacter) => {
 
   // --- KI LOGIK ---
   useEffect(() => {
+    // FIX: combatState.isActive zur Dependency hinzufügen!
     const state = combatState;
     if (!state.isActive || state.result) return;
 
     const currentC = state.combatants[state.turnIndex];
 
+    // Sicherstellen, dass wir nicht in einer Schleife hängen, wenn jemand tot ist
+    if (currentC && currentC.hp <= 0) {
+        if (!processingTurn.current) {
+             processingTurn.current = true;
+             setTimeout(() => nextTurn(), 500);
+        }
+        return;
+    }
+
     if (currentC && currentC.type === 'enemy' && currentC.hp > 0 && !processingTurn.current) {
         
         processingTurn.current = true;
         
-        const timer = setTimeout(() => {
+        const aiTurn = async () => {
             try {
-                const freshState = stateRef.current;
+                // 1. Bewegen (Verzögerung für Realismus)
+                await new Promise(r => setTimeout(r, 600));
+                
+                let freshState = stateRef.current;
                 if (!freshState.isActive || freshState.result) return;
-
+                
                 const player = freshState.combatants.find(c => c.type === 'player');
                 
                 if (player && player.hp > 0) {
                     const dist = getDistance(currentC, player);
                     
-                    // 1. Bewegen
+                    // Bewegung berechnen
                     if (dist > 1.5) {
                         let newX = currentC.x;
                         let newY = currentC.y;
                         const dx = player.x - currentC.x;
                         const dy = player.y - currentC.y;
+                        
+                        // Einfache Annäherung
                         if (Math.abs(dx) >= Math.abs(dy)) newX += Math.sign(dx);
                         else newY += Math.sign(dy);
 
                         const occupied = freshState.combatants.some(c => c.x === newX && c.y === newY && c.hp > 0);
+                        
                         if (!occupied) {
                             setCombatState(prev => ({
                                 ...prev,
                                 combatants: prev.combatants.map(c => c.id === currentC.id ? { ...c, x: newX, y: newY } : c),
-                                log: [...prev.log, `${currentC.name} bewegt sich.`]
+                                log: [...prev.log, `${currentC.name} nähert sich.`]
                             }));
+                            // Kurz warten, damit das Grid rendert und "performAction" die neuen Koordinaten hat
+                            await new Promise(r => setTimeout(r, 500)); 
                         }
                     }
                     
-                    // 2. Angreifen
-                    // Aktion wählen
+                    // 2. Angreifen (nach Bewegung)
+                    // State neu holen, da sich Position geändert haben könnte
+                    freshState = stateRef.current; 
+                    
+                    // Prüfen ob jetzt in Reichweite (oder ob es Fernkampf ist)
+                    // Hier vereinfacht: Gegner hat immer Nahkampf mit 1.5 Reichweite
+                    // Wenn wir in performAction sind, wird dort nochmal Range geprüft.
+                    
                     const actionTemplate = (currentC.actions && currentC.actions[0]) || { name: 'Angriff', damage: '1d4' };
                     
                     performAction(currentC.id, player.id, {
                         type: 'weapon',
                         name: actionTemplate.name,
                         damage: actionTemplate.damage, 
-                        attackBonus: actionTemplate.attack_bonus || 4
+                        attackBonus: actionTemplate.attack_bonus || 4,
+                        range: 1.5 // Nahkampf
                     });
                 }
             } catch (error) {
                 console.error("KI Fehler:", error);
             } finally {
-                // Nur weitermachen, wenn das Spiel noch läuft (check ref)
+                // Zug beenden
                 if (!stateRef.current.result) {
                     setTimeout(() => nextTurn(), 800);
                 }
             }
-        }, 1000);
+        };
 
-        return () => clearTimeout(timer);
+        aiTurn();
     }
-  }, [combatState.turnIndex, nextTurn, performAction]); 
+  }, [combatState.turnIndex, combatState.isActive, nextTurn, performAction]); // FIX: isActive hinzugefügt
 
   return {
     combatState, startCombat, nextTurn, endCombatSession: () => {},
