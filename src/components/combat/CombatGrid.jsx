@@ -17,27 +17,28 @@ export const CombatGrid = ({
   const [hoveredTile, setHoveredTile] = useState(null);
   const activeCombatant = combatants.find(c => c.id === activeCombatantId);
 
-  // Distanz Helper (Chebyshev für Grid-Bewegung)
+  // Distanz Helper
   const getDist = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 
-  // --- NEU: Reichweiten-Helper für Visualisierung ---
+  // +++ FIX: Robustere Reichweiten-Berechnung für Visualisierung +++
   const calculateVisualRange = (action) => {
-      if (!action) return 1; // Fallback
+      if (!action) return 1; 
 
-      // 1. Eigenschaft "Reichweite" (Reach)
-      if (action.properties && action.properties.includes("Reichweite")) {
-          return 2; // 3m = 2 Felder
-      }
+      const source = action.item || action;
+
+      // 1. Eigenschaft "Reichweite"
+      const props = source.properties || [];
+      if (props.includes("Reichweite")) return 2; 
 
       // 2. Explizite Range (z.B. "24/96")
-      if (action.range) {
-          const rangeMeters = parseInt(action.range.split('/')[0]);
+      if (source.range) {
+          const rangeMeters = parseInt(source.range.split('/')[0]);
           if (!isNaN(rangeMeters)) {
               return Math.floor(rangeMeters / 1.5);
           }
       }
 
-      // 3. Enemy "reach" String (z.B. "1,5m")
+      // 3. Enemy "reach" String
       if (action.reach) {
           const reachVal = parseFloat(action.reach.replace(',', '.'));
           if (!isNaN(reachVal)) {
@@ -62,10 +63,9 @@ export const CombatGrid = ({
       
       let isValid = false;
       if (isMove) {
-          // Bewegungsmodus
           isValid = dist <= movementLeft;
       } else {
-          // Angriffsmodus: Nutze die berechnete Reichweite der Waffe!
+          // Angriffsmodus
           const attackRange = calculateVisualRange(selectedAction);
           isValid = dist <= attackRange;
       }
@@ -93,12 +93,10 @@ export const CombatGrid = ({
         
         let highlight = '';
         
-        // Bewegungs-Highlight
         if (activeCombatant?.type === 'player' && !selectedAction && !occupied && dist <= movementLeft && dist > 0) {
             highlight = 'tile-movable';
         }
         
-        // Angriffs-Highlight (optional: zeige rote Kacheln nur bei Gegnern in Reichweite)
         if (activeCombatant?.type === 'player' && selectedAction && occupied?.type === 'enemy') {
             const range = calculateVisualRange(selectedAction);
             if (dist <= range) {
