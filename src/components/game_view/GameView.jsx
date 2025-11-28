@@ -48,18 +48,55 @@ function GameView({
   
   useEffect(() => {
       if (combatState.result === 'victory') {
-          // ... (Dein existierender XP Code) ...
-          const totalXp = combatState.combatants
-              .filter(c => c.type === 'enemy')
-              .reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
+          console.log("GameView: Sieg - Berechne XP und Loot...");
+          
+          // 1. XP berechnen
+          const enemies = combatState.combatants.filter(c => c.type === 'enemy');
+          const totalXp = enemies.reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
 
+          // 2. LOOT BERECHNEN
+          let totalGold = 0;
+          let droppedItems = [];
+
+          enemies.forEach(enemy => {
+              // A) Gold würfeln (wenn vorhanden)
+              if (enemy.loot && enemy.loot.gold_dice) {
+                  // z.B. "2W6"
+                  // Wir müssen "W" durch "d" ersetzen für die dice-utility, falls nötig
+                  const diceStr = enemy.loot.gold_dice.replace(/W/gi, 'd');
+                  try {
+                      // rollDiceString gibt ein Objekt zurück { total: 7, ... } oder eine Zahl
+                      const roll = rollDiceString(diceStr);
+                      const goldAmount = (typeof roll === 'object') ? roll.total : roll;
+                      totalGold += goldAmount;
+                  } catch (e) {
+                      console.warn("Fehler beim Goldwürfeln:", e);
+                  }
+              }
+
+              // B) Items würfeln (Chance)
+              if (enemy.loot && enemy.loot.items && Array.isArray(enemy.loot.items)) {
+                  enemy.loot.items.forEach(itemId => {
+                      // 40% Chance (0.4) dass ein Item droppt
+                      if (Math.random() <= 0.4) {
+                          droppedItems.push(itemId);
+                      }
+                  });
+              }
+          });
+
+          // 3. HP holen
           const playerCombatant = combatState.combatants.find(c => c.type === 'player');
           const remainingHp = playerCombatant ? playerCombatant.hp : 0;
 
           const timer = setTimeout(() => {
-              if (onCombatVictory) onCombatVictory(totalXp, remainingHp);
+              if (onCombatVictory) {
+                  // Datenübergabe erweitert um Loot-Objekt
+                  onCombatVictory(totalXp, remainingHp, { gold: totalGold, items: droppedItems });
+              }
               endCombatSession();
           }, 2000);
+
           return () => clearTimeout(timer);
       }
   }, [combatState.result]);

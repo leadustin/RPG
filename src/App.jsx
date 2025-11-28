@@ -49,26 +49,60 @@ function App() {
   };
 
   // +++ NEU: Logik für Kampf-Sieg (EP & HP übernehmen) +++
-  const handleCombatVictory = (earnedXp, remainingHp) => {
-    console.log(`App: Sieg verarbeitet. XP +${earnedXp}, Neue HP: ${remainingHp}`);
+  const handleCombatVictory = (earnedXp, remainingHp, lootResult) => {
+    console.log(`App: Sieg verarbeitet.`, { earnedXp, remainingHp, lootResult });
 
     if (gameState.character) {
       const currentStats = gameState.character.stats || {};
       const safeHp = (typeof remainingHp === 'number') ? remainingHp : currentStats.hp;
-
-      const updatedCharacter = {
+      
+      // Charakter kopieren
+      let updatedCharacter = {
         ...gameState.character,
-        // KORREKTUR: Hier muss 'experience' stehen, nicht 'xp'!
         experience: (gameState.character.experience || 0) + earnedXp,
-        
         stats: {
           ...currentStats,
           hp: safeHp
         }
       };
 
-      // Optional: Prüfen ob man den 'xp' Fehler von vorherigen Tests bereinigen will
-      if (updatedCharacter.xp) delete updatedCharacter.xp;
+      // --- LOOT VERARBEITEN ---
+      if (lootResult) {
+          // 1. Gold hinzufügen
+          if (lootResult.gold > 0) {
+              const currentGold = updatedCharacter.wallet?.gold || 0;
+              updatedCharacter.wallet = {
+                  ...updatedCharacter.wallet,
+                  gold: currentGold + lootResult.gold
+              };
+              // Optional: Log-Eintrag hinzufügen passiert hier nicht direkt, 
+              // aber man sieht das Gold im UI sofort steigen.
+          }
+
+          // 2. Items hinzufügen
+          if (lootResult.items && lootResult.items.length > 0) {
+              const newInventory = [...(updatedCharacter.inventory || [])];
+              
+              lootResult.items.forEach(itemId => {
+                  // Prüfen, ob Item in Datenbank existiert
+                  const itemDef = allItems.find(i => i.id === itemId);
+                  
+                  if (itemDef) {
+                      // Item hinzufügen (neue Instanz)
+                      newInventory.push({
+                          ...itemDef,
+                          instanceId: crypto.randomUUID(), // Einzigartige ID für dieses Item
+                          quantity: 1
+                      });
+                      console.log(`Loot erhalten: ${itemDef.name}`);
+                  } else {
+                      console.warn(`Loot-Item nicht gefunden in Datenbank: ${itemId}`);
+                  }
+              });
+              
+              updatedCharacter.inventory = newInventory;
+          }
+      }
 
       // Charakter im State aktualisieren
       handleUpdateCharacter(updatedCharacter);
