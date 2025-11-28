@@ -1,5 +1,5 @@
 // src/components/game_view/GameView.jsx
-import React, { useState, useEffect } from "react"; // useEffect hinzugefügt
+import React, { useState, useEffect } from "react";
 import { PartyPortraits } from "./PartyPortraits";
 import ActionBar from "./ActionBar";
 import { WorldMap } from "../worldmap/WorldMap";
@@ -9,6 +9,8 @@ import locationsData from "../../data/locations.json";
 import enemiesData from "../../data/enemies.json";
 import { CombatGrid } from "../combat/CombatGrid";
 import { CombatResultScreen } from "../combat/CombatResultScreen";
+// +++ NEU: Import TurnOrderBar +++
+import { TurnOrderBar } from "../combat/TurnOrderBar"; 
 import { useCombat } from "../../hooks/useCombat";
 import "./GameView.css";
 
@@ -28,6 +30,7 @@ function GameView({
   onCombatDefeat
 }) {
 
+  // ... (State und Hooks bleiben unverändert) ...
   const [activeCharacterId, setActiveCharacterId] = useState(character?.id || 'player');
   const [showRestMenu, setShowRestMenu] = useState(false);
 
@@ -41,41 +44,31 @@ function GameView({
     handleCombatTileClick
   } = useCombat(character);
 
-  // +++ AUTOMATISCHER SIEG +++
-  // Wenn Sieg erkannt wird: Kurz warten, dann beenden ohne Screen
+  // ... (useEffect für Sieg und Hilfsfunktionen bleiben gleich) ...
+  
   useEffect(() => {
       if (combatState.result === 'victory') {
-          console.log("GameView: Automatischer Sieg - Berechne Belohnungen...");
-          
-          // 1. XP berechnen (Summe aller Gegner im Kampf)
-          // Wir filtern nach 'enemy', da der Spieler auch in combatants ist
+          // ... (Dein existierender XP Code) ...
           const totalXp = combatState.combatants
               .filter(c => c.type === 'enemy')
               .reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
 
-          // 2. Verbleibende HP des Spielers holen
           const playerCombatant = combatState.combatants.find(c => c.type === 'player');
           const remainingHp = playerCombatant ? playerCombatant.hp : 0;
 
           const timer = setTimeout(() => {
-              // Übergabe der Daten an die Haupt-App
-              if (onCombatVictory) {
-                  console.log(`Kampf beendet. XP: ${totalXp}, HP: ${remainingHp}`);
-                  onCombatVictory(totalXp, remainingHp);
-              }
+              if (onCombatVictory) onCombatVictory(totalXp, remainingHp);
               endCombatSession();
-          }, 2000); // 2 Sekunden warten, damit die letzte Animation (Tod) wirken kann
-
+          }, 2000);
           return () => clearTimeout(timer);
       }
-  }, [combatState.result]); // Abhängigkeit ist nur das Ergebnis
+  }, [combatState.result]);
 
   if (!character) {
     return <div className="game-view-container">Lädt Charakter...</div>;
   }
 
-  const activeCharacter = character;
-
+  // ... (handleStartLocationCombat usw. bleiben gleich) ...
   const handleStartLocationCombat = () => {
       const currentLocationId = character.currentLocation;
       const locationData = locationsData.find(loc => loc.id === currentLocationId);
@@ -115,6 +108,7 @@ function GameView({
       }
   };
 
+  const activeCharacter = character;
   const isPlayerTurn = combatState.isActive && combatState.combatants[combatState.turnIndex]?.type === 'player';
 
   return (
@@ -132,13 +126,18 @@ function GameView({
            {combatState.isActive ? (
              <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                
-               {/* FIX: Screen nur bei NIEDERLAGE anzeigen, Sieg wird auto-behandelt */}
+               {/* +++ NEU: TurnOrderBar ganz oben anzeigen +++ */}
+               <TurnOrderBar 
+                   combatants={combatState.combatants} 
+                   activeIndex={combatState.turnIndex} 
+               />
+
                {combatState.result === 'defeat' && (
                  <CombatResultScreen 
                     result={combatState.result}
                     onClose={handleEndCombat}
-                    onLoadGame={onLoadGame} // Neu übergeben
-                    onMainMenu={() => window.location.reload()} // Einfacher Reload für Hauptmenü
+                    onLoadGame={onLoadGame}
+                    onMainMenu={() => window.location.reload()} 
                  />
                )}
 
@@ -162,11 +161,11 @@ function GameView({
                  />
                </div>
                
-               {/* Overlay nur ausblenden, wenn das Ergebnis feststeht */}
                {!combatState.result && (
                  <>
+                   {/* UPDATE: Log Overlay etwas nach unten geschoben (top: 100px), damit die Leiste Platz hat */}
                    <div className="combat-log-overlay" style={{ 
-                       position: 'absolute', top: 10, right: 10, width: '300px', 
+                       position: 'absolute', top: 100, right: 10, width: '300px', 
                        background: 'rgba(0,0,0,0.8)', color: '#eee', 
                        padding: '10px', fontSize: '0.85rem', pointerEvents: 'none', borderRadius: '4px',
                        maxHeight: '200px', overflowY: 'auto'
