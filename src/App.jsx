@@ -53,20 +53,22 @@ function App() {
     console.log(`App: Sieg verarbeitet. XP +${earnedXp}, Neue HP: ${remainingHp}`);
 
     if (gameState.character) {
-      // Sicherheitscheck, falls HP undefined ist (z.B. voller Heal durch Level Up Logik anderswo)
       const currentStats = gameState.character.stats || {};
       const safeHp = (typeof remainingHp === 'number') ? remainingHp : currentStats.hp;
 
       const updatedCharacter = {
         ...gameState.character,
-        // 1. XP hinzufügen
-        xp: (gameState.character.xp || 0) + earnedXp,
-        // 2. HP aktualisieren (damit erlittener Schaden bestehen bleibt)
+        // KORREKTUR: Hier muss 'experience' stehen, nicht 'xp'!
+        experience: (gameState.character.experience || 0) + earnedXp,
+        
         stats: {
           ...currentStats,
           hp: safeHp
         }
       };
+
+      // Optional: Prüfen ob man den 'xp' Fehler von vorherigen Tests bereinigen will
+      if (updatedCharacter.xp) delete updatedCharacter.xp;
 
       // Charakter im State aktualisieren
       handleUpdateCharacter(updatedCharacter);
