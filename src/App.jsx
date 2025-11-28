@@ -48,6 +48,37 @@ function App() {
     setShowCharacterSheet((prevState) => !prevState);
   };
 
+  // +++ NEU: Logik für Kampf-Sieg (EP & HP übernehmen) +++
+  const handleCombatVictory = (earnedXp, remainingHp) => {
+    console.log(`App: Sieg verarbeitet. XP +${earnedXp}, Neue HP: ${remainingHp}`);
+
+    if (gameState.character) {
+      // Sicherheitscheck, falls HP undefined ist (z.B. voller Heal durch Level Up Logik anderswo)
+      const currentStats = gameState.character.stats || {};
+      const safeHp = (typeof remainingHp === 'number') ? remainingHp : currentStats.hp;
+
+      const updatedCharacter = {
+        ...gameState.character,
+        // 1. XP hinzufügen
+        xp: (gameState.character.xp || 0) + earnedXp,
+        // 2. HP aktualisieren (damit erlittener Schaden bestehen bleibt)
+        stats: {
+          ...currentStats,
+          hp: safeHp
+        }
+      };
+
+      // Charakter im State aktualisieren
+      handleUpdateCharacter(updatedCharacter);
+    }
+  };
+
+  // +++ NEU: Logik für Niederlage (Optional, da UI das Meiste macht) +++
+  const handleCombatDefeat = () => {
+    console.log("App: Niederlage registriert.");
+    // Hier könnte man z.B. Autosaves löschen oder Statistiken tracken
+  };
+
   const autoSaveExists = loadAutoSave() !== undefined;
   const manualSaveExists = getSaveSlots().some((slot) => slot !== null);
   const saveFileExists = autoSaveExists || manualSaveExists;
@@ -89,6 +120,9 @@ function App() {
             onShortRest={handleShortRest}
             onLongRest={handleLongRest}
             onShopTransaction={handleShopTransaction}
+            // +++ NEU: Handler übergeben +++
+            onCombatVictory={handleCombatVictory}
+            onCombatDefeat={handleCombatDefeat}
           />
         );
       default:
