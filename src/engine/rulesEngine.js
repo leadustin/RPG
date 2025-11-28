@@ -270,3 +270,55 @@ export const getCrafterDiscount = (character) => {
   }
   return 0;
 };
+
+/**
+ * Bestimmt das Zauberattribut basierend auf der Klasse.
+ */
+export const getSpellcastingAbility = (characterClass) => {
+    const key = typeof characterClass === 'string' ? characterClass : characterClass?.key;
+    
+    switch (key) {
+        case 'wizard':
+        case 'rogue': // Arcane Trickster
+        case 'fighter': // Eldritch Knight
+            return 'int';
+        case 'cleric':
+        case 'druid':
+        case 'ranger':
+        case 'monk': // Manche Subklassen
+            return 'wis';
+        case 'bard':
+        case 'paladin':
+        case 'sorcerer':
+        case 'warlock':
+            return 'cha';
+        default:
+            return 'int'; // Fallback
+    }
+};
+
+/**
+ * Berechnet den Zauber-Angriffsbonus.
+ * Formel: Übungsbonus + Attributsmodifikator
+ */
+export const calculateSpellAttackBonus = (character) => {
+    if (!character || !character.class) return 0;
+    
+    const abilityKey = getSpellcastingAbility(character.class);
+    const abilityScore = character.stats.abilities[abilityKey] || 10;
+    const mod = getAbilityModifier(abilityScore);
+    const prof = getProficiencyBonus(character.level || 1);
+    
+    return mod + prof;
+};
+
+/**
+ * Berechnet den Zauber-Rettungswurf-SG (Difficulty Class / DC).
+ * Formel: 8 + Übungsbonus + Attributsmodifikator
+ */
+export const calculateSpellSaveDC = (character) => {
+    if (!character || !character.class) return 8; // Basis
+    
+    const attackBonus = calculateSpellAttackBonus(character);
+    return 8 + attackBonus;
+};
