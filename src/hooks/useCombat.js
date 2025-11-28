@@ -22,8 +22,15 @@ const extractDamageValue = (rollResult) => {
     return 1; 
 };
 
+// Hilfsfunktion: Wandelt "9m" in Anzahl Felder um (1 Feld = 1.5m)
+const calculateMoveTiles = (speedString) => {
+    if (!speedString) return 6; // Fallback: 9m / 6 Felder
+    const meters = parseInt(speedString);
+    if (isNaN(meters)) return 6;
+    return Math.floor(meters / 1.5);
+};
+
 export const useCombat = (playerCharacter) => {
-  // Initialer State
   const initialState = {
     isActive: false,
     round: 0,
@@ -68,15 +75,19 @@ export const useCombat = (playerCharacter) => {
         if (typeof e.hp === 'number') hpValue = e.hp;
         else if (e.hp && (e.hp.average || e.hp.max)) hpValue = e.hp.average || e.hp.max;
 
+        // Initiative basierend auf DEX berechnen, falls kein fester Bonus da ist
+        const dex = e.stats?.dex || 10;
+        const initMod = getAbilityModifier(dex);
+
         return {
             ...e, 
             id: e.instanceId || `enemy_${i}_${Date.now()}`,
             type: 'enemy',
             name: e.name || `Gegner ${i+1}`,
-            initiative: d(20) + (e.initBonus || 0),
+            initiative: d(20) + (e.initBonus || initMod),
             hp: hpValue,
             maxHp: hpValue,
-            speed: 5, 
+            speed: e.speed || "9m", // String aus JSON übernehmen
             color: 'red',
             x: 9, y: 3 + i
         };
@@ -260,7 +271,12 @@ export const useCombat = (playerCharacter) => {
               ...prev,
               turnIndex: nextIndex,
               round: nextRound,
-              turnResources: { hasAction: true, hasBonusAction: true, movementLeft: nextCombatant.speed || 6 },
+              // Ressourcen zurücksetzen
+              turnResources: { 
+                  hasAction: true, 
+                  hasBonusAction: true, 
+                  movementLeft: calculateMoveTiles(nextCombatant.speed) // FIX: Bewegungsrate hier berechnen
+              },
               log: [...prev.log, `--- Runde ${nextRound}: ${nextCombatant.name} ---`]
           };
       });
@@ -300,36 +316,74 @@ export const useCombat = (playerCharacter) => {
                     const actionTemplate = (currentC.actions && currentC.actions[0]) || { name: 'Angriff', damage: '1d4' };
                     const attackRange = 1.5;
 
-                    const distToPlayer = getDistance(currentC, player);
+                    let distToPlayer = getDistance({x: currentX, y: currentY}, player);
                     
-                    // 1. BEWEGUNG
-                    if (distToPlayer > attackRange) {
-                        let newX = currentX;
-                        let newY = currentY;
-                        const dx = player.x - currentX;
-                        const dy = player.y - currentY;
-                        if (Math.abs(dx) >= Math.abs(dy)) newX += Math.sign(dx);
-                        else newY += Math.sign(dy);
+                    // --- 1. BEWEGUNG (Mehrere Schritte) ---
+                    // Berechne maximale Schritte für diesen Zug
+                    const maxMoves = calculateMoveTiles(currentC.speed);
+                    let movesLeft = maxMoves;
+                    let hasMoved = false;
 
-                        const occupied = freshState.combatants.some(c => c.x === newX && c.y === newY && c.hp > 0);
-                        
-                        if (!occupied) {
-                            console.log(`🤖 AI MOVES: ${currentC.name} to (${newX}, ${newY})`);
-                            setCombatState(prev => ({
-                                ...prev,
-                                combatants: prev.combatants.map(c => c.id === currentC.id ? { ...c, x: newX, y: newY } : c),
-                                log: [...prev.log, `${currentC.name} nähert sich.`]
-                            }));
-                            currentX = newX;
-                            currentY = newY;
-                            await new Promise(r => setTimeout(r, 500)); 
+                    // Solange Moves übrig sind UND wir nicht in Reichweite sind
+                    while (movesLeft > 0 && distToPlayer > attackRange) {
+                        let bestX = currentX;
+                        let bestY = currentY;
+                        let minNewDist = distToPlayer;
+
+                        // Prüfe alle 8 Nachbarfelder (inkl. Diagonalen)
+                        for (let dx = -1; dx <= 1; dx++) {
+                            for (let dy = -1; dy <= 1; dy++) {
+                                if (dx === 0 && dy === 0) continue; // Stehenbleiben bringt nichts
+
+                                const nextX = currentX + dx;
+                                const nextY = currentY + dy;
+                                
+                                // Ist das Feld frei?
+                                const isOccupied = freshState.combatants.some(c => c.x === nextX && c.y === nextY && c.hp > 0);
+                                if (!isOccupied) {
+                                    // Berechne Distanz von diesem Feld zum Spieler
+                                    const distFromNext = getDistance({x: nextX, y: nextY}, player);
+                                    if (distFromNext < minNewDist) {
+                                        minNewDist = distFromNext;
+                                        bestX = nextX;
+                                        bestY = nextY;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Wenn wir ein besseres Feld gefunden haben
+                        if (bestX !== currentX || bestY !== currentY) {
+                            currentX = bestX;
+                            currentY = bestY;
+                            movesLeft--;
+                            hasMoved = true;
+                            distToPlayer = minNewDist; // Aktualisiere Distanz für nächsten Loop
+                        } else {
+                            // Sackgasse oder blockiert
+                            break;
                         }
                     }
+
+                    // Führe State-Update für Bewegung nur EINMAL am Ende aus
+                    if (hasMoved) {
+                        console.log(`🤖 AI MOVES: ${currentC.name} to (${currentX}, ${currentY}) using ${maxMoves - movesLeft} steps.`);
+                        setCombatState(prev => ({
+                            ...prev,
+                            combatants: prev.combatants.map(c => c.id === currentC.id ? { ...c, x: currentX, y: currentY } : c),
+                            log: [...prev.log, `${currentC.name} bewegt sich.`]
+                        }));
+                        
+                        // Kurze Pause damit die Bewegung für den Spieler sichtbar "einrastet"
+                        await new Promise(r => setTimeout(r, 400)); 
+                    }
                     
-                    // 2. ANGRIFF
-                    const newDistToPlayer = getDistance({x: currentX, y: currentY}, player);
+                    // --- 2. ANGRIFF ---
+                    // State nochmal prüfen, falls sich was geändert hat (hier unwahrscheinlich, aber sicher ist sicher)
+                    // Wir nutzen die lokalen currentX/Y, da das State-Update asynchron ist
+                    const finalDistToPlayer = getDistance({x: currentX, y: currentY}, player);
                     
-                    if (newDistToPlayer <= attackRange) {
+                    if (finalDistToPlayer <= attackRange) {
                         performAction(currentC.id, player.id, {
                             type: 'weapon',
                             name: actionTemplate.name,
@@ -338,7 +392,7 @@ export const useCombat = (playerCharacter) => {
                             range: attackRange
                         });
                     } else {
-                        console.log(`🤖 AI WAIT: Player too far.`);
+                        console.log(`🤖 AI WAIT: Player too far (${finalDistToPlayer}).`);
                     }
                 }
             } catch (error) {
