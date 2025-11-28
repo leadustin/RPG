@@ -335,7 +335,8 @@ export const useCombat = (playerCharacter) => {
         
         const aiTurn = async () => {
             try {
-                await new Promise(r => setTimeout(r, 600));
+                // Denkpause vor Zugbeginn
+                await new Promise(r => setTimeout(r, 800));
                 
                 let freshState = stateRef.current;
                 if (!freshState.isActive || freshState.result) return;
@@ -351,6 +352,7 @@ export const useCombat = (playerCharacter) => {
 
                     let distToPlayer = getDistance({x: currentX, y: currentY}, player);
                     
+                    // --- 1. BEWEGUNG ---
                     const maxMoves = calculateMoveTiles(currentC.speed);
                     let movesLeft = maxMoves;
                     let hasMoved = false;
@@ -397,17 +399,17 @@ export const useCombat = (playerCharacter) => {
                             combatants: prev.combatants.map(c => c.id === currentC.id ? { ...c, x: currentX, y: currentY } : c),
                             log: [...prev.log, `${currentC.name} bewegt sich.`]
                         }));
-                        await new Promise(r => setTimeout(r, 400)); 
+                        // WARTEN: Hier auf 600ms erhöht, damit die CSS Transition (400ms) fertig ist
+                        await new Promise(r => setTimeout(r, 600)); 
                     }
                     
+                    // --- 2. ANGRIFF ---
                     const finalDistToPlayer = getDistance({x: currentX, y: currentY}, player);
                     
                     if (finalDistToPlayer <= attackRange) {
                         performAction(currentC.id, player.id, {
                             ...actionTemplate,
                             type: 'weapon',
-                            // Wichtig: Wir müssen sicherstellen, dass performAction die Reichweite korrekt lesen kann
-                            // Entweder wir übergeben das item mit oder die Reichweite direkt
                             range: actionTemplate.range, 
                             reach: actionTemplate.reach
                         });

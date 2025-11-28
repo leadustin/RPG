@@ -37,13 +37,14 @@
 
 .combat-token {
     position: absolute;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 2px solid #fff;
-    transition: all 0.3s ease-out; /* Weiche Bewegung */
-    z-index: 5;
-    background-color: #333;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+  z-index: 5;
+  cursor: pointer;
+    transition: left 0.4s ease-in-out, top 0.4s ease-in-out;
 }
 
 .combat-token.active {

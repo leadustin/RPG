@@ -45,13 +45,30 @@ function GameView({
   // Wenn Sieg erkannt wird: Kurz warten, dann beenden ohne Screen
   useEffect(() => {
       if (combatState.result === 'victory') {
-          console.log("GameView: Automatischer Sieg - Kampf wird beendet.");
+          console.log("GameView: Automatischer Sieg - Berechne Belohnungen...");
+          
+          // 1. XP berechnen (Summe aller Gegner im Kampf)
+          // Wir filtern nach 'enemy', da der Spieler auch in combatants ist
+          const totalXp = combatState.combatants
+              .filter(c => c.type === 'enemy')
+              .reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
+
+          // 2. Verbleibende HP des Spielers holen
+          const playerCombatant = combatState.combatants.find(c => c.type === 'player');
+          const remainingHp = playerCombatant ? playerCombatant.hp : 0;
+
           const timer = setTimeout(() => {
-              handleEndCombat();
-          }, 1500); // 1.5 Sekunden Verzögerung zum Realisieren des letzten Schlags
+              // Übergabe der Daten an die Haupt-App
+              if (onCombatVictory) {
+                  console.log(`Kampf beendet. XP: ${totalXp}, HP: ${remainingHp}`);
+                  onCombatVictory(totalXp, remainingHp);
+              }
+              endCombatSession();
+          }, 2000); // 2 Sekunden warten, damit die letzte Animation (Tod) wirken kann
+
           return () => clearTimeout(timer);
       }
-  }, [combatState.result]);
+  }, [combatState.result]); // Abhängigkeit ist nur das Ergebnis
 
   if (!character) {
     return <div className="game-view-container">Lädt Charakter...</div>;
