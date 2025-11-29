@@ -203,6 +203,155 @@
 //       - 'FEIGN_DEATH': damageModifier = 0.5 für alle Typen AUSSER 'psychic'.
 //       - 'STONESKIN': damageModifier = 0.5 für 'bludgeoning', 'piercing', 'slashing' (non-magical).
 //       - Dies muss in 'performAction' VOR der HP-Abzug-Berechnung passieren.
+// TODO: Flug-Mechanik (Fly, Gaseous Form)
+//       - Combatant-Property 'movementModes' (Walk, Fly, Swim).
+//       - Wenn 'FLYING' aktiv: Hindernisse (außer hohe Wände) beim Bewegen ignorieren. 'HOVER' verhindert Absturz bei Speed 0.
+
+// TODO: Fallen-Auslöser (Glyph of Warding)
+//       - Erweitertes Summon: 'onTrigger' Effekt definieren (hier: DAMAGE).
+//       - Auslöser definieren (z.B. 'ENTER_RADIUS_3M').
+// TODO: Condition-Folgeeffekte (Haste Lethargy)
+//       - 'onConditionRemove': Wenn 'HASTED' ausläuft/entfernt wird -> 
+//         Automatisch Condition 'LETHARGIC' (Incapacitated) für 1 Runde anwenden.
+
+// TODO: Aufweck-Mechanik (Hypnotic Pattern, Sleep)
+//       - 'onDamage': Wenn Ziel Schaden nimmt und Condition 'HYPNOTIC_TRANCE' hat -> Condition entfernen.
+//       - Neue Aktion 'Wachrütteln' (Help Action?): Entfernt Condition bei Verbündetem in 1,5m.
+// TODO: Variable Konzentrations-Regeln (Major Image, Bestow Curse)
+//       - Beim Casten prüfen: Wenn Spell Slot >= X (z.B. 4 für Major Image), 
+//         das Flag 'requiresConcentration' im aktiven Effekt auf 'false' setzen.
+
+// TODO: Flächen-Schablonen (Lightning Bolt)
+//       - 'handleCombatTileClick' für 'LINE' anpassen.
+//       - Berechnet eine Linie vom Caster (x,y) zum Zielpunkt (tx,ty).
+//       - Alle Tiles, die von dieser Linie geschnitten werden, sind betroffen.
+// TODO: Reittier-Mechanik (Mounting)
+//       - Interaktion: Spieler klickt auf 'Phantomross' -> Token bewegen sich nun gemeinsam.
+//       - Wenn Mount stirbt/verschwindet -> Reiter landet auf einem Feld daneben (ggf. Prone).
+
+// TODO: Dynamische Resistenz-Wahl (Protection from Energy)
+//       - Beim Wirken: UI-Popup "Wähle Element".
+//       - Condition 'ENERGY_RESISTANCE' muss den gewählten Typ speichern (z.B. condition.value = 'fire').
+//       - In 'takeDamage': Prüfen, ob Schadenstyp == condition.value -> Schaden halbieren.
+// TODO: Inventar-Effekte (Remove Curse)
+//       - 'BREAK_ATTUNEMENT': Setzt bei ausgerüsteten Items mit 'cursed: true' den Status 'attuned' auf false.
+
+// TODO: Konzentrations-Störer (Sleet Storm)
+//       - Effekt 'BREAK_CONCENTRATION': Wenn 'activeConcentrationSpell' beim Ziel existiert -> Zauber beenden (Effekte entfernen).
+// TODO: Aktions-Einschränkungen durch Conditions (Slow, Stinking Cloud)
+//       - 'SLOWED': Setze 'turnResources.hasBonusAction' auf false, wenn Action genutzt wurde (und umgekehrt).
+//                   Setze 'acModifier' auf -2.
+//       - 'NAUSEATED': Setze 'hasAction' und 'hasBonusAction' auf false.
+
+// TODO: Zauber-Fehlfunktion (Slow)
+//       - In 'performAction': Wenn Caster 'SLOWED' ist -> 25% Chance (W4 == 1), dass der Zauber abgebrochen wird (ohne Slot-Verlust?).
+// TODO: Lifesteal-Mechanik (Vampiric Touch)
+//       - In 'performAction': Wenn Effekt-Property 'healing_on_damage' (z.B. 0.5) hat:
+//         Berechneten Schaden nehmen, * 0.5 rechnen und dem 'attacker' als HP gutschreiben.
+
+// TODO: Terrain-Immunität (Water Walk)
+//       - In 'calculateMoveCost': Wenn Tile-Typ 'WATER'/'LAVA'/'ACID' ist UND Combatant hat 'WATER_WALK':
+//         Behandle Tile als 'GROUND' (normale Kosten, kein Schaden/Sinken).
+// TODO: Banished-Mechanik (Banishment)
+//       - Wenn Status 'BANISHED' aktiv:
+//         1. Speichere aktuelle Position des Tokens.
+//         2. Entferne Token temporär aus der 'combatants'-Liste (oder setze Flag 'hidden: true').
+//       - Beim Entfernen des Status: Token an alter Position (oder nächstem freien Feld) wieder einfügen.
+
+// TODO: Auto-Fail Bedingungen bei Saves (Blight)
+//       - In 'performAction' -> 'saving_throw':
+//         Prüfen auf 'auto_fail_if'. Wenn 'target.type' oder Tags matchen -> Save gilt als misslungen.
+// TODO: Emanationen / Auren (Spirit Guardians, Conjure Minor Elementals)
+//       - Condition 'ELEMENTAL_SPIRITS':
+//         1. In 'performAction': Addiere 2d8 Schaden zu jedem Angriff des Casters.
+//         2. In 'calculateMoveCost': Wenn Gegner sich in 4,5m zum Caster befindet -> Kosten verdoppeln.
+
+// TODO: Zufalls-Verhalten (Confusion)
+//       - 'startTurn': Wenn Condition 'CONFUSED' aktiv -> W10 würfeln und Aktion automatisch setzen (z.B. 'forceAction: skip' oder 'forceAttack: random').
+// TODO: Gruppen-Teleport (Dimension Door, Teleport)
+//       - 'TELEPORT': Wenn mehrere Ziele ausgewählt sind (Caster + Gast), müssen beide zum Zielpunkt (tx, ty) verschoben werden.
+//       - Kollisions-Check: Wenn Zielort besetzt -> 4d6 Force Damage anwenden und Teleport abbrechen.
+
+// TODO: Terrain-Manipulation (Control Water)
+//       - 'SUMMON' mit Typ 'WATER_EFFECT':
+//         - Wenn Effekt 'Flood': Tiles im Radius erhalten Eigenschaft 'water' (Schwimmen nötig).
+//         - Wenn Effekt 'Part Water': Tiles im Radius (Linie) verlieren 'water'-Eigenschaft (werden begehbar).
+// TODO: Reaktiver Schaden (Fire Shield)
+//       - In 'performAction': Wenn Ziel Condition 'FIRE_SHIELD' hat UND Attacke 'melee' ist:
+//         -> Angreifer erhält 2d8 Schaden (Typ abhängig von Condition-Value).
+
+// TODO: Unterscheidung Unsichtbarkeit (Greater Invisibility)
+//       - In 'performAction': Wenn Attacker 'INVISIBLE' hat -> Condition entfernen.
+//       - Wenn Attacker 'GREATER_INVISIBILITY' hat -> Condition behalten.
+// TODO: Komplexer Schaden (Ice Storm, Flame Strike)
+//       - Die Engine muss unterstützen, dass EINE Aktion MEHRERE Damage-Effekte nacheinander auslöst.
+//       - Aktuell iteriert 'performAction' über 'effects', was korrekt ist, aber die Log-Ausgabe ("X Schaden")
+//         sollte idealerweise zusammengefasst werden ("20 Wucht und 15 Kälte").
+
+// TODO: Inventar-Integration (Secret Chest)
+//       - Das Summon 'Geheime Truhe' sollte ein eigenes Inventar haben, das persistent gespeichert wird
+//         (auch wenn das Token despawnt/neu beschworen wird).
+// TODO: Automatische Runden-Effekte (Faithful Hound, Spiritual Weapon)
+//       - 'onTurnStart': Prüfen, ob Caster ein Summon hat, das automatisch angreift (Hound).
+//       - Automatisch 'performAction' für das Summon auslösen (bei Hound: GE-Save gegen nächsten Feind).
+
+// TODO: Totale Immunität (Resilient Sphere, Otiluke's)
+//       - Condition 'RESILIENT_SPHERE':
+//         1. 'takeDamage' -> Schaden immer auf 0 setzen (außer 'Disintegrate').
+//         2. 'performAction' -> Verhindern, dass Ziel Aktionen ausführt, die nach außen wirken.
+// TODO: Wiederkehrender Schaden bei Save-Failure (Phantasmal Killer)
+//       - Condition 'NIGHTMARE_HAUNTING': Wenn der 'repeat_end_of_turn' Save misslingt,
+//         muss die Engine denselben Schadenswert (4d10) erneut anwenden.
+//       - Benötigt Feld 'damageOnSaveFail' in der Condition-Definition.
+
+// TODO: Polymorph-Mechanik (Temp-HP Puffer)
+//       - Condition 'POLYMORPHED':
+//         1. Beim Anwenden: UI öffnet "Wähle Tier".
+//         2. Setze 'tempHp' des Ziels auf 'beast.hp'.
+//         3. Ändere Token-Bild und Actions temporär.
+//         4. WICHTIG: Wenn 'tempHp' auf 0 fällt -> Condition sofort entfernen ("Rückverwandlung").
+// TODO: Dynamische HP für Summons (Bigby's Hand)
+//       - Wenn 'entity.hp' == 'caster_max_hp' -> Setze HP des Tokens auf attacker.maxHp.
+
+// TODO: Skalierung von Summon-Aktionen (Animate Objects)
+//       - Wenn Spell Slot > Basis-Level: Erhöhe Schaden der 'entity.actions' (z.B. +1d12 bei Huge Object).
+//       - Aktuell sind die Actions im JSON statisch definiert.
+// TODO: Automatische Bewegung von Summons (Cloudkill)
+//       - 'onTurnStart': Wenn Caster an der Reihe ist -> Alle eigenen Summons mit 'auto_move_away: true' finden.
+//       - Vektor berechnen (Caster -> Summon) und Summon 3m weiter schieben.
+
+// TODO: Große Token (Conjure Elemental)
+//       - 'size: large' im Summon-Entity unterstützen.
+//       - Grid-Logik anpassen: Token belegt 2x2 Felder. Kollisionsabfrage muss alle 4 Felder prüfen.
+// TODO: Save bei Schaden (Dominate Person, Polymorph)
+//       - Wenn 'takeDamage' aufgerufen wird: Prüfen ob Condition 'DOMINATED' aktiv ist.
+//       - Wenn ja: Sofortigen Saving Throw (Wisdom) auslösen. Bei Erfolg Condition entfernen.
+
+// TODO: Selbst-Gefährdung (Contact Other Plane)
+//       - Wenn target.type === 'SELF' und saving_throw definiert ist:
+//         Der Caster muss den Save würfeln, nicht ein Gegner.
+// TODO: Rest-Prevention (Dream)
+//       - Condition 'NIGHTMARE': Muss beim 'longRest'-Event geprüft werden.
+//       - Wenn aktiv: Keine HP/Spellslots regenerieren und Exhaustion-Level nicht senken.
+
+// TODO: Manuelle Schadens-Trigger (Geas)
+//       - UI: Button "Strafe auslösen" bei aktiver 'GEAS'-Condition.
+//       - Führt den verknüpften Damage-Effekt (5d10) sofort aus.
+// TODO: Kontextabhängige Vorteile bei Saves (Modify Memory, Charm Person)
+//       - Engine muss wissen, ob 'attacker' und 'target' feindlich sind ('isFighting').
+//       - Falls ja: Vorteil auf den Wisdom-Save gewähren.
+
+// TODO: Geteilte Sinne (Mislead, Arcane Eye, Familiar)
+//       - UI-Feature: "Switch View" Button bei aktiven Summons, die das erlauben.
+//       - Rendert den Fog of War aus der Perspektive des Summons.
+// TODO: Wand-Passierbarkeit (Passwall)
+//       - In 'calculateMoveCost' / 'isTilePassable':
+//         Prüfen, ob ein 'Passwall'-Token auf einem 'WALL'-Tile liegt.
+//         Falls ja: Tile temporär als passierbar behandeln.
+
+// TODO: Beschwörungs-Verlängerung (Planar Binding)
+//       - Wenn Condition 'BOUND_TO_SERVICE' erfolgreich angewendet wird:
+//         Prüfen, ob das Ziel ein Summon ist. Falls ja, dessen 'despawnTime' überschreiben/verlängern.
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { getAbilityModifier, calculateSpellAttackBonus, calculateSpellSaveDC, getProficiencyBonus } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';

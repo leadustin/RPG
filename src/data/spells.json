@@ -2537,639 +2537,1334 @@
     }
   ]
 },
+
   {
-    "key": "fly",
-    "name": "Fliegen",
-    "level": 3,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Ziel erhält Flug-Bewegungsrate von 18 Metern. Wenn der Zauber endet (oder Konzentration bricht), fällt das Ziel, wenn es noch in der Luft ist.",
-    "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 3.",
-    "classes": ["sorcerer", "warlock", "wizard"]
+  "key": "fly",
+  "name": "Fliegen",
+  "level": 3,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Feder)"],
+  "classes": ["sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "Konzentration, 10 Min.",
+  "ui_description": "Das Ziel erhält eine Fluggeschwindigkeit von 18m und kann schweben. Wenn der Zauber endet, fällt das Ziel, sofern es den Fall nicht stoppen kann.",
+  "ui_scaling": "1 zusätzliches Ziel pro Grad über 3.",
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "CONCENTRATION_10_MINUTES",
+  "target": {
+    "type": "CREATURE",
+    "count": 1,
+    "scaling": { "type": "ADD_TARGET", "amount": 1 }
   },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "FLYING",
+      "duration_seconds": 600,
+      "description": "Flugbewegung 18m (Schweben)."
+    }
+  ]
+},
+
   {
-    "key": "gaseous_form",
-    "name": "Gasförmige Gestalt",
-    "level": 3,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Ziel wird zu einer formlosen Wolke (Flug-Bewegungsrate 3m). Es kann sich durch kleinste Ritzen zwängen, aber keine Aktionen (außer Spurt) ausführen. Es hat Resistenz gegen nicht-magischen Schaden und Vorteil bei ST-, GE- und KO-Rettungswürfen.",
-    "scaling": null,
-    "classes": ["sorcerer", "warlock", "wizard"]
+  "key": "gaseous_form",
+  "name": "Gasförmige Gestalt",
+  "level": 3,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Gaze)"],
+  "classes": ["sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "Konzentration, 1 Std.",
+  "ui_description": "Das Ziel wird zur Nebelwolke. Speed 3m (Fliegen/Schweben). Resistent gegen physischen Schaden. Vorteil auf ST/GE/KO-Saves. Kann durch Ritzen schlüpfen. Kann nicht angreifen/zaubern.",
+  "ui_scaling": "1 zusätzliches Ziel pro Grad über 3.",
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "CONCENTRATION_1_HOUR",
+  "target": {
+    "type": "CREATURE",
+    "count": 1,
+    "scaling": { "type": "ADD_TARGET", "amount": 1 }
   },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "GASEOUS_FORM",
+      "duration_seconds": 3600,
+      "description": "Nebelform. Resistenz (Physisch). Vorteil (ST/GE/KO). Speed 3m."
+    }
+  ]
+},
+
   {
-    "key": "glyph_of_warding",
-    "name": "Glyphe des Schutzes",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Weihrauch und Diamantstaub im Wert von 200 GM, wird verbraucht)"],
-    "duration": "Bis gebannt oder ausgelöst",
-    "description": "Du schreibst eine Glyphe auf eine Oberfläche, die explodiert (Explosive Runen: 5W8 Schaden) oder einen Zauber (Grad 3 oder niedriger) speichert, wenn ein Auslöser eintritt.",
-    "scaling": "Explosive Runen: Schaden +1W8 pro Zaubergrad über 3. Zauberglyphe: Kann Zauber des gleichen Grades wie der Slot speichern.",
-    "damage": "5d8",
-    "damage_type": "variable",
-    "saving_throw": "dexterity",
-    "classes": ["bard", "cleric", "wizard"]
-  },
+  "key": "glyph_of_warding",
+  "name": "Glyphe des Schutzes",
+  "level": 3,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Diamantstaub 200+ GM, verbraucht)"],
+  "classes": ["bard", "cleric", "wizard"],
+  "ui_casting_time": "1 Stunde",
+  "ui_range": "Berührung",
+  "ui_duration": "Bis gebannt/ausgelöst",
+  "ui_description": "Du zeichnest eine Glyphe (Explosiv oder Zauber). Explosiv: Bei Auslöser 6m-Radius Explosion (5W8 Säure/Kälte/Feuer/Blitz/Donner; GE-RW halb). Zauber-Glyphe: Speichert Zauber (Grad 3 oder niedriger), der auf das Ziel ausgelöst wird.",
+  "ui_scaling": "Explosiv-Schaden +1W8 pro Grad über 3.",
+  "casting_time": "1_HOUR",
+  "range_m": 1.5,
+  "duration": "UNTIL_DISPELLED",
+  "target": { "type": "POINT", "range_m": 1.5 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Glyphe",
+        "type": "neutral",
+        "icon": "assets/tokens/glyph_trap.png",
+        "hp": 1, "maxHp": 1, "ac": 10, "speed": 0,
+        "description": "Unsichtbare Falle. Löst bei Annäherung aus."
+      }
+    },
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "5d8", "type": "variable" },
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "half" },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d8" }
+    }
+  ]
+},
+
   {
-    "key": "haste",
-    "name": "Hast",
-    "level": 3,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel erhält +2 RK, Vorteil bei GE-Rettungswürfen, doppelte Bewegungsrate und eine zusätzliche Aktion (nur für Angriff (1 Waffe), Spurt, Rückzug, Verstecken, Gegenstand benutzen). Wenn der Zauber endet, ist das Ziel 1 Runde 'lethargisch' (keine Aktionen/Reaktionen).",
-    "scaling": null,
-    "classes": ["sorcerer", "wizard"]
-  },
+  "key": "haste",
+  "name": "Hast",
+  "level": 3,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Lakritzwurzel)"],
+  "classes": ["sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Verdoppelt Bewegungsrate, +2 RK, Vorteil auf GE-Saves und eine zusätzliche Aktion (Angriff, Spurt, Rückzug, Verstecken, Objekt nutzen). Wenn der Zauber endet, ist das Ziel eine Runde lang handlungsunfähig (Incapacitated, Speed 0).",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "HASTED",
+      "duration_turns": 10,
+      "description": "Speed x2, +2 RK, Extra-Aktion. Folgewirkung: Lethargie."
+    }
+  ]
+},
+
   {
-    "key": "hypnotic_pattern",
-    "name": "Hypnotisches Muster",
-    "level": 3,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Erschafft ein Muster aus Farben in einem 9m-Würfel. Kreaturen im Bereich müssen WE-Rettungswurf bestehen oder sind 'bezaubert' (charmed) und 'handlungsunfähig' (incapacitated). Der Effekt endet, wenn sie Schaden nehmen oder jemand eine Aktion nutzt, um sie aufzuwecken.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
+  "key": "hypnotic_pattern",
+  "name": "Hypnotisches Muster",
+  "level": 3,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["S", "M (Konfetti)"],
+  "classes": ["bard", "sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "36 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Ein hypnotisches Farbenmuster füllt einen 9m-Würfel. Kreaturen darin müssen einen WE-Rettungswurf bestehen oder sind 'Bezaubert', 'Handlungsunfähig' und haben Speed 0. Endet bei Schaden oder Wachrütteln (Aktion).",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 36,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "AREA", "shape": "CUBE", "length_m": 9 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "HYPNOTIC_TRANCE",
+      "duration_turns": 10,
+      "saving_throw": { "ability": "wisdom", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Bezaubert, Inkapazitiert, Speed 0. Endet bei Schaden."
+    }
+  ]
+},
+
   {
-    "key": "leomunds_tiny_hut",
-    "name": "Leomunds winzige Hütte",
-    "level": 3,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Minute",
-    "range": "Selbst (3m Halbkugel)",
-    "components": ["V", "S", "M"],
-    "duration": "8 Stunden",
-    "description": "Erschafft eine unbewegliche Kuppel (3m Radius), die magisch schützt. (Bis zu 9 Kreaturen). Zauber und Angriffe können nicht durchdringen. Kreaturen im Inneren können nicht angegriffen oder bezaubert werden.",
-    "scaling": null,
-    "classes": ["bard", "wizard"]
-  },
+  "key": "leomunds_tiny_hut",
+  "name": "Leomunds winzige Hütte",
+  "level": 3,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "ritual": true,
+  "components": ["V", "S", "M (Kristallperle)"],
+  "classes": ["bard", "wizard"],
+  "ui_casting_time": "1 Minute (oder Ritual)",
+  "ui_range": "Selbst (3m Radius)",
+  "ui_duration": "8 Stunden",
+  "ui_description": "Erschafft eine unbewegliche Kuppel (3m Radius) um dich. Blockiert Wetter, Eindringlinge und Zauber (Grad 3 oder niedriger). Innen angenehmes Klima. Undurchsichtig von außen. Endet, wenn du die Kuppel verlässt.",
+  "ui_scaling": null,
+  "casting_time": "1_MINUTE",
+  "range_m": 0,
+  "duration": "8_HOURS",
+  "target": { "type": "SELF" },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Winzige Hütte",
+        "type": "ally",
+        "icon": "assets/tokens/tiny_hut.png",
+        "hp": 1000, "maxHp": 1000, "ac": 20, "speed": 0,
+        "description": "Sicherer Ruheort. Blockiert Angriffe/Zauber."
+      }
+    }
+  ]
+},
+
   {
-    "key": "lightning_bolt",
-    "name": "Blitzstrahl",
-    "level": 3,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst (30m Linie)",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Ein Blitzstrahl (30m lang, 1,5m breit) schießt von dir aus. Jede Kreatur in der Linie muss GE-Rettungswurf bestehen. Fehlschlag: 8W6 Blitzschaden. Erfolg: Halber Schaden.",
-    "scaling": "Erhöht Schaden um 1W6 pro Zaubergrad über 3.",
-    "damage": "8d6",
-    "damage_type": "lightning",
-    "saving_throw": "dexterity",
-    "classes": ["sorcerer", "wizard"],
-    "patron_spell": { "patron": "the_fathomless", "level": 3 }
+  "key": "lightning_bolt",
+  "name": "Blitzstrahl",
+  "level": 3,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Fell, Kristallstab)"],
+  "classes": ["sorcerer", "wizard"],
+  "patron_spell": { "patron": "the_fathomless", "level": 3 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Selbst (30m Linie)",
+  "ui_duration": "Sofort",
+  "ui_description": "Ein Blitz schießt in einer Linie (30m lang, 1,5m breit) von dir aus. Jede Kreatur in der Linie muss einen GE-Rettungswurf bestehen. Fehlschlag: 8W6 Blitzschaden. Erfolg: Halber Schaden.",
+  "ui_scaling": "Schaden +1W6 pro Grad über 3.",
+  "casting_time": "ACTION",
+  "range_m": 0,
+  "duration": "INSTANTANEOUS",
+  "target": {
+    "type": "AREA",
+    "shape": "LINE",
+    "length_m": 30,
+    "width_m": 1.5,
+    "origin": "SELF"
   },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "8d6", "type": "lightning" },
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "half" },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d6" }
+    }
+  ]
+},
+
   {
-    "key": "magic_circle",
-    "name": "Magischer Kreis",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "3 Meter",
-    "components": ["V", "S", "M (Weihwasser oder Silberpulver im Wert von 100 GM)"],
-    "duration": "1 Stunde",
-    "description": "Erschafft einen 3m-Radius-Zylinder. Wähle Kreaturtypen (Himmlische, Elementare, Feen, Unholde, Untote). Sie können den Kreis nicht betreten/verlassen, haben Nachteil auf Angriffe gegen Ziele im Kreis und können Ziele im Kreis nicht bezaubern/verängstigen/besessen machen.",
-    "scaling": "Verlängert Dauer pro Zaubergrad über 3.",
-    "classes": ["cleric", "paladin", "warlock", "wizard"]
-  },
+  "key": "magic_circle",
+  "name": "Magischer Kreis",
+  "level": 3,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Salz/Silber 100+ GM, verbraucht)"],
+  "classes": ["cleric", "paladin", "warlock", "wizard"],
+  "ui_casting_time": "1 Minute",
+  "ui_range": "3 Meter",
+  "ui_duration": "1 Stunde",
+  "ui_description": "Du erschaffst einen Zylinder (3m Radius). Wähle Typen (Himmlische, Elementare, Feen, Unholde, Untote). Diese können den Kreis nicht betreten (oder verlassen, wenn umgekehrt). Teleportation erfordert CH-RW. Angriffe gegen das Innere haben Nachteil.",
+  "ui_scaling": "Dauer +1 Stunde pro Grad über 3.",
+  "casting_time": "1_MINUTE",
+  "range_m": 3,
+  "duration": "1_HOUR",
+  "target": { "type": "POINT", "radius_m": 3 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Magischer Kreis",
+        "type": "ally",
+        "icon": "assets/tokens/magic_circle.png",
+        "hp": 1000, "maxHp": 1000, "ac": 20, "speed": 0,
+        "description": "Schutz gegen bestimmte Typen."
+      }
+    }
+  ]
+},
+
   {
-    "key": "major_image",
-    "name": "Großes Trugbild",
-    "level": 3,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Erschafft ein Trugbild (max 6m Würfel), das Bild, Ton, Geruch und Temperatur umfasst. Als Aktion kannst du die Illusion bewegen.",
-    "scaling": "Mit Grad 6+: Dauer 'Bis gebannt', ohne Konzentration.",
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
+  "key": "major_image",
+  "name": "Großes Trugbild",
+  "level": 3,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Vlies)"],
+  "classes": ["bard", "sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "36 Meter",
+  "ui_duration": "Konzentration, 10 Min.",
+  "ui_description": "Du erschaffst ein komplexes Trugbild (visuell, Ton, Geruch, Temperatur) in einem 6m-Würfel. Du kannst es als Magische Aktion bewegen und animieren. Physische Interaktion oder Untersuchung (INT-Wurf) entlarven es.",
+  "ui_scaling": "Ab Grad 4: Dauer 'Bis gebannt', keine Konzentration.",
+  "casting_time": "ACTION",
+  "range_m": 36,
+  "duration": "CONCENTRATION_10_MINUTES",
+  "target": { "type": "POINT", "range_m": 36 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Großes Trugbild",
+        "type": "ally",
+        "icon": "assets/tokens/illusion_major.png",
+        "hp": 1, "maxHp": 1, "ac": 10, "speed": 18,
+        "description": "Realistische Illusion (Ton, Geruch, Temperatur)."
+      }
+    }
+  ]
+},
+
   {
-    "key": "nondetection",
-    "name": "Unauffindbarkeit",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Diamantstaub 25 GM, wird verbraucht)"],
-    "duration": "8 Stunden",
-    "description": "Ziel (Kreatur oder Objekt) wird 8 Stunden lang vor Spähmagie (Divination) geschützt. Es kann nicht durch Magie anvisiert oder wahrgenommen werden.",
-    "scaling": null,
-    "classes": ["ranger", "wizard", "bard"]
-  },
+  "key": "nondetection",
+  "name": "Unauffindbarkeit",
+  "level": 3,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Diamantstaub 25+ GM, verbraucht)"],
+  "classes": ["bard", "ranger", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "8 Stunden",
+  "ui_description": "Du verbirgst eine willige Kreatur, einen Ort oder ein Objekt (max. 3m) vor Erkenntnismagie. Das Ziel kann nicht durch solche Zauber anvisiert oder durch magische Sensoren wahrgenommen werden.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "8_HOURS",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "NONDETECTION",
+      "duration_seconds": 28800,
+      "description": "Immun gegen Erkenntnismagie/Sensoren."
+    }
+  ]
+},
+
   {
-    "key": "phantom_steed",
-    "name": "Phantomross",
-    "level": 3,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Minute",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "1 Stunde",
-    "description": "Erschafft ein quasi-reales, pferdeähnliches Reittier. Es hat Bewegungsrate 30m und kann 20km pro Stunde (max 2 Std.) reisen. Es verschwindet bei 0 TP oder nach 1 Stunde.",
-    "scaling": null,
-    "classes": ["wizard"],
-    "patron_spell": { "patron": "the_undead", "level": 2 }
-  },
+  "key": "phantom_steed",
+  "name": "Phantomross",
+  "level": 3,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "ritual": true,
+  "components": ["V", "S"],
+  "classes": ["wizard"],
+  "patron_spell": { "patron": "the_undead", "level": 2 },
+  "ui_casting_time": "1 Minute (oder Ritual)",
+  "ui_range": "9 Meter",
+  "ui_duration": "1 Stunde",
+  "ui_description": "Du erschaffst ein quasi-reales, pferdeartiges Wesen (Groß). Es hat Speed 30m (100 Fuß). Du oder eine Kreatur deiner Wahl können es reiten. Wenn das Ross Schaden nimmt, endet der Zauber (es verblasst in 1 Minute).",
+  "ui_scaling": null,
+  "casting_time": "1_MINUTE",
+  "range_m": 9,
+  "duration": "1_HOUR",
+  "target": { "type": "POINT", "range_m": 9 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Phantomross",
+        "type": "ally",
+        "icon": "assets/tokens/phantom_steed.png",
+        "hp": 1, "maxHp": 1, "ac": 10, "speed": 30,
+        "description": "Reittier. Speed 30m. Verschwindet bei Schaden."
+      }
+    }
+  ]
+},
+
   {
-    "key": "protection_from_energy",
-    "name": "Schutz vor Energie",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Ziel erhält Resistenz gegen einen Energietyp deiner Wahl (Säure, Kälte, Feuer, Blitz oder Donner) für die Dauer.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"]
-  },
+  "key": "protection_from_energy",
+  "name": "Schutz vor Energie",
+  "level": 3,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "Konzentration, 1 Std.",
+  "ui_description": "Eine willige Kreatur erhält Resistenz gegen einen Schadens typ deiner Wahl: Säure, Kälte, Feuer, Blitz oder Donner.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "CONCENTRATION_1_HOUR",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "ENERGY_RESISTANCE",
+      "duration_seconds": 3600,
+      "description": "Resistenz gegen gewählten Typ (Säure/Kälte/Feuer/Blitz/Donner)."
+    }
+  ]
+},
+
   {
-    "key": "remove_curse",
-    "name": "Fluch brechen",
-    "level": 3,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Beendet alle Flüche, die auf einem Ziel (Kreatur oder Objekt) lasten. (Funktioniert nicht bei verfluchten magischen Gegenständen).",
-    "scaling": null,
-    "classes": ["cleric", "paladin", "warlock", "wizard"]
-  },
+  "key": "remove_curse",
+  "name": "Fluch brechen",
+  "level": 3,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["cleric", "paladin", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "Sofort",
+  "ui_description": "Du berührst eine Kreatur oder ein Objekt. Alle Flüche auf dem Ziel enden. Bei einem verfluchten magischen Gegenstand wird die Einstimmung gebrochen (er kann abgelegt werden), aber der Fluch bleibt auf dem Gegenstand.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "REMOVE_CONDITION",
+      "condition": "CURSED"
+    },
+    {
+      "type": "BREAK_ATTUNEMENT",
+      "description": "Erlaubt das Ablegen verfluchter Items."
+    }
+  ]
+},
+
   {
-    "key": "sending",
-    "name": "Senden",
-    "level": 3,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Unbegrenzt (auf derselben Ebene)",
-    "components": ["V", "S", "M"],
-    "duration": "1 Runde",
-    "description": "Sendet eine Botschaft (max 25 Wörter) an eine Kreatur, die du kennst. Sie hört die Botschaft mental, erkennt dich und kann 1 Runde lang mental antworten (max 25 Wörter).",
-    "scaling": null,
-    "classes": ["bard", "cleric", "wizard"],
-    "patron_spell": { "patron": "the_great_old_one", "level": 3 }
-  },
+  "key": "sending",
+  "name": "Senden",
+  "level": 3,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Kupferdraht)"],
+  "classes": ["bard", "cleric", "wizard"],
+  "patron_spell": { "patron": "the_great_old_one", "level": 3 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Unbegrenzt",
+  "ui_duration": "Sofort",
+  "ui_description": "Sendet eine Nachricht (max. 25 Wörter) an eine Kreatur (bekannt oder beschrieben). Sie hört sie im Geist, erkennt dich und kann antworten. 5% Fehlchance bei anderen Ebenen. Ziel kann dich für 8 Stunden blockieren.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 999999,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": []
+},
+
   {
-    "key": "sleet_storm",
-    "name": "Schneesturm",
-    "level": 3,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "45 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Erschafft einen Zylinder (12m hoch, 6m Radius) aus Eisregen und Graupel. Bereich ist stark sichtbehindert. Boden ist schwieriges Gelände. Kreaturen im Bereich (oder die eintreten) müssen GE-Rettungswurf bestehen oder stürzen (prone). Konzentrationswürfe für Zauber im Bereich haben Nachteil.",
-    "scaling": null,
-    "saving_throw": "dexterity",
-    "classes": ["druid", "sorcerer", "wizard"],
-    "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 3 }
-  },
+  "key": "sleet_storm",
+  "name": "Schneesturm",
+  "level": 3,
+  "school": "conjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Mini-Schirm)"],
+  "classes": ["druid", "sorcerer", "wizard"],
+  "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 3 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "45 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Ein 6m-Radius Zylinder aus Eisregen. Bereich ist 'stark sichtbehindert' und schwieriges Gelände. Wer dort startet/eintritt: GE-Rettungswurf. Fehlschlag: 'Liegend' (Prone) UND verliert Konzentration auf Zauber.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 45,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "POINT", "radius_m": 6 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Schneesturm",
+        "type": "neutral",
+        "icon": "assets/tokens/sleet_storm.png",
+        "hp": 1, "maxHp": 1, "ac": 10, "speed": 0,
+        "description": "Schwieriges Gelände. Sichtblockade."
+      }
+    },
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "PRONE",
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "NEGATES_EFFECT" }
+    },
+    {
+      "type": "BREAK_CONCENTRATION",
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Beendet laufende Konzentration sofort."
+    }
+  ]
+},
+
   {
-    "key": "slow",
-    "name": "Verlangsamen",
-    "level": 3,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Bis zu 6 Kreaturen in einem 12m-Würfel müssen WE-Rettungswurf bestehen. Fehlschlag: Bewegungsrate halbiert, -2 RK, -2 GE-RW, kann nur 1 Aktion ODER 1 Bonusaktion (nicht beides) nutzen, kann keine Reaktionen nutzen. Darf RW am Ende des Zuges wiederholen.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["sorcerer", "wizard"]
+  "key": "slow",
+  "name": "Verlangsamen",
+  "level": 3,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Melasse)"],
+  "classes": ["bard", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "36 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Bis zu 6 Kreaturen in einem 12m-Würfel müssen WE-Rettungswurf bestehen. Fehlschlag: Halber Speed, -2 RK/GE-Saves, keine Reaktionen. Nur 1 Aktion ODER Bonusaktion. Nur 1 Angriff pro Zug. Zauber können fehlschlagen (25%).",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 36,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": {
+    "type": "CREATURE",
+    "count": 6
   },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "SLOWED",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "wisdom",
+        "effect_on_success": "NEGATES_EFFECT",
+        "repeat_end_of_turn": true
+      },
+      "description": "Speed/2, -2 RK, eingeschränkte Aktionen."
+    }
+  ]
+},
+
   {
-    "key": "stinking_cloud",
-    "name": "Stinkende Wolke",
-    "level": 3,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "27 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Erschafft eine Wolke (6m Radius), die stark sichtbehindert ist. Kreaturen im Bereich müssen KO-Rettungswurf bestehen oder verbringen ihre Aktion würgend und hustend (handlungsunfähig).",
-    "scaling": null,
-    "saving_throw": "constitution",
-    "classes": ["bard", "sorcerer", "wizard"],
-    "patron_spell": { "patron": "the_fiend", "level": 3 }
-  },
+  "key": "stinking_cloud",
+  "name": "Stinkende Wolke",
+  "level": 3,
+  "school": "conjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Verfaultes Ei)"],
+  "classes": ["bard", "sorcerer", "wizard"],
+  "patron_spell": { "patron": "the_fiend", "level": 3 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "27 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Erschafft eine 6m-Radius Kugel aus gelbem, übelkeitserregendem Gas (stark sichtbehindert). Kreaturen im Bereich müssen KO-Rettungswurf bestehen oder sind 'Vergiftet'. Solange vergiftet, keine Aktionen/Bonusaktionen.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 27,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "POINT", "radius_m": 6 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Stinkende Wolke",
+        "type": "neutral",
+        "icon": "assets/tokens/stinking_cloud.png",
+        "hp": 1, "maxHp": 1, "ac": 10, "speed": 0,
+        "description": "Stark sichtbehindert. KO-RW oder Vergiftet."
+      }
+    },
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "NAUSEATED",
+      "saving_throw": { "ability": "constitution", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Vergiftet & Aktionsunfähig."
+    }
+  ]
+},
+
   {
-    "key": "tongues",
-    "name": "Zungen",
-    "level": 3,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "M"],
-    "duration": "1 Stunde",
-    "description": "Ziel kann jede Sprache sprechen und verstehen. Jede Kreatur, die die Sprache des Ziels versteht, versteht, was es sagt.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"]
-  },
+  "key": "tongues",
+  "name": "Zungen",
+  "level": 3,
+  "school": "divination",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "M (Zikkurat-Modell)"],
+  "classes": ["bard", "cleric", "sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "1 Stunde",
+  "ui_description": "Eine berührte Kreatur versteht jede gesprochene oder gezeigte Sprache. Wenn sie spricht/gestikuliert, wird sie von jeder Kreatur verstanden, die mindestens eine Sprache beherrscht.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "1_HOUR",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "TONGUES",
+      "duration_seconds": 3600
+    }
+  ]
+},
+
   {
-    "key": "vampiric_touch",
-    "name": "Vampirgriff",
-    "level": 3,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Nahkampf-Zauberangriff. Bei Treffer: 3W6 nekrotischer Schaden. Du heilst dich um die Hälfte des verursachten Schadens. Solange der Zauber wirkt, kannst du die Aktion jeden Zug wiederholen.",
-    "scaling": "Schaden +1W6 pro Zaubergrad über 3.",
-    "damage": "3d6",
-    "damage_type": "necrotic",
-    "attack_roll": "melee_spell",
-    "classes": ["warlock", "wizard"]
-  },
+  "key": "vampiric_touch",
+  "name": "Vampirgriff",
+  "level": 3,
+  "school": "necromancy",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Selbst",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Du berührst einen Feind (Nahkampf-Zauberangriff). Bei Treffer: 3W6 Nekrotikschaden. Du heilst dich um die Hälfte des verursachten Schadens. Wiederholbar in jedem Zug als Magische Aktion.",
+  "ui_scaling": "Schaden +1W6 pro Grad über 3.",
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "attack_roll": "MELEE_SPELL",
+      "damage": { "dice": "3d6", "type": "necrotic" },
+      "healing_on_damage": 0.5,
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d6" }
+    }
+  ]
+},
+
   {
-    "key": "water_breathing",
-    "name": "Wasseratmung",
-    "level": 3,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "24 Stunden",
-    "description": "Bis zu 10 willige Kreaturen erhalten die Fähigkeit, 24 Stunden lang unter Wasser zu atmen.",
-    "scaling": null,
-    "classes": ["druid", "ranger", "sorcerer", "wizard"]
+  "key": "water_breathing",
+  "name": "Wasseratmung",
+  "level": 3,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "ritual": true,
+  "components": ["V", "S", "M (Schilfrohr)"],
+  "classes": ["druid", "ranger", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion (oder Ritual)",
+  "ui_range": "9 Meter",
+  "ui_duration": "24 Stunden",
+  "ui_description": "Bis zu 10 willige Kreaturen können 24 Stunden lang unter Wasser atmen.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "24_HOURS",
+  "target": {
+    "type": "CREATURE",
+    "count": 10,
+    "scaling": { "type": "ADD_TARGET", "amount": 0 }
   },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "WATER_BREATHING",
+      "duration_seconds": 86400
+    }
+  ]
+},
+
   {
-    "key": "water_walk",
-    "name": "Wasserwandeln",
-    "level": 3,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "1 Stunde",
-    "description": "Bis zu 10 willige Kreaturen können sich 1 Stunde lang über jede Flüssigkeit (Wasser, Säure, Schlamm, Lava) bewegen, als wäre es fester Boden.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "ranger", "sorcerer", "wizard"]
+  "key": "water_walk",
+  "name": "Wasserwandeln",
+  "level": 3,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "ritual": true,
+  "components": ["V", "S", "M (Kork)"],
+  "classes": ["cleric", "druid", "ranger", "sorcerer"],
+  "ui_casting_time": "1 Aktion (oder Ritual)",
+  "ui_range": "9 Meter",
+  "ui_duration": "1 Stunde",
+  "ui_description": "Bis zu 10 willige Kreaturen können über Flüssigkeiten (Wasser, Säure, Lava) laufen wie auf festem Boden. Eintauchen erfordert Bonusaktion. Lava verursacht dennoch Hitzeschaden.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "1_HOUR",
+  "target": {
+    "type": "CREATURE",
+    "count": 10,
+    "scaling": { "type": "ADD_TARGET", "amount": 0 }
   },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "WATER_WALK",
+      "duration_seconds": 3600,
+      "description": "Läuft auf Flüssigkeiten. Untertauchen = Bonusaktion."
+    }
+  ]
+},
+
   {
-    "key": "arcane_eye",
-    "name": "Arkanes Auge",
-    "level": 4,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du erschaffst ein unsichtbares, magisches Auge in Reichweite (Flug-Bewegungsrate 9m). Du kannst als Aktion mental durch das Auge sehen (normale Sicht und Dunkelsicht 9m). Es kann sich bis zu 9m pro Zug von dir entfernen.",
-    "scaling": null,
-    "classes": ["wizard"]
-  },
+  "key": "arcane_eye",
+  "name": "Arkanes Auge",
+  "level": 4,
+  "school": "divination",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Fell)"],
+  "classes": ["wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "Konzentration, 1 Std.",
+  "ui_description": "Du erschaffst ein unsichtbares, unverwundbares Auge. Du siehst durch es (Dunkelsicht 9m). Als Bonusaktion kannst du es 9m bewegen. Kann durch 2,5cm Ritzen schlüpfen.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "CONCENTRATION_1_HOUR",
+  "target": { "type": "POINT", "range_m": 9 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Arkanes Auge",
+        "type": "ally",
+        "icon": "assets/tokens/arcane_eye.png",
+        "hp": 999, "maxHp": 999, "ac": 25, "speed": 9,
+        "description": "Unsichtbarer Späher. Unverwundbar."
+      }
+    }
+  ]
+},
+
   {
-    "key": "banishment",
-    "name": "Verbannung",
-    "level": 4,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel muss CH-Rettungswurf bestehen oder wird auf eine harmlose Halbebene verbannt. Wenn das Ziel von einer anderen Ebene stammt, wird es permanent auf seine Heimat-Ebene zurückgeschickt. Ansonsten kehrt es zurück, wenn der Zauber endet.",
-    "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 4.",
-    "saving_throw": "charisma",
-    "classes": ["cleric", "paladin", "sorcerer", "warlock", "wizard"]
+  "key": "banishment",
+  "name": "Verbannung",
+  "level": 4,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Pentakel)"],
+  "classes": ["cleric", "paladin", "sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Eine Kreatur in Reichweite muss einen CH-Rettungswurf bestehen. Fehlschlag: Sie wird in eine Halbebene verbannt (Handlungsunfähig). Extra-Planare Wesen (Unholde, Feen etc.) werden permanent verbannt, wenn der Zauber die volle Dauer hält.",
+  "ui_scaling": "1 zusätzliches Ziel pro Grad über 4.",
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": {
+    "type": "CREATURE",
+    "count": 1,
+    "scaling": { "type": "ADD_TARGET", "amount": 1 }
   },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "BANISHED",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "charisma",
+        "effect_on_success": "NEGATES_EFFECT"
+      },
+      "description": "Verbannt (Incapacitated). Entfernt vom Spielfeld."
+    }
+  ]
+},
+
   {
-    "key": "blight",
-    "name": "Kümmernis",
-    "level": 4,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Nekrotische Energie trifft eine Kreatur. Ziel muss KO-Rettungswurf bestehen. Fehlschlag: 8W8 nekrotischer Schaden. Erfolg: Halber Schaden. (Pflanzenkreaturen haben Nachteil auf den RW und erleiden maximalen Schaden).",
-    "scaling": "Erhöht Schaden um 1W8 pro Zaubergrad über 4.",
-    "damage": "8d8",
-    "damage_type": "necrotic",
-    "saving_throw": "constitution",
-    "classes": ["druid", "sorcerer", "warlock", "wizard"]
-  },
+  "key": "blight",
+  "name": "Kümmernis",
+  "level": 4,
+  "school": "necromancy",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["druid", "sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "Sofort",
+  "ui_description": "Du entziehst einer Kreatur Feuchtigkeit. KO-Rettungswurf. Fehlschlag: 8W8 Nekrotikschaden. Erfolg: Halb. Pflanzen-Kreaturen scheitern automatisch. Normale Pflanzen welken sofort.",
+  "ui_scaling": "Schaden +1W8 pro Grad über 4.",
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "8d8", "type": "necrotic" },
+      "saving_throw": {
+        "ability": "constitution",
+        "effect_on_success": "half",
+        "auto_fail_if": "PLANT"
+      },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d8" }
+    }
+  ]
+},
+
   {
-    "key": "compulsion",
-    "name": "Zwang",
-    "level": 4,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Kreaturen deiner Wahl im Bereich müssen WE-Rettungswurf bestehen oder werden gezwungen, sich in jedem ihrer Züge (als Aktion) in eine von dir bestimmte Richtung zu bewegen. Sie können keine Aktionen nutzen.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "wizard"]
-  },
+  "key": "compulsion",
+  "name": "Zwang",
+  "level": 4,
+  "school": "enchantment",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["bard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Kreaturen deiner Wahl in Reichweite müssen WE-Rettungswurf bestehen oder sind 'Bezaubert'. Als Bonusaktion bestimmst du eine Richtung. Ziele müssen sich dorthin bewegen (sicherster Weg). Nach der Bewegung neuer RW.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "CREATURE", "count": 3 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "COMPELLED",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "wisdom",
+        "effect_on_success": "NEGATES_EFFECT",
+        "repeat_end_of_turn": true
+      },
+      "description": "Bezaubert. Muss sich in gewählte Richtung bewegen."
+    }
+  ]
+},
+
   {
-    "key": "confusion",
-    "name": "Verwirrung",
-    "level": 4,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "27 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Kreaturen in einer 3m-Radius-Kugel müssen WE-Rettungswurf bestehen oder sind verwirrt. Am Anfang ihres Zuges würfeln sie W10, um ihr (zufälliges) Verhalten zu bestimmen (z.B. bewegen, nichts tun, zufällig angreifen).",
-    "scaling": "Erhöht Radius um 1,5m pro Zaubergrad über 4.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
-  },
+  "key": "confusion",
+  "name": "Verwirrung",
+  "level": 4,
+  "school": "enchantment",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Nussschalen)"],
+  "classes": ["bard", "druid", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "27 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Kreaturen in einer 3m-Sphäre müssen WE-Rettungswurf bestehen. Fehlschlag: Keine Reaktionen/Bonusaktionen. Verhalten wird jede Runde gewürfelt (W10): 1=Wandern, 2-6=Nichts tun, 7-8=Angriff, 9-10=Normal.",
+  "ui_scaling": "Radius +1,5m pro Grad über 4.",
+  "casting_time": "ACTION",
+  "range_m": 27,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "POINT", "radius_m": 3 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "CONFUSED",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "wisdom",
+        "effect_on_success": "NEGATES_EFFECT",
+        "repeat_end_of_turn": true
+      },
+      "description": "Zufälliges Verhalten (W10 Tabelle)."
+    }
+  ]
+},
+
   {
-    "key": "conjure_minor_elementals",
-    "name": "Niedere Elementare beschwören",
-    "level": 4,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "27 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du beschwörst Elementare (Herausforderungsgrad 2 oder niedriger), deren kombinierter HG 2 nicht übersteigt (z.B. 1x HG 2, 2x HG 1, 4x HG 1/2, 8x HG 1/4). Sie sind dir freundlich gesinnt und gehorchen.",
-    "scaling": "Mit Grad 6+: doppelter HG (z.B. 2x HG 2). Mit Grad 8+: dreifacher HG (z.B. 3x HG 2).",
-    "classes": ["druid", "wizard"]
-  },
+  "key": "conjure_minor_elementals",
+  "name": "Niedere Elementare beschwören",
+  "level": 4,
+  "school": "conjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["druid", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Selbst (4,5m Aura)",
+  "ui_duration": "Konzentration, 10 Min.",
+  "ui_description": "Geister umschwirren dich in 4,5m Radius (Emanation). Bereich ist schwieriges Gelände für Gegner. Jedes Mal, wenn du triffst, verursachst du 2W8 extra Schaden (Säure, Kälte, Feuer oder Blitz).",
+  "ui_scaling": "Extra-Schaden +2W8 pro Grad über 4.",
+  "casting_time": "ACTION",
+  "range_m": 0,
+  "duration": "CONCENTRATION_10_MINUTES",
+  "target": { "type": "SELF" },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "ELEMENTAL_SPIRITS",
+      "duration_seconds": 600,
+      "description": "Aura (4,5m). Angriffe +2W8 Schaden. Schwieriges Gelände für Feinde.",
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "2d8" }
+    }
+  ]
+},
+
   {
-    "key": "control_water",
-    "name": "Wasser kontrollieren",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "90 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Du kontrollierst Wasser in einem 30m-Würfel. Du kannst (als Aktion) das Wasser heben/senken, es teilen (z.B. ein Flussbett freilegen), es umleiten oder einen 15m hohen Wasserstrudel erzeugen.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "wizard"],
-    "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 4 }
-  },
+  "key": "control_water",
+  "name": "Wasser kontrollieren",
+  "level": 4,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Wasser/Staub)"],
+  "classes": ["cleric", "druid", "wizard"],
+  "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 4 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "90 Meter",
+  "ui_duration": "Konzentration, 10 Min.",
+  "ui_description": "Kontrolliert Wasser in einem 30m-Würfel. Effekte: Flut (Wasserstand +6m), Teilen (Graben), Umleiten oder Strudel (2W8 Wuchtschaden, ST-RW halb, zieht Kreaturen 3m an).",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 90,
+  "duration": "CONCENTRATION_10_MINUTES",
+  "target": { "type": "POINT", "radius_m": 15 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Wasser-Effekt",
+        "type": "neutral",
+        "icon": "assets/tokens/whirlpool.png",
+        "hp": 1000, "maxHp": 1000, "ac": 10, "speed": 0,
+        "description": "Markiert Strudel oder Flut-Zone."
+      }
+    },
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "2d8", "type": "bludgeoning" },
+      "saving_throw": { "ability": "strength", "effect_on_success": "half" },
+      "description": "Strudel-Schaden (Start/Ende Zug)."
+    },
+    {
+      "type": "PULL",
+      "distance_m": 3,
+      "description": "Zieht Kreaturen Richtung Zentrum."
+    }
+  ]
+},
+
   {
-    "key": "dimension_door",
-    "name": "Dimensionstür",
-    "level": 4,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "150 Meter",
-    "components": ["V"],
-    "duration": "Sofort",
-    "description": "Du teleportierst dich und (optional) 1 willige Kreatur (deiner Größe oder kleiner) oder ein Objekt an einen Ort in Reichweite, den du visualisieren oder beschreiben kannst. Ihr erscheint am nächsten freien Ort, falls das Ziel besetzt ist.",
-    "scaling": null,
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
-  },
+  "key": "dimension_door",
+  "name": "Dimensionstür",
+  "level": 4,
+  "school": "conjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V"],
+  "classes": ["bard", "sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "150 Meter",
+  "ui_duration": "Sofort",
+  "ui_description": "Du teleportierst dich und eine willige Kreatur (in 1,5m) an einen Ort in Reichweite (sichtbar oder visualisiert). Falls Zielort besetzt: 4W6 Kraftschaden und Fehlschlag.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 150,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "CREATURE", "count": 2 },
+  "effects": [
+    {
+      "type": "TELEPORT",
+      "range_m": 150,
+      "description": "Teleportiert Ziele zum gewählten Ort."
+    }
+  ]
+},
+
   {
-    "key": "fabricate",
-    "name": "Fabrizieren",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "36 Meter",
-    "components": ["V", "S"],
-    "duration": "Sofort",
-    "description": "Du wandelst Rohmaterialien (z.B. einen Haufen Holz) in ein fertiges Produkt (z.B. eine Holzbrücke) um. Handwerks-Übung mit den Materialien ist erforderlich, um komplexe Gegenstände herzustellen.",
-    "scaling": null,
-    "classes": ["wizard"]
-  },
+  "key": "fabricate",
+  "name": "Fabrizieren",
+  "level": 4,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["wizard"],
+  "ui_casting_time": "10 Minuten",
+  "ui_range": "36 Meter",
+  "ui_duration": "Sofort",
+  "ui_description": "Du wandelst Rohmaterialien in Reichweite in ein fertiges Objekt um (z.B. Holz zu Brücke). Erfordert Handwerkzeug-Übung für komplexe Objekte. Keine magischen Gegenstände.",
+  "ui_scaling": null,
+  "casting_time": "10_MINUTES",
+  "range_m": 36,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "POINT", "range_m": 36 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Fabriziertes Objekt",
+        "type": "neutral",
+        "icon": "assets/tokens/chest_wood.png",
+        "hp": 20, "maxHp": 20, "ac": 15, "speed": 0,
+        "description": "Ein neu erschaffenes Objekt."
+      }
+    }
+  ]
+},
+
   {
-    "key": "fire_shield",
-    "name": "Feuerschild",
-    "level": 4,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst",
-    "components": ["V", "S", "M"],
-    "duration": "10 Minuten",
-    "description": "Du wirst von einem Schild aus Flammen (wähle 'Warm' oder 'Kalt') umhüllt. Du erhältst Resistenz gegen Kälte- oder Feuerschaden. Kreaturen, die dich im Nahkampf (innerhalb 1,5m) treffen, erleiden 2W8 Kälte- oder Feuerschaden (passend zum Schild).",
-    "scaling": null,
-    "damage": "2d8",
-    "damage_type": "fire_or_cold",
-    "classes": ["wizard"],
-    "patron_spell": { "patron": ["the_fiend", "the_genie"], "level": 4 }
-  },
+  "key": "fire_shield",
+  "name": "Feuerschild",
+  "level": 4,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Phosphor)"],
+  "classes": ["druid", "sorcerer", "wizard"],
+  "patron_spell": { "patron": ["the_fiend", "the_genie"], "level": 4 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Selbst",
+  "ui_duration": "10 Minuten",
+  "ui_description": "Flammen umhüllen dich (Licht 3m/3m). Wähle: 1. Warm (Resistenz Kälte, 2W8 Feuerschaden bei Nahkampftreffer). 2. Kalt (Resistenz Feuer, 2W8 Kälteschaden bei Nahkampftreffer).",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 0,
+  "duration": "10_MINUTES",
+  "target": { "type": "SELF" },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "FIRE_SHIELD",
+      "duration_seconds": 600,
+      "description": "Resistenz & Rückwurf-Schaden (2W8) bei Treffer."
+    },
+    {
+      "type": "ADD_LIGHT_SOURCE",
+      "radius_bright_m": 3,
+      "radius_dim_m": 3,
+      "color": "#ff5500"
+    }
+  ]
+},
+
   {
-    "key": "greater_invisibility",
-    "name": "Mächtige Unsichtbarkeit",
-    "level": 4,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel wird unsichtbar. Der Zauber endet NICHT, wenn das Ziel angreift oder Zauber wirkt.",
-    "scaling": null,
-    "classes": ["bard", "sorcerer", "wizard"],
-    "patron_spell": { "patron": ["the_archfey", "the_undead", "the_genie"], "level": 4 }
-  },
+  "key": "greater_invisibility",
+  "name": "Mächtige Unsichtbarkeit",
+  "level": 4,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["bard", "sorcerer", "wizard"],
+  "patron_spell": { "patron": ["the_archfey", "the_undead", "the_genie"], "level": 4 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Eine Kreatur wird unsichtbar. Der Zauber endet NICHT, wenn das Ziel angreift oder zaubert.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "GREATER_INVISIBILITY",
+      "duration_seconds": 60,
+      "description": "Unsichtbar. Endet nicht bei Aktionen."
+    }
+  ]
+},
+
   {
-    "key": "hallucinatory_terrain",
-    "name": "Halluzinatorisches Gelände",
-    "level": 4,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "90 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "24 Stunden",
-    "description": "Du veränderst das Aussehen von Gelände in einem 45m-Würfel (z.B. lässt einen Hügel wie einen Sumpf aussehen oder umgekehrt). Physische Interaktion (INT-Wurf) entlarvt die Illusion.",
-    "scaling": null,
-    "classes": ["bard", "druid", "warlock", "wizard"]
-  },
+  "key": "hallucinatory_terrain",
+  "name": "Halluzinatorisches Gelände",
+  "level": 4,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Pilz)"],
+  "classes": ["bard", "druid", "warlock", "wizard"],
+  "ui_casting_time": "10 Minuten",
+  "ui_range": "90 Meter",
+  "ui_duration": "24 Stunden",
+  "ui_description": "Du veränderst das Aussehen von natürlichem Gelände in einem 45m-Würfel (z.B. Feld zu Sumpf). Fühlt sich beim Berühren aber normal an. Untersuchung (INT-Wurf) entlarvt die Illusion.",
+  "ui_scaling": null,
+  "casting_time": "10_MINUTES",
+  "range_m": 90,
+  "duration": "24_HOURS",
+  "target": { "type": "POINT", "radius_m": 22.5 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Illusionäres Gelände",
+        "type": "neutral",
+        "icon": "assets/tokens/terrain_illusion.png",
+        "hp": 1000, "maxHp": 1000, "ac": 10, "speed": 0,
+        "description": "Täuscht anderes Gelände vor."
+      }
+    }
+  ]
+},
+
   {
-    "key": "ice_storm",
-    "name": "Eissturm",
-    "level": 4,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "90 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Ein Hagelsturm (12m hoch, 6m Radius Zylinder) entsteht. Kreaturen im Bereich müssen GE-Rettungswurf bestehen. Fehlschlag: 2W8 Wucht- und 4W6 Kälteschaden. Erfolg: Halber Schaden. Der Bereich wird zu schwierigem Gelände.",
-    "scaling": "Erhöht Wuchtschaden um 1W8 pro Zaubergrad über 4.",
-    "damage": "2d8 + 4d6",
-    "damage_type": "bludgeoning_and_cold",
-    "saving_throw": "dexterity",
-    "classes": ["druid", "sorcerer", "wizard"]
-  },
+  "key": "ice_storm",
+  "name": "Eissturm",
+  "level": 4,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Fäustling)"],
+  "classes": ["druid", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "90 Meter",
+  "ui_duration": "Sofort",
+  "ui_description": "Hagel fällt in einem 6m-Radius Zylinder (12m hoch). GE-Rettungswurf: Fehlschlag 2W10 Wucht + 4W6 Kälte. Erfolg: Halb. Der Boden wird bis zum Ende deines nächsten Zuges schwieriges Gelände.",
+  "ui_scaling": "Wuchtschaden +1W10 pro Grad über 4.",
+  "casting_time": "ACTION",
+  "range_m": 90,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "POINT", "radius_m": 6 },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "2d10", "type": "bludgeoning" },
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "half" },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d10" }
+    },
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "4d6", "type": "cold" },
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "half" }
+    },
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Hagelsturm",
+        "type": "neutral",
+        "icon": "assets/tokens/ice_storm.png",
+        "hp": 1, "maxHp": 1, "ac": 10, "speed": 0,
+        "description": "Schwieriges Gelände (1 Runde)."
+      }
+    }
+  ]
+},
+
   {
-    "key": "leomunds_secret_chest",
-    "name": "Leomunds Geheime Truhe",
-    "level": 4,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M (Truhe 5000 GM, Mini-Replika 50 GM)"],
-    "duration": "Sofort",
-    "description": "Du versteckst eine Truhe (und ihren Inhalt) in der Ätherebene. Du kannst sie (als Aktion) mit einer Mini-Replika herbeirufen oder zurückschicken, solange du auf derselben Ebene bist. (Geht verloren, wenn Replika zerstört wird).",
-    "scaling": null,
-    "classes": ["wizard"]
-  },
+  "key": "leomunds_secret_chest",
+  "name": "Leomunds Geheime Truhe",
+  "level": 4,
+  "school": "conjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Truhe 5000+ GM, Replika 50+ GM)"],
+  "classes": ["wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "Bis gebannt",
+  "ui_description": "Du versteckst eine Truhe auf der Ätherebene. Mit der Mini-Replika kannst du sie als Magische Aktion in ein unbesetztes Feld (1,5m) herbeirufen oder zurückschicken. Risiko des Verlusts nach 60 Tagen.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "UNTIL_DISPELLED",
+  "target": { "type": "POINT", "range_m": 1.5 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Geheime Truhe",
+        "type": "ally",
+        "icon": "assets/tokens/secret_chest.png",
+        "hp": 50, "maxHp": 50, "ac": 15, "speed": 0,
+        "description": "Lagerplatz. Kann weggeschickt werden."
+      }
+    }
+  ]
+},
+
   {
-    "key": "locate_creature",
-    "name": "Kreatur aufspüren",
-    "level": 4,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst (300m Radius)",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du spürst die Richtung zu einer bekannten Kreatur in 300m Umkreis. (Blockierbar durch fließendes Wasser).",
-    "scaling": null,
-    "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"]
-  },
+  "key": "locate_creature",
+  "name": "Kreatur aufspüren",
+  "level": 4,
+  "school": "divination",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Bluthund-Fell)"],
+  "classes": ["bard", "cleric", "druid", "paladin", "ranger", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Selbst (300m Radius)",
+  "ui_duration": "Konzentration, 1 Std.",
+  "ui_description": "Du spürst die Richtung zu einer bekannten Kreatur (oder einer Art, die du aus der Nähe gesehen hast) in 300m. Du spürst auch deren Bewegung. Blockiert durch Blei, fließendes Wasser oder Verwandlung (Polymorph).",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 0,
+  "duration": "CONCENTRATION_1_HOUR",
+  "target": { "type": "SELF" },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "LOCATING_CREATURE",
+      "duration_seconds": 3600,
+      "description": "Zeigt Richtung zur Zielkreatur."
+    }
+  ]
+},
+
   {
-    "key": "mordenkainens_faithful_hound",
-    "name": "Mordenkainens Treuer Hund",
-    "level": 4,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "8 Stunden",
-    "description": "Ein unsichtbarer, formloser Wachhund erscheint und bewacht einen Bereich. Er bellt laut, wenn eine kleine oder größere Kreatur (außer dir) 9m Umkreis betritt. Er greift diese Kreatur (als Reaktion) an (Nahkampf-Zauberangriff, 4W8 Stichschaden).",
-    "scaling": null,
-    "damage": "4d8",
-    "damage_type": "piercing",
-    "attack_roll": "melee_spell",
-    "classes": ["wizard"]
-  },
+  "key": "mordenkainens_faithful_hound",
+  "name": "Mordenkainens Treuer Hund",
+  "level": 4,
+  "school": "conjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Silberpfeife)"],
+  "classes": ["wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "8 Stunden",
+  "ui_description": "Du beschwörst einen unsichtbaren Wachhund. Er bellt bei Eindringlingen (Wahre Sicht 9m). Zu Beginn deines Zuges beißt er einen Feind in 1,5m (GE-Rettungswurf, 4W8 Kraftschaden). Als Magische Aktion kannst du ihn 9m bewegen.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "8_HOURS",
+  "target": { "type": "POINT", "range_m": 9 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Treuer Hund",
+        "type": "ally",
+        "icon": "assets/tokens/phantom_watchdog.png",
+        "hp": 999, "maxHp": 999, "ac": 20, "speed": 9,
+        "description": "Unsichtbar. Beißt autom. (Start d. Zuges)."
+      }
+    },
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "4d8", "type": "force" },
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "NEGATES_EFFECT" }
+    }
+  ]
+},
+
   {
-    "key": "mordenkainens_private_sanctum",
-    "name": "Mordenkainens Privates Gemach",
-    "level": 4,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "36 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "24 Stunden",
-    "description": "Sichert einen Bereich (bis 30m Würfel) gegen magisches Ausspähen (Divination). Der Bereich kann nicht durchsucht oder durch Zaubersensoren anvisiert werden.",
-    "scaling": "Mit Grad 5+: Dauer 'Bis gebannt'.",
-    "classes": ["wizard"]
-  },
+  "key": "mordenkainens_private_sanctum",
+  "name": "Mordenkainens Privates Gemach",
+  "level": 4,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Bleiplatte)"],
+  "classes": ["wizard"],
+  "ui_casting_time": "10 Minuten",
+  "ui_range": "36 Meter",
+  "ui_duration": "24 Stunden",
+  "ui_description": "Du sicherst einen Bereich (bis 30m Würfel). Wähle Effekte: Schall-/Sichtblockade, Blockade von Sensoren/Divination, Teleport-Sperre, Ebenenreise-Sperre. Permanent nach 1 Jahr täglichem Wirken.",
+  "ui_scaling": "Größe +30m pro Grad über 4.",
+  "casting_time": "10_MINUTES",
+  "range_m": 36,
+  "duration": "24_HOURS",
+  "target": { "type": "POINT", "radius_m": 15 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Privates Gemach",
+        "type": "neutral",
+        "icon": "assets/tokens/private_sanctum.png",
+        "hp": 1000, "maxHp": 1000, "ac": 10, "speed": 0,
+        "description": "Magisch gesicherter Bereich."
+      }
+    }
+  ]
+},
+
   {
-    "key": "otilukes_resilient_sphere",
-    "name": "Otilukes Unverwüstliche Kugel",
-    "level": 4,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Eine Kugel aus schimmernder Kraft umschließt eine Kreatur (oder Objekt). Ziel muss GE-Rettungswurf bestehen oder ist in der Kugel gefangen. Nichts kann die Kugel durchdringen (weder Schaden noch Zauber). Ziel kann RW wiederholen, wenn es versucht, die Kugel zu verlassen.",
-    "scaling": null,
-    "saving_throw": "dexterity",
-    "classes": ["wizard"]
-  },
+  "key": "otilukes_resilient_sphere",
+  "name": "Otilukes Unverwüstliche Kugel",
+  "level": 4,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Glaskugel)"],
+  "classes": ["wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Eine schimmernde Kugel umschließt Ziel (Groß oder kleiner). Unwillige: GE-Rettungswurf. Die Kugel ist undurchdringlich und immun gegen allen Schaden. Ziel kann Kugel rollen (halber Speed). 'Auflösung' zerstört sie.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "RESILIENT_SPHERE",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "dexterity",
+        "effect_on_success": "NEGATES_EFFECT"
+      },
+      "description": "Eingeschlossen. Immun gegen Schaden/Effekte. Kann nicht angreifen. Speed halbiert."
+    }
+  ]
+},
+
   {
-    "key": "phantasmal_killer",
-    "name": "Phantastischer Mörder",
-    "level": 4,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel muss WE-Rettungswurf bestehen oder ist 'verängstigt' und sieht eine Illusion seiner schlimmsten Furcht. Am Ende seines Zuges muss es erneut WE-RW bestehen. Fehlschlag: 4W10 psychischer Schaden. Erfolg: Zauber endet.",
-    "scaling": "Erhöht Schaden um 1W10 pro Zaubergrad über 4.",
-    "damage": "4d10",
-    "damage_type": "psychic",
-    "saving_throw": "wisdom",
-    "classes": ["wizard"],
-    "patron_spell": { "patron": "the_hexblade", "level": 4 }
-  },
+  "key": "phantasmal_killer",
+  "name": "Phantastischer Mörder",
+  "level": 4,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["bard", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "36 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Du beschwörst den Albtraum einer Kreatur. WE-Rettungswurf. Fehlschlag: 4W10 Psycho-Schaden und 'Verängstigt' (Nachteil auf Angriffe/Checks). Am Ende des Zuges neuer RW: Fehlschlag = erneuter Schaden! Erfolg = Ende.",
+  "ui_scaling": "Schaden +1W10 pro Grad über 4.",
+  "casting_time": "ACTION",
+  "range_m": 36,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "4d10", "type": "psychic" },
+      "saving_throw": { "ability": "wisdom", "effect_on_success": "half" },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d10" }
+    },
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "NIGHTMARE_HAUNTING",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "wisdom",
+        "effect_on_success": "NEGATES_EFFECT",
+        "repeat_end_of_turn": true
+      },
+      "description": "Nachteil auf Angriffe. Bei gescheitertem Save am Zugende: 4W10 Schaden."
+    }
+  ]
+},
+
   {
-    "key": "polymorph",
-    "name": "Verwandlung",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du verwandelst eine Kreatur in ein 'Tier' (Beast) mit HG gleich oder niedriger als das Ziel (oder Ziellvl). Ziel muss WE-Rettungswurf bestehen (falls unwillig). Die Spielwerte (inkl. TP, mentale Werte) werden durch die des Tieres ersetzt. Endet bei 0 TP oder Konzentration.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "druid", "sorcerer", "wizard"]
-  },
+  "key": "polymorph",
+  "name": "Verwandlung",
+  "level": 4,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Kokon)"],
+  "classes": ["bard", "druid", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "18 Meter",
+  "ui_duration": "Konzentration, 1 Std.",
+  "ui_description": "Verwandelt eine Kreatur in ein Tier (HG <= Ziel). Ziel erhält Temp-TP gleich den Tier-TP. Wenn Temp-TP auf 0 fallen, endet der Zauber. Ziel behält Persönlichkeit, kann aber nicht sprechen/zaubern.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 18,
+  "duration": "CONCENTRATION_1_HOUR",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "POLYMORPHED",
+      "duration_seconds": 3600,
+      "saving_throw": { "ability": "wisdom", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Verwandelt in Tier. Temp-TP = Tier-HP. Endet bei 0 Temp-TP."
+    }
+  ]
+},
+
   {
-    "key": "stone_shape",
-    "name": "Stein formen",
-    "level": 4,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Du formst ein Steinobjekt (max 1,5m Kantenlänge) in eine beliebige Form um. Du kannst auch einen Teil einer Steinstruktur (z.B. einer Wand) umformen, um z.B. einen Durchgang zu schaffen.",
-    "scaling": null,
-    "classes": ["cleric", "druid", "wizard"]
-  },
+  "key": "stone_shape",
+  "name": "Stein formen",
+  "level": 4,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Lehm)"],
+  "classes": ["cleric", "druid", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Berührung",
+  "ui_duration": "Sofort",
+  "ui_description": "Du formst Stein (max. 1,5m Würfel) nach Belieben. Erschaffe Durchgänge, schließe Türen, forme Truhen oder Waffen. Feine Mechaniken sind nicht möglich.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "POINT", "range_m": 1.5 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Geformter Stein",
+        "type": "neutral",
+        "icon": "assets/tokens/stone_shape.png",
+        "hp": 50, "maxHp": 50, "ac": 17, "speed": 0,
+        "description": "Barrikade oder Durchgang."
+      }
+    }
+  ]
+},
   {
     "key": "stoneskin",
     "name": "Steinhaut",
@@ -3184,336 +3879,712 @@
     "scaling": null,
     "classes": ["druid", "ranger", "sorcerer", "wizard"]
   },
+
   {
-    "key": "wall_of_fire",
-    "name": "Feuerwand",
-    "level": 4,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Erschafft eine Wand aus Feuer (max 18m lang, 6m hoch, 30cm dick ODER ein Ring 6m Radius). Kreaturen, die ihren Zug in 3m zur 'heißen' Seite (deiner Wahl) beginnen oder dort eintreten, müssen GE-RW bestehen oder 5W8 Feuerschaden. Das Durchqueren der Wand verursacht ebenfalls 5W8 Schaden (RW für halben).",
-    "scaling": "Erhöht Schaden um 1W8 pro Zaubergrad über 4.",
-    "damage": "5d8",
-    "damage_type": "fire",
-    "saving_throw": "dexterity",
-    "classes": ["druid", "sorcerer", "wizard"],
-    "patron_spell": { "patron": ["the_fiend", "the_celestial", "the_genie"], "level": 4 }
+  "key": "wall_of_fire",
+  "name": "Feuerwand",
+  "level": 4,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Holzkohle)"],
+  "classes": ["druid", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "36 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Du erschaffst eine Feuerwand (18m Linie oder 6m Ring). Beim Erscheinen: 5W8 Feuerschaden (GE-RW halb). Eine Seite ist heiß: 5W8 Schaden bei Eintritt oder Zugende in 3m Nähe.",
+  "ui_scaling": "Schaden +1W8 pro Grad über 4.",
+  "casting_time": "ACTION",
+  "range_m": 36,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": {
+    "type": "AREA",
+    "shape": "LINE",
+    "length_m": 18,
+    "width_m": 0.3,
+    "origin": "POINT"
   },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "5d8", "type": "fire" },
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "half" },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d8" }
+    },
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Feuerwand",
+        "type": "neutral",
+        "icon": "assets/tokens/wall_of_fire.png",
+        "hp": 1000, "maxHp": 1000, "ac": 10, "speed": 0,
+        "description": "Undurchsichtig. Heiße Seite verursacht 5W8 Schaden."
+      }
+    }
+  ]
+},
+
   {
-    "key": "animate_objects",
-    "name": "Gegenstände beleben",
-    "level": 5,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Du erweckst bis zu 10 nicht-magische Objekte zum Leben. Wähle: 10 Winzige (20 TP, 18 RK, +8 Angriff, 1W4+4 Schaden), 5 Kleine (25 TP, 16 RK, +6 Angriff, 1W8+2 Schaden), 2 Mittlere (40 TP, 13 RK, +5 Angriff, 2W6+1 Schaden) oder 1 Großes (50 TP, 10 RK, +6 Angriff, 2W10+2 Schaden). Als Bonusaktion kannst du sie mental befehligen.",
-    "scaling": "Mit Grad 6+: 2 zusätzliche Objekte pro Grad über 5.",
-    "classes": ["bard", "sorcerer", "wizard"]
-  },
+  "key": "animate_objects",
+  "name": "Gegenstände beleben",
+  "level": 5,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["bard", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "36 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Du belebst nicht-magische Objekte (Anzahl = Zauber-Mod). Sie werden zu Konstrukten (AC 15, HP 10-40 je nach Größe, Speed 9m). Als Bonusaktion befehligst du sie. Schaden: Slam (Energie) basierend auf Größe.",
+  "ui_scaling": "Schaden +1 Würfelgröße pro 2 Grade.",
+  "casting_time": "ACTION",
+  "range_m": 36,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "POINT", "range_m": 36 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Belebtes Objekt",
+        "type": "ally",
+        "icon": "assets/tokens/animated_sword.png",
+        "hp": 20, "maxHp": 20, "ac": 15, "speed": 9,
+        "description": "Konstrukt. Blindsicht 9m. Immun gegen Psycho/Gift.",
+        "actions": [
+          { "name": "Hieb (Klein/Mittel)", "damage": "1d4+3", "attackBonus": 8, "type": "force" },
+          { "name": "Hieb (Groß)", "damage": "2d6+3", "attackBonus": 8, "type": "force" }
+        ]
+      }
+    }
+  ]
+},
+
   {
-    "key": "bigbys_hand",
-    "name": "Bigbys Hand",
-    "level": 5,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Erschafft eine große, schimmernde Hand (ST 26, RK 20, TP gleich deinen max. TP). Als Bonusaktion kannst du sie bewegen (18m) und eine Aktion ausführen: 1. Zuschlagende Hand (Nahkampf-Zauberangriff, 4W8 Energieschaden), 2. Greifende Hand (versucht Kreatur zu packen, 2W6 Wuchtschaden), 3. Geballte Faust (stößt 1,5m weg), 4. Dazwischentretende Hand (+5 RK gegen 1 Ziel).",
-    "scaling": "Erhöht Schaden (Zuschlagend, Greifend) um 2W8/2W6 pro Zaubergrad über 5.",
-    "damage": "4d8",
-    "damage_type": "force",
-    "attack_roll": "melee_spell",
-    "classes": ["wizard"],
-    "patron_spell": { "patron": "the_fathomless", "level": 5 }
-  },
+  "key": "bigbys_hand",
+  "name": "Bigbys Hand",
+  "level": 5,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Eierschale, Handschuh)"],
+  "classes": ["sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "36 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Eine große Hand aus Energie (AC 20, HP = deine Max HP). Bewegt sich auf Befehl und führt Effekte aus: 1. Faust (5W8 Kraft), 2. Wegstoßen (ST-RW), 3. Greifen (GE-RW + 4W6 Quetschen), 4. Schutz (Halbe Deckung).",
+  "ui_scaling": "Schaden +2W8 (Faust) / +2W6 (Griff) pro Grad über 5.",
+  "casting_time": "ACTION",
+  "range_m": 36,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "POINT", "range_m": 36 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Bigbys Hand",
+        "type": "ally",
+        "icon": "assets/tokens/bigbys_hand.png",
+        "hp": 100, "maxHp": 100, "ac": 20, "speed": 18,
+        "description": "Großes Objekt. AC 20. Nutzt Caster-Werte.",
+        "actions": [
+          { "name": "Geballte Faust", "damage": "5d8", "attackBonus": 8, "type": "force", "range": "Melee" },
+          { "name": "Greifende Hand (Crush)", "damage": "4d6+4", "attackBonus": 0, "type": "bludgeoning", "description": "Nur gegen gegriffenes Ziel." }
+        ]
+      }
+    }
+  ]
+},
+
   {
-    "key": "cloudkill",
-    "name": "Todeswolke",
-    "level": 5,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "36 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Erschafft eine Wolke (6m Radius Kugel) aus giftigem, gelbgrünem Nebel (schwerer als Luft, sinkt 3m pro Runde). Kreaturen im Bereich (oder die eintreten) müssen KO-Rettungswurf bestehen. Fehlschlag: 5W8 Giftschaden. Erfolg: Halber Schaden.",
-    "scaling": "Erhöht Schaden um 1W8 pro Zaubergrad über 5.",
-    "damage": "5d8",
-    "damage_type": "poison",
-    "saving_throw": "constitution",
-    "classes": ["sorcerer", "wizard"],
-    "patron_spell": { "patron": "the_undead", "level": 5 }
-  },
+  "key": "cloudkill",
+  "name": "Todeswolke",
+  "level": 5,
+  "school": "conjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["sorcerer", "wizard"],
+  "patron_spell": { "patron": "the_undead", "level": 5 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "36 Meter",
+  "ui_duration": "Konzentration, 10 Min.",
+  "ui_description": "Du erschaffst eine 6m-Radius Kugel aus giftigem Nebel (stark sichtbehindert). Sie bewegt sich zu Beginn jedes deiner Züge 3m von dir weg. Kreaturen im Bereich (Eintritt/Zugende/Kontakt) müssen KO-Rettungswurf bestehen. Fehlschlag: 5W8 Giftschaden. Erfolg: Halb.",
+  "ui_scaling": "Schaden +1W8 pro Grad über 5.",
+  "casting_time": "ACTION",
+  "range_m": 36,
+  "duration": "CONCENTRATION_10_MINUTES",
+  "target": { "type": "POINT", "radius_m": 6 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Todeswolke",
+        "type": "neutral",
+        "icon": "assets/tokens/cloudkill.png",
+        "hp": 1, "maxHp": 1, "ac": 10, "speed": 3,
+        "description": "Bewegt sich 3m weg/Runde. Verursacht 5W8 Giftschaden.",
+        "auto_move_away": true
+      }
+    },
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "5d8", "type": "poison" },
+      "saving_throw": { "ability": "constitution", "effect_on_success": "half" },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d8" }
+    }
+  ]
+},
+
   {
-    "key": "cone_of_cold",
-    "name": "Kältekegel",
-    "level": 5,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst (18m Kegel)",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Ein 18m-Kegel aus eisiger Kälte. Kreaturen im Bereich müssen KO-Rettungswurf bestehen. Fehlschlag: 8W8 Kälteschaden. Erfolg: Halber Schaden.",
-    "scaling": "Erhöht Schaden um 1W8 pro Zaubergrad über 5.",
-    "damage": "8d8",
-    "damage_type": "cold",
-    "saving_throw": "constitution",
-    "classes": ["sorcerer", "wizard"],
-    "patron_spell": { "patron": ["the_hexblade", "the_fathomless", "the_genie"], "level": 5 }
+  "key": "cone_of_cold",
+  "name": "Kältekegel",
+  "level": 5,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Kristallkegel)"],
+  "classes": ["druid", "sorcerer", "wizard"],
+  "patron_spell": { "patron": ["the_hexblade", "the_fathomless", "the_genie"], "level": 5 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Selbst (18m Kegel)",
+  "ui_duration": "Sofort",
+  "ui_description": "Ein Kältekegel (18m) geht von dir aus. Jede Kreatur im Bereich muss einen KO-Rettungswurf bestehen. Fehlschlag: 8W8 Kälteschaden. Erfolg: Halber Schaden. Getötete Ziele werden zu gefrorenen Statuen.",
+  "ui_scaling": "Schaden +1W8 pro Grad über 5.",
+  "casting_time": "ACTION",
+  "range_m": 0,
+  "duration": "INSTANTANEOUS",
+  "target": {
+    "type": "AREA",
+    "shape": "CONE",
+    "length_m": 18,
+    "origin": "SELF"
   },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "8d8", "type": "cold" },
+      "saving_throw": { "ability": "constitution", "effect_on_success": "half" },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d8" }
+    }
+  ]
+},
+
   {
-    "key": "conjure_elemental",
-    "name": "Elementar beschwören",
-    "level": 5,
-    "school": "conjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "27 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Beschwört einen Elementar (Luft, Erde, Feuer oder Wasser) mit HG 5. Er ist dir freundlich gesinnt. Wenn die Konzentration bricht, wird er feindselig.",
-    "scaling": "Mit Grad 6+: HG des Elementars erhöht sich um 1 pro Grad über 5.",
-    "classes": ["druid", "wizard"]
-  },
+  "key": "conjure_elemental",
+  "name": "Elementar beschwören",
+  "level": 5,
+  "school": "conjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["druid", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "18 Meter",
+  "ui_duration": "Konzentration, 10 Min.",
+  "ui_description": "Beschwört einen Großen Elementargeist (Luft/Erde/Feuer/Wasser). Feinde, die den Bereich betreten/starten (1,5m), müssen GE-RW bestehen. Fehlschlag: 8W8 Schaden (Blitz/Donner/Feuer/Kälte) und 'Festgehalten'. Start des Zuges (wenn festgehalten): Neuer RW, bei Fehlschlag 4W8 Schaden.",
+  "ui_scaling": "Initialschaden +2W8 pro Grad über 5.",
+  "casting_time": "ACTION",
+  "range_m": 18,
+  "duration": "CONCENTRATION_10_MINUTES",
+  "target": { "type": "POINT", "radius_m": 1.5 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Elementargeist",
+        "type": "ally",
+        "icon": "assets/tokens/elemental_spirit.png",
+        "hp": 1000, "maxHp": 1000, "ac": 15, "speed": 0,
+        "size": "large",
+        "description": "Falle (2x2). Verursacht Schaden & Festhalten."
+      }
+    },
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "8d8", "type": "variable" },
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "NEGATES_EFFECT" },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "2d8" }
+    },
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "ELEMENTAL_RESTRAINT",
+      "duration_turns": 10,
+      "saving_throw": { "ability": "dexterity", "effect_on_success": "NEGATES_EFFECT", "repeat_start_of_turn": true },
+      "description": "Festgehalten. 4W8 Schaden bei Fehlschlag (Rundenbeginn)."
+    }
+  ]
+},
+
   {
-    "key": "contact_other_plane",
-    "name": "Kontakt zu anderer Ebene",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Minute",
-    "range": "Selbst",
-    "components": ["V"],
-    "duration": "Sofort",
-    "description": "Du kontaktierst eine außerweltliche Entität und kannst 5 Fragen (Ja/Nein/Unklar) stellen. Du musst einen INT-Rettungswurf (SG 15) bestehen. Fehlschlag: Du erleidest 6W6 psychischen Schaden und bist 'wahnsinnig' (Ziele nicht klar erkennen) bis zur nächsten langen Rast.",
-    "scaling": null,
-    "saving_throw": "intelligence",
-    "damage": "6d6",
-    "damage_type": "psychic",
-    "classes": ["warlock", "wizard"]
-  },
+  "key": "contact_other_plane",
+  "name": "Kontakt zu anderer Ebene",
+  "level": 5,
+  "school": "divination",
+  "icon": "skill_placeholder.png",
+  "ritual": true,
+  "components": ["V"],
+  "classes": ["warlock", "wizard"],
+  "ui_casting_time": "1 Minute (oder Ritual)",
+  "ui_range": "Selbst",
+  "ui_duration": "1 Minute",
+  "ui_description": "Du kontaktierst eine Wesenheit (5 Fragen, Ja/Nein). Risiko: Du musst einen INT-RW (SG 15) bestehen. Fehlschlag: 6W6 Psychoschaden und 'Handlungsunfähig' bis zur langen Rast. Erfolg: Keine negativen Effekte.",
+  "ui_scaling": null,
+  "casting_time": "1_MINUTE",
+  "range_m": 0,
+  "duration": "1_MINUTE",
+  "target": { "type": "SELF" },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "6d6", "type": "psychic" },
+      "saving_throw": {
+        "ability": "intelligence",
+        "fixed_dc": 15,
+        "effect_on_success": "NEGATES_EFFECT"
+      },
+      "description": "Schaden bei Fehlschlag (INT SG 15)."
+    },
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "CONTACT_FAILURE",
+      "duration_until_long_rest": true,
+      "saving_throw": {
+        "ability": "intelligence",
+        "fixed_dc": 15,
+        "effect_on_success": "NEGATES_EFFECT"
+      },
+      "description": "Handlungsunfähig (Incapacitated)."
+    }
+  ]
+},
+
   {
-    "key": "creation",
-    "name": "Erschaffen",
-    "level": 5,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Speziell (siehe Beschreibung)",
-    "description": "Erschafft 1 nicht-magisches Objekt (max 1,5m Würfel) aus pflanzlichem Material (Holz, Seil etc.). Das Objekt ist quasi-real, hält aber nur eine bestimmte Zeit (abhängig vom Material, z.B. Edelstein 1 Min, Holz 1 Tag, Stein 12 Std.).",
-    "scaling": "Erhöht Größe des Würfels um 1,5m pro Zaubergrad über 5.",
-    "classes": ["sorcerer", "wizard"]
-  },
+  "key": "creation",
+  "name": "Erschaffen",
+  "level": 5,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Pinsel)"],
+  "classes": ["sorcerer", "wizard"],
+  "ui_casting_time": "1 Minute",
+  "ui_range": "9 Meter",
+  "ui_duration": "Spezial (Materialabhängig)",
+  "ui_description": "Du erschaffst ein Objekt aus Schattenmaterie (max. 1,5m Würfel). Haltbarkeit: Pflanzlich (24h), Stein (12h), Metall (1h), Edelstein (10 Min), Adamant (1 Min).",
+  "ui_scaling": "Größe +1,5m pro Grad über 5.",
+  "casting_time": "10_MINUTES",
+  "range_m": 9,
+  "duration": "SPECIAL",
+  "target": { "type": "POINT", "range_m": 9 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Schatten-Objekt",
+        "type": "neutral",
+        "icon": "assets/tokens/shadow_object.png",
+        "hp": 20, "maxHp": 20, "ac": 15, "speed": 0,
+        "description": "Erschaffenes Material."
+      }
+    }
+  ]
+},
+
   {
-    "key": "dominate_person",
-    "name": "Person beherrschen",
-    "level": 5,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ein Humanoid muss WE-Rettungswurf bestehen oder ist 'bezaubert' (charmed) und wird von dir telepathisch kontrolliert (als Aktion). Du hast Vorteil auf den RW, wenn du im Kampf bist. Wenn das Ziel Schaden nimmt, darf es den RW wiederholen.",
-    "scaling": "Mit Grad 6: Dauer 10 Min. Mit Grad 7: Dauer 1 Std. Mit Grad 8: Dauer 8 Std.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "wizard"],
-    "patron_spell": { "patron": ["the_archfey", "the_great_old_one"], "level": 5 }
-  },
+  "key": "dominate_person",
+  "name": "Person beherrschen",
+  "level": 5,
+  "school": "enchantment",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["bard", "sorcerer", "wizard"],
+  "patron_spell": { "patron": ["the_archfey", "the_great_old_one"], "level": 5 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "18 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Ein Humanoid muss einen WE-Rettungswurf bestehen (Vorteil wenn im Kampf mit dir). Fehlschlag: 'Bezaubert' und unter deiner telepathischen Kontrolle. RW wiederholen bei Schaden.",
+  "ui_scaling": "Dauer: 10 Min (Grad 6), 1 Std (Grad 7), 8 Std (Grad 8+).",
+  "casting_time": "ACTION",
+  "range_m": 18,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "CREATURE", "count": 1, "filter": "HUMANOID" },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "DOMINATED",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "wisdom",
+        "effect_on_success": "NEGATES_EFFECT"
+      },
+      "description": "Kontrolliert. RW bei Schaden."
+    }
+  ]
+},
+
   {
-    "key": "dream",
-    "name": "Traum",
-    "level": 5,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "Speziell (gleiche Ebene)",
-    "components": ["V", "S", "M"],
-    "duration": "8 Stunden",
-    "description": "Du (oder ein williger Bote) betrittst den Traum einer schlafenden Kreatur. Du kannst eine Konversation führen. Du kannst den Traum auch monströs gestalten: Ziel muss WE-Rettungswurf bestehen oder erleidet 3W6 psychischen Schaden und erhält keine Vorteile durch die Rast.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "damage": "3d6",
-    "damage_type": "psychic",
-    "classes": ["bard", "warlock", "wizard"]
-  },
+  "key": "dream",
+  "name": "Traum",
+  "level": 5,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Sand)"],
+  "classes": ["bard", "warlock", "wizard"],
+  "ui_casting_time": "1 Minute",
+  "ui_range": "Spezial",
+  "ui_duration": "8 Stunden",
+  "ui_description": "Du (oder ein Bote) fällst in Trance und betrittst den Traum einer bekannten Kreatur. Du kannst mit ihr reden und den Traum formen. Albtraum-Option: Ziel macht WE-RW. Fehlschlag: 3W6 Psychoschaden (beim Aufwachen) und keine Vorteile durch die Rast.",
+  "ui_scaling": null,
+  "casting_time": "1_MINUTE",
+  "range_m": 1.5,
+  "duration": "8_HOURS",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "DREAM_TRANCE",
+      "duration_seconds": 28800,
+      "description": "Bote: Handlungsunfähig, Speed 0."
+    },
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "3d6", "type": "psychic" },
+      "saving_throw": { "ability": "wisdom", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Nur bei Albtraum-Option (beim Aufwachen)."
+    }
+  ]
+},
+
   {
-    "key": "geas",
-    "name": "Mächtiger Befehl (Geas)",
-    "level": 5,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Minute",
-    "range": "18 Meter",
-    "components": ["V"],
-    "duration": "30 Tage",
-    "description": "Du befiehlst einer Kreatur (die dich verstehen kann) eine Handlung (oder das Unterlassen einer Handlung). Ziel muss WE-Rettungswurf bestehen oder ist 'bezaubert' (charmed) und muss dem Befehl folgen. Wenn es dem Befehl widerspricht, erleidet es 5W10 psychischen Schaden (1x pro Tag).",
-    "scaling": "Mit Grad 7: Dauer 1 Jahr. Mit Grad 9: Dauer 'Bis gebannt'.",
-    "saving_throw": "wisdom",
-    "damage": "5d10",
-    "damage_type": "psychic",
-    "classes": ["bard", "cleric", "druid", "paladin", "wizard"]
-  },
+  "key": "geas",
+  "name": "Mächtiger Befehl (Geas)",
+  "level": 5,
+  "school": "enchantment",
+  "icon": "skill_placeholder.png",
+  "components": ["V"],
+  "classes": ["bard", "cleric", "druid", "paladin", "wizard"],
+  "ui_casting_time": "1 Minute",
+  "ui_range": "18 Meter",
+  "ui_duration": "30 Tage",
+  "ui_description": "Du erteilst einen Befehl. Ziel muss WE-Rettungswurf bestehen oder ist 'Bezaubert'. Wenn es dem Befehl zuwiderhandelt, erleidet es 5W10 Psychoschaden (1x/Tag).",
+  "ui_scaling": "Dauer: 1 Jahr (Grad 7-8), Ewig (Grad 9).",
+  "casting_time": "1_MINUTE",
+  "range_m": 18,
+  "duration": "30_DAYS",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "GEAS",
+      "duration_seconds": 2592000,
+      "saving_throw": { "ability": "wisdom", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Bezaubert. Muss Befehl folgen."
+    },
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "5d10", "type": "psychic" },
+      "description": "Strafe bei Ungehorsam (manuell auslösen)."
+    }
+  ]
+},
+
   {
-    "key": "hold_monster",
-    "name": "Monster festhalten",
-    "level": 5,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "27 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Eine Kreatur (jeder Typ, außer Untote) muss WE-Rettungswurf bestehen oder ist 'gelähmt' (paralyzed). Am Ende jedes seiner Züge darf es den RW wiederholen.",
-    "scaling": "Wähle ein zusätzliches Ziel pro Zaubergrad über 5.",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "sorcerer", "warlock", "wizard"]
+  "key": "hold_monster",
+  "name": "Monster festhalten",
+  "level": 5,
+  "school": "enchantment",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Eisenstück)"],
+  "classes": ["bard", "sorcerer", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "27 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Eine Kreatur in Reichweite muss einen WE-Rettungswurf bestehen oder ist 'Gelähmt' (Paralyzed). Wiederholter RW am Ende jedes Zuges.",
+  "ui_scaling": "1 zusätzliches Ziel pro Grad über 5.",
+  "casting_time": "ACTION",
+  "range_m": 27,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": {
+    "type": "CREATURE",
+    "count": 1,
+    "scaling": { "type": "ADD_TARGET", "amount": 1 }
   },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "PARALYZED",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "wisdom",
+        "effect_on_success": "NEGATES_EFFECT",
+        "repeat_end_of_turn": true
+      },
+      "description": "Gelähmt. Kritische Treffer in Nahkampf."
+    }
+  ]
+},
+
   {
-    "key": "legend_lore",
-    "name": "Sagenkunde",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Selbst",
-    "components": ["V", "S", "M (Weihrauch 250 GM, 4 Elfenbein-Streifen 50 GM)"],
-    "duration": "Sofort",
-    "description": "Du nennst eine Person, einen Ort oder ein Objekt. Du erhältst (falls vorhanden) legendäres Wissen (in metaphorischer Form) darüber.",
-    "scaling": null,
-    "classes": ["bard", "cleric", "wizard"]
-  },
+  "key": "legend_lore",
+  "name": "Sagenkunde",
+  "level": 5,
+  "school": "divination",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Weihrauch 250+ GM, 4 Elfenbeinstreifen 200+ GM)"],
+  "classes": ["bard", "cleric", "wizard"],
+  "ui_casting_time": "10 Minuten",
+  "ui_range": "Selbst",
+  "ui_duration": "Sofort",
+  "ui_description": "Du nennst eine berühmte Person, einen Ort oder Gegenstand. Du erhältst eine Zusammenfassung von Legenden und Wissen darüber. Ist das Ziel nicht berühmt, hörst du traurige Posaunentöne und der Zauber scheitert.",
+  "ui_scaling": null,
+  "casting_time": "10_MINUTES",
+  "range_m": 0,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "SELF" },
+  "effects": []
+},
+
   {
-    "key": "mislead",
-    "name": "Irreführung",
-    "level": 5,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "Selbst",
-    "components": ["S"],
-    "duration": "Konzentration, bis zu 1 Stunde",
-    "description": "Du wirst unsichtbar und erschaffst gleichzeitig ein illusionäres Abbild von dir (in 9m Umkreis). Als Bonusaktion kannst du das Abbild bewegen. Du kannst deine Sinne (als Aktion) auf das Abbild verlagern, um durch es zu sehen und zu hören.",
-    "scaling": null,
-    "classes": ["bard", "wizard"]
-  },
+  "key": "mislead",
+  "name": "Irreführung",
+  "level": 5,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["S"],
+  "classes": ["bard", "warlock", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "Selbst",
+  "ui_duration": "Konzentration, 1 Std.",
+  "ui_description": "Du wirst unsichtbar und erschaffst gleichzeitig ein illusionäres Doppel an deinem Platz. Als Magische Aktion kannst du das Doppel bewegen (2x Speed) und durch seine Sinne wahrnehmen. Unsichtbarkeit endet bei Angriff/Zauber.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 0,
+  "duration": "CONCENTRATION_1_HOUR",
+  "target": { "type": "SELF" },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "INVISIBLE",
+      "duration_seconds": 3600,
+      "description": "Unsichtbar. Endet bei Aktion."
+    },
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Illusionäres Doppel",
+        "type": "ally",
+        "icon": "assets/tokens/mislead_double.png",
+        "hp": 1, "maxHp": 1, "ac": 10, "speed": 18,
+        "description": "Doppelgänger. Unverwundbar. Teilt Sinne."
+      }
+    }
+  ]
+},
+
   {
-    "key": "modify_memory",
-    "name": "Erinnerung verändern",
-    "level": 5,
-    "school": "enchantment",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 1 Minute",
-    "description": "Ziel muss WE-Rettungswurf bestehen oder ist 'bezaubert' (charmed) und handlungsunfähig. Du kannst eine Erinnerung (max 10 Min.) aus den letzten 24 Std. löschen, verändern oder erschaffen. Wenn die Konzentration endet, ist die Erinnerung modifiziert.",
-    "scaling": "Mit Grad 6+: Ziel-Zeitraum (24 Std) erhöht sich (7 Tage, 30 Tage, 1 Jahr, beliebig).",
-    "saving_throw": "wisdom",
-    "classes": ["bard", "wizard"]
-  },
+  "key": "modify_memory",
+  "name": "Erinnerung verändern",
+  "level": 5,
+  "school": "enchantment",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["bard", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "Konzentration, 1 Min.",
+  "ui_description": "Ein Ziel muss WE-Rettungswurf bestehen (Vorteil im Kampf). Fehlschlag: 'Bezaubert' und 'Handlungsunfähig'. Du kannst eine Erinnerung (max 10 Min) aus den letzten 24 Std verändern. Endet sofort, wenn das Ziel Schaden nimmt.",
+  "ui_scaling": "Zeitraum: 7 Tage (Grad 6), 30 Tage (Grad 7), 1 Jahr (Grad 8), Beliebig (Grad 9).",
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "CONCENTRATION_1_MINUTE",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "MODIFYING_MEMORY",
+      "duration_turns": 10,
+      "saving_throw": {
+        "ability": "wisdom",
+        "effect_on_success": "NEGATES_EFFECT"
+      },
+      "description": "Bezaubert & Handlungsunfähig. Endet bei Schaden."
+    }
+  ]
+},
+
   {
-    "key": "passwall",
-    "name": "Wandpassage",
-    "level": 5,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "1 Stunde",
-    "description": "Erschafft einen Durchgang (bis 1,5m breit, 2,1m hoch, 6m tief) durch eine feste Oberfläche (Holz, Stein, Metall).",
-    "scaling": null,
-    "classes": ["wizard"]
-  },
+  "key": "passwall",
+  "name": "Wandpassage",
+  "level": 5,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Sesamsamen)"],
+  "classes": ["wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "1 Stunde",
+  "ui_description": "Du öffnest einen Durchgang (1,5m breit, 2,5m hoch, 6m tief) in einer Oberfläche aus Holz, Gips oder Stein. Keine Instabilität. Am Ende werden Kreaturen sicher herausgeschoben.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "1_HOUR",
+  "target": { "type": "POINT", "range_m": 9 },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Durchgang",
+        "type": "neutral",
+        "icon": "assets/tokens/passwall.png",
+        "hp": 1000, "maxHp": 1000, "ac": 10, "speed": 0,
+        "description": "Öffnung in der Wand."
+      }
+    }
+  ]
+},
+
   {
-    "key": "planar_binding",
-    "name": "Ebenenbindung",
-    "level": 5,
-    "school": "abjuration",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Stunde",
-    "range": "18 Meter",
-    "components": ["V", "S", "M (Juwel im Wert von 1000 GM, wird verbraucht)"],
-    "duration": "24 Stunden",
-    "description": "Du versuchst, einen Himmlischen, Elementar, Fee oder Unhold zu binden (den du z.B. beschworen hast). Ziel muss CH-Rettungswurf bestehen oder ist 24 Std. an dich gebunden und muss dir gehorchen (solange es nicht selbstzerstörerisch ist).",
-    "scaling": "Mit Grad 6: Dauer 10 Tage. Grad 7: 30 Tage. Grad 8: 180 Tage. Grad 9: 1 Jahr + 1 Tag.",
-    "saving_throw": "charisma",
-    "classes": ["bard", "cleric", "druid", "wizard"]
-  },
+  "key": "planar_binding",
+  "name": "Ebenenbindung",
+  "level": 5,
+  "school": "abjuration",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Juwel 1.000+ GM, verbraucht)"],
+  "classes": ["bard", "cleric", "druid", "warlock", "wizard"],
+  "ui_casting_time": "1 Stunde",
+  "ui_range": "18 Meter",
+  "ui_duration": "24 Stunden",
+  "ui_description": "Du bindest einen Himmlischen, Elementar, Fee oder Unhold an deinen Dienst. Ziel muss CH-Rettungswurf bestehen. Verlängert die Dauer von Beschwörungszaubern. Befehle werden befolgt.",
+  "ui_scaling": "Dauer: 10 Tage (Grad 6), 30 Tage (Grad 7), 180 Tage (Grad 8), 366 Tage (Grad 9).",
+  "casting_time": "1_HOUR",
+  "range_m": 18,
+  "duration": "24_HOURS",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "BOUND_TO_SERVICE",
+      "duration_seconds": 86400,
+      "saving_throw": { "ability": "charisma", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Dient dem Caster. Beschwörung verlängert."
+    }
+  ]
+},
+
   {
-    "key": "rarys_telepathic_bond",
-    "name": "Rarys Telepathie-Band",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "1 Stunde",
-    "description": "Bis zu 8 willige Kreaturen können 1 Stunde lang telepathisch miteinander kommunizieren (solange sie auf derselben Ebene sind).",
-    "scaling": null,
-    "classes": ["wizard"]
-  },
+  "key": "rarys_telepathic_bond",
+  "name": "Rarys Telepathie-Band",
+  "level": 5,
+  "school": "divination",
+  "icon": "skill_placeholder.png",
+  "ritual": true,
+  "components": ["V", "S", "M (Eierschalen)"],
+  "classes": ["bard", "wizard"],
+  "ui_casting_time": "1 Aktion (oder Ritual)",
+  "ui_range": "9 Meter",
+  "ui_duration": "1 Stunde",
+  "ui_description": "Bis zu 8 willige Kreaturen werden telepathisch verbunden. Kommunikation ist über beliebige Distanz auf derselben Ebene möglich.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "1_HOUR",
+  "target": { "type": "CREATURE", "count": 8 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "TELEPATHIC_LINK",
+      "duration_seconds": 3600,
+      "description": "Telepathische Kommunikation mit Gruppe."
+    }
+  ]
+},
+
   {
-    "key": "scrying",
-    "name": "Ausspähung (Scrying)",
-    "level": 5,
-    "school": "divination",
-    "icon": "skill_placeholder.png",
-    "casting_time": "10 Minuten",
-    "range": "Selbst",
-    "components": ["V", "S", "M (Fokus im Wert von 1000 GM)"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Du versuchst, eine Kreatur oder einen Ort auszuspähen. Ziel (falls Kreatur) muss WE-Rettungswurf bestehen (Modifikator basiert darauf, wie gut du es kennst). Bei Erfolg siehst und hörst du das Ziel 10 Min. lang.",
-    "scaling": null,
-    "saving_throw": "wisdom",
-    "classes": ["bard", "cleric", "druid", "warlock", "wizard"]
-  },
+  "key": "scrying",
+  "name": "Ausspähung (Scrying)",
+  "level": 5,
+  "school": "divination",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Fokus 1.000+ GM)"],
+  "classes": ["bard", "cleric", "druid", "warlock", "wizard"],
+  "ui_casting_time": "10 Minuten",
+  "ui_range": "Selbst (Sensor)",
+  "ui_duration": "Konzentration, 10 Min.",
+  "ui_description": "Du beobachtest eine Kreatur auf derselben Ebene. WE-Rettungswurf (modifiziert durch Wissen/Verbindung). Fehlschlag: Unsichtbarer Sensor folgt dem Ziel. Erfolg: Ziel ist 24h immun.",
+  "ui_scaling": null,
+  "casting_time": "10_MINUTES",
+  "range_m": 0,
+  "duration": "CONCENTRATION_10_MINUTES",
+  "target": { "type": "SELF" },
+  "effects": [
+    {
+      "type": "SUMMON",
+      "entity": {
+        "name": "Sensor",
+        "type": "ally",
+        "icon": "assets/tokens/scrying_sensor.png",
+        "hp": 1000, "maxHp": 1000, "ac": 10, "speed": 9,
+        "description": "Unsichtbar. Übermittelt Bild & Ton."
+      }
+    }
+  ]
+},
+
   {
-    "key": "seeming",
-    "name": "Schein",
-    "level": 5,
-    "school": "illusion",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "9 Meter",
-    "components": ["V", "S"],
-    "duration": "8 Stunden",
-    "description": "Du veränderst das Aussehen (inkl. Kleidung) einer beliebigen Anzahl von Kreaturen in Reichweite. Die Illusion hält 8 Stunden und wird nicht durch physische Interaktion gebrochen (nur durch INT-Wurf).",
-    "scaling": null,
-    "classes": ["bard", "sorcerer", "wizard"],
-    "patron_spell": { "patron": "the_archfey", "level": 5 }
-  },
+  "key": "seeming",
+  "name": "Schein",
+  "level": 5,
+  "school": "illusion",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["bard", "sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "9 Meter",
+  "ui_duration": "8 Stunden",
+  "ui_description": "Du veränderst das Aussehen beliebiger Kreaturen in Reichweite. Unwillige machen CH-Rettungswurf. Hält 8 Stunden. Physische Untersuchung (INT-Check) entlarvt die Illusion.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 9,
+  "duration": "8_HOURS",
+  "target": { "type": "CREATURE", "count": 99 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "SEEMING_DISGUISE",
+      "duration_seconds": 28800,
+      "saving_throw": { "ability": "charisma", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Illusions-Verkleidung."
+    }
+  ]
+},
+
   {
-    "key": "telekinesis",
-    "name": "Telekinese",
-    "level": 5,
-    "school": "transmutation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "18 Meter",
-    "components": ["V", "S"],
-    "duration": "Konzentration, bis zu 10 Minuten",
-    "description": "Du kontrollierst (als Aktion) eine Kreatur oder ein Objekt (bis 500kg). Objekt: Kannst du 9m bewegen. Kreatur: Muss ST-Rettungswurf (Attributswurf-Wettstreit mit deinem INT) bestehen oder wird 9m bewegt (auch in die Luft).",
-    "scaling": null,
-    "saving_throw": "strength_contest",
-    "classes": ["sorcerer", "wizard"],
-    "patron_spell": { "patron": "the_great_old_one", "level": 5 }
-  },
+  "key": "telekinesis",
+  "name": "Telekinese",
+  "level": 5,
+  "school": "transmutation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S"],
+  "classes": ["sorcerer", "wizard"],
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "18 Meter",
+  "ui_duration": "Konzentration, 10 Min.",
+  "ui_description": "Du bewegst eine Kreatur oder ein Objekt (Riesig oder kleiner). Kreatur: ST-Rettungswurf. Fehlschlag: Wird 9m bewegt und ist 'Festgehalten' (Restrained) bis Ende deines nächsten Zuges. Wiederholbar in jedem Zug als Magische Aktion.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 18,
+  "duration": "CONCENTRATION_10_MINUTES",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "RESTRAINED",
+      "duration_turns": 1,
+      "saving_throw": { "ability": "strength", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Telekinetisch gegriffen."
+    },
+    {
+      "type": "PUSH",
+      "distance_m": 9,
+      "saving_throw": { "ability": "strength", "effect_on_success": "NEGATES_EFFECT" },
+      "description": "Bewegung in beliebige Richtung."
+    }
+  ]
+},
   {
     "key": "teleportation_circle",
     "name": "Teleportationskreis",
