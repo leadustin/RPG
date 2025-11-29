@@ -2478,39 +2478,65 @@
     }
   ]
 },
+
   {
-    "key": "feign_death",
-    "name": "Scheintod",
-    "level": 3,
-    "school": "necromancy",
-    "icon": "skill_placeholder.png",
-    "ritual": true,
-    "casting_time": "1 Aktion",
-    "range": "Berührung",
-    "components": ["V", "S", "M"],
-    "duration": "1 Stunde",
-    "description": "Du versetzt eine willige Kreatur in einen scheintoten Zustand. Sie ist 'gelähmt', immun gegen Gift/Krankheit, hat Resistenz gegen allen Schaden (außer psychisch). Für alle (auch magische) Inspektionen erscheint sie tot.",
-    "scaling": null,
-    "classes": ["cleric", "wizard", "bard"]
-  },
+  "key": "feign_death",
+  "name": "Scheintod",
+  "level": 3,
+  "school": "necromancy",
+  "icon": "skill_placeholder.png",
+  "ritual": true,
+  "components": ["V", "S", "M (Grabeserde)"],
+  "classes": ["bard", "cleric", "druid", "wizard"],
+  "ui_casting_time": "1 Aktion (oder Ritual)",
+  "ui_range": "Berührung",
+  "ui_duration": "1 Stunde",
+  "ui_description": "Du versetzt eine willige Kreatur in einen leichenähnlichen Zustand. Sie erscheint tot, ist 'Blind' und 'Handlungsunfähig', hat Bewegungsrate 0, Resistenz gegen allen Schaden (außer Psychisch) und ist immun gegen den Zustand 'Vergiftet'.",
+  "ui_scaling": null,
+  "casting_time": "ACTION",
+  "range_m": 1.5,
+  "duration": "1_HOUR",
+  "target": { "type": "CREATURE", "count": 1 },
+  "effects": [
+    {
+      "type": "APPLY_CONDITION",
+      "condition": "FEIGN_DEATH",
+      "duration_seconds": 3600,
+      "description": "Blind, Handlungsunfähig, Speed 0, Resistenz (außer Psycho), Immun gegen Gift."
+    }
+  ]
+},
+
   {
-    "key": "fireball",
-    "name": "Feuerball",
-    "level": 3,
-    "school": "evocation",
-    "icon": "skill_placeholder.png",
-    "casting_time": "1 Aktion",
-    "range": "45 Meter",
-    "components": ["V", "S", "M"],
-    "duration": "Sofort",
-    "description": "Ein Feuerball explodiert an einem Punkt in Reichweite (6m Radius Kugel). Jede Kreatur im Bereich muss GE-Rettungswurf bestehen. Fehlschlag: 8W6 Feuerschaden. Erfolg: Halber Schaden.",
-    "scaling": "Erhöht Schaden um 1W6 pro Zaubergrad über 3.",
-    "damage": "8d6",
-    "damage_type": "fire",
-    "saving_throw": "dexterity",
-    "classes": ["sorcerer", "wizard"],
-    "patron_spell": { "patron": ["the_fiend", "the_genie"], "level": 3 }
-  },
+  "key": "fireball",
+  "name": "Feuerball",
+  "level": 3,
+  "school": "evocation",
+  "icon": "skill_placeholder.png",
+  "components": ["V", "S", "M (Guano, Schwefel)"],
+  "classes": ["sorcerer", "wizard"],
+  "patron_spell": { "patron": ["the_fiend", "the_genie"], "level": 3 },
+  "ui_casting_time": "1 Aktion",
+  "ui_range": "45 Meter",
+  "ui_duration": "Sofort",
+  "ui_description": "Eine feurige Explosion in einem 6m-Radius. Jede Kreatur im Bereich muss einen GE-Rettungswurf machen. Fehlschlag: 8W6 Feuerschaden. Erfolg: Halber Schaden. Entzündet brennbare Objekte.",
+  "ui_scaling": "Schaden +1W6 pro Grad über 3.",
+  "casting_time": "ACTION",
+  "range_m": 45,
+  "duration": "INSTANTANEOUS",
+  "target": { "type": "POINT", "radius_m": 6 },
+  "effects": [
+    {
+      "type": "DAMAGE",
+      "damage": { "dice": "8d6", "type": "fire" },
+      "saving_throw": {
+        "ability": "dexterity",
+        "effect_on_success": "half"
+      },
+      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d6" }
+    }
+  ]
+},
   {
     "key": "fly",
     "name": "Fliegen",

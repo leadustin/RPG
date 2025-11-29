@@ -199,6 +199,10 @@
 //       - Effekt 'FORCE_DROP_ITEMS':
 //         1. Prüfen, was das Ziel in der Hand hält (Waffe/Schild/Item).
 //         2. Item aus 'equipped' entfernen und als Loot-Token auf das Feld (x,y) legen.
+// TODO: Resistenz-System erweitern (Feign Death, Stoneskin)
+//       - 'FEIGN_DEATH': damageModifier = 0.5 für alle Typen AUSSER 'psychic'.
+//       - 'STONESKIN': damageModifier = 0.5 für 'bludgeoning', 'piercing', 'slashing' (non-magical).
+//       - Dies muss in 'performAction' VOR der HP-Abzug-Berechnung passieren.
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { getAbilityModifier, calculateSpellAttackBonus, calculateSpellSaveDC, getProficiencyBonus } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';
