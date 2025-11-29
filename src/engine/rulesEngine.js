@@ -1,4 +1,27 @@
 // src/engine/rulesEngine.js
+//       - 'REDUCE_SPEED': Bewegungsrate temporär senken (Ray of Frost)
+//       - 'NO_HP_REGEN': TP-Regeneration blockieren (Chill Touch)
+//       - 'NO_OPPORTUNITY_ATTACKS': Verhindert automatische Angriffe bei Bewegung (Shocking Grasp)
+// TODO: Condition 'CHARMED' implementieren
+//       - Effekt: Ziel kann den Bezauberer nicht angreifen.
+//       - Effekt: Bezauberer hat Vorteil bei sozialen Interaktionen mit dem Ziel.
+//       - Auto-Break: Zustand muss enden, wenn das Ziel Schaden vom Bezauberer erleidet.
+// TODO: Soziale Zustände implementieren
+//       - 'DISGUISED': Beeinflusst Reaktion von NPCs/Gegnern (Aggro-Radius verringern?)
+//       - 'CHARMED': Ermöglicht neue Dialogoptionen oder verhindert Angriff.
+// TODO: Condition-Logik erweitern (Expeditious Retreat)
+//       - Beim Anwenden des Status 'EXPEDITIOUS_RETREAT': Sofort movementLeft erhöhen (Dash).
+//       - In 'startTurn': Prüfen, ob Status aktiv ist -> 'Dash' Button für Bonusaktion freischalten.
+// TODO: Rüstungs-Berechnung erweitern (Mage Armor)
+//       - In 'calculateAC': Prüfen auf Condition 'MAGE_ARMOR'.
+//       - Falls aktiv & keine Rüstung getragen: Base AC = 13 + DexMod.
+
+// TODO: Projektil-System für Zauber (Magic Missile, Scorching Ray)
+//       - Ermöglichen, dass ein Ziel mehrfach in der 'targets'-Liste vorkommt (z.B. 3x für 3 Geschosse).
+//       - UI: Klicks auf dasselbe Ziel erhöhen einen Zähler statt es abzuwählen.
+// TODO: Kampf-Modifikatoren implementieren
+//       - 'SHIELD_SPELL': In 'calculateAC' temporär +5 addieren.
+//       - 'PROTECTION_FROM_TYPES': Wenn Angreifer-Typ (z.B. Undead) matcht -> Nachteil (Disadvantage) auf Angriffswurf erzwingen.
 import featuresData from '../data/features.json';
 
 // --- GRUNDREGELN (CORE RULES) ---

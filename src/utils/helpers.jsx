@@ -1,4 +1,6 @@
 // src/utils/helpers.jsx
+// TODO: rollDiceFormula erweitern, um komplexe Terme wie "1d8+1d6+4" zu unterstützen.
+//       Aktuell wird nur "XdY+Z" unterstützt. (Benötigt für True Strike, Green-Flame Blade etc.)
 
 /**
  * Tabelle für die benötigten Gesamt-EP pro Stufe (D&D 5e).

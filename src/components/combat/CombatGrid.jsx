@@ -1,5 +1,22 @@
 // src/components/combat/CombatGrid.jsx
-import React, { useState, useEffect, useRef } from 'react'; // useRef hinzugefügt
+// src/components/combat/CombatGrid.jsx
+// TODO: Lichtsystem & Fog of War implementieren
+//       - Unterstützung für Lichtquellen (z.B. Zauber 'Licht', Fackeln)
+//       - Berechnung von hellem/dämmrigem Licht und Sichtlinien
+//       - Visualisierung von Radien um Tokens (z.B. Detect Magic 9m, Paladin Auren)
+// TODO: Interaktive Objekte rendern
+//       - Türen (offen/geschlossen) visuell darstellen
+//       - Klick-Handler für Interaktionen mit Objekten (z.B. Truhen, Hebel)
+// TODO: Geometrie für Kegel (Cones) und Linien (Lines) implementieren
+//       - 'handleCombatTileClick' muss Richtung erkennen (Mausposition relativ zum Caster)
+//       - Berechnung der betroffenen Tiles für Kegel (z.B. Burning Hands) und Linien (z.B. Lightning Bolt)
+// TODO: Sichtblockaden (Obscurement) implementieren
+//       - Prüfen, ob Tokens (wie 'fog_cloud' oder 'darkness') auf der Linie zwischen Caster und Ziel liegen.
+//       - Falls ja: 'target' ist nicht sichtbar (kann nicht angewählt werden oder hat Vorteil/Nachteil).
+// TODO: Schwieriges Gelände (Difficult Terrain) implementieren
+//       - Bewegungskosten für bestimmte Tiles verdoppeln (2 Bewegungspunkte pro Feld).
+//       - Prüfen, ob ein 'Grease'-Token auf dem Feld liegt.
+import React, { useState, useEffect, useRef } from 'react';
 import './CombatGrid.css';
 
 const TILE_SIZE = 64; 
@@ -17,29 +34,24 @@ export const CombatGrid = ({
   const [hoveredTile, setHoveredTile] = useState(null);
   const activeCombatant = combatants.find(c => c.id === activeCombatantId);
   
-  // +++ NEU: Floating Text State & Ref +++
+  // Floating Text State & Ref
   const [floatingTexts, setFloatingTexts] = useState([]);
   const prevCombatantsRef = useRef(combatants);
 
-  // +++ NEU: Überwachung auf HP-Änderungen +++
+  // Überwachung auf HP-Änderungen (Floating Text Logic unverändert)
   useEffect(() => {
       const newTexts = [];
       const prevCombatants = prevCombatantsRef.current;
 
       combatants.forEach(current => {
-          // Finde den gleichen Kämpfer im vorherigen State
           const prev = prevCombatants.find(p => p.id === current.id);
-          
           if (prev && prev.hp !== current.hp) {
               const diff = current.hp - prev.hp;
               const isDamage = diff < 0;
               const absDiff = Math.abs(diff);
-              
-              // Text erstellen
               newTexts.push({
                   id: Date.now() + Math.random(),
-                  x: current.x,
-                  y: current.y,
+                  x: current.x, y: current.y,
                   text: absDiff.toString(),
                   type: isDamage ? 'damage' : 'heal'
               });
@@ -48,33 +60,34 @@ export const CombatGrid = ({
 
       if (newTexts.length > 0) {
           setFloatingTexts(prev => [...prev, ...newTexts]);
-          
-          // Nach 1.2s (Animationsdauer) aufräumen
           setTimeout(() => {
               setFloatingTexts(prev => prev.filter(t => !newTexts.find(nt => nt.id === t.id)));
           }, 1200);
       }
-
-      // Referenz aktualisieren für nächsten Render
       prevCombatantsRef.current = combatants;
   }, [combatants]);
 
-
-  // Distanz Helper
+  // Distanz Helper (Chebyshev Distanz für Grid-Bewegung)
   const getDist = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
+
+  // +++ NEU: Berechnung des Radius in Tiles +++
+  const getActionRadiusInTiles = (action) => {
+      if (!action?.target?.radius_m) return 0;
+      // 1.5m entspricht 1 Feld
+      return Math.floor(action.target.radius_m / 1.5);
+  };
 
   const calculateVisualRange = (action) => {
       if (!action) return 1; 
+      // Neu: Check auf range_m im JSON
+      if (action.range_m) return Math.floor(action.range_m / 1.5);
+
       const source = action.item || action;
       const props = source.properties || [];
       if (props.includes("Reichweite")) return 2; 
       if (source.range) {
           const rangeMeters = parseInt(source.range.split('/')[0]);
           if (!isNaN(rangeMeters)) return Math.floor(rangeMeters / 1.5);
-      }
-      if (action.reach) {
-          const reachVal = parseFloat(action.reach.replace(',', '.'));
-          if (!isNaN(reachVal)) return Math.max(1, Math.floor(reachVal / 1.5));
       }
       return 1; 
   };
@@ -113,18 +126,43 @@ export const CombatGrid = ({
 
   const renderTiles = () => {
     const tiles = [];
+    const actionRadius = getActionRadiusInTiles(selectedAction);
+
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const occupied = combatants.find(c => c.x === x && c.y === y && c.hp > 0);
-        const dist = activeCombatant ? getDist(activeCombatant, {x,y}) : 999;
+        const distToPlayer = activeCombatant ? getDist(activeCombatant, {x,y}) : 999;
         
         let highlight = '';
-        if (activeCombatant?.type === 'player' && !selectedAction && !occupied && dist <= movementLeft && dist > 0) {
-            highlight = 'tile-movable';
+        
+        // 1. Bewegungsmodus
+        if (activeCombatant?.type === 'player' && !selectedAction) {
+            if (!occupied && distToPlayer <= movementLeft && distToPlayer > 0) {
+                highlight = 'tile-movable';
+            }
         }
-        if (activeCombatant?.type === 'player' && selectedAction && occupied?.type === 'enemy') {
+        
+        // 2. Angriffsmodus
+        if (activeCombatant?.type === 'player' && selectedAction) {
             const range = calculateVisualRange(selectedAction);
-            if (dist <= range) highlight = 'tile-attackable';
+            
+            // +++ NEU: Flächenzauber-Logik +++
+            if (actionRadius > 0 && hoveredTile) {
+                // Berechne Distanz vom Mauszeiger (Zentrum der Explosion) zu diesem Tile (x,y)
+                const distToImpact = getDist(hoveredTile, {x, y});
+                
+                // Prüfe, ob Mauszeiger in Reichweite des Spielers ist
+                const impactInRange = getDist(activeCombatant, hoveredTile) <= range;
+
+                // Markiere alles im Radius, wenn der Mittelpunkt gültig ist
+                if (impactInRange && distToImpact <= actionRadius) {
+                    highlight = 'tile-aoe-target'; // Neue CSS-Klasse benötigt!
+                }
+            } 
+            // Standard Einzelziel-Logik (Fallback)
+            else if (occupied?.type === 'enemy' && distToPlayer <= range) {
+                highlight = 'tile-attackable';
+            }
         }
 
         tiles.push(
@@ -145,6 +183,7 @@ export const CombatGrid = ({
     return tiles;
   };
 
+  // ... (renderTokens und renderFloatingTexts bleiben unverändert) ...
   const renderTokens = () => {
     return combatants.map(c => {
       if (c.hp <= 0) return null;
@@ -170,7 +209,6 @@ export const CombatGrid = ({
     });
   };
 
-  // +++ NEU: Rendering der Floating Texts +++
   const renderFloatingTexts = () => {
       return floatingTexts.map(ft => (
           <div 
@@ -179,7 +217,7 @@ export const CombatGrid = ({
               style={{
                   left: ft.x * TILE_SIZE + (TILE_SIZE / 2),
                   top: ft.y * TILE_SIZE,
-                  marginLeft: '-10px' // Zentrieren
+                  marginLeft: '-10px'
               }}
           >
               {ft.type === 'damage' ? `-${ft.text}` : `+${ft.text}`}
@@ -192,7 +230,6 @@ export const CombatGrid = ({
       <div className="grid-layer">{renderTiles()}</div>
       {renderOverlay()}
       <div className="token-layer">{renderTokens()}</div>
-      {/* +++ NEU: Layer für Texte +++ */}
       <div className="floating-text-container">{renderFloatingTexts()}</div>
     </div>
   );

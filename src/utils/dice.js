@@ -1,4 +1,6 @@
 // src/utils/dice.js
+// TODO: rollDiceFormula erweitern, um komplexe Terme wie "1d8+1d6+4" zu unterstützen.
+//       Aktuell wird nur "XdY+Z" unterstützt. (Benötigt für True Strike, Green-Flame Blade etc.)
 
 /**
  * Rollt einen n-seitigen Würfel.

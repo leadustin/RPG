@@ -1,4 +1,7 @@
 // src/hooks/useGameState.jsx
+// TODO: Soziale Zustände implementieren
+//       - 'DISGUISED': Beeinflusst Reaktion von NPCs/Gegnern (Aggro-Radius verringern?)
+//       - 'CHARMED': Ermöglicht neue Dialogoptionen oder verhindert Angriff.
 
 import { useState, useEffect, useCallback } from "react";
 import {

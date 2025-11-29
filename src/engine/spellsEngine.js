@@ -1,4 +1,19 @@
 // src/engine/spellsEngine.js
+// TODO: Support für weitere Effekt-Typen hinzufügen:
+//       - 'ADD_LIGHT_SOURCE': Für Lichtzauber (Parameter: Radius hell/dämmrig, Farbe)
+//       - 'INTERACT': Für Zauber wie 'Klopfen' (Knock) oder 'Magierhand'
+//       - 'TERRAIN': Für Zauber, die den Untergrund verändern (z.B. 'Schmieren', 'Dornenwuchs')
+//       - 'NO_OPPORTUNITY_ATTACKS': Verhindert automatische Angriffe bei Bewegung (Shocking Grasp)
+// TODO: Erweiterte Zauber-Logik (Chromatic Orb, Chaos Bolt)
+//       - UI für Schadensart-Auswahl beim Wirken ('variable' auflösen)
+//       - "Leaping"-Mechanik: Würfelergebnisse auf Doubles prüfen und ggf. 'chain_target' auslösen.
+// TODO: Skalierung für flache Werte implementieren (False Life)
+//       - Support für 'scaling.type === "FLAT_VALUE"' hinzufügen.
+//       - Logik: (castLevel - baseLevel) * scaling.increase_amount auf den Würfel-Modifikator addieren.
+// TODO: Vertrauten-Mechanik erweitern
+//       - 'Touch Delivery': Wenn ein Vertrauter in Reichweite ist, erlaube dem Spieler,
+//         Zauber mit Reichweite 'Berührung' von der Position des Vertrauten aus zu wirken.
+//       - 'Shared Senses': Fog of War für den Spieler basierend auf der Position des Vertrauten aufdecken.
 import allSpells from '../data/spells.json';
 import { getModifier, rollDiceFormula } from '../utils/helpers';
 
