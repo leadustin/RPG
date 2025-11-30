@@ -113,7 +113,6 @@ export const useGameState = () => {
 
   // +++ WICHTIGSTER FIX: Charakter-Objekte wiederherstellen (Hydrierung) +++
   const handleCharacterCreation = (finalizedCharacter) => {
-    // Wir erstellen eine Kopie, die wir "hydrieren" (mit Daten füllen)
     let hydratedChar = JSON.parse(JSON.stringify(finalizedCharacter));
 
     // 1. Rasse wiederherstellen (falls nur ID gespeichert)
@@ -143,8 +142,6 @@ export const useGameState = () => {
         }
     }
 
-    // --- Ab hier ist 'hydratedChar' wieder ein vollwertiges Objekt mit .name, .icon etc. ---
-
     if (hydratedChar.ability_bonus_assignments) {
       for (const [ability, bonus] of Object.entries(
         hydratedChar.ability_bonus_assignments
@@ -153,7 +150,6 @@ export const useGameState = () => {
       }
     }
 
-    // HP Berechnung benötigt das Rassen-Objekt (deshalb Hydrierung vorher!)
     const hp = calculateInitialHP(hydratedChar);
 
     const initialStats = {
@@ -214,6 +210,16 @@ export const useGameState = () => {
         ),
       ],
     });
+  };
+
+    const handleAddLogEntry = (message, type = 'general') => {
+    setGameState(prev => ({
+      ...prev,
+      logEntries: [
+        ...prev.logEntries,
+        { id: Date.now(), message, type, timestamp: new Date() }
+      ]
+    }));
   };
 
   const handleDiscoverLocation = useCallback((locationId) => {
@@ -902,5 +908,6 @@ export const useGameState = () => {
     rollDiceFormula,
     handleCombatVictory,
     handleCombatDefeat,
+    handleAddLogEntry,
   };
 };

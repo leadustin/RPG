@@ -1,5 +1,5 @@
 // src/components/game_view/GameView.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { PartyPortraits } from "./PartyPortraits";
 import ActionBar from "./ActionBar";
 import { WorldMap } from "../worldmap/WorldMap";
@@ -9,7 +9,6 @@ import locationsData from "../../data/locations.json";
 import enemiesData from "../../data/enemies.json";
 import { CombatGrid } from "../combat/CombatGrid";
 import { CombatResultScreen } from "../combat/CombatResultScreen";
-// +++ NEU: Import wiederhergestellt +++
 import { TurnOrderBar } from "../combat/TurnOrderBar"; 
 import { useCombat } from "../../hooks/useCombat";
 import { rollDiceString } from "../../utils/dice"; 
@@ -28,12 +27,14 @@ function GameView({
   onLongRest,
   onShopTransaction,
   onCombatVictory, 
-  onCombatDefeat
+  onCombatDefeat,
+  onAddLogEntry
 }) {
 
   const [activeCharacterId, setActiveCharacterId] = useState(character?.id || 'player');
   const [showRestMenu, setShowRestMenu] = useState(false);
 
+  // 1. HIER FEHLTEN DIE DRAG-HANDLER
   const { 
     combatState, 
     startCombat, 
@@ -41,46 +42,57 @@ function GameView({
     endCombatSession,
     selectedAction,
     setSelectedAction,
-    handleCombatTileClick
+    handleCombatTileClick,
+    queuedAction,
+    cancelAction,
+    executeTurn,
+    // NEU: Drag State & Handler müssen hier rausgeholt werden!
+    dragState,
+    handleTokenDragStart,
+    handleGridDragMove,
+    handleGridDragEnd
   } = useCombat(character);
 
-  // Logik für XP, HP und Loot bei Sieg
+  // --- KAMPF-LOG ---
+  const lastLogLength = useRef(0);
+  useEffect(() => {
+      if (combatState.isActive) {
+          const newLogs = combatState.log.slice(lastLogLength.current);
+          if (newLogs.length > 0) {
+              newLogs.forEach(msg => {
+                  if (onAddLogEntry) onAddLogEntry(msg, 'combat');
+              });
+              lastLogLength.current = combatState.log.length;
+          }
+      } else {
+          lastLogLength.current = 0;
+      }
+  }, [combatState.log, combatState.isActive, onAddLogEntry]);
+
+  // --- SIEG LOGIK ---
   useEffect(() => {
       if (combatState.result === 'victory') {
-          console.log("GameView: Sieg - Berechne XP und Loot...");
-          
-          // 1. XP berechnen
           const enemies = combatState.combatants.filter(c => c.type === 'enemy');
           const totalXp = enemies.reduce((sum, enemy) => sum + (enemy.xp || 0), 0);
-
-          // 2. Loot berechnen
           let totalGold = 0;
           let droppedItems = [];
 
           enemies.forEach(enemy => {
-              // A) Gold würfeln
               if (enemy.loot && enemy.loot.gold_dice) {
                   const diceStr = enemy.loot.gold_dice.replace(/W/gi, 'd');
                   try {
                       const roll = rollDiceString(diceStr);
                       const goldAmount = (typeof roll === 'object') ? roll.total : roll;
                       totalGold += goldAmount;
-                  } catch (e) {
-                      console.warn("Fehler beim Goldwürfeln:", e);
-                  }
+                  } catch (e) { console.warn("Fehler Gold:", e); }
               }
-
-              // B) Items würfeln (40% Chance)
               if (enemy.loot && enemy.loot.items && Array.isArray(enemy.loot.items)) {
                   enemy.loot.items.forEach(itemId => {
-                      if (Math.random() <= 0.4) {
-                          droppedItems.push(itemId);
-                      }
+                      if (Math.random() <= 0.4) droppedItems.push(itemId);
                   });
               }
           });
 
-          // 3. HP holen
           const playerCombatant = combatState.combatants.find(c => c.type === 'player');
           const remainingHp = playerCombatant ? playerCombatant.hp : 0;
 
@@ -90,42 +102,30 @@ function GameView({
               }
               endCombatSession();
           }, 2000);
-
           return () => clearTimeout(timer);
       }
   }, [combatState.result]);
 
-  if (!character) {
-    return <div className="game-view-container">Lädt Charakter...</div>;
-  }
+  if (!character) return <div>Lädt...</div>;
 
   const activeCharacter = character;
+  const isPlayerTurn = combatState.isActive && combatState.combatants[combatState.turnIndex]?.type === 'player';
+
+  const currentLocation = locationsData.find(l => l.id === character.currentLocation);
+  const currentMapId = currentLocation?.mapId || "cave_entrance"; 
 
   const handleStartLocationCombat = () => {
-      const currentLocationId = character.currentLocation;
-      const locationData = locationsData.find(loc => loc.id === currentLocationId);
-
-      if (!locationData || !locationData.enemies || locationData.enemies.length === 0) {
-          console.log("Keine Gegner an diesem Ort definiert.");
-          return;
-      }
-
+      if (!currentLocation || !currentLocation.enemies || currentLocation.enemies.length === 0) return;
       const combatEnemies = [];
-      locationData.enemies.forEach((enemyConfig) => {
+      currentLocation.enemies.forEach((enemyConfig) => {
           const enemyTemplate = enemiesData[enemyConfig.id];
           if (enemyTemplate) {
               for (let i = 0; i < enemyConfig.count; i++) {
-                  combatEnemies.push({
-                      ...enemyTemplate,
-                      instanceId: `${enemyConfig.id}_${i}_${Date.now()}` 
-                  });
+                  combatEnemies.push({ ...enemyTemplate, instanceId: `${enemyConfig.id}_${i}_${Date.now()}` });
               }
           }
       });
-
-      if (combatEnemies.length > 0) {
-          startCombat(combatEnemies);
-      }
+      if (combatEnemies.length > 0) startCombat(combatEnemies);
   };
 
   const handleEndCombat = () => {
@@ -135,17 +135,15 @@ function GameView({
   };
 
   const handleActionSlotClick = (action) => {
-      if (combatState.isActive) {
+      if (combatState.isActive && isPlayerTurn) {
+          if (queuedAction) cancelAction();
           if (selectedAction && selectedAction.name === action.name) {
               setSelectedAction(null); 
           } else {
-              console.log("Waffe ausgewählt:", action.name);
               setSelectedAction(action); 
           }
       }
   };
-
-  const isPlayerTurn = combatState.isActive && combatState.combatants[combatState.turnIndex]?.type === 'player';
 
   return (
     <div className="game-view-container">
@@ -162,7 +160,6 @@ function GameView({
            {combatState.isActive ? (
              <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                
-               {/* +++ WIEDER EINGEFÜGT: Initiative Leiste +++ */}
                <TurnOrderBar 
                    combatants={combatState.combatants} 
                    activeIndex={combatState.turnIndex} 
@@ -179,56 +176,29 @@ function GameView({
                    flex: 1, 
                    position: 'relative', 
                    cursor: selectedAction ? 'crosshair' : 'default',
-                   display: 'flex',
-                   justifyContent: 'center',
-                   alignItems: 'center',
-                   overflow: 'auto',
+                   overflow: 'hidden',
                    background: '#222'
                }}>
                  <CombatGrid 
-                   width={12}
-                   height={8}
+                   mapId={currentMapId} 
+                   width={20} 
+                   height={15}
                    combatants={combatState.combatants}
                    activeCombatantId={combatState.combatants[combatState.turnIndex]?.id}
                    selectedAction={selectedAction}
                    movementLeft={combatState.turnResources.movementLeft}
                    onTileClick={(x, y) => handleCombatTileClick(x, y)}
+                   queuedAction={queuedAction}
+                   onContextMenu={cancelAction}
+                   
+                   // 2. HIER WERDEN DIE NEUEN PROPS ÜBERGEBEN
+                   dragState={dragState}
+                   onTokenDragStart={handleTokenDragStart}
+                   onGridDragMove={handleGridDragMove}
+                   onGridDragEnd={handleGridDragEnd}
                  />
                </div>
                
-               {!combatState.result && (
-                 <>
-                   {/* UPDATE: Top Position angepasst (100px), damit die Leiste Platz hat */}
-                   <div className="combat-log-overlay" style={{ 
-                       position: 'absolute', top: 100, right: 10, width: '300px', 
-                       background: 'rgba(0,0,0,0.8)', color: '#eee', 
-                       padding: '10px', fontSize: '0.85rem', pointerEvents: 'none', borderRadius: '4px',
-                       maxHeight: '200px', overflowY: 'auto'
-                   }}>
-                      {combatState.log.slice(-6).map((l, i) => <div key={i} style={{marginBottom:'4px', borderBottom:'1px solid #444'}}>{l}</div>)}
-                   </div>
-
-                   <div style={{ position: 'absolute', bottom: 20, right: 20, pointerEvents: 'auto' }}>
-                       <button 
-                           onClick={nextTurn}
-                           disabled={!isPlayerTurn} 
-                           style={{ 
-                               padding: '12px 24px', 
-                               fontSize: '1.1rem', 
-                               cursor: isPlayerTurn ? 'pointer' : 'not-allowed',
-                               backgroundColor: isPlayerTurn ? '#d4af37' : '#555',
-                               color: isPlayerTurn ? '#000' : '#888',
-                               border: '2px solid #222',
-                               borderRadius: '5px',
-                               fontWeight: 'bold',
-                               boxShadow: '0 4px 6px rgba(0,0,0,0.5)'
-                           }}
-                       >
-                           {isPlayerTurn ? "Runde beenden ⌛" : `Gegnerzug...`}
-                       </button>
-                   </div>
-                 </>
-               )}
              </div>
            ) : character.currentLocation && character.currentLocation !== "worldmap" ? (
               <LocationView 
@@ -249,7 +219,7 @@ function GameView({
         </div>
       </div>
 
-      <div className="bottom-section">
+      <div className="bottom-section" style={{ position: 'relative' }}>
         <div className="action-bar-area">
           <ActionBar
             character={activeCharacter}
@@ -263,6 +233,49 @@ function GameView({
             selectedAction={selectedAction}
           />
         </div>
+
+        {combatState.isActive && !combatState.result && (
+            <div style={{ 
+                position: 'absolute', 
+                right: '30px', 
+                bottom: '25px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'flex-end',
+                gap: '5px',
+                zIndex: 100
+            }}>
+               <button 
+                   onClick={queuedAction ? executeTurn : nextTurn}
+                   disabled={!isPlayerTurn} 
+                   style={{ 
+                       padding: '12px 30px', 
+                       fontSize: '1.1rem', 
+                       backgroundColor: queuedAction ? '#2ecc71' : '#d4af37',
+                       color: queuedAction ? '#fff' : '#000',
+                       border: '2px solid #111',
+                       borderRadius: '6px',
+                       fontWeight: 'bold',
+                       cursor: isPlayerTurn ? 'pointer' : 'not-allowed',
+                       boxShadow: '0 4px 8px rgba(0,0,0,0.6)',
+                       whiteSpace: 'nowrap',
+                       transition: 'all 0.2s'
+                   }}
+               >
+                   {queuedAction ? "Ausführen" : "Zug beenden"}
+               </button>
+               
+               {queuedAction && (
+                   <div style={{
+                       fontSize:'0.75rem', color:'#ccc', 
+                       textShadow:'1px 1px 2px black',
+                       pointerEvents: 'none'
+                   }}>
+                       (Rechtsklick Abbruch)
+                   </div>
+               )}
+            </div>
+        )}
       </div>
 
       {showRestMenu && (

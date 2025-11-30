@@ -1,12 +1,12 @@
 [
   {
-    "id": "elfenwacht",
-    "name": "location.elfenwacht.name",
+    "id": "cave_entrance",
+    "name": "location.cave_entrance.name",
     "x": 1000,
     "y": 1400,
     "radius": 10,
-    "description": "location.elfenwacht.description",
-    "mapFile": "elfenwacht.json",
+    "description": "location.cave_entrance.description",
+    "mapFile": "cave_entrance.json",
     "shops": ["general_store_elfenwacht", "blacksmith_elfenwacht"],
     "xp": 300,
     "enemies": [

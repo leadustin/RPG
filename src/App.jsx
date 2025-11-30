@@ -40,7 +40,8 @@ function App() {
     handleUpdateCharacter,
     handleCastSpell,
     handleUnpackItem,
-    handleDestroyItem
+    handleDestroyItem,
+    handleAddLogEntry
   } = useGameState();
 
   const [showCharacterSheet, setShowCharacterSheet] = useState(false);
@@ -151,6 +152,7 @@ function App() {
             saveFileExists={saveFileExists}
             onShortRest={handleShortRest}
             onLongRest={handleLongRest}
+            onAddLogEntry={handleAddLogEntry}
             onShopTransaction={handleShopTransaction}
             onCombatVictory={handleCombatVictory}
             onCombatDefeat={handleCombatDefeat}

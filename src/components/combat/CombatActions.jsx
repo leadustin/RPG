@@ -7,7 +7,9 @@ export const CombatActions = ({
   onAttack, 
   onDash, 
   onEndTurn,
-  playerWeapons = [] // Array von Waffen aus dem Inventar
+  playerWeapons = [],
+  selectedAction,
+  onCancel
 }) => {
   const { turnResources, combatants, turnIndex } = combatState;
   const activeCombatant = combatants[turnIndex];
@@ -67,7 +69,15 @@ export const CombatActions = ({
             🏃 Sprinten (Dash)
         </button>
         
-        {/* Platzhalter für mehr Aktionen wie "Verstecken" oder Zauber */}
+        {selectedAction && (
+            <button 
+                className="action-btn cancel"
+                style={{ backgroundColor: '#e74c3c', color: 'white', marginLeft: '10px' }}
+                onClick={onCancel}
+            >
+                ❌ Abbrechen
+            </button>
+        )}
       </div>
 
       <button className="end-turn-btn" onClick={onEndTurn}>
