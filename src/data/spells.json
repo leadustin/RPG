@@ -1,14 +1,5 @@
 [
   {
-    "//_TODO_LIST": [
-      "Licht-System: Effekte für 'light', 'dancing_lights', 'flame_blade' (ADD_LIGHT_SOURCE) definieren, sobald Engine es unterstützt.",
-      "Mage Hand: Interaktions-Logik (Türen öffnen, Items tragen) in der Engine verknüpfen.",
-      "Dauerhafte Effekte: System für 'Until Dispelled' oder 24h Buffs (z.B. 'mage_armor') prüfen.",
-      "Minor Illusion: Logik für 'Untersuchen' (Investigation Check) hinzufügen, um Illusionen transparent zu machen (Ally-Status ändern)."
-    ]
-  },
-
-  {
   "key": "acid_splash",
   "name": "Säurespritzer",
   "level": 0,
@@ -444,32 +435,37 @@
 },
 
   {
-  "key": "burning_hands",
-  "name": "Brennende Hände",
-  "level": 1,
-  "school": "evocation",
-  "icon": "skill_placeholder.png",
-  "components": ["V", "S"],
-  "classes": ["sorcerer", "wizard"],
-  "patron_spell": { "patron": "the_fiend", "level": 1 },
-  "ui_casting_time": "1 Aktion",
-  "ui_range": "Selbst (4,5m Kegel)",
-  "ui_duration": "Sofort",
-  "ui_description": "Eine dünne Flammenwand schießt aus deinen Fingerspitzen. Jede Kreatur in einem 4,5m-Kegel muss einen GE-Rettungswurf machen. Fehlschlag: 3W6 Feuerschaden. Erfolg: Halber Schaden. Brennbare Objekte fangen Feuer.",
-  "ui_scaling": "Schaden +1W6 pro Grad über 1.",
-  "casting_time": "ACTION",
-  "range_m": 0,
-  "duration": "INSTANTANEOUS",
-  "target": { "type": "AREA", "shape": "CONE", "length_m": 4.5, "origin": "SELF" },
-  "effects": [
-    {
-      "type": "DAMAGE",
-      "damage": { "dice": "3d6", "type": "fire" },
-      "saving_throw": { "ability": "dexterity", "effect_on_success": "half" },
-      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d6" }
-    }
-  ]
-},
+    "key": "burning_hands",
+    "name": "Brennende Hände",
+    "level": 1,
+    "school": "evocation",
+    "icon": "skill_placeholder.png",
+    "components": ["V", "S"],
+    "classes": ["sorcerer", "wizard"],
+    "patron_spell": { "patron": "the_fiend", "level": 1 },
+    "ui_casting_time": "1 Aktion",
+    "ui_range": "Selbst (4,5m Kegel)",
+    "ui_duration": "Sofort",
+    "ui_description": "Eine dünne Flammenwand schießt aus deinen Fingerspitzen. Jede Kreatur in einem 4,5m-Kegel muss einen GE-Rettungswurf machen. Fehlschlag: 3W6 Feuerschaden. Erfolg: Halber Schaden. Brennbare Objekte fangen Feuer.",
+    "ui_scaling": "Schaden +1W6 pro Grad über 1.",
+    "casting_time": "ACTION",
+    "range_m": 0,
+    "duration": "INSTANTANEOUS",
+    "target": {
+      "type": "AREA",
+      "shape": "CONE",
+      "length_m": 4.5,
+      "origin": "SELF"
+    },
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage": { "dice": "3d6", "type": "fire" },
+        "saving_throw": { "ability": "dexterity", "effect_on_success": "half" },
+        "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d6" }
+      }
+    ]
+  },
 
   {
   "key": "charm_person",
@@ -1173,37 +1169,42 @@
 },
 
   {
-  "key": "thunderwave",
-  "name": "Donnerwelle",
-  "level": 1,
-  "school": "evocation",
-  "icon": "skill_placeholder.png",
-  "components": ["V", "S"],
-  "classes": ["bard", "druid", "sorcerer", "wizard"],
-  "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 1 },
-  "ui_casting_time": "1 Aktion",
-  "ui_range": "Selbst (4,5m Würfel)",
-  "ui_duration": "Sofort",
-  "ui_description": "Eine Welle aus donnernder Kraft geht von dir aus. Jede Kreatur in einem 4,5m-Würfel muss einen KO-Rettungswurf bestehen. Fehlschlag: 2W8 Donnerschaden und wird 3m weggestoßen. Erfolg: Halber Schaden, kein Wegstoßen.",
-  "ui_scaling": "Schaden +1W8 pro Grad über 1.",
-  "casting_time": "ACTION",
-  "range_m": 0,
-  "duration": "INSTANTANEOUS",
-  "target": { "type": "AREA", "shape": "CUBE", "length_m": 4.5, "origin": "SELF" },
-  "effects": [
-    {
-      "type": "DAMAGE",
-      "damage": { "dice": "2d8", "type": "thunder" },
-      "saving_throw": { "ability": "constitution", "effect_on_success": "half" },
-      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d8" }
+    "key": "thunderwave",
+    "name": "Donnerwoge",
+    "level": 1,
+    "school": "evocation",
+    "icon": "skill_placeholder.png",
+    "components": ["V", "S"],
+    "classes": ["bard", "druid", "sorcerer", "wizard"],
+    "patron_spell": { "patron": ["the_fathomless", "the_genie"], "level": 1 },
+    "ui_casting_time": "1 Aktion",
+    "ui_range": "Selbst (4,5m Würfel)",
+    "ui_duration": "Sofort",
+    "ui_description": "Eine Woge aus donnernder Kraft geht von dir aus. Jede Kreatur in einem 4,5m-Würfel muss einen KO-Rettungswurf bestehen. Fehlschlag: 2W8 Donnerschaden und wird 3m weggestoßen. Erfolg: Halber Schaden, kein Wegstoßen.",
+    "ui_scaling": "Schaden +1W8 pro Grad über 1.",
+    "casting_time": "ACTION",
+    "range_m": 0,
+    "duration": "INSTANTANEOUS",
+    "target": {
+      "type": "AREA",
+      "shape": "CUBE",
+      "length_m": 4.5,
+      "origin": "SELF"
     },
-    {
-      "type": "PUSH",
-      "distance_m": 3,
-      "saving_throw": { "ability": "constitution", "effect_on_success": "NEGATES_EFFECT" }
-    }
-  ]
-},
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage": { "dice": "2d8", "type": "thunder" },
+        "saving_throw": { "ability": "constitution", "effect_on_success": "half" },
+        "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d8" }
+      },
+      {
+        "type": "PUSH",
+        "distance_m": 3,
+        "saving_throw": { "ability": "constitution", "effect_on_success": "NEGATES_EFFECT" }
+      }
+    ]
+  },
 
   {
   "key": "unseen_servant",
@@ -1271,39 +1272,40 @@
 },
 
   {
-  "key": "melfs_acid_arrow",
-  "name": "Melfs Säurepfeil",
-  "level": 2,
-  "school": "evocation",
-  "icon": "skill_placeholder.png",
-  "components": ["V", "S", "M (Rhabarberblatt-Pulver)"],
-  "classes": ["wizard"],
-  "ui_casting_time": "1 Aktion",
-  "ui_range": "27 Meter",
-  "ui_duration": "Sofort",
-  "ui_description": "Ein grüner Pfeil explodiert in Säure. Fernkampf-Zauberangriff. Treffer: 4W4 Säureschaden sofort + 2W4 am Ende des nächsten Zuges. Fehlschlag: Halber Initialschaden, kein späterer Schaden.",
-  "ui_scaling": "Initial- UND späterer Schaden +1W4 pro Grad über 2.",
-  "casting_time": "ACTION",
-  "range_m": 27,
-  "duration": "INSTANTANEOUS",
-  "target": { "type": "CREATURE", "count": 1 },
-  "effects": [
-    {
-      "type": "DAMAGE",
-      "attack_roll": "RANGED_SPELL",
-      "damage": { "dice": "4d4", "type": "acid" },
-      "on_miss": "half",
-      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d4" }
-    },
-    {
-      "type": "APPLY_CONDITION",
-      "condition": "ACID_BURN",
-      "duration_turns": 1,
-      "on_hit": true,
-      "description": "Erleidet 2W4 Säureschaden am Zugende."
-    }
-  ]
-},
+    "key": "melfs_acid_arrow",
+    "name": "Melfs Säurepfeil",
+    "level": 2,
+    "school": "evocation",
+    "icon": "skill_placeholder.png",
+    "components": ["V", "S", "M (Rhabarberblatt-Pulver)"],
+    "classes": ["wizard"],
+    "ui_casting_time": "1 Aktion",
+    "ui_range": "27 Meter",
+    "ui_duration": "Sofort",
+    "ui_description": "Ein grüner Pfeil explodiert in Säure. Fernkampf-Zauberangriff. Treffer: 4W4 Säureschaden sofort + 2W4 am Ende des nächsten Zuges. Fehlschlag: Halber Initialschaden, kein späterer Schaden.",
+    "ui_scaling": "Initial- UND späterer Schaden +1W4 pro Grad über 2.",
+    "casting_time": "ACTION",
+    "range_m": 27,
+    "duration": "INSTANTANEOUS",
+    "target": { "type": "CREATURE", "count": 1 },
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "attack_roll": "RANGED_SPELL",
+        "damage": { "dice": "4d4", "type": "acid" },
+        "damage_on_miss": true,
+        "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "1d4" }
+      },
+      {
+        "type": "APPLY_CONDITION",
+        "condition": "ACID_BURN",
+        "duration_turns": 1,
+        "on_hit": true,
+        "description": "Erleidet 2W4 Säureschaden am Zugende.",
+        "damage_on_turn_end": { "dice": "2d4", "type": "acid" }
+      }
+    ]
+  },
 
   {
   "key": "alter_self",
@@ -1968,30 +1970,29 @@
 },
 
   {
-  "key": "misty_step",
-  "name": "Nebelschritt",
-  "level": 2,
-  "school": "conjuration",
-  "icon": "skill_placeholder.png",
-  "components": ["V"],
-  "classes": ["sorcerer", "warlock", "wizard"],
-  "ui_casting_time": "1 Bonusaktion",
-  "ui_range": "Selbst (9m Teleport)",
-  "ui_duration": "Sofort",
-  "ui_description": "Du hüllst dich in silbernen Nebel und teleportierst dich bis zu 9m an einen unbesetzten Ort, den du sehen kannst.",
-  "ui_scaling": null,
-  "casting_time": "BONUS_ACTION",
-  "range_m": 9,
-  "duration": "INSTANTANEOUS",
-  "target": { "type": "POINT", "range_m": 9 },
-  "effects": [
-    {
-      "type": "TELEPORT",
-      "range_m": 9,
-      "description": "Teleportiert den Caster zum gewählten Zielpunkt."
-    }
-  ]
-},
+    "key": "misty_step",
+    "name": "Nebelschritt",
+    "level": 2,
+    "school": "conjuration",
+    "icon": "skill_placeholder.png",
+    "components": ["V"],
+    "classes": ["sorcerer", "warlock", "wizard"],
+    "ui_casting_time": "1 Bonusaktion",
+    "ui_range": "Selbst (9m Teleport)",
+    "ui_duration": "Sofort",
+    "ui_description": "Du hüllst dich in silbernen Nebel und teleportierst dich bis zu 9m an einen unbesetzten Ort, den du sehen kannst.",
+    "ui_scaling": null,
+    "casting_time": "BONUS_ACTION",
+    "range_m": 9,
+    "duration": "INSTANTANEOUS",
+    "target": { "type": "POINT", "range_m": 9 },
+    "effects": [
+      {
+        "type": "TELEPORT",
+        "range_m": 9
+      }
+    ]
+  },
 
   {
   "key": "nystuls_magic_aura",
@@ -12272,7 +12273,7 @@
       }
     ]
   },
-  
+
   {
     "key": "yolandes_regal_presence",
     "name": "Yolandes Königliche Präsenz",

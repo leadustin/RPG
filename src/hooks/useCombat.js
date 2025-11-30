@@ -12,9 +12,6 @@
 //       - Neue Action-Typen: 'INTERACT' (für Türen, Truhen)
 //       - Trigger-System: Beim Betreten eines Feldes prüfen, ob ein Effekt auslöst (z.B. Zauber 'Alarm', 'Glyphe', Bärenfalle)
 //       - "Passive Wahrnehmung" gegen den SG der Falle/des Alarms prüfen
-// TODO: Geometrie für Kegel (Cones) und Linien (Lines) implementieren
-//       - 'handleCombatTileClick' muss Richtung erkennen (Mausposition relativ zum Caster)
-//       - Berechnung der betroffenen Tiles für Kegel (z.B. Burning Hands) und Linien (z.B. Lightning Bolt)
 // TODO: Condition 'CHARMED' implementieren
 //       - Effekt: Ziel kann den Bezauberer nicht angreifen.
 //       - Effekt: Bezauberer hat Vorteil bei sozialen Interaktionen mit dem Ziel.
@@ -25,10 +22,6 @@
 // TODO: Condition-Logik erweitern (Expeditious Retreat)
 //       - Beim Anwenden des Status 'EXPEDITIOUS_RETREAT': Sofort movementLeft erhöhen (Dash).
 //       - In 'startTurn': Prüfen, ob Status aktiv ist -> 'Dash' Button für Bonusaktion freischalten.
-// TODO: Temporäre Trefferpunkte (Temp HP) implementieren
-//       - Eigenes Feld 'tempHp' im Combatant-Objekt.
-//       - Bei Schaden: Erst tempHp abziehen, dann hp.
-//       - Bei 'HEALING' mit type 'temp_hp': tempHp setzen (nicht addieren, nicht stapelbar!).
 // TODO: Reaktions-System implementieren
 //       - Ressource 'hasReaction' (1x pro Runde) tracken.
 //       - Trigger-Logik: Wenn ein Event (z.B. 'FALL_DAMAGE_EVENT', 'ATTACKED_EVENT') eintritt,
@@ -43,7 +36,6 @@
 // TODO: Rüstungs-Berechnung erweitern (Mage Armor)
 //       - In 'calculateAC': Prüfen auf Condition 'MAGE_ARMOR'.
 //       - Falls aktiv & keine Rüstung getragen: Base AC = 13 + DexMod.
-
 // TODO: Projektil-System für Zauber (Magic Missile, Scorching Ray)
 //       - Ermöglichen, dass ein Ziel mehrfach in der 'targets'-Liste vorkommt (z.B. 3x für 3 Geschosse).
 //       - UI: Klicks auf dasselbe Ziel erhöhen einen Zähler statt es abzuwählen.
@@ -58,21 +50,14 @@
 // TODO: Komplexe Condition-Logik (Tasha's Laughter)
 //       - Zustand 'HIDEOUS_LAUGHTER' muss 'PRONE' und 'INCAPACITATED' implizieren.
 //       - Bei Schaden ('takeDamage'): Prüfen, ob Ziel 'HIDEOUS_LAUGHTER' hat -> Sofortiger Save mit Vorteil (2 Würfel, nimm höheren).
-
 // TODO: Begleiter-Verhalten (Floating Disk)
 //       - Logik für 'Follow': Wenn Caster sich bewegt, prüfen ob Summon > 6m entfernt ist -> automatisch nachziehen?
-// TODO: Geometrie für Würfel (Cube) implementieren (Thunderwave)
-//       - 'handleCombatTileClick': Berechnung für 'shape: CUBE' (origin: SELF).
-//       - Meist die 3x3 Felder vor dem Spieler (abhängig von Blickrichtung?) oder Spieler im Zentrum/Ecke.
-
-// TODO: Erzwungene Bewegung (Forced Movement / Push)
 //       - Neuer Effekt-Typ 'PUSH' in 'performAction'.
 //       - Berechnet Vektor von Attacker zu Target und bewegt Target X Felder weiter weg.
 //       - Kollisionsprüfung: Stoppt an Wänden/anderen Kreaturen.
 // TODO: Schaden bei Fehlschlag (Damage on Miss)
 //       - Support für 'on_miss': 'half' in der Schadensberechnung von 'performAction'.
 //       - Aktuell wird bei 'attack_roll' < AC oft gar nichts gemacht.
-
 // TODO: Schaden über Zeit (DoT / Delayed Damage)
 //       - Condition-Logik 'ACID_BURN': Muss in 'endTurn' Schaden auslösen.
 //       - Skalierung von Conditions: Wenn Melfs Acid Arrow mit höherem Slot gewirkt wird,
@@ -80,18 +65,12 @@
 // TODO: Zauber-Optionen (Modal Dialog)
 //       - Beim Wirken von Zaubern wie 'Alter Self', 'Enhance Ability' oder 'Hex' 
 //         muss ein UI-Dialog aufgehen, um die Sub-Option zu wählen.
-
 // TODO: Temporäre Angriffe/Waffen durch Conditions
 //       - Wenn Condition 'ALTER_SELF' aktiv ist -> Füge temporäre Aktion "Klauenangriff (1W6)" zum Inventar hinzu.
 //       - Angriff muss 'spellcasting ability' statt STR/DEX nutzen.
-// TODO: Kampf-Zustände (Conditions) implementieren
-//       - 'BLINDED': Nachteil auf eigene Angriffe, Vorteil für Angreifer. Keine Sichtradius (Fog of War?).
-//       - 'BLUR': Nachteil für Angreifer (Disadvantage).
-//       - 'repeat_end_of_turn': Logik am Ende von 'nextTurn' hinzufügen, um Rettungswürfe für Conditions automatisch zu würfeln.
-// TODO: Gefährliche Zonen (Hazard Zones) implementieren
-//       - Prüfen, ob ein Token (z.B. 'Cloud of Daggers') das Feld eines anderen Tokens betritt.
-//       - Prüfen, ob ein Combatant seinen Zug auf einem Hazard-Feld beendet.
-//       - Schaden aus dem verknüpften Effekt anwenden.
+// TODO: Auswirkungen von Kampf-Zuständen (Conditions) implementieren
+//       - In 'performAction': Prüfen auf 'BLINDED' (Nachteil Attacke), 'BLUR' (Nachteil Angreifer) etc.
+//       - 'repeat_end_of_turn': Logik in 'tickConditions' erweitern, um Rettungswürfe automatisch zu würfeln.
 // TODO: Erhaltungs-Kosten für Konzentration (Crown of Madness, Witch Bolt)
 //       - 'startTurn': Prüfen, ob Caster einen Zauber aktiv hat, der eine Aktion pro Runde fordert.
 //       - UI-Prompt: "Aktion nutzen um [Zauber] zu halten?" -> Ja (Aktion verbraucht) / Nein (Zauber endet).
@@ -147,10 +126,6 @@
 // TODO: Abfang-Logik bei Treffern (Mirror Image)
 //       - In 'performAction' (wenn Ziel getroffen wurde): Prüfen auf Condition 'MIRROR_IMAGE'.
 //       - Würfeln (1d6 pro Stack). Bei 3+: Schaden auf 0 setzen, Condition-Stack um 1 reduzieren, Log-Eintrag "Duplikat zerstört".
-// TODO: Teleportations-Mechanik (Misty Step, Dimension Door)
-//       - Neuer Effekt-Typ 'TELEPORT'.
-//       - In 'performAction': Setze c.x und c.y des Casters auf targetCoords.x/y.
-//       - Validierung: Prüfen, ob Zielfeld 'unoccupied' ist (kein anderer Combatant).
 // TODO: Schadens-Modifikatoren (Debuffs)
 //       - Condition 'ENFEEBLED': In 'performAction' (wenn das Ziel angreift),
 //         einen zusätzlichen 'damageModifier' (-1d8) auf die Schadensformel anwenden.
@@ -206,29 +181,21 @@
 // TODO: Flug-Mechanik (Fly, Gaseous Form)
 //       - Combatant-Property 'movementModes' (Walk, Fly, Swim).
 //       - Wenn 'FLYING' aktiv: Hindernisse (außer hohe Wände) beim Bewegen ignorieren. 'HOVER' verhindert Absturz bei Speed 0.
-
 // TODO: Fallen-Auslöser (Glyph of Warding)
 //       - Erweitertes Summon: 'onTrigger' Effekt definieren (hier: DAMAGE).
 //       - Auslöser definieren (z.B. 'ENTER_RADIUS_3M').
 // TODO: Condition-Folgeeffekte (Haste Lethargy)
 //       - 'onConditionRemove': Wenn 'HASTED' ausläuft/entfernt wird -> 
 //         Automatisch Condition 'LETHARGIC' (Incapacitated) für 1 Runde anwenden.
-
 // TODO: Aufweck-Mechanik (Hypnotic Pattern, Sleep)
 //       - 'onDamage': Wenn Ziel Schaden nimmt und Condition 'HYPNOTIC_TRANCE' hat -> Condition entfernen.
 //       - Neue Aktion 'Wachrütteln' (Help Action?): Entfernt Condition bei Verbündetem in 1,5m.
 // TODO: Variable Konzentrations-Regeln (Major Image, Bestow Curse)
 //       - Beim Casten prüfen: Wenn Spell Slot >= X (z.B. 4 für Major Image), 
 //         das Flag 'requiresConcentration' im aktiven Effekt auf 'false' setzen.
-
-// TODO: Flächen-Schablonen (Lightning Bolt)
-//       - 'handleCombatTileClick' für 'LINE' anpassen.
-//       - Berechnet eine Linie vom Caster (x,y) zum Zielpunkt (tx,ty).
-//       - Alle Tiles, die von dieser Linie geschnitten werden, sind betroffen.
 // TODO: Reittier-Mechanik (Mounting)
 //       - Interaktion: Spieler klickt auf 'Phantomross' -> Token bewegen sich nun gemeinsam.
 //       - Wenn Mount stirbt/verschwindet -> Reiter landet auf einem Feld daneben (ggf. Prone).
-
 // TODO: Dynamische Resistenz-Wahl (Protection from Energy)
 //       - Beim Wirken: UI-Popup "Wähle Element".
 //       - Condition 'ENERGY_RESISTANCE' muss den gewählten Typ speichern (z.B. condition.value = 'fire').
@@ -242,13 +209,11 @@
 //       - 'SLOWED': Setze 'turnResources.hasBonusAction' auf false, wenn Action genutzt wurde (und umgekehrt).
 //                   Setze 'acModifier' auf -2.
 //       - 'NAUSEATED': Setze 'hasAction' und 'hasBonusAction' auf false.
-
 // TODO: Zauber-Fehlfunktion (Slow)
 //       - In 'performAction': Wenn Caster 'SLOWED' ist -> 25% Chance (W4 == 1), dass der Zauber abgebrochen wird (ohne Slot-Verlust?).
 // TODO: Lifesteal-Mechanik (Vampiric Touch)
 //       - In 'performAction': Wenn Effekt-Property 'healing_on_damage' (z.B. 0.5) hat:
 //         Berechneten Schaden nehmen, * 0.5 rechnen und dem 'attacker' als HP gutschreiben.
-
 // TODO: Terrain-Immunität (Water Walk)
 //       - In 'calculateMoveCost': Wenn Tile-Typ 'WATER'/'LAVA'/'ACID' ist UND Combatant hat 'WATER_WALK':
 //         Behandle Tile als 'GROUND' (normale Kosten, kein Schaden/Sinken).
@@ -309,7 +274,6 @@
 //         1. Beim Anwenden: UI öffnet "Wähle Tier".
 //         2. Setze 'tempHp' des Ziels auf 'beast.hp'.
 //         3. Ändere Token-Bild und Actions temporär.
-//         4. WICHTIG: Wenn 'tempHp' auf 0 fällt -> Condition sofort entfernen ("Rückverwandlung").
 // TODO: Dynamische HP für Summons (Bigby's Hand)
 //       - Wenn 'entity.hp' == 'caster_max_hp' -> Setze HP des Tokens auf attacker.maxHp.
 
@@ -626,10 +590,20 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { getAbilityModifier, calculateSpellAttackBonus, calculateSpellSaveDC, getProficiencyBonus } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';
+import { 
+  applyCondition, 
+  hasCondition, 
+  resolveDamage, 
+  applyTempHp, 
+  tickConditions,
+  CONDITION_TYPES 
+} from '../engine/combat/conditionManager';
+import { getAffectedTiles, getDistance } from '../engine/combat/geometry';
+import { calculateForcedMovement, isValidTeleport } from '../engine/combat/movementEffects';
+import { checkHazardInteractions } from '../engine/combat/hazardManager';
+import { processSpecialEffect } from '../engine/combat/specialEffectManager';
 
 // --- HELPER FUNCTIONS ---
-const getDistance = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
-
 const normalizeDice = (diceString) => {
     if (!diceString) return "1d4";
     return diceString.replace(/W/gi, 'd').replace(/\s/g, ''); 
@@ -721,7 +695,9 @@ export const useCombat = (playerCharacter) => {
       type: 'player',
       name: playerCharacter.name || 'Held',
       hp: startHp, maxHp: maxHp, ac: stats.armor_class || 12,
-      initiative: playerInit, x: 2, y: 4, speed: 6, color: 'blue', icon: playerCharacter.icon
+      initiative: playerInit, x: 2, y: 4, speed: 6, color: 'blue', icon: playerCharacter.icon,
+      activeConditions: [],
+      tempHp: 0
     };
 
     const enemyCombatants = enemies.map((e, i) => {
@@ -734,7 +710,9 @@ export const useCombat = (playerCharacter) => {
             type: 'enemy', name: e.name || `Gegner ${i+1}`,
             initiative: d(20) + getAbilityModifier(dex),
             hp: hpValue, maxHp: hpValue, speed: e.speed || "9m", 
-            color: 'red', x: 9, y: 3 + i
+            color: 'red', x: 9, y: 3 + i,
+            activeConditions: [],
+            tempHp: 0
         };
     });
 
@@ -756,7 +734,8 @@ export const useCombat = (playerCharacter) => {
       processingTurn.current = false;
   }, []);
 
-  // --- PERFORM ACTION (MIT SUMMON SUPPORT) ---
+  // --- PERFORM ACTION (MIT SUMMON SUPPORT & CONDITIONS) ---
+  // --- PERFORM ACTION (MÄCHTIGE VERSION) ---
   const performAction = useCallback((attackerId, targetIdsInput, action, targetCoords = null) => {
     setCombatState(prev => {
       const attacker = prev.combatants.find(c => c.id === attackerId);
@@ -770,54 +749,63 @@ export const useCombat = (playerCharacter) => {
       if (!attacker || (!isSummon && targets.length === 0)) return prev;
 
       let logEntries = [];
-      const hpChanges = {};
-      const newCombatantsToAdd = []; // Liste für neue Beschwörungen
+      // Wir speichern hier das komplette aktualisierte Combatant-Objekt
+      const combatantUpdates = {}; 
+      const newCombatantsToAdd = []; 
 
       console.log(`⚡ ACTION: ${attacker.name} uses ${action.name}`);
 
       // ---------------------------------------------------------
-      // FALL A: ZAUBER
+      // FALL A: ZAUBER & EFFEKTE
       // ---------------------------------------------------------
       if (action.effects && action.effects.length > 0) {
           action.effects.forEach(effect => {
               
-              // 1. BESCHWÖRUNG (SUMMON)
+              // 1. BESCHWÖRUNG (SUMMON & HAZARDS)
               if (effect.type === 'SUMMON' && targetCoords) {
-                  // Erstelle neues Entity
                   const entity = effect.entity;
                   const newId = `summon_${Date.now()}_${Math.floor(Math.random()*1000)}`;
-                  
+                  const isHazard = entity.type === 'hazard';
+
                   newCombatantsToAdd.push({
                       id: newId,
                       name: entity.name || "Beschwörung",
-                      type: entity.type || 'ally', // 'ally' (grün) oder 'enemy' (rot)
+                      type: entity.type || 'ally',
                       hp: entity.hp || 10,
                       maxHp: entity.maxHp || 10,
                       ac: entity.ac || 10,
-                      speed: entity.speed || 6,
+                      speed: entity.speed || 0,
                       x: targetCoords.x,
                       y: targetCoords.y,
                       icon: entity.icon || 'src/assets/react.svg',
-                      controlledBy: attacker.id, // Referenz wer es beschworen hat
-                      actions: entity.actions || [], // Hat es eigene Angriffe?
-                      initiative: attacker.initiative - 0.1 // Zieht direkt nach dem Beschwörer
+                      controlledBy: attacker.id,
+                      actions: entity.actions || [],
+                      initiative: attacker.initiative - 0.1,
+                      activeConditions: [],
+                      tempHp: 0,
+                      hazardProfile: isHazard ? entity.hazard_profile : null,
+                      isPassable: isHazard 
                   });
 
-                  logEntries.push(`✨ ${attacker.name} beschwört ${entity.name} an Position (${targetCoords.x}, ${targetCoords.y}).`);
+                  logEntries.push(`✨ ${attacker.name} erschafft ${entity.name}.`);
               }
 
-              // 2. SCHADEN & HEILUNG
-              if ((effect.type === "DAMAGE" || effect.type === "HEALING") && targets.length > 0) {
-                  let diceString = effect.damage.dice;
-                  // Skalierung
+              // 2. SCHADEN, HEILUNG, TEMP_HP, CONDITIONS & SPECIALS
+              else if ((effect.type === "DAMAGE" || effect.type === "HEALING" || effect.type === "TEMP_HP" || effect.type === "APPLY_CONDITION" || effect.type === "DISINTEGRATE" || effect.type === "INSTANT_KILL_CONDITIONAL" || effect.type === "BANISH") && targets.length > 0) {
+                  
+                  // Würfel-Logik
+                  let diceString = effect.damage?.dice || "1d4";
                   if (effect.scaling && effect.scaling.type === "CANTRIP" && attacker.type === 'player') {
                       const scaled = getCantripDice(playerCharacter.level, effect.scaling);
                       if (scaled) diceString = scaled;
                   }
 
-                  let baseRollVal = extractDamageValue(rollDiceString(normalizeDice(diceString)));
-                  if (effect.add_modifier && attacker.type === 'player') {
-                      baseRollVal += calculateSpellAttackBonus(playerCharacter) - getProficiencyBonus(playerCharacter.level); 
+                  let baseRollVal = 0;
+                  if (effect.type !== 'APPLY_CONDITION' && effect.type !== 'BANISH') {
+                      baseRollVal = extractDamageValue(rollDiceString(normalizeDice(diceString)));
+                      if (effect.add_modifier && attacker.type === 'player') {
+                          baseRollVal += calculateSpellAttackBonus(playerCharacter) - getProficiencyBonus(playerCharacter.level); 
+                      }
                   }
 
                   const typeKey = effect.damage?.type?.toLowerCase() || "force";
@@ -827,7 +815,6 @@ export const useCombat = (playerCharacter) => {
                   targets.forEach(target => {
                       let hitSuccess = false;
                       let isCritical = false;
-                      let halfDamage = false;
                       let finalDamage = baseRollVal;
                       let msg = '';
 
@@ -840,9 +827,18 @@ export const useCombat = (playerCharacter) => {
 
                           if (totalRoll >= target.ac || isCritical) {
                               hitSuccess = true;
-                              if (isCritical) finalDamage += extractDamageValue(rollDiceString(normalizeDice(diceString)));
+                              if (isCritical && effect.type === 'DAMAGE') finalDamage += extractDamageValue(rollDiceString(normalizeDice(diceString)));
                           } else {
-                              msg = `💨 verfehlt ${target.name}.`;
+                              // NEU: Damage on Miss (z.B. Melf's Acid Arrow)
+                              if (effect.damage_on_miss) {
+                                  const missDamage = Math.floor(baseRollVal / 2);
+                                  let missedTargetState = combatantUpdates[target.id] || { ...target };
+                                  missedTargetState = resolveDamage(missedTargetState, missDamage);
+                                  combatantUpdates[target.id] = missedTargetState;
+                                  msg = `💨 verfehlt ${target.name} knapp (${missDamage} Schaden).`;
+                              } else {
+                                  msg = `💨 verfehlt ${target.name}.`;
+                              }
                           }
                       }
                       // B. RETTUNGSWURF
@@ -860,33 +856,113 @@ export const useCombat = (playerCharacter) => {
                                   hitSuccess = false;
                                   msg = `🛡️ ${target.name} weicht vollständig aus.`;
                               } else {
+                                  // Save Halves
                                   hitSuccess = true;
-                                  halfDamage = true;
                                   finalDamage = Math.floor(finalDamage / 2);
-                                  msg = `🛡️ ${target.name} halbiert Schaden.`;
+                                  msg = `🛡️ ${target.name} widersteht (halber Schaden).`;
                               }
                           }
                       } else {
-                          hitSuccess = true; // Auto hit
+                          hitSuccess = true; // Auto hit (z.B. Magic Missile, Healing)
                       }
 
                       if (hitSuccess) {
+                          let currentTargetState = combatantUpdates[target.id] || { ...target };
+
+                          // 1. HEILUNG
                           if (effect.type === 'HEALING') {
-                              hpChanges[target.id] = (hpChanges[target.id] || 0) + finalDamage;
+                              currentTargetState.hp = Math.min(currentTargetState.maxHp, currentTargetState.hp + finalDamage);
                               msg = `💖 Heilt ${target.name} für ${finalDamage} TP.`;
-                          } else {
-                              hpChanges[target.id] = (hpChanges[target.id] || 0) - finalDamage;
+                          } 
+                          // 2. TEMPORÄRE HP
+                          else if (effect.type === 'TEMP_HP') {
+                              currentTargetState = applyTempHp(currentTargetState, finalDamage);
+                              msg = `🛡️ ${target.name} erhält ${finalDamage} Temp HP.`;
+                          }
+                          // 3. SCHADEN
+                          else if (effect.type === 'DAMAGE') {
+                              currentTargetState = resolveDamage(currentTargetState, finalDamage);
                               msg += ` 💥 ${target.name} nimmt ${finalDamage} ${dmgTypeDE}schaden.`;
+                              if (currentTargetState.hp <= 0) msg += ` 💀 Besiegt!`;
+                          }
+                          // 4. CONDITION
+                          else if (effect.type === 'APPLY_CONDITION' && effect.condition) {
+                              currentTargetState = applyCondition(currentTargetState, effect.condition);
+                              msg += ` 🌀 ${target.name} ist nun ${effect.condition.type}!`;
+                          }
+
+                          // 5. NEU: SPEZIAL-EFFEKTE (Disintegrate, Banishment, etc.)
+                          const specialEffectData = { 
+                              ...effect, 
+                              damageDealt: (effect.type === 'DAMAGE') ? finalDamage : 0 
+                          };
+                          
+                          // Wir rufen den Manager auf
+                          const specialResult = processSpecialEffect(
+                              specialEffectData, 
+                              attacker, 
+                              currentTargetState, 
+                              prev.combatants
+                          );
+
+                          if (specialResult && specialResult.updates) {
+                              // Updates anwenden (z.B. isPermadeath setzen)
+                              currentTargetState = { ...currentTargetState, ...specialResult.updates };
+                              if (specialResult.logs.length > 0) logEntries.push(...specialResult.logs);
+                          }
+
+                          combatantUpdates[target.id] = currentTargetState;
+                      }
+                      if(msg) logEntries.push(msg);
+                  });
+              }
+
+              // 3. ERZWUNGENE BEWEGUNG (PUSH / PULL)
+              else if ((effect.type === 'PUSH' || effect.type === 'PULL') && targets.length > 0) {
+                  targets.forEach(target => {
+                      let moveSuccess = true;
+                      if (effect.saving_throw) {
+                          const saveDC = (attacker.type === 'player') ? calculateSpellSaveDC(playerCharacter) : (attacker.save_dc || 12);
+                          const abilityKey = effect.saving_throw.ability.toLowerCase().substring(0, 3);
+                          const saveRoll = d(20) + getAbilityModifier(target.stats?.[abilityKey] || 10);
+                          if (saveRoll >= saveDC) {
+                              moveSuccess = false;
+                              logEntries.push(`🛡️ ${target.name} hält stand.`);
                           }
                       }
-                      logEntries.push(msg);
+
+                      if (moveSuccess) {
+                          const dist = effect.distance_m || 3;
+                          const newPos = calculateForcedMovement(target, attacker, effect.type, dist, prev.combatants);
+                          
+                          if (newPos.x !== target.x || newPos.y !== target.y) {
+                              let currentTargetState = combatantUpdates[target.id] || { ...target };
+                              currentTargetState.x = newPos.x;
+                              currentTargetState.y = newPos.y;
+                              combatantUpdates[target.id] = currentTargetState;
+                              logEntries.push(`➡️ ${target.name} wird bewegt.`);
+                          }
+                      }
                   });
+              }
+
+              // 4. TELEPORTATION
+              else if (effect.type === 'TELEPORT') {
+                  if (targetCoords && isValidTeleport(targetCoords, prev.combatants)) {
+                      let currentAttackerState = combatantUpdates[attacker.id] || { ...attacker };
+                      currentAttackerState.x = targetCoords.x;
+                      currentAttackerState.y = targetCoords.y;
+                      combatantUpdates[attacker.id] = currentAttackerState;
+                      logEntries.push(`✨ ${attacker.name} teleportiert sich.`);
+                  } else {
+                      logEntries.push(`🚫 Teleport blockiert.`);
+                  }
               }
           });
       }
       
       // ---------------------------------------------------------
-      // FALL B: WAFFE
+      // FALL B: WAFFE (Standard Angriff)
       // ---------------------------------------------------------
       else if (!action.effects && action.type !== 'spell' && targets.length > 0) {
           targets.forEach(target => {
@@ -901,34 +977,30 @@ export const useCombat = (playerCharacter) => {
                   else if (action.damage?.dice) diceString = action.damage.dice; 
                   else if (typeof action.damage === 'string') diceString = action.damage;
 
-                  const cleanDice = normalizeDice(diceString);
-                  let damage = extractDamageValue(rollDiceString(cleanDice));
-
-                  if (isCritical) damage += extractDamageValue(rollDiceString(cleanDice));
+                  let damage = extractDamageValue(rollDiceString(normalizeDice(diceString)));
+                  if (isCritical) damage += extractDamageValue(rollDiceString(normalizeDice(diceString)));
                   if (action.damage?.bonus) damage += Number(action.damage.bonus);
 
-                  hpChanges[target.id] = (hpChanges[target.id] || 0) - damage;
+                  let currentTargetState = combatantUpdates[target.id] || { ...target };
+                  currentTargetState = resolveDamage(currentTargetState, damage);
+                  combatantUpdates[target.id] = currentTargetState;
+                  
                   logEntries.push(`⚔️ Trifft ${target.name} für ${damage} Schaden.${isCritical ? ' (KRIT!)' : ''}`);
+                  if (currentTargetState.hp <= 0) logEntries.push(`💀 ${target.name} besiegt!`);
               } else {
                   logEntries.push(`💨 Verfehlt ${target.name}.`);
               }
           });
       }
 
-      // State Update: HP anwenden & neue Tokens hinzufügen
+      // State Update: Updates anwenden & neue Tokens hinzufügen
       let updatedCombatants = prev.combatants.map(c => {
-          if (hpChanges[c.id] !== undefined) {
-              const newHp = Math.max(0, Math.min(c.maxHp, c.hp + hpChanges[c.id]));
-              if (newHp === 0) logEntries.push(`💀 ${c.name} besiegt!`);
-              return { ...c, hp: newHp };
-          }
+          if (combatantUpdates[c.id]) return combatantUpdates[c.id];
           return c;
       });
 
-      // Füge beschworene Kreaturen hinzu
       if (newCombatantsToAdd.length > 0) {
           updatedCombatants = [...updatedCombatants, ...newCombatantsToAdd];
-          // Sortiere neu nach Initiative (optional, damit sie im Turn Order richtig stehen)
           updatedCombatants.sort((a, b) => b.initiative - a.initiative);
       }
 
@@ -957,42 +1029,66 @@ export const useCombat = (playerCharacter) => {
       if (!state.isActive || state.result) return;
 
       const current = state.combatants[state.turnIndex];
-      // Erlaube auch Beschwörungen (controlledBy player) zu agieren, falls du das später willst
+      // Erlaube auch Beschwörungen (controlledBy player) zu agieren
       if (current.type !== 'player' && current.controlledBy !== 'player') return; 
 
-      const target = state.combatants.find(c => c.x === x && c.y === y && c.hp > 0);
+      const targetCombatant = state.combatants.find(c => c.x === x && c.y === y && c.hp > 0);
 
-      // A: Aktion ausgewählt
+      // A: Aktion ausgewählt (Angriff oder Zauber)
       if (selectedAction && state.turnResources.hasAction) {
           const allowedRange = calculateWeaponRange(selectedAction);
           const distToClick = getDistance(current, {x, y});
 
+          // Reichweiten-Check
           if (distToClick > allowedRange) {
               setCombatState(prev => ({...prev, log: [...prev.log, `⚠️ Zu weit weg!`]}))
               return;
           }
 
-          // 1. FLÄCHENZAUBER ODER PUNKT-ZIEL (SUMMON)
-          if (selectedAction.target?.type === 'POINT' || selectedAction.target?.radius_m) {
-              const radiusTiles = selectedAction.target.radius_m ? Math.floor(selectedAction.target.radius_m / 1.5) : 0;
+          // 1. FLÄCHENZAUBER (AoE) & GEOMETRIE
+          // Prüft auf explizite Form (Cone, Line, Cube) oder Radius
+          if (selectedAction.target?.shape || selectedAction.target?.radius_m || selectedAction.target?.type === 'POINT') {
               
+              // Berechne betroffene Kacheln
+              // Wir bauen ein shapeData Objekt aus der Action
+              const shapeData = {
+                  type: selectedAction.target.shape || (selectedAction.target.radius_m ? 'SPHERE' : 'POINT'),
+                  size_m: selectedAction.target.length_m || selectedAction.target.width_m || 0,
+                  radius_m: selectedAction.target.radius_m
+              };
+
+              const affectedTiles = getAffectedTiles(current, {x, y}, shapeData);
+              
+              // Finde alle Combatants auf diesen Kacheln
               const targetsInArea = state.combatants.filter(c => {
                   if (c.hp <= 0) return false;
-                  const distToImpact = getDistance({x, y}, c);
-                  return distToImpact <= radiusTiles;
+                  // Ignoriere den Caster selbst bei den meisten offensiven Zaubern (optional)
+                  if (c.id === current.id && selectedAction.target.type !== 'SELF') return false;
+                  
+                  return affectedTiles.some(tile => tile.x === c.x && tile.y === c.y);
               });
 
-              // WICHTIG: Auch wenn keine Ziele da sind, feuern wir für den SUMMON Effekt
+              // Visuelles Feedback im Log (optional)
+              // setCombatState(...) -> Log: "Zielt auf X Gegner"
+
+              // Aktion ausführen (auch wenn keine Ziele getroffen werden, z.B. für Summon-Effekte auf den Boden)
               const targetIds = targetsInArea.map(t => t.id);
               performAction(current.id, targetIds, selectedAction, {x, y});
           } 
-          // 2. EINZELZIEL
-          else if (target && target.type === 'enemy') {
-              performAction(current.id, [target.id], selectedAction, {x, y});
+          
+          // 2. EINZELZIEL (Gezielter Angriff)
+          else if (targetCombatant && targetCombatant.type === 'enemy') {
+              performAction(current.id, [targetCombatant.id], selectedAction, {x, y});
+          }
+          
+          // 3. FEHLKLICK (Leeres Feld bei Einzelziel-Zauber)
+          else if (!targetCombatant) {
+               setCombatState(prev => ({...prev, log: [...prev.log, `⚠️ Kein gültiges Ziel.`]}))
           }
       } 
-      // B: Bewegung
-      else if (!target && !selectedAction) {
+      
+      // B: Bewegung (Keine Aktion ausgewählt)
+      else if (!targetCombatant && !selectedAction) {
           const dist = getDistance(current, {x, y});
           if (dist <= state.turnResources.movementLeft) {
               setCombatState(prev => ({
@@ -1000,24 +1096,64 @@ export const useCombat = (playerCharacter) => {
                   combatants: prev.combatants.map(c => c.id === current.id ? { ...c, x, y } : c),
                   turnResources: { ...prev.turnResources, movementLeft: prev.turnResources.movementLeft - dist }
               }));
+          } else {
+              setCombatState(prev => ({...prev, log: [...prev.log, `⚠️ Bewegung reicht nicht.`]}))
           }
       }
   }, [selectedAction, performAction]);
 
-  // ... (Rest bleibt gleich: nextTurn, KI, etc.)
+  // nextTurn, KI, etc.)
   const nextTurn = useCallback(() => {
       processingTurn.current = false; 
       setCombatState(prev => {
           if (prev.result) return prev;
+
+          let updatedCombatants = [...prev.combatants];
+          let extraLogs = [];
+
+          // 1. END OF TURN Trigger (für den, der gerade fertig ist)
+          const endingCombatant = updatedCombatants[prev.turnIndex];
+          if (endingCombatant && endingCombatant.hp > 0) {
+              // A: Conditions ticken
+              updatedCombatants[prev.turnIndex] = tickConditions(endingCombatant);
+              
+              // B: Hazard Check (End Turn) - z.B. Cloudkill
+              const hazardResult = checkHazardInteractions(updatedCombatants[prev.turnIndex], prev.combatants, 'END_TURN');
+              if (hazardResult.logs.length > 0) {
+                  updatedCombatants[prev.turnIndex] = hazardResult.combatant;
+                  extraLogs.push(...hazardResult.logs);
+              }
+          }
+
           const nextIndex = (prev.turnIndex + 1) % prev.combatants.length;
           const nextRound = nextIndex === 0 ? prev.round + 1 : prev.round;
-          const nextCombatant = prev.combatants[nextIndex];
+          
+          // 2. START OF TURN Trigger (für den Neuen)
+          const nextCombatantIndex = nextIndex; // Workaround, um auf das Array zuzugreifen
+          let nextCombatant = updatedCombatants[nextCombatantIndex];
+
+          if (nextCombatant && nextCombatant.hp > 0) {
+              // Hazard Check (Start Turn) - z.B. Spirit Guardians, Moonbeam
+              const startHazardResult = checkHazardInteractions(nextCombatant, updatedCombatants, 'START_TURN');
+              if (startHazardResult.logs.length > 0) {
+                  updatedCombatants[nextCombatantIndex] = startHazardResult.combatant;
+                  extraLogs.push(...startHazardResult.logs);
+              }
+          }
+
+          // Prüfen ob jemand durch Hazards gestorben ist
+          const activeNext = updatedCombatants[nextIndex]; // Neu laden falls update
+          
+          // Falls der nächste Spieler durch den Hazard am Rundenstart stirbt, müsste man eigentlich direkt weiterschalten,
+          // aber das lassen wir der Einfachheit halber erst mal so.
+
           return {
               ...prev,
               turnIndex: nextIndex,
               round: nextRound,
-              turnResources: { hasAction: true, hasBonusAction: true, movementLeft: calculateMoveTiles(nextCombatant.speed) },
-              log: [...prev.log, `--- Runde ${nextRound}: ${nextCombatant.name} ---`]
+              combatants: updatedCombatants,
+              turnResources: { hasAction: true, hasBonusAction: true, movementLeft: calculateMoveTiles(activeNext.speed) },
+              log: [...prev.log, ...extraLogs, `--- Runde ${nextRound}: ${activeNext.name} ---`]
           };
       });
   }, []);
