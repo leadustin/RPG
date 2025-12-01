@@ -1,6 +1,6 @@
 // src/components/combat/CombatGrid.jsx
-import React, { useState, useMemo, Suspense, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import React, { useState, useMemo, Suspense, useRef, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber'; 
 import { Line, Html, MapControls, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { getMapData } from '../../utils/mapRegistry';
@@ -58,7 +58,7 @@ const VisualTile = ({ x, y, highlight, isHovered, blocked }) => {
     );
 };
 
-// --- INTERACTION PLANE (Mit Drag) ---
+// --- INTERACTION PLANE ---
 const InteractionPlane = ({ width, height, onClick, onHover, onDragMove, onDragEnd }) => {
     const centerX = (width - 1) / 2;
     const centerY = -(height - 1) / 2;
@@ -83,20 +83,43 @@ const InteractionPlane = ({ width, height, onClick, onHover, onDragMove, onDragE
     );
 };
 
-// --- TOKEN (Mit Drag Start) ---
+// --- TOKEN ---
 const Token = ({ combatant, isActive, onDragStart }) => {
     const groupRef = useRef();
     const isEnemy = combatant.type === 'enemy';
     const color = isEnemy ? '#c0392b' : '#2980b9';
     
-    const targetPos = new THREE.Vector3(combatant.x, -combatant.y, 0.1);
-    const [initialPos] = useState([combatant.x, -combatant.y, 0.1]);
+    // Wegpunkte-Logik
+    const [waypoints, setWaypoints] = useState([]);
+    const [currentWaypointIndex, setCurrentWaypointIndex] = useState(0);
+    const lastPathRef = useRef(null);
+
+    useEffect(() => {
+        if (combatant.lastMovePath && combatant.lastMovePath !== lastPathRef.current) {
+            lastPathRef.current = combatant.lastMovePath;
+            const points = combatant.lastMovePath.map(p => new THREE.Vector3(p.x, -p.y, 0.1));
+            setWaypoints(points);
+            setCurrentWaypointIndex(0);
+        }
+    }, [combatant.lastMovePath]);
 
     useFrame((state, delta) => {
-        if (groupRef.current) {
-            groupRef.current.position.lerp(targetPos, delta * 3.0);
+        if (!groupRef.current) return;
+        
+        let target = new THREE.Vector3(combatant.x, -combatant.y, 0.1);
+
+        if (waypoints.length > 0 && currentWaypointIndex < waypoints.length) {
+            target = waypoints[currentWaypointIndex];
+            if (groupRef.current.position.distanceTo(target) < 0.1) {
+                setCurrentWaypointIndex(prev => prev + 1);
+            }
         }
+
+        const speed = 6.0; 
+        groupRef.current.position.lerp(target, delta * speed);
     });
+
+    const [initialPos] = useState([combatant.x, -combatant.y, 0.1]);
 
     return (
         <group 
@@ -104,10 +127,7 @@ const Token = ({ combatant, isActive, onDragStart }) => {
             position={initialPos}
             onPointerDown={(e) => {
                 e.stopPropagation();
-                // Linksklick auf eigenen Token startet Drag
-                if (e.button === 0 && isActive && !isEnemy) {
-                    if (onDragStart) onDragStart(combatant.id);
-                }
+                if (isActive && !isEnemy && onDragStart) onDragStart(combatant.id);
             }}
         >
             <mesh><circleGeometry args={[0.4, 32]} /><meshBasicMaterial color={color} /></mesh>
@@ -123,51 +143,32 @@ const Token = ({ combatant, isActive, onDragStart }) => {
     );
 };
 
-// --- PATH RULER (Die blaue Schlange) ---
+// --- PATH RULER ---
 const PathRuler = ({ path, cost, valid }) => {
     if (!path || path.length < 2) return null;
     const points = useMemo(() => path.map(p => new THREE.Vector3(p.x, -p.y, 0.2)), [path]);
     const endPoint = points[points.length - 1];
     const color = valid ? "#3498db" : "#e74c3c";
-
-    // NEU: Umrechnung in Meter (1 Feld = 1.5m)
     const distanceInMeters = (cost * 1.5).toFixed(1);
-
     return (
         <group>
             <Line points={points} color={color} lineWidth={4} />
-            <mesh position={endPoint}>
-                <circleGeometry args={[0.3, 16]} />
-                <meshBasicMaterial color={color} opacity={0.5} transparent />
-            </mesh>
+            <mesh position={endPoint}><circleGeometry args={[0.3, 16]} /><meshBasicMaterial color={color} opacity={0.5} transparent /></mesh>
             <Html position={endPoint} center style={{pointerEvents:'none'}}>
-                <div style={{
-                    background: color, color: 'white', fontWeight: 'bold',
-                    padding: '4px 8px', borderRadius: '12px', fontSize: '12px',
-                    whiteSpace: 'nowrap', boxShadow: '0 2px 4px rgba(0,0,0,0.4)'
-                }}>
-                    {distanceInMeters} m
-                </div>
+                <div style={{ background: color, color: 'white', fontWeight: 'bold', padding: '4px 8px', borderRadius: '12px', fontSize: '12px', whiteSpace: 'nowrap', boxShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>{distanceInMeters} m</div>
             </Html>
         </group>
     );
 };
 
-// --- GEPLANTE AKTION (Gelbe Linie) ---
+// --- PLANNED ACTION LINE ---
 const PlannedActionLine = ({ start, end, label }) => {
     if (!start || !end) return null;
-    const points = useMemo(() => [
-        new THREE.Vector3(start.x, -start.y, 0.2),
-        new THREE.Vector3(end.x, -end.y, 0.2)
-    ], [start, end]);
-
+    const points = useMemo(() => [new THREE.Vector3(start.x, -start.y, 0.2), new THREE.Vector3(end.x, -end.y, 0.2)], [start, end]);
     return (
         <group>
             <Line points={points} color="#f1c40f" lineWidth={3} dashed dashScale={10} gapSize={5} />
-            <mesh position={[end.x, -end.y, 0.2]}>
-                <circleGeometry args={[0.15, 16]} />
-                <meshBasicMaterial color="#f1c40f" />
-            </mesh>
+            <mesh position={[end.x, -end.y, 0.2]}><circleGeometry args={[0.15, 16]} /><meshBasicMaterial color="#f1c40f" /></mesh>
             <Html position={[(start.x + end.x) / 2, -(start.y + end.y) / 2, 0.2]} center style={{pointerEvents:'none'}}>
                 <div style={{ background: '#f1c40f', color: 'black', fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>{label}</div>
             </Html>
@@ -175,17 +176,18 @@ const PlannedActionLine = ({ start, end, label }) => {
     );
 };
 
-// --- SCENE ---
+// --- COMBAT SCENE (KORRIGIERT) ---
 const CombatScene = ({ 
     width, height, combatants, activeCombatantId, 
     selectedAction, movementLeft, onTileClick, 
     hoveredTile, setHoveredTile, queuedAction,
     mapImage, blockedTiles,
-    // DRAG PROPS
     dragState, onTokenDragStart, onGridDragMove, onGridDragEnd
 }) => {
     
+    // HIER WAR DER FEHLER: Diese Zeile hatte gefehlt!
     const activeCombatant = combatants.find(c => c.id === activeCombatantId);
+    
     const centerX = (width - 1) / 2;
     const centerY = -(height - 1) / 2;
     const getDist = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
@@ -199,14 +201,10 @@ const CombatScene = ({
             let highlight = null;
             const isHovered = hoveredTile && hoveredTile.x === x && hoveredTile.y === y;
 
-            // Bewegungshighlight entfernt, da jetzt Drag!
-            // Wir zeigen nur Angriffs-Reichweite und AoE
             if (activeCombatant?.type === 'player' && selectedAction && !queuedAction) {
                  const dist = getDist(activeCombatant, {x, y});
                  const range = selectedAction.range_m ? Math.floor(selectedAction.range_m/1.5) : 1;
-                 if (dist <= range) {
-                    highlight = occupied?.type === 'enemy' ? 'attackable' : 'aoe_target';
-                 }
+                 if (dist <= range) highlight = occupied?.type === 'enemy' ? 'attackable' : 'aoe_target';
             }
 
             if (highlight || isHovered) {
@@ -234,54 +232,18 @@ const CombatScene = ({
 
     return (
         <>
-            <MapControls 
-                makeDefault
-                enableRotate={false} 
-                screenSpacePanning={true}
-                minZoom={10} 
-                maxZoom={100}
-                target={[centerX, centerY, 0]} 
-                // Deaktivieren bei Drag
-                enabled={!dragState?.isDragging}
-                // Rechte Maus für Pan
-                mouseButtons={{ LEFT: null, MIDDLE: null, RIGHT: THREE.MOUSE.PAN }}
-            />
+            <MapControls makeDefault enableRotate={false} screenSpacePanning={true} minZoom={10} maxZoom={100} target={[centerX, centerY, 0]} enabled={!dragState?.isDragging} mouseButtons={{ LEFT: null, MIDDLE: null, RIGHT: THREE.MOUSE.PAN }} />
             <ambientLight intensity={1} />
-            
             {mapImage && <MapBackground width={width} height={height} imageUrl={mapImage} />}
-
-            <InteractionPlane 
-                width={width} height={height} 
-                onClick={onTileClick}
-                onHover={(x, y) => setHoveredTile(x !== null ? {x, y} : null)}
-                onDragMove={onGridDragMove}
-                onDragEnd={onGridDragEnd}
-            />
-
-            {/* NEU: Pfad beim Ziehen anzeigen */}
-            {dragState && dragState.isDragging && (
-                <PathRuler 
-                    path={dragState.path} 
-                    cost={dragState.cost} 
-                    valid={dragState.valid} 
-                />
-            )}
-
+            <InteractionPlane width={width} height={height} onClick={onTileClick} onHover={(x, y) => setHoveredTile(x !== null ? {x, y} : null)} onDragMove={onGridDragMove} onDragEnd={onGridDragEnd} />
+            {dragState && dragState.isDragging && <PathRuler path={dragState.path} cost={dragState.cost} valid={dragState.valid} />}
             <group>{tiles}</group>
-            
             <group>
                 {combatants.filter(c => c.hp > 0).map(c => (
-                    <Token 
-                        key={c.id} 
-                        combatant={c} 
-                        isActive={c.id === activeCombatantId} 
-                        onDragStart={onTokenDragStart} // Event weitergeben
-                    />
+                    <Token key={c.id} combatant={c} isActive={c.id === activeCombatantId} onDragStart={onTokenDragStart} />
                 ))}
             </group>
-            {planStart && planEnd && (
-                <PlannedActionLine start={planStart} end={planEnd} label={queuedAction.action.name} />
-            )}
+            {planStart && planEnd && <PlannedActionLine start={planStart} end={planEnd} label={queuedAction.action.name} />}
         </>
     );
 };
@@ -302,22 +264,10 @@ export const CombatGrid = (props) => {
   const centerY = -((h - 1) / 2);
 
   return (
-    <div 
-        className="combat-grid-container-3d" 
-        style={{ width: '100%', height: '600px', background: '#1a1a1a', position: 'relative' }}
-        onContextMenu={(e) => { 
-            e.preventDefault(); 
-            if (props.onContextMenu) props.onContextMenu(); 
-        }}
-    >
+    <div className="combat-grid-container-3d" style={{ width: '100%', height: '600px', background: '#1a1a1a', position: 'relative' }} onContextMenu={(e) => { e.preventDefault(); if (props.onContextMenu) props.onContextMenu(); }}>
       <Canvas orthographic camera={{ zoom: 40, position: [centerX, centerY, 100], near: 0.1, far: 1000 }}>
         <Suspense fallback={<Html center><div style={{color:'white'}}>Lade Karte...</div></Html>}>
-            <CombatScene 
-                {...props} 
-                width={w} height={h}
-                mapImage={mapImage} blockedTiles={blockedTiles}
-                hoveredTile={hoveredTile} setHoveredTile={setHoveredTile} 
-            />
+            <CombatScene {...props} width={w} height={h} mapImage={mapImage} blockedTiles={blockedTiles} hoveredTile={hoveredTile} setHoveredTile={setHoveredTile} />
         </Suspense>
       </Canvas>
     </div>

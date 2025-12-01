@@ -586,7 +586,6 @@
 // NEU: Logik für Word of Radiance: Implementiere den Flächenziel-Filter 'filter: "CREATURE_OF_CHOICE"' für Emanation-Effekte.
 // NEU: Logik für Yolande's Regal Presence: Implementiere den Hazard-Trigger 'DAMAGE_AND_DEBUFF_ON_CONTACT_ONCE_PER_TURN'. Dieser muss Schaden (4W6 Psycho), den Zustand 'Prone' und den 'PUSH' (3m Wegstoßen) bündeln.
 
-// src/hooks/useCombat.js
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { getAbilityModifier, calculateSpellAttackBonus, calculateSpellSaveDC, getProficiencyBonus } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';
@@ -627,10 +626,11 @@ const calculateWeaponRange = (action) => {
 };
 const damageTypeMap = { acid: "Säure", bludgeoning: "Wucht", cold: "Kälte", fire: "Feuer", force: "Energie", lightning: "Blitz", necrotic: "Nekrotisch", piercing: "Stich", poison: "Gift", psychic: "Psychisch", radiant: "Gleißend", slashing: "Hieb", thunder: "Donner", healing: "Heilung" };
 
-
+// --- HOOK ---
 export const useCombat = (playerCharacter) => {
   const initialState = {
     isActive: false,
+    isMapLoaded: false,
     round: 0,
     turnIndex: 0,
     combatants: [],
@@ -652,11 +652,17 @@ export const useCombat = (playerCharacter) => {
 
   useEffect(() => { stateRef.current = combatState; }, [combatState]);
 
+  // Reset bei Aktionswechsel
+  useEffect(() => {
+      setCurrentTargets([]);
+      setQueuedAction(null);
+  }, [selectedAction]);
+
   // --- MAP DATEN ---
   const blockedTiles = useMemo(() => {
       if (!playerCharacter || !playerCharacter.currentLocation) return [];
       const locData = locationsData.find(l => l.id === playerCharacter.currentLocation);
-      const mapId = locData?.mapId || "cave_entrance"; 
+      const mapId = locData?.mapId || (locData?.mapFile ? locData.mapFile.replace('.json', '') : "cave_entrance");
       const mapData = getMapData(mapId);
       if (!mapData) return [];
       return parseTiledCollisions(mapData, mapData.width, mapData.height, mapData.tilewidth);
@@ -680,8 +686,39 @@ export const useCombat = (playerCharacter) => {
       return set;
   }, [blockedTiles]);
 
-  // --- DRAG HANDLERS (BEWEGUNG) ---
+  // --- KAMPF STARTEN (INTERN) - WAR VORHER FEHLEND ---
+  const triggerCombat = useCallback(() => {
+      setCombatState(prev => {
+          if (prev.isActive) return prev;
 
+          const updatedCombatants = prev.combatants.map(c => {
+              const dex = c.stats?.dex || 10;
+              const initBonus = getAbilityModifier(dex);
+              const initRoll = d(20) + initBonus;
+              return { ...c, initiative: initRoll };
+          });
+          updatedCombatants.sort((a, b) => b.initiative - a.initiative);
+
+          const player = updatedCombatants.find(c => c.type === 'player');
+          const startResources = { 
+              hasAction: true, 
+              hasBonusAction: true, 
+              movementLeft: calculateMoveTiles(player.speed || "9m") 
+          };
+
+          return {
+              ...prev,
+              isActive: true,
+              round: 1,
+              turnIndex: 0,
+              combatants: updatedCombatants,
+              turnResources: startResources,
+              log: [...prev.log, "⚔️ Feinde gesichtet! Kampf beginnt!", `--- Runde 1: ${updatedCombatants[0].name} ---`]
+          };
+      });
+  }, []);
+
+  // --- DRAG HANDLERS ---
   const handleTokenDragStart = useCallback((combatantId) => {
       const current = stateRef.current.combatants[stateRef.current.turnIndex];
       if (!current || current.id !== combatantId || current.type !== 'player') return;
@@ -709,7 +746,10 @@ export const useCombat = (playerCharacter) => {
       const blockedSet = getFullBlockedSet();
       const result = findPath(dragRef.current.start.x, dragRef.current.start.y, x, y, blockedSet, 200, 200);
       
-      const maxMove = stateRef.current.turnResources.movementLeft;
+      const maxMove = stateRef.current.isActive 
+          ? stateRef.current.turnResources.movementLeft 
+          : 999;
+
       const isValid = result.valid && result.cost <= maxMove;
 
       const newState = {
@@ -725,57 +765,111 @@ export const useCombat = (playerCharacter) => {
   }, [getFullBlockedSet]);
 
   const handleGridDragEnd = useCallback(() => {
-      // 1. Referenz lokal sichern
       const dragData = dragRef.current;
       if (!dragData || !dragData.isDragging) return;
 
-      // 2. Werte lokal extrahieren (WICHTIG: Bevor dragRef null wird!)
-      const { valid, cost, current: targetPos } = dragData;
+      const { valid, cost, current: targetPos, path } = dragData;
 
       if (valid && cost > 0) {
-          // 3. State Update mit den lokalen Variablen nutzen
-          setCombatState(current => ({
-              ...current,
-              combatants: current.combatants.map(c => 
-                  c.id === current.combatants[current.turnIndex].id 
-                  // Hier nutzen wir 'targetPos' statt 'dragRef.current.current'
-                  ? { ...c, x: targetPos.x, y: targetPos.y } 
+          setCombatState(prev => {
+              const newCombatants = prev.combatants.map(c => 
+                  c.type === 'player' 
+                  ? { 
+                      ...c, 
+                      x: targetPos.x, 
+                      y: targetPos.y,
+                      lastMovePath: path 
+                    } 
                   : c
-              ),
-              turnResources: { 
-                  ...current.turnResources, 
-                  movementLeft: Math.max(0, current.turnResources.movementLeft - cost) 
+              );
+
+              let newResources = { ...prev.turnResources };
+              if (prev.isActive) {
+                  newResources.movementLeft = Math.max(0, prev.turnResources.movementLeft - cost);
               }
-          }));
+
+              return {
+                  ...prev,
+                  combatants: newCombatants,
+                  turnResources: newResources
+              };
+          });
+
+          // Aggro Check
+          if (!stateRef.current.isActive) {
+              const enemies = stateRef.current.combatants.filter(c => c.type === 'enemy' && c.hp > 0);
+              const aggroRadius = 6; 
+              const enemyInSight = enemies.some(e => {
+                  const dist = Math.sqrt(Math.pow(e.x - targetPos.x, 2) + Math.pow(e.y - targetPos.y, 2));
+                  return dist <= aggroRadius;
+              });
+              if (enemyInSight) setTimeout(() => triggerCombat(), 500);
+          }
       } 
       
-      // 4. Reset
       setDragState(null);
       dragRef.current = null;
-  }, []);
+  }, [triggerCombat]);
 
   const handleDragCancel = useCallback(() => {
       setDragState(null);
       dragRef.current = null;
   }, []);
 
+  // --- INITIALISIERUNG (WAR VORHER FEHLEND) ---
+  const initializeMap = useCallback((enemies) => {
+    if (!playerCharacter) return;
+    const stats = playerCharacter.stats || {};
+    const maxHp = stats.maxHp || playerCharacter.maxHp || 20;
+    const startHp = (typeof stats.hp === 'number') ? stats.hp : (playerCharacter.hp || 20);
+    const playerSpeed = stats.speed || playerCharacter.speed || "9m";
 
-  // --- ALTE HANDLERS (Aktionen) ---
+    const playerCombatant = {
+      id: playerCharacter.id || 'player', type: 'player', name: playerCharacter.name || 'Held',
+      hp: startHp, maxHp: maxHp, ac: stats.armor_class || 12,
+      initiative: 0, x: 2, y: 4, 
+      speed: playerSpeed, 
+      color: 'blue', icon: playerCharacter.icon,
+      activeConditions: [], tempHp: 0
+    };
 
+    const enemyCombatants = enemies.map((e, i) => {
+        let hpValue = 10;
+        if (typeof e.hp === 'number') hpValue = e.hp;
+        else if (e.hp && (e.hp.average || e.hp.max)) hpValue = e.hp.average || e.hp.max;
+        const dex = e.stats?.dex || 10;
+        return {
+            ...e, id: e.instanceId || `enemy_${i}_${Date.now()}`,
+            type: 'enemy', name: e.name || `Gegner ${i+1}`,
+            initiative: 0, 
+            hp: hpValue, maxHp: hpValue, speed: e.speed || "9m", 
+            color: 'red', x: 9, y: 3 + i, 
+            activeConditions: [], tempHp: 0
+        };
+    });
+
+    const allCombatants = [playerCombatant, ...enemyCombatants];
+
+    setCombatState({
+      isActive: false, isMapLoaded: true, round: 0, turnIndex: 0,
+      combatants: allCombatants, log: ["Gebiet betreten."],
+      turnResources: { hasAction: true, hasBonusAction: true, movementLeft: 999 },
+      result: null
+    });
+    setSelectedAction(null);
+    setQueuedAction(null);
+    processingTurn.current = false;
+  }, [playerCharacter]);
+
+  // --- AKTIONEN HANDLER ---
   const planAction = useCallback((attackerId, targetIds, action, targetCoords) => {
       setQueuedAction({ attackerId, targetIds, action, targetCoords });
       setCurrentTargets([]);
   }, []);
 
   const cancelAction = useCallback(() => {
-      if (dragRef.current) {
-          setDragState(null);
-          dragRef.current = null;
-          return;
-      }
-      setSelectedAction(null);
-      setQueuedAction(null);
-      setCurrentTargets([]);
+      if (dragRef.current) { setDragState(null); dragRef.current = null; return; }
+      setSelectedAction(null); setQueuedAction(null); setCurrentTargets([]);
   }, []);
 
   const resolveAction = useCallback((attackerId, targetIdsInput, action, targetCoords = null) => {
@@ -816,7 +910,6 @@ export const useCombat = (playerCharacter) => {
                       const scaled = getCantripDice(playerCharacter.level, effect.scaling);
                       if (scaled) diceString = scaled;
                   }
-
                   let baseRollVal = 0;
                   if (effect.type !== 'APPLY_CONDITION' && effect.type !== 'BANISH') {
                       baseRollVal = extractDamageValue(rollDiceString(normalizeDice(diceString)));
@@ -878,7 +971,6 @@ export const useCombat = (playerCharacter) => {
                               currentTargetState = applyCondition(currentTargetState, effect.condition);
                               msg += ` 🌀 ${target.name} ist nun ${effect.condition.type}!`;
                           }
-
                           const specialEffectData = { ...effect, damageDealt: (effect.type === 'DAMAGE') ? finalDamage : 0 };
                           const specialResult = processSpecialEffect(specialEffectData, attacker, currentTargetState, prev.combatants);
                           if (specialResult && specialResult.updates) {
@@ -965,7 +1057,12 @@ export const useCombat = (playerCharacter) => {
           result
       };
     });
-  }, [playerCharacter, isBlocked]);
+    
+    if (!combatState.isActive) {
+        setTimeout(() => triggerCombat(), 600);
+    }
+
+  }, [playerCharacter, isBlocked, combatState.isActive, triggerCombat]);
 
   const executeTurn = useCallback(() => {
       if (queuedAction) {
@@ -977,15 +1074,12 @@ export const useCombat = (playerCharacter) => {
   }, [queuedAction, resolveAction]);
 
   const handleCombatTileClick = useCallback((x, y) => {
-      // Bewegung ist jetzt DRAG-only.
       const state = stateRef.current;
       if (!state.isActive || state.result) return;
-
       if (isBlocked(x, y)) {
           setCombatState(prev => ({...prev, log: [...prev.log, `🚫 Blockiert!`]}))
           return;
       }
-
       const current = state.combatants[state.turnIndex];
       if (current.type !== 'player') return;
 
@@ -1000,7 +1094,6 @@ export const useCombat = (playerCharacter) => {
                setCombatState(prev => ({...prev, log: [...prev.log, `⚠️ Zu weit weg!`]}))
                return;
            }
-
            if (selectedAction.target?.shape || selectedAction.target?.radius_m || selectedAction.target?.type === 'POINT') {
                const shapeData = { type: selectedAction.target.shape || 'SPHERE', radius_m: selectedAction.target.radius_m };
                const affectedTiles = getAffectedTiles(current, {x,y}, shapeData);
@@ -1057,47 +1150,8 @@ export const useCombat = (playerCharacter) => {
       });
   }, []);
 
-  const startCombat = useCallback((enemies) => {
-    if (!playerCharacter) return;
-    const stats = playerCharacter.stats || {};
-    const startHp = (typeof stats.hp === 'number') ? stats.hp : (playerCharacter.hp || 20);
-    const maxHp = stats.maxHp || playerCharacter.maxHp || 20;
-    const playerInit = d(20) + getAbilityModifier(stats.abilities?.dex || 10);
-    const playerSpeed = stats.speed || playerCharacter.speed || "9m";
-
-    const playerCombatant = {
-      id: playerCharacter.id || 'player', type: 'player', name: playerCharacter.name || 'Held',
-      hp: startHp, maxHp: maxHp, ac: stats.armor_class || 12,
-      initiative: playerInit, x: 2, y: 4, speed: playerSpeed, color: 'blue', icon: playerCharacter.icon,
-      activeConditions: [], tempHp: 0
-    };
-
-    const enemyCombatants = enemies.map((e, i) => {
-        let hpValue = 10;
-        if (typeof e.hp === 'number') hpValue = e.hp;
-        else if (e.hp && (e.hp.average || e.hp.max)) hpValue = e.hp.average || e.hp.max;
-        const dex = e.stats?.dex || 10;
-        return {
-            ...e, id: e.instanceId || `enemy_${i}_${Date.now()}`,
-            type: 'enemy', name: e.name || `Gegner ${i+1}`,
-            initiative: d(20) + getAbilityModifier(dex),
-            hp: hpValue, maxHp: hpValue, speed: e.speed || "9m", 
-            color: 'red', x: 9, y: 3 + i,
-            activeConditions: [], tempHp: 0
-        };
-    });
-
-    const allCombatants = [playerCombatant, ...enemyCombatants].sort((a, b) => b.initiative - a.initiative);
-    setCombatState({
-      isActive: true, round: 1, turnIndex: 0, combatants: allCombatants,
-      log: [`Kampf gestartet! ${allCombatants[0].name} beginnt.`],
-      turnResources: { hasAction: true, hasBonusAction: true, movementLeft: 6 },
-      result: null
-    });
-    setSelectedAction(null);
-    processingTurn.current = false;
-  }, [playerCharacter]);
-
+  // --- ALIAS FÜR KOMPATIBILITÄT ---
+  const startCombat = useCallback(() => {}, []);
   const endCombatSession = useCallback(() => {
       setCombatState(initialState);
       setSelectedAction(null);
@@ -1106,6 +1160,7 @@ export const useCombat = (playerCharacter) => {
       processingTurn.current = false;
   }, []);
 
+  // --- KI ---
   useEffect(() => {
     const state = combatState;
     if (!state.isActive || state.result) return;
@@ -1143,7 +1198,6 @@ export const useCombat = (playerCharacter) => {
                                 const nextX = currentX + dx; const nextY = currentY + dy;
                                 const isOccupied = freshState.combatants.some(c => c.x === nextX && c.y === nextY && c.hp > 0);
                                 const isWall = isBlocked(nextX, nextY);
-                                
                                 if (!isOccupied && !isWall) {
                                     const distFromNext = getDistance({x: nextX, y: nextY}, player);
                                     if (distFromNext < minNewDist) { minNewDist = distFromNext; bestX = nextX; bestY = nextY; }
@@ -1177,9 +1231,10 @@ export const useCombat = (playerCharacter) => {
   }, [combatState.turnIndex, combatState.isActive, nextTurn, resolveAction, blockedTiles]);
 
   return {
-    combatState, startCombat, nextTurn, endCombatSession,
+    combatState, initializeMap, nextTurn, endCombatSession,
     selectedAction, setSelectedAction, handleCombatTileClick,
     queuedAction, cancelAction, executeTurn,
-    dragState, handleTokenDragStart, handleGridDragMove, handleGridDragEnd, handleDragCancel
+    dragState, handleTokenDragStart, handleGridDragMove, handleGridDragEnd, handleDragCancel,
+    startCombat
   };
 };

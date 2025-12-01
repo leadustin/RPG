@@ -34,10 +34,9 @@ function GameView({
   const [activeCharacterId, setActiveCharacterId] = useState(character?.id || 'player');
   const [showRestMenu, setShowRestMenu] = useState(false);
 
-  // 1. HIER FEHLTEN DIE DRAG-HANDLER
   const { 
     combatState, 
-    startCombat, 
+    initializeMap, 
     nextTurn, 
     endCombatSession,
     selectedAction,
@@ -46,17 +45,46 @@ function GameView({
     queuedAction,
     cancelAction,
     executeTurn,
-    // NEU: Drag State & Handler müssen hier rausgeholt werden!
     dragState,
     handleTokenDragStart,
     handleGridDragMove,
-    handleGridDragEnd
+    handleGridDragEnd,
+    handleDragCancel
   } = useCombat(character);
 
-  // --- KAMPF-LOG ---
+  // --- ORT & MAP LADEN (STRIKT) ---
+  const currentLocationId = character?.currentLocation;
+  const locationData = locationsData.find(l => l.id === currentLocationId);
+  
+  // Wir nutzen strikt die ID aus der JSON. Kein Fallback.
+  const currentMapId = locationData?.mapId;
+
+  useEffect(() => {
+      // Nur laden, wenn mapId in den Daten existiert
+      if (!combatState.isMapLoaded && locationData && locationData.mapId) {
+          const combatEnemies = [];
+          if (locationData.enemies) {
+              locationData.enemies.forEach((enemyConfig) => {
+                  const template = enemiesData[enemyConfig.id];
+                  if (template) {
+                      for (let i = 0; i < enemyConfig.count; i++) {
+                          combatEnemies.push({ 
+                              ...template, 
+                              instanceId: `${enemyConfig.id}_${i}_${Date.now()}` 
+                          });
+                      }
+                  }
+              });
+          }
+          initializeMap(combatEnemies);
+      }
+  }, [locationData, combatState.isMapLoaded, initializeMap]);
+
+
+  // --- LOGGING ---
   const lastLogLength = useRef(0);
   useEffect(() => {
-      if (combatState.isActive) {
+      if (combatState.isMapLoaded) { 
           const newLogs = combatState.log.slice(lastLogLength.current);
           if (newLogs.length > 0) {
               newLogs.forEach(msg => {
@@ -67,9 +95,9 @@ function GameView({
       } else {
           lastLogLength.current = 0;
       }
-  }, [combatState.log, combatState.isActive, onAddLogEntry]);
+  }, [combatState.log, combatState.isMapLoaded, onAddLogEntry]);
 
-  // --- SIEG LOGIK ---
+  // --- SIEG ---
   useEffect(() => {
       if (combatState.result === 'victory') {
           const enemies = combatState.combatants.filter(c => c.type === 'enemy');
@@ -109,24 +137,8 @@ function GameView({
   if (!character) return <div>Lädt...</div>;
 
   const activeCharacter = character;
-  const isPlayerTurn = combatState.isActive && combatState.combatants[combatState.turnIndex]?.type === 'player';
-
-  const currentLocation = locationsData.find(l => l.id === character.currentLocation);
-  const currentMapId = currentLocation?.mapId || "cave_entrance"; 
-
-  const handleStartLocationCombat = () => {
-      if (!currentLocation || !currentLocation.enemies || currentLocation.enemies.length === 0) return;
-      const combatEnemies = [];
-      currentLocation.enemies.forEach((enemyConfig) => {
-          const enemyTemplate = enemiesData[enemyConfig.id];
-          if (enemyTemplate) {
-              for (let i = 0; i < enemyConfig.count; i++) {
-                  combatEnemies.push({ ...enemyTemplate, instanceId: `${enemyConfig.id}_${i}_${Date.now()}` });
-              }
-          }
-      });
-      if (combatEnemies.length > 0) startCombat(combatEnemies);
-  };
+  const isPlayerTurn = !combatState.isActive || (combatState.isActive && combatState.combatants[combatState.turnIndex]?.type === 'player');
+  const showMapMode = combatState.isMapLoaded;
 
   const handleEndCombat = () => {
       if (combatState.result === 'victory' && onCombatVictory) onCombatVictory();
@@ -135,8 +147,8 @@ function GameView({
   };
 
   const handleActionSlotClick = (action) => {
-      if (combatState.isActive && isPlayerTurn) {
-          if (queuedAction) cancelAction();
+      if (showMapMode && isPlayerTurn) {
+          if (queuedAction) cancelAction(); 
           if (selectedAction && selectedAction.name === action.name) {
               setSelectedAction(null); 
           } else {
@@ -157,13 +169,15 @@ function GameView({
         </div>
         
         <div className="world-map-area">
-           {combatState.isActive ? (
+           {showMapMode ? (
              <div className="combat-view" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
                
-               <TurnOrderBar 
-                   combatants={combatState.combatants} 
-                   activeIndex={combatState.turnIndex} 
-               />
+               {combatState.isActive && (
+                   <TurnOrderBar 
+                       combatants={combatState.combatants} 
+                       activeIndex={combatState.turnIndex} 
+                   />
+               )}
 
                {combatState.result && (
                  <CombatResultScreen 
@@ -179,6 +193,7 @@ function GameView({
                    overflow: 'hidden',
                    background: '#222'
                }}>
+                 {/* Hier übergeben wir strikt die mapId aus der JSON */}
                  <CombatGrid 
                    mapId={currentMapId} 
                    width={20} 
@@ -186,12 +201,10 @@ function GameView({
                    combatants={combatState.combatants}
                    activeCombatantId={combatState.combatants[combatState.turnIndex]?.id}
                    selectedAction={selectedAction}
-                   movementLeft={combatState.turnResources.movementLeft}
+                   movementLeft={combatState.isActive ? combatState.turnResources.movementLeft : 999}
                    onTileClick={(x, y) => handleCombatTileClick(x, y)}
                    queuedAction={queuedAction}
                    onContextMenu={cancelAction}
-                   
-                   // 2. HIER WERDEN DIE NEUEN PROPS ÜBERGEBEN
                    dragState={dragState}
                    onTokenDragStart={handleTokenDragStart}
                    onGridDragMove={handleGridDragMove}
@@ -199,6 +212,38 @@ function GameView({
                  />
                </div>
                
+               <div style={{ position: 'absolute', bottom: 20, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', pointerEvents: 'auto', gap: '5px' }}>
+                   {(combatState.isActive || queuedAction) && (
+                       <button 
+                           onClick={queuedAction ? executeTurn : nextTurn}
+                           disabled={!isPlayerTurn} 
+                           style={{ 
+                               padding: '15px 50px', 
+                               fontSize: '1.2rem', 
+                               backgroundColor: queuedAction ? '#2ecc71' : '#d4af37',
+                               color: queuedAction ? '#fff' : '#000',
+                               border: '2px solid #222',
+                               borderRadius: '8px',
+                               fontWeight: 'bold',
+                               cursor: isPlayerTurn ? 'pointer' : 'not-allowed',
+                               boxShadow: '0 4px 6px rgba(0,0,0,0.5)',
+                               transition: 'all 0.2s'
+                           }}
+                       >
+                           {queuedAction ? "Aktion ausführen" : "Zug beenden"} ⌛
+                       </button>
+                   )}
+                   
+                   {queuedAction && (
+                       <div style={{
+                           color: '#fff', fontSize:'0.8rem', 
+                           textShadow: '1px 1px 2px black', 
+                           backgroundColor: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '4px'
+                       }}>
+                           Rechtsklick zum Abbrechen
+                       </div>
+                   )}
+               </div>
              </div>
            ) : character.currentLocation && character.currentLocation !== "worldmap" ? (
               <LocationView 
@@ -206,7 +251,7 @@ function GameView({
                   character={character}
                   onLeaveLocation={() => onEnterLocation("worldmap", character.worldMapPosition)}
                   onShopTransaction={onShopTransaction}
-                  onStartCombat={handleStartLocationCombat}
+                  onStartCombat={() => {}} 
               />
            ) : (
               <WorldMap
@@ -228,54 +273,11 @@ function GameView({
             onLoadGame={onLoadGame}
             saveFileExists={saveFileExists}
             onRestClick={() => setShowRestMenu(true)} 
-            disabled={!combatState.isActive || !isPlayerTurn}
+            disabled={!showMapMode || !isPlayerTurn}
             onSlotClick={handleActionSlotClick}
             selectedAction={selectedAction}
           />
         </div>
-
-        {combatState.isActive && !combatState.result && (
-            <div style={{ 
-                position: 'absolute', 
-                right: '30px', 
-                bottom: '25px', 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'flex-end',
-                gap: '5px',
-                zIndex: 100
-            }}>
-               <button 
-                   onClick={queuedAction ? executeTurn : nextTurn}
-                   disabled={!isPlayerTurn} 
-                   style={{ 
-                       padding: '12px 30px', 
-                       fontSize: '1.1rem', 
-                       backgroundColor: queuedAction ? '#2ecc71' : '#d4af37',
-                       color: queuedAction ? '#fff' : '#000',
-                       border: '2px solid #111',
-                       borderRadius: '6px',
-                       fontWeight: 'bold',
-                       cursor: isPlayerTurn ? 'pointer' : 'not-allowed',
-                       boxShadow: '0 4px 8px rgba(0,0,0,0.6)',
-                       whiteSpace: 'nowrap',
-                       transition: 'all 0.2s'
-                   }}
-               >
-                   {queuedAction ? "Ausführen" : "Zug beenden"}
-               </button>
-               
-               {queuedAction && (
-                   <div style={{
-                       fontSize:'0.75rem', color:'#ccc', 
-                       textShadow:'1px 1px 2px black',
-                       pointerEvents: 'none'
-                   }}>
-                       (Rechtsklick Abbruch)
-                   </div>
-               )}
-            </div>
-        )}
       </div>
 
       {showRestMenu && (
