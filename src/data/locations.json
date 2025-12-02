@@ -10,7 +10,7 @@
     "shops": ["general_store_elfenwacht", "blacksmith_elfenwacht"],
     "xp": 300,
     "enemies": [
-      { "id": "goblin", "count": 1 }
+      { "id": "goblin", "count": 10 }
     ]
   },
   {

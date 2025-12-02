@@ -586,6 +586,7 @@
 // NEU: Logik für Word of Radiance: Implementiere den Flächenziel-Filter 'filter: "CREATURE_OF_CHOICE"' für Emanation-Effekte.
 // NEU: Logik für Yolande's Regal Presence: Implementiere den Hazard-Trigger 'DAMAGE_AND_DEBUFF_ON_CONTACT_ONCE_PER_TURN'. Dieser muss Schaden (4W6 Psycho), den Zustand 'Prone' und den 'PUSH' (3m Wegstoßen) bündeln.
 
+// src/hooks/useCombat.js
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { getAbilityModifier, calculateSpellAttackBonus, calculateSpellSaveDC, getProficiencyBonus } from '../engine/rulesEngine';
 import { rollDiceString, d } from '../utils/dice';
@@ -596,7 +597,7 @@ import { checkHazardInteractions } from '../engine/combat/hazardManager';
 import { processSpecialEffect } from '../engine/combat/specialEffectManager';
 import { getMapData } from '../utils/mapRegistry';
 import { parseTiledCollisions } from '../utils/mapLoader';
-import { findPath, getGridKey, getPathLength } from '../utils/pathfinding';
+import { findPath, getGridKey } from '../utils/pathfinding';
 import locationsData from '../data/locations.json';
 
 // --- HELPER FUNCTIONS ---
@@ -686,7 +687,7 @@ export const useCombat = (playerCharacter) => {
       return set;
   }, [blockedTiles]);
 
-  // --- KAMPF STARTEN (INTERN) - WAR VORHER FEHLEND ---
+  // --- KAMPF STARTEN ---
   const triggerCombat = useCallback(() => {
       setCombatState(prev => {
           if (prev.isActive) return prev;
@@ -816,7 +817,7 @@ export const useCombat = (playerCharacter) => {
       dragRef.current = null;
   }, []);
 
-  // --- INITIALISIERUNG (WAR VORHER FEHLEND) ---
+  // --- INITIALISIERUNG ---
   const initializeMap = useCallback((enemies) => {
     if (!playerCharacter) return;
     const stats = playerCharacter.stats || {};
@@ -872,6 +873,7 @@ export const useCombat = (playerCharacter) => {
       setSelectedAction(null); setQueuedAction(null); setCurrentTargets([]);
   }, []);
 
+  // --- RESOLVE ACTION (MIT NEUER SUMMON LOGIK) ---
   const resolveAction = useCallback((attackerId, targetIdsInput, action, targetCoords = null) => {
     setCombatState(prev => {
       const attacker = prev.combatants.find(c => c.id === attackerId);
@@ -890,19 +892,53 @@ export const useCombat = (playerCharacter) => {
       if (action.effects && action.effects.length > 0) {
           action.effects.forEach(effect => {
               if (effect.type === 'SUMMON' && targetCoords) {
+                  // FIX: Koordinaten runden für exakte Platzierung auf dem Grid
+                  const spawnX = Math.round(targetCoords.x);
+                  const spawnY = Math.round(targetCoords.y);
+
                   const entity = effect.entity;
                   const newId = `summon_${Date.now()}_${Math.floor(Math.random()*1000)}`;
                   const isHazard = entity.type === 'hazard';
-                  newCombatantsToAdd.push({
-                      id: newId, name: entity.name || "Beschwörung", type: entity.type || 'ally',
-                      hp: entity.hp || 10, maxHp: entity.maxHp || 10, ac: entity.ac || 10,
-                      speed: entity.speed || 0, x: targetCoords.x, y: targetCoords.y,
-                      icon: entity.icon || 'src/assets/react.svg', controlledBy: attacker.id,
-                      actions: entity.actions || [], initiative: attacker.initiative - 0.1,
-                      activeConditions: [], tempHp: 0, hazardProfile: isHazard ? entity.hazard_profile : null,
-                      isPassable: isHazard 
-                  });
-                  logEntries.push(`✨ ${attacker.name} erschafft ${entity.name}.`);
+                  
+                  // FIX: Dauer setzen (Standard 10 Runden = 1 Minute)
+                  const duration = 10; 
+
+                  const newSummon = {
+                      id: newId, 
+                      name: entity.name || "Beschwörung", 
+                      type: entity.type || 'ally',
+                      hp: entity.hp || 10, maxHp: entity.maxHp || 10, 
+                      ac: entity.ac || 10,
+                      speed: entity.speed || 0, 
+                      x: spawnX, y: spawnY, 
+                      icon: entity.icon || 'src/assets/react.svg', 
+                      controlledBy: attacker.id,
+                      actions: entity.actions || [], 
+                      initiative: attacker.initiative - 0.1,
+                      activeConditions: [], 
+                      tempHp: 0, 
+                      hazardProfile: isHazard ? entity.hazard_profile : null,
+                      isPassable: isHazard,
+                      duration: duration 
+                  };
+                  newCombatantsToAdd.push(newSummon);
+                  logEntries.push(`✨ ${attacker.name} erschafft ${entity.name} (Dauer: ${duration} Runden).`);
+
+                  // FIX: Sofortiger Hazard-Check beim Spawn (z.B. "ENTER" Trigger)
+                  if (isHazard) {
+                      // Prüfen, ob jemand (ausser dem Summon) auf dem gerundeten Feld steht
+                      const victim = prev.combatants.find(c => Math.round(c.x) === spawnX && Math.round(c.y) === spawnY && c.hp > 0);
+                      
+                      if (victim) {
+                          // Wir simulieren ein "ENTER" Event, damit der Schaden sofort triggert
+                          const immediateResult = checkHazardInteractions(victim, [...prev.combatants, newSummon], 'ENTER');
+                          
+                          if (immediateResult.logs.length > 0) {
+                              combatantUpdates[victim.id] = immediateResult.combatant;
+                              logEntries.push(...immediateResult.logs);
+                          }
+                      }
+                  }
               }
               else if ((effect.type === "DAMAGE" || effect.type === "HEALING" || effect.type === "TEMP_HP" || effect.type === "APPLY_CONDITION" || effect.type === "DISINTEGRATE" || effect.type === "INSTANT_KILL_CONDITIONAL" || effect.type === "BANISH") && targets.length > 0) {
                   let diceString = effect.damage?.dice || "1d4";
@@ -1112,25 +1148,50 @@ export const useCombat = (playerCharacter) => {
       }
   }, [selectedAction, planAction, currentTargets, isBlocked]);
 
+  // --- NEXT TURN (MIT DURATION & HAZARD CHECK) ---
   const nextTurn = useCallback(() => {
       processingTurn.current = false; 
       setQueuedAction(null);
       setCurrentTargets([]);
+
       setCombatState(prev => {
           if (prev.result) return prev;
+
           let updatedCombatants = [...prev.combatants];
           let extraLogs = [];
-          const endingCombatant = updatedCombatants[prev.turnIndex];
-          if (endingCombatant && endingCombatant.hp > 0) {
-              updatedCombatants[prev.turnIndex] = tickConditions(endingCombatant);
-              const hazardResult = checkHazardInteractions(updatedCombatants[prev.turnIndex], prev.combatants, 'END_TURN');
-              if (hazardResult.logs.length > 0) {
-                  updatedCombatants[prev.turnIndex] = hazardResult.combatant;
-                  extraLogs.push(...hazardResult.logs);
+          let currentTurnIndex = prev.turnIndex;
+
+          // A) Zugende des aktuellen Charakters
+          const endingCombatant = updatedCombatants[currentTurnIndex];
+          if (endingCombatant) { 
+              // FIX: Dauer reduzieren & Auflösen von Summons/Hazards
+              if (endingCombatant.duration !== undefined) {
+                  endingCombatant.duration -= 1;
+                  if (endingCombatant.duration <= 0) {
+                      extraLogs.push(`💨 ${endingCombatant.name} löst sich auf.`);
+                      updatedCombatants.splice(currentTurnIndex, 1);
+                      // Index korrigieren, da Liste kürzer wurde und wir sonst einen überspringen
+                      currentTurnIndex--; 
+                  }
+              }
+
+              // Conditions & Hazard END_TURN Check (nur wenn er noch existiert und lebt)
+              if (updatedCombatants[currentTurnIndex] && updatedCombatants[currentTurnIndex].id === endingCombatant.id && endingCombatant.hp > 0) {
+                  updatedCombatants[currentTurnIndex] = tickConditions(endingCombatant);
+                  const hazardResult = checkHazardInteractions(updatedCombatants[currentTurnIndex], prev.combatants, 'END_TURN');
+                  if (hazardResult.logs.length > 0) {
+                      updatedCombatants[currentTurnIndex] = hazardResult.combatant;
+                      extraLogs.push(...hazardResult.logs);
+                  }
               }
           }
-          const nextIndex = (prev.turnIndex + 1) % prev.combatants.length;
+
+          // B) Nächster Charakter
+          let nextIndex = currentTurnIndex + 1;
+          if (nextIndex >= updatedCombatants.length) nextIndex = 0;
           const nextRound = nextIndex === 0 ? prev.round + 1 : prev.round;
+          
+          // C) Zuganfang des neuen Charakters (Hazard START_TURN Check)
           const nextCombatant = updatedCombatants[nextIndex];
           if (nextCombatant && nextCombatant.hp > 0) {
               const startHazardResult = checkHazardInteractions(nextCombatant, updatedCombatants, 'START_TURN');
@@ -1139,18 +1200,22 @@ export const useCombat = (playerCharacter) => {
                   extraLogs.push(...startHazardResult.logs);
               }
           }
+
           return {
               ...prev,
               turnIndex: nextIndex,
               round: nextRound,
               combatants: updatedCombatants,
-              turnResources: { hasAction: true, hasBonusAction: true, movementLeft: calculateMoveTiles(updatedCombatants[nextIndex].speed) },
-              log: [...prev.log, ...extraLogs, `--- Runde ${nextRound}: ${updatedCombatants[nextIndex].name} ---`]
+              turnResources: { 
+                  hasAction: true, 
+                  hasBonusAction: true, 
+                  movementLeft: nextCombatant ? calculateMoveTiles(nextCombatant.speed) : 0 
+              },
+              log: [...prev.log, ...extraLogs, `--- Runde ${nextRound}: ${nextCombatant ? nextCombatant.name : '???'} ---`]
           };
       });
   }, []);
 
-  // --- ALIAS FÜR KOMPATIBILITÄT ---
   const startCombat = useCallback(() => {}, []);
   const endCombatSession = useCallback(() => {
       setCombatState(initialState);
@@ -1160,28 +1225,47 @@ export const useCombat = (playerCharacter) => {
       processingTurn.current = false;
   }, []);
 
-  // --- KI ---
+  // --- KI & HAZARD-SKIP LOGIK ---
   useEffect(() => {
     const state = combatState;
     if (!state.isActive || state.result) return;
+    
     const currentC = state.combatants[state.turnIndex];
-    if (currentC && currentC.hp <= 0) {
+    if (!currentC) return;
+
+    // 1. Überspringe Tote
+    if (currentC.hp <= 0) {
         if (!processingTurn.current) {
              processingTurn.current = true;
              setTimeout(() => nextTurn(), 500);
         }
         return;
     }
-    if (currentC && currentC.type === 'enemy' && currentC.hp > 0 && !processingTurn.current) {
+
+    // 2. FIX: Überspringe Hazards/Neutrale Tokens automatisch (Dolchwolke)
+    // Sie haben keinen eigenen Zug, sie existieren nur.
+    if (currentC.type === 'hazard' || currentC.type === 'neutral') {
+        if (!processingTurn.current) {
+            processingTurn.current = true;
+            setTimeout(() => nextTurn(), 500);
+        }
+        return;
+    }
+
+    // 3. Gegner KI
+    if (currentC.type === 'enemy' && currentC.hp > 0 && !processingTurn.current) {
         processingTurn.current = true;
         const aiTurn = async () => {
             try {
                 await new Promise(r => setTimeout(r, 800));
                 let freshState = stateRef.current;
                 if (!freshState.isActive || freshState.result) return;
+                
                 const player = freshState.combatants.find(c => c.type === 'player');
                 if (player && player.hp > 0) {
-                    let currentX = currentC.x; let currentY = currentC.y;
+                    let currentX = currentC.x; 
+                    let currentY = currentC.y;
+                    
                     const actionTemplate = (currentC.actions && currentC.actions[0]) || { name: 'Angriff', damage: '1d4' };
                     const attackRange = calculateWeaponRange(actionTemplate);
                     let distToPlayer = getDistance({x: currentX, y: currentY}, player);
@@ -1196,7 +1280,7 @@ export const useCombat = (playerCharacter) => {
                             for (let dy = -1; dy <= 1; dy++) {
                                 if (dx === 0 && dy === 0) continue; 
                                 const nextX = currentX + dx; const nextY = currentY + dy;
-                                const isOccupied = freshState.combatants.some(c => c.x === nextX && c.y === nextY && c.hp > 0);
+                                const isOccupied = freshState.combatants.some(c => Math.round(c.x) === nextX && Math.round(c.y) === nextY && c.hp > 0);
                                 const isWall = isBlocked(nextX, nextY);
                                 if (!isOccupied && !isWall) {
                                     const distFromNext = getDistance({x: nextX, y: nextY}, player);
@@ -1208,6 +1292,7 @@ export const useCombat = (playerCharacter) => {
                             currentX = bestX; currentY = bestY; movesLeft--; hasMoved = true; distToPlayer = minNewDist; 
                         } else { break; }
                     }
+                    
                     if (hasMoved) {
                         setCombatState(prev => ({
                             ...prev,

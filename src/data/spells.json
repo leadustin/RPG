@@ -1440,26 +1440,28 @@
   "ui_casting_time": "1 Aktion",
   "ui_range": "18 Meter",
   "ui_duration": "Konzentration, 1 Min.",
-  "ui_description": "Du erschaffst einen 1,5m-Würfel aus wirbelnden Dolchen. Initialschaden: 4W4 Hieb. Kreaturen nehmen diesen Schaden auch, wenn sie den Bereich betreten, ihren Zug dort beenden oder du den Würfel (als Magische Aktion, 9m teleportieren) auf sie bewegst.",
+  "ui_description": "Du erschaffst einen 1,5m-Würfel aus wirbelnden Dolchen. Kreaturen erleiden 4W4 Hiebschaden, wenn sie den Bereich betreten oder ihren Zug dort beginnen.",
   "ui_scaling": "Schaden +2W4 pro Grad über 2.",
   "casting_time": "ACTION",
   "range_m": 18,
   "duration": "CONCENTRATION_1_MINUTE",
-  "target": { "type": "AREA", "shape": "CUBE", "length_m": 1.5 },
+  "target": { "type": "POINT", "range_m": 18 },
   "effects": [
-    {
-      "type": "DAMAGE",
-      "damage": { "dice": "4d4", "type": "slashing" },
-      "scaling": { "type": "PER_SLOT_LEVEL", "increase_dice": "2d4" }
-    },
     {
       "type": "SUMMON",
       "entity": {
         "name": "Dolchwolke",
-        "type": "neutral",
+        "type": "hazard", 
         "icon": "assets/tokens/cloud_of_daggers.png",
-        "hp": 1, "maxHp": 1, "ac": 10, "speed": 9,
-        "description": "Verursacht 4W4 Schaden bei Kontakt."
+        "hp": 999, 
+        "maxHp": 999, 
+        "ac": 10, 
+        "speed": 0,
+        "hazard_profile": {
+            "trigger": ["START_TURN", "ENTER"],
+            "damage": { "dice": "4d4", "type": "slashing" }
+        },
+        "description": "Verursacht 4W4 Hiebschaden bei Kontakt oder Zugbeginn."
       }
     }
   ]
